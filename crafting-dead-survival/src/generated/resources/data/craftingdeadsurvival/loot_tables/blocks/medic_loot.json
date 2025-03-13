@@ -27,6 +27,11 @@
         },
         {
           "type": "minecraft:item",
+          "weight": 40,
+          "name": "craftingdeadsurvival:morphine_syringe"
+        },
+        {
+          "type": "minecraft:item",
           "weight": 30,
           "name": "craftingdead:first_aid_kit"
         },

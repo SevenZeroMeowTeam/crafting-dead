@@ -22,6 +22,11 @@
         },
         {
           "type": "minecraft:item",
+          "weight": 20,
+          "name": "craftingdeadsurvival:morphine_syringe"
+        },
+        {
+          "type": "minecraft:item",
           "weight": 10,
           "name": "craftingdeadsurvival:mre"
         },

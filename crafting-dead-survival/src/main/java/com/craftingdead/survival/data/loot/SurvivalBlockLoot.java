@@ -30,6 +30,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
 public class SurvivalBlockLoot extends BlockLoot {
 
@@ -429,6 +430,8 @@ public class SurvivalBlockLoot extends BlockLoot {
                 .add(LootItem.lootTableItem(ModItems.BANDAGE.get())
                     .setWeight(25))
                 .add(LootItem.lootTableItem(SurvivalItems.SPLINT.get())
+                    .setWeight(25))
+                .add(LootItem.lootTableItem(SurvivalItems.MORPHINE_SYRINGE.get())
                     .setWeight(25))
                 .add(LootItem.lootTableItem(ModItems.RIOT_VEST.get())
                     .setWeight(10))
@@ -841,6 +844,8 @@ public class SurvivalBlockLoot extends BlockLoot {
                     .setWeight(30))
                 .add(LootItem.lootTableItem(SurvivalItems.SPLINT.get())
                     .setWeight(40))
+                .add(LootItem.lootTableItem(SurvivalItems.MORPHINE_SYRINGE.get())
+                    .setWeight(40))
                 .add(LootItem.lootTableItem(ModItems.FIRST_AID_KIT.get())
                     .setWeight(30))
                 .add(LootItem.lootTableItem(ModItems.ADRENALINE_SYRINGE.get())
@@ -921,6 +926,8 @@ public class SurvivalBlockLoot extends BlockLoot {
                 .add(LootItem.lootTableItem(ModItems.BANDAGE.get())
                     .setWeight(10))
                 .add(LootItem.lootTableItem(SurvivalItems.SPLINT.get())
+                    .setWeight(20))
+                .add(LootItem.lootTableItem(SurvivalItems.MORPHINE_SYRINGE.get())
                     .setWeight(20))
                 .add(LootItem.lootTableItem(SurvivalItems.MRE.get())
                     .setWeight(10))
@@ -1184,6 +1191,8 @@ public class SurvivalBlockLoot extends BlockLoot {
                     .setWeight(20))
                 .add(LootItem.lootTableItem(SurvivalItems.SPLINT.get())
                     .setWeight(20))
+                .add(LootItem.lootTableItem(SurvivalItems.MORPHINE_SYRINGE.get())
+                    .setWeight(20))
                 .add(LootItem.lootTableItem(SurvivalItems.MRE.get())
                     .setWeight(10))
                 .add(LootItem.lootTableItem(SurvivalItems.EMPTY_WATER_CANTEEN.get())
@@ -1369,7 +1378,7 @@ public class SurvivalBlockLoot extends BlockLoot {
   }
 
   @Override
-  protected Iterable<Block> getKnownBlocks() {
+  protected @NotNull Iterable<Block> getKnownBlocks() {
     return SurvivalBlocks.deferredRegister.getEntries().stream()
         .map(RegistryObject::get)
         .collect(Collectors.toSet());

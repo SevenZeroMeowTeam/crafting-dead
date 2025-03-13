@@ -153,6 +153,11 @@ public class SurvivalItems {
           .stacksTo(3)
           .tab(TAB)));
 
+  public static final RegistryObject<Item> MORPHINE_SYRINGE = deferredRegister.register("morphine_syringe",
+      () -> new ActionItem(SurvivalActionTypes.USE_MORPHINE_SYRINGE, new Item.Properties()
+          .stacksTo(3)
+          .tab(TAB)));
+
   public static final RegistryObject<Item> RBI_SYRINGE = deferredRegister.register("rbi_syringe",
       () -> new ActionItem(SurvivalActionTypes.USE_RBI_SYRINGE, new ActionItem.Properties()
           .stacksTo(3)
@@ -603,6 +608,9 @@ public class SurvivalItems {
     ArbitraryTooltips.registerTooltip(CANNED_TOMATO_SOUP, cannedFoodTooltip);
     ArbitraryTooltips.registerTooltip(SPLINT,
         new TranslatableComponent("splint.information")
+            .withStyle(ChatFormatting.GRAY));
+    ArbitraryTooltips.registerTooltip(MORPHINE_SYRINGE,
+        new TranslatableComponent("morphine_syringe.information")
             .withStyle(ChatFormatting.GRAY));
     ArbitraryTooltips.registerTooltip(RBI_SYRINGE,
         new TranslatableComponent("rbi_syringe.information")

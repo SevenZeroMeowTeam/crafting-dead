@@ -95,9 +95,10 @@
   "death.attack.infection":"%1$s died from RBI",
   "death.attack.bleeding":"%1$s bled to death",
 
-  "action.craftingdeadsurvival.use_splint.message":"Applying splint",
-  "action.craftingdeadsurvival.use_syringe_on_zombie.message":"Withdrawing RBI infection",
-  "action.craftingdeadsurvival.use_cure_syringe.message":"Injecting cure",
+  "action.craftingdeadsurvival.use_splint.message":"Applying Splint",
+  "action.craftingdeadsurvival.use_morphine_syringe.message":"Injecting Morphine",
+  "action.craftingdeadsurvival.use_syringe_on_zombie.message":"Withdrawing RBI Infection",
+  "action.craftingdeadsurvival.use_cure_syringe.message":"Injecting Cure",
   "action.craftingdeadsurvival.use_rbi_syringe.message":"Injecting RBI",
   "action.craftingdeadsurvival.fill_water_canteen.message": "Filling Water Canteen",
   "action.craftingdeadsurvival.fill_flask": "Filling Flask of Water",
@@ -106,6 +107,7 @@
 
   "item.craftingdeadsurvival.rbi_syringe": "RBI Syringe",
   "item.craftingdeadsurvival.cure_syringe": "RBI Cure Syringe",
+  "item.craftingdeadsurvival.morphine_syringe": "Morphine Syringe",
   "item.craftingdeadsurvival.splint": "Makeshift Splint",
 
   "item.craftingdeadsurvival.pipe_bomb": "Pipe Bomb",
@@ -205,6 +207,7 @@
   "can_opener.information": "Opens canned goods",
   "canned_food.information": "Open it using the right tool",
   "splint.information": "Stabilizes broken limbs",
+  "morphine_syringe.information": "Relieves severe pain",
   "rbi_syringe.information": "Causes infection",
   "cure_syringe.information": "Cures infection"
 }
