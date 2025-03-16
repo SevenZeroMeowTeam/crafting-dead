@@ -51,6 +51,21 @@
           "name": "craftingdead:adrenaline_syringe"
         },
         {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:binomial",
+                "n": 4.0,
+                "p": 0.5
+              },
+              "add": false
+            }
+          ],
+          "name": "craftingdead:adrenaline_syringe"
+        },
+        {
           "type": "minecraft:tag",
           "functions": [
             {
@@ -148,13 +163,13 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:binomial",
-                "n": 2.0,
+                "n": 4.0,
                 "p": 0.5
               },
               "add": false
             }
           ],
-          "name": "craftingdead:adrenaline_syringe"
+          "name": "craftingdeadsurvival:morphine_syringe"
         },
         {
           "type": "minecraft:item",

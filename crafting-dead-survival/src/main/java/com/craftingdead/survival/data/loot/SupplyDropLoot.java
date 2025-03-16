@@ -18,6 +18,7 @@
 
 package com.craftingdead.survival.data.loot;
 
+import com.craftingdead.survival.world.item.SurvivalItems;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import com.craftingdead.core.tags.ModItemTags;
@@ -47,6 +48,9 @@ public class SupplyDropLoot
                 .apply(SetItemCountFunction
                     .setCount(BinomialDistributionGenerator.binomial(6, 0.12F))))
             .add(LootItem.lootTableItem(ModItems.ADRENALINE_SYRINGE.get())
+                .apply(
+                    SetItemCountFunction.setCount(BinomialDistributionGenerator.binomial(4, 0.5F))))
+            .add(LootItem.lootTableItem(SurvivalItems.MORPHINE_SYRINGE.get())
                 .apply(
                     SetItemCountFunction.setCount(BinomialDistributionGenerator.binomial(4, 0.5F))))
             .add(TagEntry.expandTag(ModItemTags.SYRINGES)
@@ -87,6 +91,9 @@ public class SupplyDropLoot
         .withPool(LootPool.lootPool()
             .setRolls(ConstantValue.exactly(10))
             .add(LootItem.lootTableItem(ModItems.BANDAGE.get())
+                .apply(
+                    SetItemCountFunction.setCount(BinomialDistributionGenerator.binomial(4, 0.5F))))
+            .add(LootItem.lootTableItem(SurvivalItems.MORPHINE_SYRINGE.get())
                 .apply(
                     SetItemCountFunction.setCount(BinomialDistributionGenerator.binomial(4, 0.5F))))
             .add(LootItem.lootTableItem(ModItems.BOLT_CUTTERS.get())

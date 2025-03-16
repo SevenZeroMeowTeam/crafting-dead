@@ -27,6 +27,21 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:binomial",
+                "n": 4.0,
+                "p": 0.5
+              },
+              "add": false
+            }
+          ],
+          "name": "craftingdeadsurvival:morphine_syringe"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:binomial",
                 "n": 2.0,
                 "p": 0.7
               },

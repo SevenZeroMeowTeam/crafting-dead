@@ -48,6 +48,13 @@ public class SurvivalActionTypes {
               .forItem(SurvivalItems.SPLINT)
               .build());
 
+  public static final RegistryObject<EntityItemActionType<?>> USE_MORPHINE_SYRINGE =
+      deferredRegister.register("use_morphine_syringe",
+          () -> EntityItemActionType
+              .builder(TargetSelector.SELF_OR_OTHERS.hasEffect(SurvivalMobEffects.BROKEN_LEG))
+              .forItem(SurvivalItems.SPLINT)
+              .build());
+
   public static final RegistryObject<EntityItemActionType<?>> USE_SYRINGE_ON_ZOMBIE =
       deferredRegister.register("use_syringe_on_zombie",
           () -> EntityItemActionType.builder(TargetSelector.OTHERS_ONLY.ofEntityType(Zombie.class))
@@ -60,7 +67,7 @@ public class SurvivalActionTypes {
 
   public static final RegistryObject<EntityItemActionType<?>> USE_CURE_SYRINGE =
       deferredRegister.register("use_cure_syringe",
-          () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
+          () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS.hasEffect(SurvivalMobEffects.INFECTION))
               .forItem(SurvivalItems.CURE_SYRINGE)
               .duration(16)
               .resultItem(ModItems.SYRINGE)
@@ -85,4 +92,16 @@ public class SurvivalActionTypes {
               .resultItem(SurvivalItems.WATER_CANTEEN)
               .consumeItemInCreative(true)
               .build());
+
+  public static final RegistryObject<ItemActionType<?>> FILL_FLASK =
+      deferredRegister.register("fill_flask",
+          () -> BlockItemActionType.builder()
+              .durationSeconds(3)
+              .forFluid(FluidTags.WATER)
+              .forItem(SurvivalItems.EMPTY_FLASK)
+              .finishSound(SoundEvents.BOTTLE_FILL)
+              .resultItem(SurvivalItems.FLASK)
+              .consumeItemInCreative(true)
+              .build());
+
 }

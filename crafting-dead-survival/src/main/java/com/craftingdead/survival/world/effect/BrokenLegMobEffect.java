@@ -42,8 +42,9 @@ public class BrokenLegMobEffect extends MobEffect {
 
   @Override
   public List<ItemStack> getCurativeItems() {
-    List<ItemStack> items = new ArrayList<ItemStack>();
+    List<ItemStack> items = new ArrayList<>();
     items.add(new ItemStack(SurvivalItems.SPLINT::get));
+    items.add(new ItemStack(SurvivalItems.MORPHINE_SYRINGE::get));
     return items;
   }
 }
