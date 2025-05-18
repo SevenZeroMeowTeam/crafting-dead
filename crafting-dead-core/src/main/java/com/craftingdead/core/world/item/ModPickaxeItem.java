@@ -21,6 +21,8 @@ package com.craftingdead.core.world.item;
 import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Tier;
@@ -36,6 +38,14 @@ public class ModPickaxeItem extends PickaxeItem {
       Properties properties) {
     super(tier, attackDamage, attackSpeed, properties);
     this.attackDamage = attackDamage;
+  }
+
+  @Override
+  public boolean hurtEnemy(ItemStack itemStack, LivingEntity targetEntity,
+      LivingEntity attackerEntity) {
+    itemStack.hurtAndBreak(1, attackerEntity,
+        (entity) -> entity.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+    return true;
   }
 
   @Override
