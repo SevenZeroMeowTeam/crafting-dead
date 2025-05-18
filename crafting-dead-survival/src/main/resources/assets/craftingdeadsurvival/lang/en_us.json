@@ -101,7 +101,7 @@
   "action.craftingdeadsurvival.use_cure_syringe.message":"Injecting Cure",
   "action.craftingdeadsurvival.use_rbi_syringe.message":"Injecting RBI",
   "action.craftingdeadsurvival.fill_water_canteen.message": "Filling Water Canteen",
-  "action.craftingdeadsurvival.fill_flask": "Filling Flask of Water",
+  "action.craftingdeadsurvival.fill_flask.message": "Filling Flask",
 
   "itemGroup.craftingdeadsurvival": "Crafting Dead Survival",
 
