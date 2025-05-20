@@ -1103,12 +1103,12 @@ public class ModItems {
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> FIRE_AXE = deferredRegister.register("fire_axe",
-      () -> new ModAxeItem(Tiers.IRON, 14, -2.4F, new Item.Properties()
+      () -> new ModAxeItem(Tiers.IRON, 1.0F, 14, -2.4F, new Item.Properties()
           .durability(100)
           .tab((COMBAT_TAB))));
 
   public static final RegistryObject<Item> CHAINSAW = deferredRegister.register("chainsaw",
-      () -> new MeleeWeaponItem(8, -2.4F, new Item.Properties()
+      () -> new ModAxeItem(Tiers.IRON, 2.0F,8, -2.4F, new Item.Properties()
           .durability(75)
           .tab(COMBAT_TAB)));
 
@@ -1128,7 +1128,7 @@ public class ModItems {
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> SLEDGEHAMMER = deferredRegister.register("sledgehammer",
-      () -> new ModPickaxeItem(Tiers.IRON, 10, -2.4F,
+      () -> new ModPickaxeItem(Tiers.IRON, 1.0F, 10, -2.4F,
           new Item.Properties()
               .durability(110)
               .tab(COMBAT_TAB)));
@@ -1139,12 +1139,12 @@ public class ModItems {
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> SHOVEL = deferredRegister.register("shovel",
-      () -> new ModShovelItem(Tiers.IRON, 8, -2.4F, new Item.Properties()
+      () -> new ModShovelItem(Tiers.IRON, 1.0F, 8, -2.4F, new Item.Properties()
           .durability(70)
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> HATCHET = deferredRegister.register("hatchet",
-      () -> new ModAxeItem(Tiers.IRON, 16, -2.4F, new Item.Properties()
+      () -> new ModAxeItem(Tiers.IRON, 1.4F, 16, -2.4F, new Item.Properties()
           .durability(40)
           .tab(COMBAT_TAB)));
 
@@ -1170,7 +1170,7 @@ public class ModItems {
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> PICKAXE = deferredRegister.register("pickaxe",
-      () -> new ModPickaxeItem(Tiers.IRON, 10, -2.4F, new Item.Properties()
+      () -> new ModPickaxeItem(Tiers.IRON, 1.5F, 10, -2.4F, new Item.Properties()
           .durability(210)
           .tab(COMBAT_TAB)));
 
