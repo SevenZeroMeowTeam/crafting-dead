@@ -28,7 +28,6 @@ public class ServerConfig {
   // Game-Settings Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue showSubtitles;
   public final ForgeConfigSpec.BooleanValue allowSupplyDropBreak;
   public final ForgeConfigSpec.IntValue supplyDropDuration;
 
@@ -118,11 +117,6 @@ public class ServerConfig {
         .comment("General Game-Settings")
         .push("game-settings");
     {
-      this.showSubtitles = builder
-          .translation("options.craftingdeadsurvival.server.show_subtitles")
-          .comment("If true display subtitles")
-          .define("showSubtitles", true);
-
       this.allowSupplyDropBreak = builder
           .translation("options.craftingdeadsurvival.server.allow_supply_drop_break")
           .comment("If true supply drops can be destroyed by a left-click")
