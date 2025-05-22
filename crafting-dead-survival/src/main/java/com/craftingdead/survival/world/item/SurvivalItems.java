@@ -593,6 +593,8 @@ public class SurvivalItems {
         .withStyle(ChatFormatting.GRAY);
     var cannedFoodTooltip = new TranslatableComponent("canned_food.information")
         .withStyle(ChatFormatting.GRAY);
+    var emptyCanteenFlaskTooltip  = new TranslatableComponent("empty_canteen_flask.information")
+        .withStyle(ChatFormatting.GRAY);
     ArbitraryTooltips.registerTooltip(CAN_OPENER, canOpenerTooltip);
     ArbitraryTooltips.registerTooltip(SCREWDRIVER, canOpenerTooltip);
     ArbitraryTooltips.registerTooltip(MULTI_TOOL, canOpenerTooltip);
@@ -606,6 +608,8 @@ public class SurvivalItems {
     ArbitraryTooltips.registerTooltip(CANNED_PICKLES, cannedFoodTooltip);
     ArbitraryTooltips.registerTooltip(CANNED_DOG_FOOD, cannedFoodTooltip);
     ArbitraryTooltips.registerTooltip(CANNED_TOMATO_SOUP, cannedFoodTooltip);
+    ArbitraryTooltips.registerTooltip(EMPTY_WATER_CANTEEN, emptyCanteenFlaskTooltip);
+    ArbitraryTooltips.registerTooltip(EMPTY_FLASK, emptyCanteenFlaskTooltip);
     ArbitraryTooltips.registerTooltip(SPLINT,
         new TranslatableComponent("splint.information")
             .withStyle(ChatFormatting.GRAY));

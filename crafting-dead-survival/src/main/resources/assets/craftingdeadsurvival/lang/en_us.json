@@ -208,6 +208,7 @@
 
   "can_opener.information": "Opens canned goods",
   "canned_food.information": "Open it using the right tool",
+  "empty_canteen_flask.information": "Can be refilled with water",
   "splint.information": "Stabilizes broken limbs",
   "morphine_syringe.information": "Relieves severe pain",
   "rbi_syringe.information": "Causes infection",
