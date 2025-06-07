@@ -1901,6 +1901,7 @@ public class ModItems {
   public static final RegistryObject<Item> BINOCULARS =
       deferredRegister.register("binoculars",
           () -> new BinocularsItem(new Item.Properties()
+              .stacksTo(1)
               .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> PARACHUTE =
