@@ -21,6 +21,10 @@ java {
 
 repositories {
     maven {
+        name 'NeoForged Maven'
+        url = "https://maven.neoforged.net/releases"
+    }
+    maven {
         url 'https://maven.tarbits.co.uk/releases'
         mavenContent {
             releasesOnly()
