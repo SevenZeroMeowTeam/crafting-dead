@@ -20,10 +20,7 @@ java {
 }
 
 repositories {
-    maven {
-        name 'NeoForged Maven'
-        url = "https://maven.neoforged.net/releases"
-    }
+    mavenCentral()
     maven {
         url 'https://maven.tarbits.co.uk/releases'
         mavenContent {
