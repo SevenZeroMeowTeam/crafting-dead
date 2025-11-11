@@ -18,6 +18,8 @@
 
 package com.craftingdead.core.world.item.gun;
 
+import com.craftingdead.core.ServerConfig;
+import com.craftingdead.core.world.item.gun.attachment.Attachments;
 import java.util.HashMap;
 import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
@@ -138,7 +140,8 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
   }
 
   public void handleShoot(LivingExtension<?, ?> living) {
-    Entity entity = living.entity();
+    var entity = living.entity();
+    var gun = living.mainHandGun().orElse(null);
 
     if (this.canFlash(living)) {
       this.remainingFlashTicks = MUZZLE_FLASH_DURATION_TICKS;
@@ -151,10 +154,29 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
     }
 
     this.currentShootAnimation = this.getAnimation(GunAnimationEvent.SHOOT);
-    this.animationController.addAnimation(this.currentShootAnimation);
+    if (!gun.isPerformingSecondaryAction()) {
+      this.animationController.addAnimation(this.currentShootAnimation);
+    }
 
     if (entity == this.minecraft.getCameraEntity()) {
-      this.client.getCameraManager().randomRecoil(this.getRecoil(), true);
+      float recoilAmount = 1.0F;
+      // Prone
+      if (living.isCrouching()) {
+        recoilAmount *= (1.0F - ServerConfig.instance.proneRecoilMultiplier.get().floatValue());
+      }
+      // Crouch
+      if (entity.isCrouching()) {
+        recoilAmount *= (1.0F - ServerConfig.instance.crouchRecoilMultiplier.get().floatValue());
+      }
+      // Tactical Grip attached
+      if (gun.getAttachments().containsValue(Attachments.TACTICAL_GRIP.get())) {
+        recoilAmount *= (1.0F - ServerConfig.instance.tacticalGripRecoilMultiplier.get().floatValue());
+      }
+      // Bipod attached
+      if (gun.getAttachments().containsValue(Attachments.BIPOD.get())) {
+        recoilAmount *= (1.0F - ServerConfig.instance.bipodRecoilMultiplier.get().floatValue());
+      }
+      this.client.getCameraManager().randomRecoil(this.getRecoil() * recoilAmount, true);
     }
 
     double sqrDistance = this.minecraft.gameRenderer.getMainCamera().getPosition()
