@@ -18,6 +18,7 @@
 
 package com.craftingdead.core.world.item.gun;
 
+import com.craftingdead.core.network.message.play.NPCTriggerPressedMessage;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -138,7 +139,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
 
   /**
    * If the gun's trigger is pressed.
-   * 
+   *
    * @see #triggerPressedUpdater
    */
   private boolean wasTriggerPressed;
@@ -284,6 +285,31 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
   }
 
   @Override
+  public void setNPCTriggerPressed(LivingExtension<?, ?> living, boolean triggerPressed,
+      boolean sendUpdate, float accuracy) {
+    if (triggerPressed == this.isTriggerPressed() || (triggerPressed && (!this.canShoot(living)
+        || MinecraftForge.EVENT_BUS.post(
+        new GunEvent.NPCTriggerPressed(this, this.itemStack, living))))) {
+      return;
+    }
+
+    if (triggerPressed) {
+      this.gunFuture = executorService.scheduleAtFixedRate(() -> this.npcShoot(living, accuracy), 0L,
+          this.getFireDelayMs(), TimeUnit.MILLISECONDS);
+    } else {
+      this.stopShooting();
+    }
+
+    if (sendUpdate) {
+      var target = living.level().isClientSide()
+          ? PacketDistributor.SERVER.noArg()
+          : PacketDistributor.TRACKING_ENTITY.with(living::entity);
+      NetworkChannel.PLAY.getSimpleChannel().send(target,
+          new NPCTriggerPressedMessage(living.entity().getId(), triggerPressed));
+    }
+  }
+
+  @Override
   public boolean isTriggerPressed() {
     return this.gunFuture != null && !this.gunFuture.isDone();
   }
@@ -386,7 +412,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     BlockableEventLoop<?> executor = LogicalSidedProvider.WORKQUEUE.get(side);
 
     if (this.ammoProvider.getMagazine().map(Magazine::getSize).orElse(0) <= 0) {
-      if (side.isServer()) {
+      if (side.isServer() || side.isClient()) {
         executor.execute(() -> {
           living.entity().playSound(ModSoundEvents.DRY_FIRE.get(), 1.0F, 1.0F);
           this.ammoProvider.reload(living);
@@ -404,6 +430,52 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     }
 
     executor.execute(() -> this.processShot(living));
+
+    if (side.isClient()) {
+      this.getClient().handleShoot(living);
+    }
+
+    Thread.yield();
+  }
+
+  private void npcShoot(LivingExtension<?, ?> living, float accuracy) {
+    long time = Util.getMillis();
+
+    if (!this.isTriggerPressed()
+        || (time - this.lastTickMs >= 500L)
+        || !this.canShoot(living)) {
+      this.stopShooting();
+      return;
+    }
+
+    // Add 5 to account for inconsistencies in timing
+    if (time - this.lastShotMs + 10 < this.getFireDelayMs()) {
+      return;
+    }
+    this.lastShotMs = time;
+
+    LogicalSide side = living.level().isClientSide() ? LogicalSide.CLIENT : LogicalSide.SERVER;
+    BlockableEventLoop<?> executor = LogicalSidedProvider.WORKQUEUE.get(side);
+
+    if (this.ammoProvider.getMagazine().map(Magazine::getSize).orElse(0) <= 0) {
+      if (side.isServer() || side.isClient()) {
+        executor.execute(() -> {
+          living.entity().playSound(ModSoundEvents.DRY_FIRE.get(), 1.0F, 1.0F);
+          this.ammoProvider.reload(living);
+        });
+      }
+      this.stopShooting();
+      return;
+    }
+
+    int shotCount = this.shotCount.getAndIncrement();
+    int maxShots = this.fireMode.getMaxShots().orElse(Integer.MAX_VALUE);
+    if (shotCount >= maxShots) {
+      this.stopShooting();
+      return;
+    }
+
+    executor.execute(() -> this.processNPCShot(living, accuracy));
 
     if (side.isClient()) {
       this.getClient().handleShoot(living);
@@ -490,6 +562,88 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     }
   }
 
+  protected void processNPCShot(LivingExtension<?, ?> living, float accuracy) {
+    var entity = living.entity();
+    var level = living.level();
+    var random = entity.getRandom();
+
+    MinecraftForge.EVENT_BUS.post(new GunEvent.Shoot(this, this.itemStack, living));
+
+    // Magazine size will be synced to clients so only decrement this on the server.
+    if (!level.isClientSide()
+        && !(living.entity() instanceof Player player && player.isCreative())) {
+      final int unbreakingLevel =
+          EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, this.itemStack);
+      if (!DigDurabilityEnchantment.shouldIgnoreDurabilityDrop(
+          this.itemStack, unbreakingLevel, level.getRandom())) {
+        this.ammoProvider.getExpectedMagazine().decrementSize();
+      }
+    }
+
+    // Used to avoid playing the same hit sound more than once.
+    boolean hitEntity = false;
+    Set<BlockState> blocksHit = new HashSet<>();
+
+    for (int i = 0; i < this.getRoundsPerShot(); i++) {
+
+      // Determines if the shot hits based on accuracy chance
+      boolean shouldHit = random.nextFloat() <= accuracy;
+      if (!shouldHit) {
+        continue;
+      }
+
+      final long randomSeed = level.getGameTime() + i;
+      random.setSeed(randomSeed);
+
+      float partialTick = level.isClientSide() ? this.getClient().getPartialTick() : 1.0F;
+
+      // ONLY ray trace if accuracy test passed
+      var hitResult = RayTraceUtil.rayTrace(entity, this.getRange(), partialTick, 0, 0).orElse(null);
+
+      if (hitResult != null) {
+        switch (hitResult.getType()) {
+          case BLOCK:
+            var blockHitResult = (BlockHitResult) hitResult;
+            var blockState = level.getBlockState(blockHitResult.getBlockPos());
+            this.hitBlock(living, blockHitResult, blockState,
+                level.isClientSide() && (i == 0 || !blocksHit.contains(blockState)));
+            blocksHit.add(blockState);
+            break;
+
+          case ENTITY:
+            var entityHitResult = (EntityHitResult) hitResult;
+            if (!entityHitResult.getEntity().isAlive()) {
+              break;
+            }
+
+            // Handled by validatePendingHit
+            if (entityHitResult.getEntity() instanceof LivingEntity
+                && entity instanceof ServerPlayer) {
+              break;
+            }
+
+            if (level.isClientSide()) {
+              this.getClient().handleHitEntityPre(living,
+                  entityHitResult.getEntity(),
+                  entityHitResult.getLocation(),
+                  randomSeed);
+            }
+
+            this.npcHitEntity(living,
+                entityHitResult.getEntity(),
+                entityHitResult.getLocation(),
+                !hitEntity && level.isClientSide());
+
+            hitEntity = true;
+            break;
+
+          default:
+            break;
+        }
+      }
+    }
+  }
+
   protected abstract float getDamage();
 
   private void hitEntity(LivingExtension<?, ?> living, Entity hitEntity, Vec3 hitPos,
@@ -536,6 +690,91 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
             .map(Hat::headshotReductionPercentage)
             .orElse(0.0F);
         damage *= headshotDamagePercent * ServerConfig.instance.headshotBonusDamage.get();
+      }
+    }
+
+    // Post gun hit entity event
+    var event =
+        new GunEvent.EntityHit(this, this.itemStack, living, hitEntity, damage, hitPos, headshot);
+    if (MinecraftForge.EVENT_BUS.post(event)) {
+      return;
+    }
+
+    damage = event.damage();
+    headshot = event.headshot();
+
+    // Simulated client-side effects
+    if (living.level().isClientSide()) {
+      this.getClient().handleHitEntityPost(living, hitEntity, hitPos, playSound, headshot);
+      return;
+    }
+
+    // Resets the temporary invincibility before causing the damage, preventing
+    // previous damages from blocking the gun damage.
+    // Also, allows multiple bullets to hit the same target at the same time.
+    hitEntity.invulnerableTime = 0;
+
+    ModDamageSource.hurtWithoutKnockback(hitEntity,
+        ModDamageSource.gun(entity, headshot), damage);
+
+    checkCreateExplosion(this.itemStack, entity, hitPos);
+
+    if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS,
+        this.itemStack) > 0) {
+      hitEntity.setSecondsOnFire(100);
+    }
+
+    MinecraftForge.EVENT_BUS
+        .post(new GunEvent.EntityDamaged(this, this.itemStack, living, hitEntity,
+            damage, hitPos, headshot));
+
+    if (hitEntity instanceof LivingEntity hitLivingEntity
+        && entity instanceof ServerPlayer player) {
+      // Alert client of hit (real hit as opposed to client prediction)
+      NetworkChannel.PLAY.getSimpleChannel().send(
+          PacketDistributor.PLAYER.with(() -> player),
+          new HitMessage(hitPos, hitLivingEntity.isDeadOrDying()));
+    }
+  }
+
+  private void npcHitEntity(LivingExtension<?, ?> living, Entity hitEntity, Vec3 hitPos,
+      boolean playSound) {
+    final var entity = living.entity();
+    var damage = this.getDamage();
+    if (ServerConfig.instance.damageDropOffEnable.get()) {
+      var distance = hitEntity.distanceTo(living.entity());
+      // Ensure minimum damage
+      var minDamage =
+          Math.min(damage, ServerConfig.instance.damageDropOffMinimumDamage.get().floatValue());
+      damage = Math.max(minDamage, damage
+          - (float) (((ServerConfig.instance.damageDropOffLoss.get() / 100) * this.getRange())
+          * distance));
+    }
+
+    var armorPenetration = Math.min((1.0F
+        + (EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.ARMOR_PENETRATION.get(),
+        this.itemStack) / 255.0F))
+        * this.ammoProvider.getExpectedMagazine().getArmorPenetration(), 1.0F);
+    if (armorPenetration > 0 && hitEntity instanceof LivingEntity livingEntityHit) {
+      var reducedDamage =
+          damage - CombatRules.getDamageAfterAbsorb(damage, livingEntityHit.getArmorValue(),
+              (float) livingEntityHit.getAttribute(Attributes.ARMOR_TOUGHNESS).getValue());
+      // Apply armor penetration by adding to the damage lost by armor absorption
+      damage += reducedDamage * armorPenetration;
+    }
+
+    // 10% Chance that the next Bullet is a Headshot
+    boolean headshot = living.random().nextInt(100) < 10;
+
+    if (hitEntity instanceof LivingEntity) {
+      var hitLiving = LivingExtension.getOrThrow((LivingEntity) hitEntity);
+      if (headshot) {
+        var headshotDamagePercent = 1.0F - hitLiving.getEquipmentInSlot(Equipment.Slot.HAT)
+            .filter(Hat.class::isInstance)
+            .map(Hat.class::cast)
+            .map(Hat::headshotReductionPercentage)
+            .orElse(0.0F);
+        damage *= (float) (headshotDamagePercent * ServerConfig.instance.headshotBonusDamage.get());
       }
     }
 

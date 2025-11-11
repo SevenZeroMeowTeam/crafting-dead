@@ -81,6 +81,16 @@ public interface Gun extends Equipment, CombatSlotProvider, Synched {
   void setTriggerPressed(LivingExtension<?, ?> living, boolean triggerPressed, boolean sendUpdate);
 
   /**
+   * Set the trigger pressed state.
+   *
+   * @param living - the entity holding the gun
+   * @param triggerPressed - whether the trigger is pressed
+   * @param sendUpdate - send an update to the opposing logical side (client/server)
+   * @param accuracy - can be used to adjust the accuracy of NPC's
+   */
+  void setNPCTriggerPressed(LivingExtension<?, ?> living, boolean triggerPressed, boolean sendUpdate, float accuracy);
+
+  /**
    * Whether the trigger is currently pressed.
    * 
    * @return <code>true</code> if pressed, <code>false</code> otherwise.
