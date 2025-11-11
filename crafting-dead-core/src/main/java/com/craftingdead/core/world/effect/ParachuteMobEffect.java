@@ -40,21 +40,16 @@ public class ParachuteMobEffect extends MobEffect {
     livingEntity.resetFallDistance();
     if (livingEntity.isOnGround() || livingEntity.isInWater()) {
       livingEntity.removeEffect(ModMobEffects.PARACHUTE.get());
-      syncParachuteEffect(livingEntity, false);
+      this.syncParachuteEffect(livingEntity, false);
       return;
     }
-    syncParachuteEffect(livingEntity, true);
+    this.syncParachuteEffect(livingEntity, true);
     super.applyEffectTick(livingEntity, amplifier);
   }
 
   @Override
   public boolean isDurationEffectTick(int duration, int amplifier) {
     return true;
-  }
-
-  @Override
-  public boolean isInstantenous() {
-    return false;
   }
 
   private void syncParachuteEffect(LivingEntity entity, boolean hasParachute) {

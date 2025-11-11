@@ -676,7 +676,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> M1GARAND =
       deferredRegister.register("m1garand",
           () -> AimableGunItem.builder(GunConfigurations.M1GARAND.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.M1GARAND_AMMUNITION)
@@ -921,7 +921,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> M107 =
       deferredRegister.register("m107",
           () -> AimableGunItem.builder(GunConfigurations.M107.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .putReloadAnimation(ReloadAnimation::new)
               .setDefaultMagazine(ModItems.M107_MAGAZINE)
@@ -936,7 +936,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> AS50 =
       deferredRegister.register("as50",
           () -> AimableGunItem.builder(GunConfigurations.AS50.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.AS50_MAGAZINE)
@@ -951,7 +951,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> AWP =
       deferredRegister.register("awp",
           () -> AimableGunItem.builder(GunConfigurations.AWP.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::boltActionSniper)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.AWP_MAGAZINE)
@@ -964,7 +964,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> DMR =
       deferredRegister.register("dmr",
           () -> AimableGunItem.builder(GunConfigurations.DMR.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.DMR_MAGAZINE)
@@ -982,7 +982,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> TRENCH_GUN =
       deferredRegister.register("trench_gun",
           () -> AimableGunItem.builder(GunConfigurations.TRENCH_GUN.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::pistol)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::shotGun)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.TRENCH_GUN_SHELLS)
@@ -991,7 +991,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> MOSSBERG =
       deferredRegister.register("mossberg",
           () -> AimableGunItem.builder(GunConfigurations.MOSSBERG.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::pistol)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::shotGun)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.MOSSBERG_SHELLS)
@@ -1919,6 +1919,12 @@ public class ModItems {
   public static final RegistryObject<Item> HANDCUFFS_KEY =
       deferredRegister.register("handcuffs_key",
           () -> new HandcuffsKeyItem(new Item.Properties()
+              .stacksTo(1)
+              .tab(COMBAT_TAB)));
+
+  public static final RegistryObject<Item> ELECTRONIC_SIGNAL =
+      deferredRegister.register("electronic_signal",
+          () -> new Item(new Item.Properties()
               .stacksTo(1)
               .tab(COMBAT_TAB)));
 

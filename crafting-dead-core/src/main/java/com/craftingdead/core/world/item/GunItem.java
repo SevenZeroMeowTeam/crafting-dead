@@ -118,12 +118,7 @@ public abstract class GunItem extends ProjectileWeaponItem {
   }
 
   public AmmoProvider createAmmoProvider() {
-    AmmoProvider ammoProvider =
-        new MagazineAmmoProvider(this.getDefaultMagazine().getDefaultInstance());
-    if (ServerConfig.instance.reloadGunComeEmptyMag.get()) {
-      ammoProvider.getExpectedMagazine().setSize(0);
-    }
-    return ammoProvider;
+    return new MagazineAmmoProvider(ItemStack.EMPTY);
   }
 
   public Set<Item> getAcceptedMagazines() {

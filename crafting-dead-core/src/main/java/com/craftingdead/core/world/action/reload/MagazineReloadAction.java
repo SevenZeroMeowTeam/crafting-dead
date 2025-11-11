@@ -29,11 +29,13 @@ import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.core.world.item.gun.ammoprovider.MagazineAmmoProvider;
 import com.craftingdead.core.world.item.gun.magazine.Magazine;
 import com.google.common.collect.ImmutableList;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class MagazineReloadAction extends AbstractReloadAction {
 
@@ -114,6 +116,12 @@ public class MagazineReloadAction extends AbstractReloadAction {
     // Inventory - third
     living.entity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         .ifPresent(builder::add);
+
+    // Creative Inventory if the player is in creative mode - fourth
+    if (living.entity() instanceof Player player && player.getAbilities().instabuild) {
+      var defaultMagazine = this.gun.getDefaultMagazineStack();
+      builder.add(new InvWrapper(new SimpleContainer(defaultMagazine)));
+    }
 
     return builder.build();
   }

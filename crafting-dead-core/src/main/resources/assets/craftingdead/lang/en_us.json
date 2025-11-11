@@ -3,6 +3,7 @@
   "container.crafting": "Crafting",
   "enchantment.craftingdead.armor_penetration": "Armor Penetration",
 
+  "key.categories.craftingdead": "Crafting Dead",
   "key.reload": "Reload",
   "key.remove_magazine": "Remove Magazine",
   "key.toggle_fire_mode": "Toggle Fire Mode",
@@ -410,6 +411,7 @@
   "item.craftingdead.parachute": "Parachute",
   "item.craftingdead.handcuffs": "Handcuffs",
   "item.craftingdead.handcuffs_key": "Handcuffs Key",
+  "item.craftingdead.electronic_signal": "Electronic Signal",
 
   "item.modifiers.clothing":"When wearing:",
 

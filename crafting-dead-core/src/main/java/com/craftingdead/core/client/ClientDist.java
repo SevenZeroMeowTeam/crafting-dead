@@ -20,6 +20,8 @@ package com.craftingdead.core.client;
 
 import com.craftingdead.core.client.gui.screen.inventory.CraftingScreen;
 import com.craftingdead.core.network.message.play.DamageHandcuffsMessage;
+import com.craftingdead.core.world.action.RemoveMagazineAction;
+import com.craftingdead.core.world.action.reload.AbstractReloadAction;
 import com.craftingdead.core.world.item.MeleeWeaponItem;
 import com.craftingdead.core.world.item.ModAxeItem;
 import com.craftingdead.core.world.item.ModPickaxeItem;
@@ -146,13 +148,13 @@ public class ClientDist implements ModDist {
           "de.maxhenkel.corpse.entities.DummySkeleton");
 
   public static final KeyMapping RELOAD =
-      new KeyMapping("key.reload", GLFW.GLFW_KEY_R, "key.categories.gameplay");
+      new KeyMapping("key.reload", GLFW.GLFW_KEY_R, "key.categories." + CraftingDead.ID);
   public static final KeyMapping REMOVE_MAGAZINE =
-      new KeyMapping("key.remove_magazine", GLFW.GLFW_KEY_J, "key.categories.gameplay");
+      new KeyMapping("key.remove_magazine", GLFW.GLFW_KEY_J, "key.categories." + CraftingDead.ID);
   public static final KeyMapping TOGGLE_FIRE_MODE =
-      new KeyMapping("key.toggle_fire_mode", GLFW.GLFW_KEY_V, "key.categories.gameplay");
+      new KeyMapping("key.toggle_fire_mode", GLFW.GLFW_KEY_V, "key.categories." + CraftingDead.ID);
   public static final KeyMapping OPEN_EQUIPMENT_MENU =
-      new KeyMapping("key.equipment_menu", GLFW.GLFW_KEY_Z, "key.categories.inventory");
+      new KeyMapping("key.equipment_menu", GLFW.GLFW_KEY_Z, "key.categories." + CraftingDead.ID);
 
   public static final ClientConfig clientConfig;
   public static final ForgeConfigSpec clientConfigSpec;
@@ -260,7 +262,7 @@ public class ClientDist implements ModDist {
   /**
    * Get the {@link Minecraft} instance. If accessing {@link Minecraft} from a common class
    * (contains both client and server code) don't access fields directly from {@link Minecraft} as
-   * it will cause class loading problems. To safely access {@link ClientPlayerEntity} in a
+   * it will cause class loading problems. To safely access {@link LocalPlayer} in a
    * multi-sided environment, use {@link #getPlayerExtension()}.
    *
    * @return {@link Minecraft}
@@ -291,7 +293,7 @@ public class ClientDist implements ModDist {
       SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(
           new ResourceLocation(ClientDist.clientConfig.killSound.get()));
       if (soundEvent != null) {
-        this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEvent, 5.0F, 1.5F));
+        this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEvent, 5.0F, 0.3F));
       }
     }
   }
@@ -558,6 +560,9 @@ public class ClientDist implements ModDist {
     }
 
     var gun = player.mainHandGun().orElse(null);
+    boolean isReloadingOrUnloading  = player.getAction()
+        .filter(action -> action instanceof AbstractReloadAction
+            || action instanceof RemoveMagazineAction).isPresent();
     if (this.minecraft.options.keyAttack.matchesMouse(event.getButton())) {
       var triggerPressed = event.getAction() == GLFW.GLFW_PRESS;
       if (gun != null) {
@@ -574,7 +579,7 @@ public class ClientDist implements ModDist {
           case HOLD -> gun.setPerformingSecondaryAction(
               player, event.getAction() == GLFW.GLFW_PRESS, true);
           case TOGGLE -> {
-            if (event.getAction() == GLFW.GLFW_PRESS) {
+            if (event.getAction() == GLFW.GLFW_PRESS && !isReloadingOrUnloading) {
               gun.setPerformingSecondaryAction(player, !gun.isPerformingSecondaryAction(), true);
             }
           }

@@ -18,6 +18,7 @@
 
 package com.craftingdead.core;
 
+import com.craftingdead.core.data.tags.ModBlockTagsProvider;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.slf4j.Logger;
 import com.craftingdead.core.capability.CapabilityUtil;
@@ -181,6 +182,8 @@ public class CraftingDead {
     if (event.includeServer()) {
       dataGenerator.addProvider(new ModItemTagsProvider(dataGenerator,
           new ForgeBlockTagsProvider(dataGenerator, event.getExistingFileHelper()),
+          event.getExistingFileHelper()));
+      dataGenerator.addProvider(new ModBlockTagsProvider(dataGenerator,
           event.getExistingFileHelper()));
       dataGenerator.addProvider(new ModRecipeProvider(dataGenerator));
       dataGenerator.addProvider(new GunDataProvider(dataGenerator));

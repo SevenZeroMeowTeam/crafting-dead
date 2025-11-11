@@ -95,7 +95,7 @@ public class CraftingMenu extends AbstractContainerMenu {
 
     // Hotbar
     for (int x = 0; x < 9; ++x) {
-      this.addSlot(new Slot(inventory, x, 8 + x * slotSize, 142));
+      this.addSlot(new Slot(inventory, x, 8 + x * slotSize, 141));
     }
   }
 
@@ -119,15 +119,39 @@ public class CraftingMenu extends AbstractContainerMenu {
     if (slot.hasItem()) {
       var stack = slot.getItem();
       itemstack = stack.copy();
-
       if (index == 4) { // RESULT_SLOT
-        if (!this.moveItemStackTo(stack, 32, 41,
-            false)) { // HOTBAR_SLOT_START to HOTBAR_SLOT_END + 1
-          if (!this.moveItemStackTo(stack, 5, 32, false)) { // INV_SLOT_START to INV_SLOT_END + 1
-            return ItemStack.EMPTY;
+        var level = player.level;
+        var recipeOpt = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, craftingGrid, level);
+        if (recipeOpt.isPresent()) {
+          var recipe = recipeOpt.get();
+          var result = recipe.assemble(craftingGrid).copy();
+          while (true) {
+            if (!this.moveItemStackTo(result.copy(), 5, 41, true)) {
+              break;
+            }
+            // Consume ingredients
+            var remaining = recipe.getRemainingItems(craftingGrid);
+            for (int i = 0; i < remaining.size(); ++i) {
+              var input = craftingGrid.getItem(i);
+              var remainingItem = remaining.get(i);
+              if (!input.isEmpty()) {
+                craftingGrid.removeItem(i, 1);
+              }
+              if (!remainingItem.isEmpty()) {
+                if (craftingGrid.getItem(i).isEmpty()) {
+                  craftingGrid.setItem(i, remainingItem);
+                } else {
+                  player.getInventory().placeItemBackInInventory(remainingItem);
+                }
+              }
+            }
+            if (!recipe.matches(craftingGrid, level)) {
+              break;
+            }
+            result = recipe.assemble(craftingGrid).copy();
           }
+          this.updateResult();
         }
-        slot.onTake(player, stack);
       } else if (index >= 5 && index <= 31) { // Inventory Slots
         if (!this.moveItemStackTo(stack, 0, 4, false)) { // CRAFT_SLOT_START to CRAFT_SLOT_END + 1
           return ItemStack.EMPTY;
