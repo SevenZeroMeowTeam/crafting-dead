@@ -106,6 +106,15 @@ if (!releaseBuild) {
 dependencies {
     implementation project(':crafting-dead-core')
 
+    def rocketConnectorProject = rootProject.findProject(':rocket-connector')
+    if (rocketConnectorProject != null) {
+        implementation rocketConnectorProject
+    } else {
+        // Fall back to the published connector when the composite project is absent (e.g. CI checkout).
+        library group: 'net.rocketpowered', name: 'rocket-connector', version: '0.0.8'
+        minecraftLibrary group: 'net.rocketpowered', name: 'rocket-connector', version: '0.0.8'
+    }
+
     library group: 'flare', name: 'flare-eventbus', version: '[2.0.1]'
     // eventbus transitive dependencies
     jarJar group: 'flare', name: 'flare-commons', version: '[0.0.2]'
@@ -146,7 +155,6 @@ dependencies {
     }
 
     minecraftLibrary group: 'net.rocketpowered', name: 'rocket-sdk', version: '0.0.8'
-    implementation project(':rocket-connector')
 }
 
 if (releaseBuild) {
