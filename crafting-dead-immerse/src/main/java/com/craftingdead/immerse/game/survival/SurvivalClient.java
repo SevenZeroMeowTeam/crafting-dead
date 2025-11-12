@@ -30,6 +30,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class SurvivalClient extends SurvivalGame implements GameClient {
@@ -90,7 +91,7 @@ public class SurvivalClient extends SurvivalGame implements GameClient {
       if (this.isThirstEnabled()
           && !player.entity().isEyeInFluid(FluidTags.WATER)
           && player.entity().getAirSupply() == player.entity().getMaxAirSupply()) {
-        renderWater(width, height,
+        this.renderWater(player, width, height,
             (float) survivalPlayer.getWater() / (float) survivalPlayer.getMaxWater(), ICONS);
       }
     }
@@ -98,12 +99,20 @@ public class SurvivalClient extends SurvivalGame implements GameClient {
     return false;
   }
 
-  private static void renderWater(int width, int height, float waterPercentage,
+  private void renderWater(PlayerExtension<?> player, int width, int height, float waterPercentage,
       ResourceLocation resourceLocation) {
-    final int y = height - 49;
+    var vehicle = player.entity().getVehicle();
+    int y = height - 49;
     final int x = width / 2 + 91;
     RenderSystem.enableBlend();
     RenderSystem.setShaderTexture(0, resourceLocation);
+
+    // Move water bar up to avoid overlapping with the vehicle's health bar rows
+    if (vehicle instanceof LivingEntity vehicleEntity) {
+      float maxHealth = vehicleEntity.getMaxHealth();
+      int healthRows = (int) Math.ceil(maxHealth / 21.0F);
+      y -= (healthRows - 1) * 10; // Move up 10px for each extra row
+    }
 
     for (int i = 0; i < 10; i++) {
       // Draw droplet outline

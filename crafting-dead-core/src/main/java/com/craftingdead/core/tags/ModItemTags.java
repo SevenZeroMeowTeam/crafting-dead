@@ -28,6 +28,8 @@ public class ModItemTags {
 
   public static final TagKey<Item> SYRINGES = bind("syringes");
   public static final TagKey<Item> CLOTHING = bind("clothing");
+  public static final TagKey<Item> BACKPACK = bind("backpack");
+  public static final TagKey<Item> VEST = bind("vest");
   public static final TagKey<Item> MELEES = bind("melees");
   public static final TagKey<Item> HATS = bind("hats");
   public static final TagKey<Item> MAGAZINES = bind("magazines");

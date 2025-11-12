@@ -3,6 +3,7 @@
   "container.crafting": "Crafting",
   "enchantment.craftingdead.armor_penetration": "Armor Penetration",
 
+  "key.categories.craftingdead": "Crafting Dead",
   "key.reload": "Reload",
   "key.remove_magazine": "Remove Magazine",
   "key.toggle_fire_mode": "Toggle Fire Mode",
@@ -20,10 +21,6 @@
   "options.craftingdead.client.crosshair": "Crosshair",
   "options.craftingdead.client.kill_sound": "Kill Sound",
 
-  "options.craftingdead.server.override_minecraft_inventory": "Override Minecraft Inventory",
-  "options.craftingdead.server.override_minecraft_hotbar": "Override Minecraft Hotbar",
-  "options.craftingdead.server.allow_offhand_swap": "Allow Offhand Swap",
-  "options.craftingdead.server.allow_toggle_perspective": "Allow Toggle Perspective",
   "options.craftingdead.server.handcuff_damage_chance": "Handcuff Damage Chance",
 
   "options.craftingdead.server.hit_marker_mode": "Hit Marker Mode",
@@ -235,7 +232,7 @@
   "item.craftingdead.crowbar": "Crowbar",
   "item.craftingdead.katana": "Katana",
   "item.craftingdead.fire_axe": "Fireman's Axe",
-  "item.craftingdead.chainsaw": "Broken Chainsaw",
+  "item.craftingdead.chainsaw": "Chainsaw",
   "item.craftingdead.pipe": "Pipe",
   "item.craftingdead.night_stick": "Night Stick",
   "item.craftingdead.golf_club": "Golf Club",
@@ -414,6 +411,7 @@
   "item.craftingdead.parachute": "Parachute",
   "item.craftingdead.handcuffs": "Handcuffs",
   "item.craftingdead.handcuffs_key": "Handcuffs Key",
+  "item.craftingdead.electronic_signal": "Electronic Signal",
 
   "item.modifiers.clothing":"When wearing:",
 
@@ -425,6 +423,10 @@
   "hat.immune_to_gas": "Immune to gas",
   "hat.has_night_vision": "Has night vision ability",
   "remote_detonator.information": "Right click to remotely detonate explosives within %d meters",
+  "clothing.protection.level": "Protection Level",
+  "clothing.casual": "Low",
+  "clothing.utility": "Medium",
+  "clothing.military": "High",
   "clothing.movement_speed": "Movement speed: ",
   "clothing.immune_to_fire": "Immune to fire",
   "magazine.armor_penetration": "Armor penetration: ",

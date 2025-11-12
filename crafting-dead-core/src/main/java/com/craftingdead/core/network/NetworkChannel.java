@@ -24,6 +24,7 @@ import com.craftingdead.core.network.message.play.CrouchMessage;
 import com.craftingdead.core.network.message.play.DamageHandcuffsMessage;
 import com.craftingdead.core.network.message.play.EnableCombatModeMessage;
 import com.craftingdead.core.network.message.play.HitMessage;
+import com.craftingdead.core.network.message.play.NPCTriggerPressedMessage;
 import com.craftingdead.core.network.message.play.OpenCraftingMenuMessage;
 import com.craftingdead.core.network.message.play.OpenEquipmentMenuMessage;
 import com.craftingdead.core.network.message.play.OpenStorageMessage;
@@ -82,49 +83,56 @@ public enum NetworkChannel {
           .add();
 
       simpleChannel
-          .messageBuilder(SyncGunContainerSlotMessage.class, 0x05, NetworkDirection.PLAY_TO_CLIENT)
+          .messageBuilder(NPCTriggerPressedMessage.class, 0x05)
+          .encoder(NPCTriggerPressedMessage::encode)
+          .decoder(NPCTriggerPressedMessage::decode)
+          .consumer(NPCTriggerPressedMessage::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(SyncGunContainerSlotMessage.class, 0x06, NetworkDirection.PLAY_TO_CLIENT)
           .encoder(SyncGunContainerSlotMessage::encode)
           .decoder(SyncGunContainerSlotMessage::decode)
           .consumer(SyncGunContainerSlotMessage::handle)
           .add();
 
       simpleChannel
-          .messageBuilder(OpenStorageMessage.class, 0x06, NetworkDirection.PLAY_TO_SERVER)
+          .messageBuilder(OpenStorageMessage.class, 0x07, NetworkDirection.PLAY_TO_SERVER)
           .encoder(OpenStorageMessage::encode)
           .decoder(OpenStorageMessage::decode)
           .consumer(OpenStorageMessage::handle)
           .add();
 
       simpleChannel
-          .messageBuilder(PerformActionMessage.class, 0x07)
+          .messageBuilder(PerformActionMessage.class, 0x08)
           .encoder(PerformActionMessage::encode)
           .decoder(PerformActionMessage::decode)
           .consumer(PerformActionMessage::handle)
           .add();
 
       simpleChannel
-          .messageBuilder(CancelActionMessage.class, 0x08)
+          .messageBuilder(CancelActionMessage.class, 0x09)
           .encoder(CancelActionMessage::encode)
           .decoder(CancelActionMessage::decode)
           .consumer(CancelActionMessage::handle)
           .add();
 
       simpleChannel
-          .messageBuilder(ValidatePendingHitMessage.class, 0x09, NetworkDirection.PLAY_TO_SERVER)
+          .messageBuilder(ValidatePendingHitMessage.class, 0x0A, NetworkDirection.PLAY_TO_SERVER)
           .encoder(ValidatePendingHitMessage::encode)
           .decoder(ValidatePendingHitMessage::decode)
           .consumer(ValidatePendingHitMessage::handle)
           .add();
 
       simpleChannel
-          .messageBuilder(CrouchMessage.class, 0x0A)
+          .messageBuilder(CrouchMessage.class, 0x0B)
           .encoder(CrouchMessage::encode)
           .decoder(CrouchMessage::decode)
           .consumer(CrouchMessage::handle)
           .add();
 
       simpleChannel
-          .messageBuilder(HitMessage.class, 0x0B, NetworkDirection.PLAY_TO_CLIENT)
+          .messageBuilder(HitMessage.class, 0x0C, NetworkDirection.PLAY_TO_CLIENT)
           .encoder(HitMessage::encode)
           .decoder(HitMessage::decode)
           .consumer(HitMessage::handle)
@@ -152,14 +160,14 @@ public enum NetworkChannel {
           .add();
 
       simpleChannel
-          .messageBuilder(ParachuteSyncMessage.class, 0x10, NetworkDirection.PLAY_TO_CLIENT)
+          .messageBuilder(ParachuteSyncMessage.class, 0x11, NetworkDirection.PLAY_TO_CLIENT)
           .encoder(ParachuteSyncMessage::encode)
           .decoder(ParachuteSyncMessage::decode)
           .consumer(ParachuteSyncMessage::handle)
           .add();
 
       simpleChannel
-          .messageBuilder(OpenCraftingMenuMessage.class, 0x11, NetworkDirection.PLAY_TO_SERVER)
+          .messageBuilder(OpenCraftingMenuMessage.class, 0x12, NetworkDirection.PLAY_TO_SERVER)
           .encoder(OpenCraftingMenuMessage::encode)
           .decoder(OpenCraftingMenuMessage::decode)
           .consumer(OpenCraftingMenuMessage::handle)

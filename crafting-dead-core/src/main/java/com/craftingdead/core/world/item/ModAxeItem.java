@@ -19,23 +19,41 @@
 package com.craftingdead.core.world.item;
 
 import java.util.List;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 public class ModAxeItem extends AxeItem {
 
+  private final float blockBreakSpeed;
   private final float attackDamage;
 
-  public ModAxeItem(Tier tier, float attackDamage, float attackSpeed,
-      Properties properties) {
+  public ModAxeItem(Tier tier, float blockBreakSpeed, float attackDamage, float attackSpeed, Properties properties) {
     super(tier, attackDamage, attackSpeed, properties);
+    this.blockBreakSpeed = blockBreakSpeed;
     this.attackDamage = attackDamage;
+  }
+
+  @Override
+  public boolean hurtEnemy(ItemStack itemStack, LivingEntity targetEntity,
+      LivingEntity attackerEntity) {
+    itemStack.hurtAndBreak(1, attackerEntity,
+        (entity) -> entity.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+    return true;
+  }
+
+  @Override
+  public float getDestroySpeed(ItemStack itemStack, BlockState state) {
+    return this.blockBreakSpeed;
   }
 
   @Override
@@ -43,12 +61,12 @@ public class ModAxeItem extends AxeItem {
       @NotNull TooltipFlag flag) {
     tooltip.add(new TranslatableComponent("item.craftingdead.damage").append(" ").append(
             new TranslatableComponent(String.valueOf((int) this.attackDamage))
-                .withStyle(style -> style.withColor(0xBD4444)))
-        .withStyle(style -> style.withColor(0x666666)));
+                .withStyle(style -> style.withColor(ChatFormatting.RED)))
+        .withStyle(style -> style.withColor(ChatFormatting.GRAY)));
 
     tooltip.add(new TranslatableComponent("item.craftingdead.durability").append(" ").append(
             new TranslatableComponent(String.valueOf(stack.getMaxDamage() - stack.getDamageValue()))
-                .withStyle(style -> style.withColor(0xBD4444)))
-        .withStyle(style -> style.withColor(0x666666)));
+                .withStyle(style -> style.withColor(ChatFormatting.RED)))
+        .withStyle(style -> style.withColor(ChatFormatting.GRAY)));
   }
 }

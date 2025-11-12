@@ -41,10 +41,6 @@ public class ServerConfig {
   // Game-Settings Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue overrideMinecraftInventory;
-  public final ForgeConfigSpec.BooleanValue overrideMinecraftHotbar;
-  public final ForgeConfigSpec.BooleanValue allowOffhandSwap;
-  public final ForgeConfigSpec.BooleanValue allowTogglePerspective;
   public final ForgeConfigSpec.DoubleValue handcuffDamageChance;
 
   // ================================================================================
@@ -74,6 +70,7 @@ public class ServerConfig {
   // public final ForgeConfigSpec.BooleanValue reloadTakeAmmoOnReload;
   // public final ForgeConfigSpec.BooleanValue reloadTakeAmmoAsMagazine;
   public final ForgeConfigSpec.BooleanValue reloadGunComeEmptyMag;
+  public final ForgeConfigSpec.BooleanValue reloadGunComeNoMag;
   public final ForgeConfigSpec.IntValue reloadDuration;
   public final ForgeConfigSpec.BooleanValue reloadDestroyMagWhenEmpty;
   // Sub Category Dual Wield
@@ -81,6 +78,15 @@ public class ServerConfig {
   // public final ForgeConfigSpec.IntValue reloadDualWieldSingleReloadDuration;
   // public final ForgeConfigSpec.BooleanValue reloadDualWieldSoundsSingleReload;
   // public final ForgeConfigSpec.BooleanValue reloadDualWieldSoundsShootWithNoAmmo;
+
+  // ================================================================================
+  // Recoil Values
+  // ================================================================================
+
+  public final ForgeConfigSpec.DoubleValue crouchRecoilMultiplier;
+  public final ForgeConfigSpec.DoubleValue proneRecoilMultiplier;
+  public final ForgeConfigSpec.DoubleValue tacticalGripRecoilMultiplier;
+  public final ForgeConfigSpec.DoubleValue bipodRecoilMultiplier;
 
   // ================================================================================
   // Scope Values
@@ -184,22 +190,6 @@ public class ServerConfig {
         .comment("General Game-Settings")
         .push("game-settings");
     {
-      this.overrideMinecraftInventory = builder
-          .translation("options.craftingdead.server.override_minecraft_inventory")
-          .comment("If true overrides the default Minecraft inventory with the Crafting Dead inventory (Opens with \"E\")")
-          .define("overrideWithCraftingDeadInventory", false);
-      this.overrideMinecraftHotbar = builder
-          .translation("options.craftingdead.server.override_minecraft_hotbar")
-          .comment("If true overrides the default Minecraft hotbar")
-          .define("overrideMinecraftHotbar", false);
-      this.allowOffhandSwap = builder
-          .translation("options.craftingdead.server.allow_offhand_swap")
-          .comment("If true players are allowed to swap items to the offhand")
-          .define("allowOffhandSwap", true);
-      this.allowTogglePerspective = builder
-          .translation("options.craftingdead.server.allow_toggle_perspective")
-          .comment("If true players are allowed to toggle their perspective")
-          .define("allowTogglePerspective", true);
       this.handcuffDamageChance = builder
           .translation("options.craftingdead.server.handcuff_damage_chance")
           .comment("The Chance that the player damages the handcuff")
@@ -277,8 +267,12 @@ public class ServerConfig {
       // .define("Take Ammo As Magazine", true);
       this.reloadGunComeEmptyMag = builder
           .translation("options.craftingdead.server.reload.gun_comes_empty_mag")
-          .comment("Defines whenever a gun should come with am empty magazine when crafted")
+          .comment("Defines whenever a gun should come with an empty magazine when crafted")
           .define("gunComeEmptyMag", true);
+      this.reloadGunComeNoMag = builder
+          .translation("options.craftingdead.server.reload.gun_comes_no_mag")
+          .comment("Defines whenever a gun should come with no magazine when crafted")
+          .define("gunComeNoMag", false);
       this.reloadDuration = builder
           .translation("options.craftingdead.server.reload.extra_reload_duration")
           .comment("Additional reload time applied to the standard gun reload time (Ticks)")
@@ -304,6 +298,30 @@ public class ServerConfig {
       // .define("Sounds Shoot With No Ammo", true);
       // }
       // builder.pop();
+    }
+    builder.pop();
+
+    // Recoil Configuration
+    builder
+        .comment("Configure recoil multipliers")
+        .push("recoil");
+    {
+      this.crouchRecoilMultiplier = builder
+          .translation("options.craftingdead.server.recoil.crouch_recoil_multiplier")
+          .comment("Recoil multiplier applied while crouching. (0.2F = 20% less recoil)")
+          .defineInRange("crouchRecoilMultiplier", 0.1F, 0.01F, 1.0F);
+      this.proneRecoilMultiplier = builder
+          .translation("options.craftingdead.server.recoil.prone_recoil_multiplier")
+          .comment("Recoil multiplier applied while prone. (0.2F = 20% less recoil)")
+          .defineInRange("proneRecoilMultiplier", 0.2F, 0.01F, 1.0F);
+      this.tacticalGripRecoilMultiplier = builder
+          .translation("options.craftingdead.server.recoil.tactical_grip_recoil_multiplier")
+          .comment("Recoil multiplier applied when a tactical grip is attached. (0.2F = 20% less recoil)")
+          .defineInRange("tacticalGripRecoilMultiplier", 0.6F, 0.01F, 1.0F);
+      this.bipodRecoilMultiplier = builder
+          .translation("options.craftingdead.server.recoil.bipod_recoil_multiplier")
+          .comment("Recoil multiplier applied when a bipod is attached. (0.2F = 20% less recoil)")
+          .defineInRange("bipodRecoilMultiplier", 0.6F, 0.01F, 1.0F);
     }
     builder.pop();
 

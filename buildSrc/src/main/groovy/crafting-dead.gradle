@@ -20,6 +20,7 @@ java {
 }
 
 repositories {
+    mavenCentral()
     maven {
         url 'https://maven.tarbits.co.uk/releases'
         mavenContent {

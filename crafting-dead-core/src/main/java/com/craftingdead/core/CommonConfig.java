@@ -39,13 +39,13 @@ public class CommonConfig {
 
   private CommonConfig(ForgeConfigSpec.Builder builder) {
     this.weakVestArmor =
-        builder.defineInRange("weakVestArmor", 10.0F, 0.0F, Float.MAX_VALUE);
+        builder.defineInRange("weakVestArmor", 8.0F, 0.0F, Float.MAX_VALUE);
     this.weakVestArmorToughness =
-        builder.defineInRange("weakVestArmorToughness", 1.5F, 0.0F, Float.MAX_VALUE);
+        builder.defineInRange("weakVestArmorToughness", 1.0F, 0.0F, Float.MAX_VALUE);
 
     this.strongVestArmor =
-        builder.defineInRange("strongVestArmor", 20.0F, 0.0F, Float.MAX_VALUE);
+        builder.defineInRange("strongVestArmor", 12.0F, 0.0F, Float.MAX_VALUE);
     this.strongVestArmorToughness =
-        builder.defineInRange("strongVestArmorToughness", 3.0F, 0.0F, Float.MAX_VALUE);
+        builder.defineInRange("strongVestArmorToughness", 2.0F, 0.0F, Float.MAX_VALUE);
   }
 }

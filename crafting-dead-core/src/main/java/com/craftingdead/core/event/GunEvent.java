@@ -76,6 +76,14 @@ public abstract class GunEvent extends Event {
     }
   }
 
+  @Cancelable
+  public static class NPCTriggerPressed extends Action {
+
+    public NPCTriggerPressed(Gun gun, ItemStack itemStack, LivingExtension<?, ?> living) {
+      super(gun, itemStack, living);
+    }
+  }
+
   public static class Initialize extends GunEvent {
 
     private final Map<GunCraftSlotType, Attachment> attachments = new HashMap<>();

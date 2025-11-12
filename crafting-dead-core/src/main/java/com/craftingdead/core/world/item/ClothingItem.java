@@ -87,9 +87,25 @@ public class ClothingItem extends EquipmentItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, Level world, List<Component> lines,
-      TooltipFlag tooltipFlag) {
+  public void appendHoverText(ItemStack stack, Level world, List<Component> lines, TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, world, lines, tooltipFlag);
+    switch (this.clothingType) {
+      case CASUAL -> lines.add(new TranslatableComponent("clothing.protection.level")
+          .withStyle(ChatFormatting.GRAY)
+          .append(" ")
+          .append(new TranslatableComponent("clothing.casual")
+          .withStyle(ChatFormatting.RED)));
+      case UTILITY -> lines.add(new TranslatableComponent("clothing.protection.level")
+          .withStyle(ChatFormatting.GRAY)
+          .append(" ")
+          .append(new TranslatableComponent("clothing.utility")
+          .withStyle(ChatFormatting.RED)));
+      case MILITARY -> lines.add(new TranslatableComponent("clothing.protection.level")
+          .withStyle(ChatFormatting.GRAY)
+          .append(" ")
+          .append(new TranslatableComponent("clothing.military")
+          .withStyle(ChatFormatting.RED)));
+    }
     if (this.fireImmunity) {
       lines.add(new TranslatableComponent("clothing.immune_to_fire")
           .withStyle(ChatFormatting.GRAY));

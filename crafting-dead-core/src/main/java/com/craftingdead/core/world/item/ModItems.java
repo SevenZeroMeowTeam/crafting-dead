@@ -676,7 +676,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> M1GARAND =
       deferredRegister.register("m1garand",
           () -> AimableGunItem.builder(GunConfigurations.M1GARAND.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.M1GARAND_AMMUNITION)
@@ -921,7 +921,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> M107 =
       deferredRegister.register("m107",
           () -> AimableGunItem.builder(GunConfigurations.M107.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .putReloadAnimation(ReloadAnimation::new)
               .setDefaultMagazine(ModItems.M107_MAGAZINE)
@@ -936,7 +936,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> AS50 =
       deferredRegister.register("as50",
           () -> AimableGunItem.builder(GunConfigurations.AS50.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.AS50_MAGAZINE)
@@ -951,7 +951,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> AWP =
       deferredRegister.register("awp",
           () -> AimableGunItem.builder(GunConfigurations.AWP.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::boltActionSniper)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.AWP_MAGAZINE)
@@ -964,7 +964,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> DMR =
       deferredRegister.register("dmr",
           () -> AimableGunItem.builder(GunConfigurations.DMR.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.DMR_MAGAZINE)
@@ -982,7 +982,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> TRENCH_GUN =
       deferredRegister.register("trench_gun",
           () -> AimableGunItem.builder(GunConfigurations.TRENCH_GUN.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::pistol)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::shotGun)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.TRENCH_GUN_SHELLS)
@@ -991,7 +991,7 @@ public class ModItems {
   public static final RegistryObject<GunItem> MOSSBERG =
       deferredRegister.register("mossberg",
           () -> AimableGunItem.builder(GunConfigurations.MOSSBERG.getKey())
-              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::pistol)
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::shotGun)
               .putReloadAnimation(ReloadAnimation::new)
               .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
               .setDefaultMagazine(ModItems.MOSSBERG_SHELLS)
@@ -1007,7 +1007,7 @@ public class ModItems {
               .setGrenadeEntitySupplier(
                   FunctionalUtil.nullsafeFunction(FireGrenadeEntity::new, FireGrenadeEntity::new))
               .setEnabledSupplier(ServerConfig.instance.explosivesFireGrenadeEnabled::get)
-              .stacksTo(3)
+              .stacksTo(1)
               .tab(COMBAT_TAB)));
 
   public static final RegistryObject<GrenadeItem> SMOKE_GRENADE =
@@ -1016,7 +1016,7 @@ public class ModItems {
               .setGrenadeEntitySupplier(
                   FunctionalUtil.nullsafeFunction(SmokeGrenadeEntity::new, SmokeGrenadeEntity::new))
               .setEnabledSupplier(ServerConfig.instance.explosivesSmokeGrenadeEnabled::get)
-              .stacksTo(3)
+              .stacksTo(1)
               .tab(COMBAT_TAB)));
 
   public static final RegistryObject<GrenadeItem> FLASH_GRENADE =
@@ -1025,7 +1025,7 @@ public class ModItems {
               .setGrenadeEntitySupplier(
                   FunctionalUtil.nullsafeFunction(FlashGrenadeEntity::new, FlashGrenadeEntity::new))
               .setEnabledSupplier(ServerConfig.instance.explosivesFlashGrenadeEnabled::get)
-              .stacksTo(3)
+              .stacksTo(1)
               .tab(COMBAT_TAB)));
 
   public static final RegistryObject<GrenadeItem> DECOY_GRENADE =
@@ -1034,7 +1034,7 @@ public class ModItems {
               .setGrenadeEntitySupplier(
                   FunctionalUtil.nullsafeFunction(DecoyGrenadeEntity::new, DecoyGrenadeEntity::new))
               .setEnabledSupplier(ServerConfig.instance.explosivesDecoyGrenadeEnabled::get)
-              .stacksTo(3)
+              .stacksTo(1)
               .tab(COMBAT_TAB)));
 
   public static final RegistryObject<GrenadeItem> FRAG_GRENADE =
@@ -1103,12 +1103,12 @@ public class ModItems {
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> FIRE_AXE = deferredRegister.register("fire_axe",
-      () -> new ModAxeItem(Tiers.IRON, 14, -2.4F, new Item.Properties()
+      () -> new ModAxeItem(Tiers.IRON, 1.0F, 14, -2.4F, new Item.Properties()
           .durability(100)
           .tab((COMBAT_TAB))));
 
   public static final RegistryObject<Item> CHAINSAW = deferredRegister.register("chainsaw",
-      () -> new MeleeWeaponItem(8, -2.4F, new Item.Properties()
+      () -> new ModAxeItem(Tiers.IRON, 2.0F,8, -2.4F, new Item.Properties()
           .durability(75)
           .tab(COMBAT_TAB)));
 
@@ -1128,7 +1128,7 @@ public class ModItems {
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> SLEDGEHAMMER = deferredRegister.register("sledgehammer",
-      () -> new ModPickaxeItem(Tiers.IRON, 10, -2.4F,
+      () -> new ModPickaxeItem(Tiers.IRON, 1.0F, 10, -2.4F,
           new Item.Properties()
               .durability(110)
               .tab(COMBAT_TAB)));
@@ -1139,12 +1139,12 @@ public class ModItems {
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> SHOVEL = deferredRegister.register("shovel",
-      () -> new ModShovelItem(Tiers.IRON, 8, -2.4F, new Item.Properties()
+      () -> new ModShovelItem(Tiers.IRON, 1.0F, 8, -2.4F, new Item.Properties()
           .durability(70)
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> HATCHET = deferredRegister.register("hatchet",
-      () -> new ModAxeItem(Tiers.IRON, 16, -2.4F, new Item.Properties()
+      () -> new ModAxeItem(Tiers.IRON, 1.4F, 16, -2.4F, new Item.Properties()
           .durability(40)
           .tab(COMBAT_TAB)));
 
@@ -1170,7 +1170,7 @@ public class ModItems {
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> PICKAXE = deferredRegister.register("pickaxe",
-      () -> new ModPickaxeItem(Tiers.IRON, 10, -2.4F, new Item.Properties()
+      () -> new ModPickaxeItem(Tiers.IRON, 1.5F, 10, -2.4F, new Item.Properties()
           .durability(210)
           .tab(COMBAT_TAB)));
 
@@ -1633,7 +1633,7 @@ public class ModItems {
               .attributeModifier(Attributes.ARMOR, new AttributeModifier(
                   ClothingItem.ARMOR_MODIFIER_ID,
                   "Armor modifier",
-                  8,
+                  5,
                   AttributeModifier.Operation.ADDITION))
               .attributeModifier(Attributes.MOVEMENT_SPEED, new AttributeModifier(
                   ClothingItem.ARMOR_MODIFIER_ID,
@@ -1901,6 +1901,7 @@ public class ModItems {
   public static final RegistryObject<Item> BINOCULARS =
       deferredRegister.register("binoculars",
           () -> new BinocularsItem(new Item.Properties()
+              .stacksTo(1)
               .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> PARACHUTE =
@@ -1918,6 +1919,12 @@ public class ModItems {
   public static final RegistryObject<Item> HANDCUFFS_KEY =
       deferredRegister.register("handcuffs_key",
           () -> new HandcuffsKeyItem(new Item.Properties()
+              .stacksTo(1)
+              .tab(COMBAT_TAB)));
+
+  public static final RegistryObject<Item> ELECTRONIC_SIGNAL =
+      deferredRegister.register("electronic_signal",
+          () -> new Item(new Item.Properties()
               .stacksTo(1)
               .tab(COMBAT_TAB)));
 

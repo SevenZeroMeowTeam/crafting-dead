@@ -52,7 +52,7 @@ public class SurvivalActionTypes {
       deferredRegister.register("use_morphine_syringe",
           () -> EntityItemActionType
               .builder(TargetSelector.SELF_OR_OTHERS.hasEffect(SurvivalMobEffects.BROKEN_LEG))
-              .forItem(SurvivalItems.SPLINT)
+              .forItem(SurvivalItems.MORPHINE_SYRINGE)
               .build());
 
   public static final RegistryObject<EntityItemActionType<?>> USE_SYRINGE_ON_ZOMBIE =

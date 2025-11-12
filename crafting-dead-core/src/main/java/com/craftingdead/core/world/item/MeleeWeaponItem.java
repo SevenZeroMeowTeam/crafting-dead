@@ -19,6 +19,7 @@
 package com.craftingdead.core.world.item;
 
 import java.util.List;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.TooltipFlag;
@@ -71,13 +72,13 @@ public class MeleeWeaponItem extends ToolItem {
       @NotNull TooltipFlag flag) {
     tooltip.add(new TranslatableComponent("item.craftingdead.damage").append(" ").append(
             new TranslatableComponent(String.valueOf(this.attackDamage))
-                .withStyle(style -> style.withColor(0xBD4444)))
-        .withStyle(style -> style.withColor(0x666666)));
+                .withStyle(style -> style.withColor(ChatFormatting.RED)))
+        .withStyle(style -> style.withColor(ChatFormatting.GRAY)));
 
     tooltip.add(new TranslatableComponent("item.craftingdead.durability").append(" ").append(
             new TranslatableComponent(String.valueOf(stack.getMaxDamage() - stack.getDamageValue()))
-                .withStyle(style -> style.withColor(0xBD4444)))
-        .withStyle(style -> style.withColor(0x666666)));
+                .withStyle(style -> style.withColor(ChatFormatting.RED)))
+        .withStyle(style -> style.withColor(ChatFormatting.GRAY)));
   }
 
   @Override

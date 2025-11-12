@@ -8,9 +8,7 @@
     "ZombieMixin",
     "SpawnPlacementsMixin"
   ],
-  "client": [
-    "SubtitleOverlayMixin"
-  ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
   }

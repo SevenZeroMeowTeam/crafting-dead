@@ -28,7 +28,8 @@ public class ServerConfig {
   // Game-Settings Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue showSubtitles;
+  public final ForgeConfigSpec.BooleanValue allowSupplyDropBreak;
+  public final ForgeConfigSpec.IntValue supplyDropDuration;
 
   // ================================================================================
   // Loot Values
@@ -116,10 +117,15 @@ public class ServerConfig {
         .comment("General Game-Settings")
         .push("game-settings");
     {
-      this.showSubtitles = builder
-          .translation("options.craftingdeadsurvival.server.show_subtitles")
-          .comment("If true display subtitles")
-          .define("showSubtitles", true);
+      this.allowSupplyDropBreak = builder
+          .translation("options.craftingdeadsurvival.server.allow_supply_drop_break")
+          .comment("If true supply drops can be destroyed by a left-click")
+          .define("allowSupplyDropBreak", true);
+
+      this.supplyDropDuration = builder
+          .translation("options.craftingdeadsurvival.server.supply_drop_duration")
+          .comment("Duration in seconds before a Supply Drop disappears from the world")
+          .defineInRange("supplyDropDuration", 1200, 1, Integer.MAX_VALUE);
     }
     builder.pop();
 

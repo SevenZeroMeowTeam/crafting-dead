@@ -18,6 +18,7 @@
 
 package com.craftingdead.survival.world.entity;
 
+import com.craftingdead.survival.CraftingDeadSurvival;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.NonNullList;
@@ -53,6 +54,8 @@ public class SupplyDrop extends Entity implements MenuProvider {
 
   private SimpleContainer container = new SimpleContainer(54);
 
+  private int ticks = 0;
+
   @Nullable
   private ResourceLocation lootTable;
   private long lootTableSeed;
@@ -84,15 +87,22 @@ public class SupplyDrop extends Entity implements MenuProvider {
   public void tick() {
     super.baseTick();
     if (!this.isNoGravity()) {
-      this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.009D, 0.0D));
+      this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.0025D, 0.0D));
     }
 
     if (this.onGround) {
       this.setDeltaMovement(this.getDeltaMovement().scale(0.5D));
+
+      this.ticks++;
+      if (this.ticks >= CraftingDeadSurvival.serverConfig.supplyDropDuration.get() * 20) {
+        this.remove(RemovalReason.DISCARDED);
+        return;
+      }
+    } else {
+      this.ticks = 0;
     }
 
     this.move(MoverType.SELF, this.getDeltaMovement());
-
   }
 
   @Override
@@ -149,6 +159,10 @@ public class SupplyDrop extends Entity implements MenuProvider {
 
   @Override
   public boolean hurt(DamageSource source, float amount) {
+    if (!CraftingDeadSurvival.serverConfig.allowSupplyDropBreak.get()) {
+      return false;
+    }
+
     if (this.level.isClientSide() || this.isRemoved()) {
       return true;
     }

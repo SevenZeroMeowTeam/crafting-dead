@@ -20,21 +20,19 @@ package com.craftingdead.core.client;
 
 import com.craftingdead.core.client.gui.screen.inventory.CraftingScreen;
 import com.craftingdead.core.network.message.play.DamageHandcuffsMessage;
+import com.craftingdead.core.world.action.RemoveMagazineAction;
+import com.craftingdead.core.world.action.reload.AbstractReloadAction;
 import com.craftingdead.core.world.item.MeleeWeaponItem;
 import com.craftingdead.core.world.item.ModAxeItem;
 import com.craftingdead.core.world.item.ModPickaxeItem;
 import com.craftingdead.core.world.item.ModShovelItem;
-import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import com.craftingdead.core.CraftingDead;
@@ -150,13 +148,13 @@ public class ClientDist implements ModDist {
           "de.maxhenkel.corpse.entities.DummySkeleton");
 
   public static final KeyMapping RELOAD =
-      new KeyMapping("key.reload", GLFW.GLFW_KEY_R, "key.categories.gameplay");
+      new KeyMapping("key.reload", GLFW.GLFW_KEY_R, "key.categories." + CraftingDead.ID);
   public static final KeyMapping REMOVE_MAGAZINE =
-      new KeyMapping("key.remove_magazine", GLFW.GLFW_KEY_J, "key.categories.gameplay");
+      new KeyMapping("key.remove_magazine", GLFW.GLFW_KEY_J, "key.categories." + CraftingDead.ID);
   public static final KeyMapping TOGGLE_FIRE_MODE =
-      new KeyMapping("key.toggle_fire_mode", GLFW.GLFW_KEY_V, "key.categories.gameplay");
+      new KeyMapping("key.toggle_fire_mode", GLFW.GLFW_KEY_V, "key.categories." + CraftingDead.ID);
   public static final KeyMapping OPEN_EQUIPMENT_MENU =
-      new KeyMapping("key.equipment_menu", GLFW.GLFW_KEY_Z, "key.categories.inventory");
+      new KeyMapping("key.equipment_menu", GLFW.GLFW_KEY_Z, "key.categories." + CraftingDead.ID);
 
   public static final ClientConfig clientConfig;
   public static final ForgeConfigSpec clientConfigSpec;
@@ -264,7 +262,7 @@ public class ClientDist implements ModDist {
   /**
    * Get the {@link Minecraft} instance. If accessing {@link Minecraft} from a common class
    * (contains both client and server code) don't access fields directly from {@link Minecraft} as
-   * it will cause class loading problems. To safely access {@link ClientPlayerEntity} in a
+   * it will cause class loading problems. To safely access {@link LocalPlayer} in a
    * multi-sided environment, use {@link #getPlayerExtension()}.
    *
    * @return {@link Minecraft}
@@ -295,7 +293,7 @@ public class ClientDist implements ModDist {
       SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(
           new ResourceLocation(ClientDist.clientConfig.killSound.get()));
       if (soundEvent != null) {
-        this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEvent, 5.0F, 1.5F));
+        this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEvent, 5.0F, 0.3F));
       }
     }
   }
@@ -562,6 +560,9 @@ public class ClientDist implements ModDist {
     }
 
     var gun = player.mainHandGun().orElse(null);
+    boolean isReloadingOrUnloading  = player.getAction()
+        .filter(action -> action instanceof AbstractReloadAction
+            || action instanceof RemoveMagazineAction).isPresent();
     if (this.minecraft.options.keyAttack.matchesMouse(event.getButton())) {
       var triggerPressed = event.getAction() == GLFW.GLFW_PRESS;
       if (gun != null) {
@@ -578,7 +579,7 @@ public class ClientDist implements ModDist {
           case HOLD -> gun.setPerformingSecondaryAction(
               player, event.getAction() == GLFW.GLFW_PRESS, true);
           case TOGGLE -> {
-            if (event.getAction() == GLFW.GLFW_PRESS) {
+            if (event.getAction() == GLFW.GLFW_PRESS && !isReloadingOrUnloading) {
               gun.setPerformingSecondaryAction(player, !gun.isPerformingSecondaryAction(), true);
             }
           }
@@ -622,13 +623,6 @@ public class ClientDist implements ModDist {
         || overlay == ForgeIngameGui.AIR_LEVEL_ELEMENT
         || overlay == ForgeIngameGui.ARMOR_LEVEL_ELEMENT) {
       event.setCanceled(player.isCombatModeEnabled());
-
-      if (overlay == ForgeIngameGui.HOTBAR_ELEMENT
-          && ServerConfig.instance.overrideMinecraftHotbar.get()
-          && !player.isCombatModeEnabled()) {
-        event.setCanceled(true);
-        this.renderHotbar(event.getMatrixStack(), event.getWindow());
-      }
 
     } else if (overlay == ForgeIngameGui.CROSSHAIR_ELEMENT) {
       var aiming = player.mainHandItem().getCapability(Scope.CAPABILITY)
@@ -786,13 +780,6 @@ public class ClientDist implements ModDist {
         return;
       }
     }
-
-    // Allows overriding the default inventory with the crafting dead inventory
-    if (event.getScreen() instanceof InventoryScreen && isSurvivalMode()
-        && ServerConfig.instance.overrideMinecraftInventory.get()) {
-      event.setCanceled(true);
-      NetworkChannel.PLAY.getSimpleChannel().sendToServer(new OpenEquipmentMenuMessage());
-    }
   }
 
   @SubscribeEvent
@@ -913,49 +900,6 @@ public class ClientDist implements ModDist {
     ModelPart parachuteModel = entityModelSet.bakeLayer(ModModelLayers.PARACHUTE);
     parachuteModel.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
     poseStack.popPose();
-  }
-
-  private void renderHotbar(PoseStack poseStack, Window window) {
-    var player = this.getPlayerExtension().orElse(null);
-
-    assert player != null;
-    if (player.isCombatModeEnabled()) {
-      return;
-    }
-
-    int screenWidth = window.getGuiScaledWidth();
-    int screenHeight = window.getGuiScaledHeight();
-
-    int xPos = (screenWidth / 2) - 91;
-    int yPos = screenHeight - 22;
-
-    this.minecraft.getProfiler().push("hotbar");
-    RenderSystem.setShader(GameRenderer::getPositionTexShader);
-    RenderSystem.setShaderTexture(0,
-        new ResourceLocation(CraftingDead.ID, "textures/gui/container/widgets.png"));
-    RenderSystem.enableBlend();
-    RenderSystem.defaultBlendFunc();
-
-    this.minecraft.gui.blit(poseStack, xPos, yPos, 0, 0, 182, 22);
-
-    int selectedSlot = player.entity().getInventory().selected;
-    int selectedXPos = xPos + selectedSlot * 20 - 1;
-
-    this.minecraft.gui.blit(poseStack, selectedXPos, yPos - 1, 0, 22, 24, 24);
-
-    var itemRenderer = this.minecraft.getItemRenderer();
-
-    for (int i = 0; i < 9; ++i) {
-      int slotXPos = xPos + i * 20 + 3;
-      int slotYPos = yPos + 3;
-      ItemStack itemStack = player.entity().getInventory().getItem(i);
-
-      itemRenderer.renderAndDecorateItem(itemStack, slotXPos, slotYPos);
-      itemRenderer.renderGuiItemDecorations(this.minecraft.font, itemStack, slotXPos, slotYPos);
-    }
-
-    RenderSystem.disableBlend();
-    this.minecraft.getProfiler().pop();
   }
 
   private boolean isSurvivalMode() {

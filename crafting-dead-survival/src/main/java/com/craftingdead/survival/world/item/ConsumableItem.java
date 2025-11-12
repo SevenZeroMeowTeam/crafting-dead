@@ -71,8 +71,8 @@ public class ConsumableItem extends Item {
 
   @Override
   public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag tag) {
-    return (type != Type.ONLY_FOOD && CraftingDeadSurvival.instance().isImmerseLoaded())
-        ? createHydrationProvider(water) : null;
+    return (this.type != Type.ONLY_FOOD && CraftingDeadSurvival.instance().isImmerseLoaded())
+        ? createHydrationProvider(this.water) : null;
   }
 
   private static ICapabilityProvider createHydrationProvider(int water) {
@@ -82,42 +82,72 @@ public class ConsumableItem extends Item {
   @Override
   public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level,
       @NotNull Player player, @NotNull InteractionHand hand) {
-    boolean canConsume =
-        (type == Type.ONLY_FOOD && canEat(player)) || (type == Type.FOOD_AND_DRINK && (
-            canEat(player) || canDrink(player))) || (type == Type.ONLY_DRINK && canDrink(player)
+    boolean canConsume = (this.type == Type.ONLY_FOOD && this.canEat(player)) || (this.type == Type.FOOD_AND_DRINK && (
+            this.canEat(player) || this.canDrink(player))) || (this.type == Type.ONLY_DRINK && this.canDrink(player)
             && CraftingDeadSurvival.instance().isImmerseLoaded());
-
     return canConsume ? ItemUtils.startUsingInstantly(level, player, hand)
         : InteractionResultHolder.fail(player.getItemInHand(hand));
+  }
+
+  /**
+   * Prevents unnecessary consumption when the player no longer needs food or water
+   */
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public void onUseTick(@NotNull Level level, @NotNull LivingEntity entity,
+      @NotNull ItemStack stack, int remainingUseDuration) {
+    if (!(entity instanceof Player player)) return;
+    boolean needsFood = this.canEat(player);
+    boolean needsWater = CraftingDeadSurvival.instance().isImmerseLoaded() && this.canDrink(player);
+    boolean consumption = switch (this.type) {
+      case ONLY_FOOD -> needsFood;
+      case ONLY_DRINK -> needsWater;
+      case FOOD_AND_DRINK -> needsFood || needsWater;
+    };
+    if (!consumption) {
+      player.releaseUsingItem();
+    }
   }
 
   @Override
   public @NotNull ItemStack finishUsingItem(@NotNull ItemStack itemStack, @NotNull Level level,
       @NotNull LivingEntity entity) {
+
     if (entity instanceof ServerPlayer serverPlayer) {
       CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, itemStack);
     }
+
     if (entity instanceof Player player) {
-      applyEffects(player);
-      itemStack.shrink(player.getAbilities().instabuild ? 0 : 1);
-      if (itemStack.isEmpty() && emptyItem != null) {
-        return new ItemStack(emptyItem.get());
+      this.applyEffects(player);
+
+      if (!player.getAbilities().instabuild) {
+        itemStack.shrink(1);
+
+        if (this.emptyItem != null) {
+          var emptyStack = new ItemStack(this.emptyItem.get());
+          if (!player.getInventory().add(emptyStack)) {
+            player.spawnAtLocation(emptyStack);
+          }
+        }
       }
     }
-    triggerConsumptionEvent(level, entity);
+
+    this.triggerConsumptionEvent(level, entity);
     return itemStack;
   }
 
+
   private void applyEffects(Player player) {
     player.awardStat(Stats.ITEM_USED.get(this));
-    if (foodProperties != null) {
+    if (this.foodProperties != null) {
       player.getFoodData()
-          .eat(foodProperties.getNutrition(), foodProperties.getSaturationModifier());
+          .eat(this.foodProperties.getNutrition(), this.foodProperties.getSaturationModifier());
     }
   }
 
   private void triggerConsumptionEvent(Level level, LivingEntity entity) {
-    GameEvent event = (type == Type.ONLY_DRINK) ? GameEvent.DRINKING_FINISH : GameEvent.EAT;
+    var event = (this.type == Type.ONLY_DRINK) ? GameEvent.DRINKING_FINISH : GameEvent.EAT;
     level.gameEvent(entity, event, entity.eyeBlockPosition());
   }
 
@@ -128,14 +158,14 @@ public class ConsumableItem extends Item {
 
   @Override
   public @NotNull UseAnim getUseAnimation(@NotNull ItemStack itemStack) {
-    return (type == Type.ONLY_DRINK) ? UseAnim.DRINK : UseAnim.EAT;
+    return (this.type == Type.ONLY_DRINK) ? UseAnim.DRINK : UseAnim.EAT;
   }
 
-  private static boolean canEat(Player player) {
+  private boolean canEat(Player player) {
     return player.getFoodData().getFoodLevel() < 20;
   }
 
-  private static boolean canDrink(Player player) {
+  private boolean canDrink(Player player) {
     var handler = PlayerExtension.getOrThrow(player).getHandlerOrThrow(SurvivalPlayerHandler.TYPE);
     return handler.getWater() < handler.getMaxWater();
   }
@@ -143,13 +173,13 @@ public class ConsumableItem extends Item {
   @Override
   public void appendHoverText(@NotNull ItemStack itemStack, @Nullable Level level,
       @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
-    if (foodProperties != null) {
+    if (this.foodProperties != null) {
       tooltip.add(new TranslatableComponent("item.craftingdeadsurvival.consumable.food_info").withStyle(
-              ChatFormatting.GRAY).append(new TextComponent(" " + foodProperties.getNutrition()).withStyle(ChatFormatting.RED)));
+              ChatFormatting.GRAY).append(new TextComponent(" " + this.foodProperties.getNutrition()).withStyle(ChatFormatting.RED)));
     }
-    if (water > 0) {
+    if (this.water > 0) {
       tooltip.add(new TranslatableComponent("item.craftingdeadsurvival.consumable.water_info").withStyle(
-                  ChatFormatting.GRAY).append(new TextComponent(" " + water).withStyle(ChatFormatting.RED)));
+                  ChatFormatting.GRAY).append(new TextComponent(" " + this.water).withStyle(ChatFormatting.RED)));
     }
   }
 }

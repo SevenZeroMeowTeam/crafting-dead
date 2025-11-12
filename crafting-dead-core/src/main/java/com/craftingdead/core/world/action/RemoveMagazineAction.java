@@ -62,7 +62,7 @@ public class RemoveMagazineAction extends TimedAction {
 
   @Override
   protected int getTotalDurationTicks() {
-    return this.gun.getReloadDurationTicks() / 2;
+    return this.gun.getReloadDurationTicks();
   }
 
   @Override

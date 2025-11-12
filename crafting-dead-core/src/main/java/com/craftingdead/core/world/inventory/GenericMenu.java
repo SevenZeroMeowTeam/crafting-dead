@@ -18,6 +18,7 @@
 
 package com.craftingdead.core.world.inventory;
 
+import com.craftingdead.core.world.item.ModItems;
 import java.util.function.BiPredicate;
 import com.craftingdead.core.world.item.GunItem;
 import com.craftingdead.core.world.item.StorageItem;
@@ -130,6 +131,6 @@ public class GenericMenu extends AbstractMenu {
   }
 
   private static boolean notGunOrStorage(PredicateItemHandlerSlot slot, ItemStack itemStack) {
-    return !(itemStack.getItem() instanceof GunItem || itemStack.getItem() instanceof StorageItem);
+    return !((itemStack.getItem() instanceof GunItem && itemStack.getItem() != ModItems.TASER.get()) || itemStack.getItem() instanceof StorageItem);
   }
 }

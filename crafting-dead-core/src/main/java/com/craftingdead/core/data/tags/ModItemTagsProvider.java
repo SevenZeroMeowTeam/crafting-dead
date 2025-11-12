@@ -97,6 +97,21 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         ModItems.SWAT_CLOTHING.get(), ModItems.TAC_GHILLIE_CLOTHING.get(),
         ModItems.WHITE_DUSK_CLOTHING.get(), ModItems.WINTER_ARMY_CLOTHING.get(),
         ModItems.YELLOW_DUSK_CLOTHING.get());
+    this.tag(ModItemTags.BACKPACK).add(ModItems.SMALL_RED_BACKPACK.get(),
+        ModItems.SMALL_ORANGE_BACKPACK.get(), ModItems.SMALL_YELLOW_BACKPACK.get(),
+        ModItems.SMALL_GREEN_BACKPACK.get(), ModItems.SMALL_BLUE_BACKPACK.get(),
+        ModItems.SMALL_PURPLE_BACKPACK.get(), ModItems.MEDIUM_RED_BACKPACK.get(),
+        ModItems.MEDIUM_ORANGE_BACKPACK.get(), ModItems.MEDIUM_YELLOW_BACKPACK.get(),
+        ModItems.MEDIUM_GREEN_BACKPACK.get(), ModItems.MEDIUM_BLUE_BACKPACK.get(),
+        ModItems.MEDIUM_PURPLE_BACKPACK.get(), ModItems.MEDIUM_GREY_BACKPACK.get(),
+        ModItems.MEDIUM_BLACK_BACKPACK.get(), ModItems.MEDIUM_GHILLIE_BACKPACK.get(),
+        ModItems.MEDIUM_WHITE_BACKPACK.get(), ModItems.LARGE_GREY_BACKPACK.get(),
+        ModItems.LARGE_GREEN_BACKPACK.get(), ModItems.LARGE_TAN_BACKPACK.get(),
+        ModItems.LARGE_BLACK_BACKPACK.get(), ModItems.LARGE_GHILLIE_BACKPACK.get());
+    this.tag(ModItemTags.VEST).add(ModItems.BLACK_TACTICAL_VEST.get(),
+        ModItems.GHILLIE_TACTICAL_VEST.get(), ModItems.GREEN_TACTICAL_VEST.get(),
+        ModItems.GREY_TACTICAL_VEST.get(), ModItems.RIOT_VEST.get(),
+        ModItems.TAN_TACTICAL_VEST.get());
     this.tag(ModItemTags.MELEES).add(ModItems.BAT.get(), ModItems.BO_STAFF.get(),
         ModItems.BOLT_CUTTERS.get(), ModItems.BOWIE_KNIFE.get(), ModItems.BROADSWORD.get(),
         ModItems.BROKEN_BOTTLE.get(), ModItems.CHAINSAW.get(), ModItems.CLEAVER.get(),

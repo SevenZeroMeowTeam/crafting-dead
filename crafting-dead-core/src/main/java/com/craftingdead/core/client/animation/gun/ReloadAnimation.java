@@ -68,7 +68,7 @@ public class ReloadAnimation extends TimedAnimation {
     float angle4 = Mth.sin(time / 15.0F);
     angle1 *= angle4;
     angle2 *= angle3 * angle4;
-    vec.setX(-2.0F * (angle1 * 5.0F + angle2));
-    vec.setZ(2.0F * angle2);
+    vec.setX(-3.0F * (angle1 * 4.0F + angle2));
+    vec.setZ(3.0F * angle2);
   }
 }
