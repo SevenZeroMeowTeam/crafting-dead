@@ -24,6 +24,9 @@ minecraft {
                 craftingdead {
                     source project(':crafting-dead-core').sourceSets.main
                 }
+                craftingdeaddecoration {
+                    source project(':crafting-dead-decoration').sourceSets.main
+                }
             }
         }
 
@@ -42,6 +45,9 @@ minecraft {
                 }
                 craftingdead {
                     source project(':crafting-dead-core').sourceSets.main
+                }
+                craftingdeaddecoration {
+                    source project(':crafting-dead-decoration').sourceSets.main
                 }
             }
         }
@@ -65,6 +71,9 @@ minecraft {
                 craftingdead {
                     source project(':crafting-dead-core').sourceSets.main
                 }
+                craftingdeaddecoration {
+                    source project(':crafting-dead-decoration').sourceSets.main
+                }
             }
         }
     }
@@ -73,7 +82,14 @@ minecraft {
 dependencies {
     implementation project(':crafting-dead-core')
     implementation project(':crafting-dead-immerse')
+    implementation project(':crafting-dead-decoration')
     
+    def yogaVersion = project(':crafting-dead-immerse').findProperty('lwjgl_version') ?: project.findProperty('lwjgl_version')
+    minecraftLibrary group: 'org.lwjgl', name: 'lwjgl', version: "[${yogaVersion}]"
+    minecraftLibrary(group: 'org.lwjgl', name: 'lwjgl-yoga', version: "[${yogaVersion}]") {
+        exclude group: 'org.lwjgl', module: 'lwjgl'
+    }
+
     // Dirty hacks for depending on immerse
     minecraftLibrary group: 'net.rocketpowered', name: 'rocket-sdk', version: '0.0.8'
 }
