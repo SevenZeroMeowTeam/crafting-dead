@@ -1007,7 +1007,7 @@ public class ModItems {
               .setGrenadeEntitySupplier(
                   FunctionalUtil.nullsafeFunction(FireGrenadeEntity::new, FireGrenadeEntity::new))
               .setEnabledSupplier(ServerConfig.instance.explosivesFireGrenadeEnabled::get)
-              .stacksTo(3)
+              .stacksTo(1)
               .tab(COMBAT_TAB)));
 
   public static final RegistryObject<GrenadeItem> SMOKE_GRENADE =
@@ -1016,7 +1016,7 @@ public class ModItems {
               .setGrenadeEntitySupplier(
                   FunctionalUtil.nullsafeFunction(SmokeGrenadeEntity::new, SmokeGrenadeEntity::new))
               .setEnabledSupplier(ServerConfig.instance.explosivesSmokeGrenadeEnabled::get)
-              .stacksTo(3)
+              .stacksTo(1)
               .tab(COMBAT_TAB)));
 
   public static final RegistryObject<GrenadeItem> FLASH_GRENADE =
@@ -1025,7 +1025,7 @@ public class ModItems {
               .setGrenadeEntitySupplier(
                   FunctionalUtil.nullsafeFunction(FlashGrenadeEntity::new, FlashGrenadeEntity::new))
               .setEnabledSupplier(ServerConfig.instance.explosivesFlashGrenadeEnabled::get)
-              .stacksTo(3)
+              .stacksTo(1)
               .tab(COMBAT_TAB)));
 
   public static final RegistryObject<GrenadeItem> DECOY_GRENADE =
@@ -1034,7 +1034,7 @@ public class ModItems {
               .setGrenadeEntitySupplier(
                   FunctionalUtil.nullsafeFunction(DecoyGrenadeEntity::new, DecoyGrenadeEntity::new))
               .setEnabledSupplier(ServerConfig.instance.explosivesDecoyGrenadeEnabled::get)
-              .stacksTo(3)
+              .stacksTo(1)
               .tab(COMBAT_TAB)));
 
   public static final RegistryObject<GrenadeItem> FRAG_GRENADE =
