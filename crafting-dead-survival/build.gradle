@@ -2,6 +2,8 @@ plugins {
     id 'crafting-dead'
 }
 
+evaluationDependsOn(':rocket-connector')
+
 mixin {
     add sourceSets.main, 'craftingdeadsurvival.refmap.json'
 }
@@ -27,6 +29,12 @@ minecraft {
                 craftingdeaddecoration {
                     source project(':crafting-dead-decoration').sourceSets.main
                 }
+                craftingdeadimmerse {
+                    source project(':crafting-dead-immerse').sourceSets.main
+                }
+                rocketconnector {
+                    source project(':rocket-connector').sourceSets.main
+                }
             }
         }
 
@@ -48,6 +56,12 @@ minecraft {
                 }
                 craftingdeaddecoration {
                     source project(':crafting-dead-decoration').sourceSets.main
+                }
+                craftingdeadimmerse {
+                    source project(':crafting-dead-immerse').sourceSets.main
+                }
+                rocketconnector {
+                    source project(':rocket-connector').sourceSets.main
                 }
             }
         }
@@ -74,15 +88,23 @@ minecraft {
                 craftingdeaddecoration {
                     source project(':crafting-dead-decoration').sourceSets.main
                 }
+                craftingdeadimmerse {
+                    source project(':crafting-dead-immerse').sourceSets.main
+                }
+                rocketconnector {
+                    source project(':rocket-connector').sourceSets.main
+                }
             }
         }
     }
 }
 
 dependencies {
-    implementation project(':crafting-dead-core')
-    implementation project(':crafting-dead-immerse')
-    implementation project(':crafting-dead-decoration')
+    compileOnly project(':crafting-dead-core')
+    compileOnly project(':crafting-dead-immerse')
+    compileOnly project(':crafting-dead-decoration')
+    compileOnly project(':rocket-connector')
+    minecraftLibrary project(path: ':crafting-dead-immerse', configuration: 'minecraftLibrary')
     
     def yogaVersion = project(':crafting-dead-immerse').findProperty('lwjgl_version') ?: project.findProperty('lwjgl_version')
     minecraftLibrary group: 'org.lwjgl', name: 'lwjgl', version: "[${yogaVersion}]"

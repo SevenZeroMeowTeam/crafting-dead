@@ -37,9 +37,9 @@ public abstract class ModelBakeryMixin {
 
   @Shadow
   @Final
-  private ResourceManager resourceManager;
+  protected ResourceManager resourceManager;
 
-  @Inject(method = "processLoading", at = @At(value = "INVOKE", shift = At.Shift.AFTER,
+  @Inject(method = "processLoading(Lnet/minecraft/util/profiling/ProfilerFiller;I)V", at = @At(value = "INVOKE", shift = At.Shift.AFTER,
       target = "Lnet/minecraft/client/resources/model/ModelBakery;loadTopLevel(Lnet/minecraft/client/resources/model/ModelResourceLocation;)V",
       ordinal = 0))
   public void prepare(ProfilerFiller profiler, int mipLevel, CallbackInfo callbackInfo) {
@@ -51,6 +51,6 @@ public abstract class ModelBakeryMixin {
     }
   }
 
-  @Invoker
+  @Invoker("addModelToCache")
   abstract void invokeAddModelToCache(ResourceLocation modelLocation);
 }

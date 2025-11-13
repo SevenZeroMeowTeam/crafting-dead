@@ -48,9 +48,10 @@ public class AbstractContainerMenuMixin {
   private ContainerSynchronizer synchronizer;
 
   @SuppressWarnings("unchecked")
-  @Redirect(at = @At(value = "INVOKE",
-      target = "Lnet/minecraft/world/item/ItemStack;matches(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z"),
-      method = "synchronizeSlotToRemote")
+  @Redirect(method =
+    "synchronizeSlotToRemote(ILnet/minecraft/world/item/ItemStack;Ljava/util/function/Supplier;)V",
+    at = @At(value = "INVOKE",
+      target = "Lnet/minecraft/world/item/ItemStack;matches(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z"))
   private boolean matches(ItemStack lastStack, ItemStack currentStack, int slotIndex,
       ItemStack __, Supplier<ItemStack> coppiedStack) {
 

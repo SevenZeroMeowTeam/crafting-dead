@@ -32,7 +32,7 @@ public class MultiPlayerGameModeMixin {
   /**
    * Renders HUD for spectating player.
    */
-  @Inject(at = @At("RETURN"), method = "canHurtPlayer", cancellable = true)
+  @Inject(method = "canHurtPlayer()Z", at = @At("RETURN"), cancellable = true)
   private void canHurtPlayer(CallbackInfoReturnable<Boolean> callbackInfo) {
     callbackInfo.setReturnValue(callbackInfo.getReturnValue() ||
         Minecraft.getInstance().getCameraEntity() instanceof RemotePlayer);

@@ -16,21 +16,19 @@
  * https://craftingdead.net/terms.php
  */
 
-package com.craftingdead.immerse.mixin;
+package com.craftingdead.core.telemetry;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import io.sentry.Sentry;
-import net.minecraft.CrashReport;
-import net.minecraft.server.MinecraftServer;
+public enum TelemetryEnvironment {
+  EXPERIMENTAL("experimental"),
+  PRODUCTION("production");
 
-@Mixin(MinecraftServer.class)
-public class MinecraftServerMixin {
+  private final String wireValue;
 
-  @Inject(method = "onServerCrash(Lnet/minecraft/CrashReport;)V", at = @At("HEAD"))
-  private void onServerCrash(CrashReport crashReport, CallbackInfo callbackInfo) {
-    Sentry.captureException(crashReport.getException());
+  TelemetryEnvironment(String wireValue) {
+    this.wireValue = wireValue;
+  }
+
+  public String getWireValue() {
+    return this.wireValue;
   }
 }

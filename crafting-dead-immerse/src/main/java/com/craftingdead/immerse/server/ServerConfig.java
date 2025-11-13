@@ -26,6 +26,7 @@ public class ServerConfig {
 
   public final ForgeConfigSpec.ConfigValue<List<? extends String>> gameRotation;
   public final ForgeConfigSpec.EnumValue<NametagMode> nametagMode;
+  public final ForgeConfigSpec.IntValue hydrateCommandCooldownMinutes;
 
   public ServerConfig(ForgeConfigSpec.Builder builder) {
     builder.push("server");
@@ -45,6 +46,12 @@ public class ServerConfig {
               "HIDE_PLAYER: Hide player nametags",
               "HIDE_ALL: Hide all nametags")
           .defineEnum("nametag_mode", NametagMode.DEFAULT);
+
+    this.hydrateCommandCooldownMinutes = builder
+      .translation("options.craftingdeadimmerse.gameplay.hydrate_command_cooldown_minutes")
+      .comment("Cooldown, in minutes, applied to players using the /hydrate command.",
+        "Set to 0 to disable the cooldown entirely.")
+      .defineInRange("hydrate_command_cooldown_minutes", 30, 0, Integer.MAX_VALUE);
     }
     builder.pop();
   }
