@@ -33,7 +33,7 @@ import net.minecraftforge.fml.ModLoader;
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
 
-  @Inject(method = "resizeDisplay()V", at = @At("RETURN"))
+  @Inject(method = "resizeDisplay", at = @At("RETURN"))
   public void resizeDisplay(CallbackInfo callbackInfo) {
     // If some mod crashed during the game initialization Crafting Dead may not be completely
     // initialized
@@ -46,7 +46,7 @@ public abstract class MinecraftMixin {
   /**
    * Modifies window title.
    */
-  @Inject(method = "createTitle()Ljava/lang/String;", at = @At("HEAD"), cancellable = true)
+  @Inject(method = "createTitle", at = @At("HEAD"), cancellable = true)
   private void createTitle(CallbackInfoReturnable<String> callbackInfo) {
     callbackInfo.setReturnValue(
         "Minecraft " + SharedConstants.getCurrentVersion().getName() + " - Crafting Dead");
@@ -55,12 +55,12 @@ public abstract class MinecraftMixin {
   /**
    * Increases GUI frame rate for a smoother experience.
    */
-  @Inject(method = "getFramerateLimit()I", at = @At("HEAD"), cancellable = true)
+  @Inject(method = "getFramerateLimit", at = @At("HEAD"), cancellable = true)
   private void getFramerateLimit(CallbackInfoReturnable<Integer> callbackInfo) {
     callbackInfo.setReturnValue(Minecraft.getInstance().getWindow().getFramerateLimit());
   }
 
-  @Inject(method = "crash(Lnet/minecraft/CrashReport;)V", at = @At("HEAD"))
+  @Inject(method = "crash", at = @At("HEAD"))
   private static void crash(CrashReport crashReport, CallbackInfo callbackInfo) {
     Sentry.captureException(crashReport.getException());
   }

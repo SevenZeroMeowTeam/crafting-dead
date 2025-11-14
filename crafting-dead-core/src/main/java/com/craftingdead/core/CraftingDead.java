@@ -18,8 +18,6 @@
 
 package com.craftingdead.core;
 
-import java.util.Optional;
-
 import com.craftingdead.core.data.tags.ModBlockTagsProvider;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.slf4j.Logger;
@@ -55,7 +53,6 @@ import com.craftingdead.core.world.item.gun.attachment.Attachments;
 import com.craftingdead.core.world.item.gun.magazine.Magazine;
 import com.craftingdead.core.world.item.gun.skin.Paint;
 import com.craftingdead.core.world.item.scope.Scope;
-import com.craftingdead.core.telemetry.TelemetryManager;
 import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import net.minecraft.data.DataGenerator;
@@ -174,8 +171,6 @@ public class CraftingDead {
 
   private void handleCommonSetup(FMLCommonSetupEvent event) {
     logger.info("Starting Crafting Dead, version {}", VERSION);
-    TelemetryManager.initialize(ID, VERSION, Optional::empty, null,
-        scope -> scope.setTag("craftingdead.version", VERSION));
     NetworkChannel.loadChannels();
     event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(ModItems.SYRINGE.get()),
         Ingredient.of(Items.REDSTONE),

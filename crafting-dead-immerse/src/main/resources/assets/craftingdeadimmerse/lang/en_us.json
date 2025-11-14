@@ -54,7 +54,6 @@
     "toasts.error": "Rocket Error",
     "commands.game.restart":"Restarting game",
     "commands.game.reload_rotation":"Reloading game rotation",
-    "commands.hydrate.cooldown": "You must wait %s before using /hydrate again.",
     "commands.hydrate.success.single": "%s was hydrated.",
     "commands.hydrate.success.multiple": "%s players were hydrated.",
 

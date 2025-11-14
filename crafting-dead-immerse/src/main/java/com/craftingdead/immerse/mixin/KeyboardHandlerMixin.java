@@ -36,8 +36,7 @@ import sm0keysa1m0n.bliss.view.ViewScreen;
 @Mixin(KeyboardHandler.class)
 public class KeyboardHandlerMixin {
 
-  @SuppressWarnings("unused")
-  @Inject(method = "keyPress(JIIII)V", at = @At("HEAD"), cancellable = true)
+  @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
   public void keyPress(long window, int keyCode, int scanCode, int action, int modifiers,
       CallbackInfo callbackInfo) {
     if (action == GLFW.GLFW_PRESS) {

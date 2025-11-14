@@ -19,10 +19,7 @@
 package com.craftingdead.immerse.command;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Stream;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.immerse.CraftingDeadImmerse;
@@ -34,7 +31,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -42,10 +38,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.fml.LogicalSide;
 
 public class HydrateCommand {
-
-    private static final long TICKS_PER_SECOND = 20L;
-    private static final long TICKS_PER_MINUTE = TICKS_PER_SECOND * 60L;
-    private static final Map<UUID, Long> COOLDOWNS = new HashMap<>();
 
   public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
     dispatcher.register(Commands.literal("hydrate")
@@ -61,23 +53,6 @@ public class HydrateCommand {
   }
 
   private static int processCommand(CommandSourceStack source, Collection<ServerPlayer> targets) {
-        var cooldownMinutes = CraftingDeadImmerse.serverConfig.hydrateCommandCooldownMinutes.get();
-        if (cooldownMinutes > 0 && source.getEntity() instanceof ServerPlayer executingPlayer) {
-            var currentTick = executingPlayer.getLevel().getGameTime();
-            var cooldownTicks = cooldownMinutes * TICKS_PER_MINUTE;
-            var lastUse = COOLDOWNS.get(executingPlayer.getUUID());
-            if (lastUse != null) {
-                var elapsed = currentTick - lastUse;
-                if (elapsed < cooldownTicks) {
-                    var remainingTicks = cooldownTicks - elapsed;
-                    source.sendFailure(new TranslatableComponent("commands.hydrate.cooldown",
-                            formatCooldown(remainingTicks)).withStyle(ChatFormatting.RED));
-                    return 0;
-                }
-            }
-            COOLDOWNS.put(executingPlayer.getUUID(), currentTick);
-        }
-
     var hydrated = targets.stream()
         .filter(ServerPlayer::isAlive)
         .flatMap(player -> Stream.ofNullable(PlayerExtension.get(player)))
@@ -100,23 +75,4 @@ public class HydrateCommand {
     player.getHandlerOrThrow(SurvivalPlayerHandler.TYPE).hydrate();
     player.entity().playNotifySound(SoundEvents.GENERIC_DRINK, SoundSource.NEUTRAL, 5.0F, 5.0F);
   }
-
-    private static TextComponent formatCooldown(long remainingTicks) {
-        var remainingSeconds = (long) Math.ceil(remainingTicks / (double) TICKS_PER_SECOND);
-        var minutes = remainingSeconds / 60;
-        var seconds = remainingSeconds % 60;
-
-        var builder = new StringBuilder();
-        if (minutes > 0) {
-            builder.append(minutes).append("m");
-        }
-        if (seconds > 0 || minutes == 0) {
-            if (minutes > 0) {
-                builder.append(' ');
-            }
-            builder.append(seconds).append('s');
-        }
-
-        return new TextComponent(builder.toString());
-    }
 }

@@ -55,7 +55,6 @@
     "toasts.error": "错误火箭",
     "commands.game.restart":"重启游戏",
     "commands.game.reload_rotation":"旋转重启游戏",
-    "commands.hydrate.cooldown": "你必须等待%s才能再次使用 /hydrate。",
     "commands.hydrate.success.single": "%s被水化了。",
     "commands.hydrate.success.multiple": "%s补充了水分。",
 

@@ -22,12 +22,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
-
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 import com.craftingdead.core.capability.CapabilityUtil;
-import com.craftingdead.core.telemetry.TelemetryManager;
 import com.craftingdead.immerse.client.ClientDist;
 import com.craftingdead.immerse.command.ImmerseCommands;
 import com.craftingdead.immerse.game.Game;
@@ -48,8 +44,8 @@ import com.craftingdead.immerse.world.level.block.ImmerseBlocks;
 import com.craftingdead.immerse.world.level.block.entity.ImmerseBlockEntityTypes;
 import com.craftingdead.immerse.world.level.extension.LandOwnerTypes;
 import com.craftingdead.immerse.world.level.extension.LevelExtension;
-import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
+import io.sentry.Sentry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
@@ -90,8 +86,6 @@ public class CraftingDeadImmerse {
   public static final String DISPLAY_NAME = JarVersionLookupHandler
       .getImplementationTitle(CraftingDeadImmerse.class)
       .orElse("[display_name]");
-
-  private static final Logger logger = LogUtils.getLogger();
 
   public static final ServerConfig serverConfig;
   public static final ForgeConfigSpec serverConfigSpec;
@@ -194,24 +188,27 @@ public class CraftingDeadImmerse {
 
   private void handleCommonSetup(FMLCommonSetupEvent event) {
     if (commonConfig.sentryEnabled.get()) {
-      TelemetryManager.initialize(ID, VERSION,
-          () -> Optional.ofNullable(commonConfig.sentryDsn.get()).filter(dsn -> !dsn.isBlank()),
-          scope -> {
-            scope.setTag("immerse.version", VERSION);
-            scope.setTag("immerse.dist", FMLEnvironment.dist.name());
-            if (FMLEnvironment.production) {
-              var instanceJson = Path.of("minecraftinstance.json");
-              if (Files.exists(instanceJson)) {
-                try (var reader = Files.newBufferedReader(instanceJson)) {
-                  var parsedJson = GsonHelper.parse(reader);
-                  var unlocked = GsonHelper.getAsBoolean(parsedJson, "isUnlocked");
-                  scope.setTag("immerseUnlocked", String.valueOf(unlocked));
-                } catch (IOException e) {
-                  logger.warn("Failed to read minecraftinstance.json for telemetry tag", e);
-                }
-              }
+      Sentry.init(options -> {
+        options.setDsn(commonConfig.sentryDsn.get());
+        // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+        // We recommend adjusting this value in production.
+        options.setTracesSampleRate(0.5);
+        options.setEnvironment(FMLEnvironment.production ? "production" : "development");
+        options.setTag("dist", FMLEnvironment.dist.name());
+
+        if (FMLEnvironment.production) {
+          var instanceJson = Path.of("minecraftinstance.json");
+          if (Files.exists(instanceJson)) {
+            try (var reader = Files.newBufferedReader(Path.of("minecraftinstance.json"))) {
+              var parsedJson = GsonHelper.parse(reader);
+              var unlocked = GsonHelper.getAsBoolean(parsedJson, "isUnlocked");
+              options.setTag("unlocked", String.valueOf(unlocked));
+            } catch (IOException e) {
+              e.printStackTrace();
             }
-          });
+          }
+        }
+      });
     }
 
     NetworkChannel.loadChannels();

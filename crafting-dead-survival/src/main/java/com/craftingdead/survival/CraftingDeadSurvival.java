@@ -18,12 +18,8 @@
 
 package com.craftingdead.survival;
 
-import java.util.Optional;
 import java.util.Random;
-
 import org.slf4j.Logger;
-
-import com.craftingdead.core.telemetry.TelemetryManager;
 import com.craftingdead.core.event.GunEvent;
 import com.craftingdead.core.event.LivingExtensionEvent;
 import com.craftingdead.core.world.action.ActionTypes;
@@ -97,16 +93,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.JarVersionLookupHandler;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 @Mod(CraftingDeadSurvival.ID)
 public class CraftingDeadSurvival {
 
   public static final String ID = "craftingdeadsurvival";
-  public static final String VERSION = JarVersionLookupHandler
-      .getImplementationVersion(CraftingDeadSurvival.class)
-      .orElse("[version]");
 
   private static final String H_CD_SERVER_CORE_ID = "hcdservercore";
 
@@ -167,10 +159,6 @@ public class CraftingDeadSurvival {
   // ================================================================================
 
   private void handleCommonSetup(FMLCommonSetupEvent event) {
-    TelemetryManager.initialize(ID, VERSION, Optional::empty, scope -> {
-      scope.setTag("survival.version", VERSION);
-      scope.setTag("survival.immerseLoaded", String.valueOf(this.isImmerseLoaded()));
-    });
     event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(ModItems.SYRINGE.get()),
         Ingredient.of(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE),
         new ItemStack(SurvivalItems.CURE_SYRINGE.get())));

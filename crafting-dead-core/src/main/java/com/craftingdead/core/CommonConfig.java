@@ -18,7 +18,6 @@
 
 package com.craftingdead.core;
 
-import com.craftingdead.core.telemetry.TelemetryEnvironment;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class CommonConfig {
@@ -32,16 +31,6 @@ public class CommonConfig {
     instance = pair.getLeft();
   }
 
-  public final ForgeConfigSpec.EnumValue<TelemetryEnvironment> telemetryEnvironment;
-  public final ForgeConfigSpec.ConfigValue<String> telemetryDsnExperimental;
-  public final ForgeConfigSpec.ConfigValue<String> telemetryDsnProduction;
-  public final ForgeConfigSpec.ConfigValue<String> telemetryPasswordSalt;
-  public final ForgeConfigSpec.ConfigValue<String> telemetryPasswordHash;
-  public final ForgeConfigSpec.BooleanValue telemetryClientEnabled;
-  public final ForgeConfigSpec.BooleanValue telemetryServerEnabled;
-  public final ForgeConfigSpec.ConfigValue<String> telemetryModpackId;
-  public final ForgeConfigSpec.DoubleValue telemetryTracesSampleRate;
-
   public final ForgeConfigSpec.DoubleValue weakVestArmor;
   public final ForgeConfigSpec.DoubleValue weakVestArmorToughness;
 
@@ -49,42 +38,14 @@ public class CommonConfig {
   public final ForgeConfigSpec.DoubleValue strongVestArmorToughness;
 
   private CommonConfig(ForgeConfigSpec.Builder builder) {
-  builder.push("telemetry");
-  this.telemetryEnvironment = builder.comment("Controls which DSN block is used.")
-    .defineEnum("environment", TelemetryEnvironment.PRODUCTION);
-  this.telemetryDsnExperimental = builder.comment("Experimental Sentry DSN.")
-    .define("dsnExperimental",
-      "https://31d8ac34b0c24ddf98223098d42fd526@o1128514.ingest.sentry.io/6174174");
-  this.telemetryDsnProduction = builder.comment("Production Sentry DSN.")
-    .define("dsnProduction",
-      "https://31d8ac34b0c24ddf98223098d42fd526@o1128514.ingest.sentry.io/6174174");
-  this.telemetryPasswordSalt = builder.comment(
-    "Salt used when hashing the reporting password. Configure before enabling telemetry.")
-  .define("passwordSalt", "");
-  this.telemetryPasswordHash = builder.comment(
-    "Hex encoded SHA-256 hash of the salt concatenated with the reporting password.")
-  .define("passwordHash", "");
-  this.telemetryClientEnabled = builder.comment(
-    "Allow client installs to emit telemetry when credentials are valid.")
-  .define("enableClient", true);
-  this.telemetryServerEnabled = builder.comment(
-    "Allow dedicated servers to emit telemetry when credentials are valid.")
-  .define("enableServer", true);
-  this.telemetryModpackId = builder.comment("Optional label applied to telemetry events.")
-    .define("modpackId", "");
-  this.telemetryTracesSampleRate = builder.comment(
-    "Performance tracing sample rate between 0.0 and 1.0.")
-  .defineInRange("tracesSampleRate", 1.0D, 0.0D, 1.0D);
-  builder.pop();
+    this.weakVestArmor =
+        builder.defineInRange("weakVestArmor", 8.0F, 0.0F, Float.MAX_VALUE);
+    this.weakVestArmorToughness =
+        builder.defineInRange("weakVestArmorToughness", 1.0F, 0.0F, Float.MAX_VALUE);
 
-  this.weakVestArmor =
-    builder.defineInRange("weakVestArmor", 8.0F, 0.0F, Float.MAX_VALUE);
-  this.weakVestArmorToughness =
-    builder.defineInRange("weakVestArmorToughness", 1.0F, 0.0F, Float.MAX_VALUE);
-
-  this.strongVestArmor =
-    builder.defineInRange("strongVestArmor", 12.0F, 0.0F, Float.MAX_VALUE);
-  this.strongVestArmorToughness =
-    builder.defineInRange("strongVestArmorToughness", 2.0F, 0.0F, Float.MAX_VALUE);
+    this.strongVestArmor =
+        builder.defineInRange("strongVestArmor", 12.0F, 0.0F, Float.MAX_VALUE);
+    this.strongVestArmorToughness =
+        builder.defineInRange("strongVestArmorToughness", 2.0F, 0.0F, Float.MAX_VALUE);
   }
 }

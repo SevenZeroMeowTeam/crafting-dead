@@ -62,9 +62,6 @@ dependencies {
     minecraftLibrary(group: 'org.lwjgl', name: 'lwjgl-yoga', version: "[${yogaVersion}]") {
         exclude group: 'org.lwjgl', module: 'lwjgl'
     }
-
-    minecraftLibrary group: 'net.rocketpowered', name: 'rocket-sdk', version: '0.0.8'
-    minecraftLibrary group: 'net.rocketpowered', name: 'rocket-common', version: '0.0.7'
 }
 
 jar {
