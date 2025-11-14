@@ -110,10 +110,9 @@ dependencies {
     if (rocketConnectorProject != null) {
         implementation rocketConnectorProject
     } else {
-    // Fall back to the published connector when the composite project is absent (e.g. CI checkout).
-    library group: 'net.rocketpowered', name: 'rocket-connector', version: '[0.0.8]'
-    jarJar group: 'net.rocketpowered', name: 'rocket-connector', version: '[0.0.8]'
-    minecraftLibrary group: 'net.rocketpowered', name: 'rocket-connector', version: '0.0.8'
+        // Fall back to the published connector when the composite project is absent (e.g. CI checkout).
+        library group: 'net.rocketpowered', name: 'rocket-connector', version: '0.0.8'
+        minecraftLibrary group: 'net.rocketpowered', name: 'rocket-connector', version: '0.0.8'
     }
 
     library group: 'flare', name: 'flare-eventbus', version: '[2.0.1]'
