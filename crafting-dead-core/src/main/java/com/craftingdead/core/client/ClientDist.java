@@ -20,6 +20,8 @@ package com.craftingdead.core.client;
 
 import com.craftingdead.core.client.gui.screen.inventory.CraftingScreen;
 import com.craftingdead.core.network.message.play.DamageHandcuffsMessage;
+import com.craftingdead.core.network.message.play.TraumaPacket;
+import com.craftingdead.core.trauma.TraumaSeverity;
 import com.craftingdead.core.world.action.RemoveMagazineAction;
 import com.craftingdead.core.world.action.reload.AbstractReloadAction;
 import com.craftingdead.core.world.item.MeleeWeaponItem;
@@ -27,12 +29,14 @@ import com.craftingdead.core.world.item.ModAxeItem;
 import com.craftingdead.core.world.item.ModPickaxeItem;
 import com.craftingdead.core.world.item.ModShovelItem;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import com.craftingdead.core.CraftingDead;
@@ -198,6 +202,10 @@ public class ClientDist implements ModDist {
   private float lastYaw;
   private float lastRoll;
 
+  private int traumaAimTicks;
+  private float traumaAimStrength;
+  private TraumaSeverity lastTraumaSeverity = TraumaSeverity.NONE;
+
   public ClientDist() {
     final var modBus = FMLJavaModLoadingContext.get().getModEventBus();
     modBus.addListener(this::handleClientSetup);
@@ -295,6 +303,18 @@ public class ClientDist implements ModDist {
       if (soundEvent != null) {
         this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEvent, 5.0F, 0.3F));
       }
+    }
+  }
+
+  public void handleTrauma(TraumaPacket packet) {
+    this.lastTraumaSeverity = packet.severity();
+    this.traumaAimTicks = Math.max(this.traumaAimTicks, packet.aimSwayTicks());
+    this.traumaAimStrength = Math.max(this.traumaAimStrength, packet.aimSwayStrength());
+
+    if (this.minecraft.gui != null && packet.severity() != TraumaSeverity.NONE) {
+      var translationKey = "message." + CraftingDead.ID + ".trauma." + packet.severity().name()
+          .toLowerCase(Locale.ROOT);
+      this.minecraft.gui.setOverlayMessage(new TranslatableComponent(translationKey), false);
     }
   }
 
@@ -472,6 +492,15 @@ public class ClientDist implements ModDist {
 
     var player = this.getPlayerExtension().orElse(null);
     if (player != null) {
+      if (this.traumaAimTicks > 0) {
+        this.traumaAimTicks--;
+        var severityMultiplier = 1.0F + this.lastTraumaSeverity.ordinal() * 0.25F;
+        this.cameraManager.randomRecoil(this.traumaAimStrength * severityMultiplier, false);
+      } else if (this.lastTraumaSeverity != TraumaSeverity.NONE) {
+        this.lastTraumaSeverity = TraumaSeverity.NONE;
+        this.traumaAimStrength = 0.0F;
+      }
+
       var gun = player.mainHandGun().orElse(null);
 
       var levelFocused = !this.minecraft.isPaused() && this.minecraft.getOverlay() == null

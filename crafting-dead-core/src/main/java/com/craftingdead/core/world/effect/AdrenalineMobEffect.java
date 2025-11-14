@@ -18,12 +18,15 @@
 
 package com.craftingdead.core.world.effect;
 
+import com.craftingdead.core.ServerConfig;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 
 public class AdrenalineMobEffect extends MobEffect {
 
@@ -31,6 +34,30 @@ public class AdrenalineMobEffect extends MobEffect {
     super(MobEffectCategory.BENEFICIAL, 0xFFD000);
     this.addAttributeModifier(Attributes.MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635",
         0.2D, AttributeModifier.Operation.MULTIPLY_TOTAL);
+  }
+
+  @Override
+  public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
+    // Reduce slowness effects based on configuration
+    var slownessEffect = livingEntity.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
+    if (slownessEffect != null) {
+      float reductionFactor = ServerConfig.instance.adrenalineSlowReductionFactor.get().floatValue();
+      if (reductionFactor > 0) {
+        // Reduce the duration of slowness effect
+        int newDuration = Math.max(1, (int) (slownessEffect.getDuration() * (1.0f - reductionFactor)));
+        livingEntity.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+        if (newDuration > 1) {
+          livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 
+              newDuration, slownessEffect.getAmplifier()));
+        }
+      }
+    }
+  }
+
+  @Override
+  public boolean isDurationEffectTick(int duration, int amplifier) {
+    // Apply slowness reduction every 20 ticks (1 second)
+    return duration % 20 == 0;
   }
 
   @Override

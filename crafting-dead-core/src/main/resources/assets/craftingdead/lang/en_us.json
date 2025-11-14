@@ -94,6 +94,9 @@
 
   "message.switch_fire_mode": "Switched to %s",
   "message.low_health": "%1$s's health is too low",
+  "message.craftingdead.trauma.minor": "Minor head trauma",
+  "message.craftingdead.trauma.moderate": "Moderate head trauma",
+  "message.craftingdead.trauma.severe": "Severe head trauma",
 
   "fire_mode.auto":"AUTO",
   "fire_mode.semi":"SEMI",
@@ -422,6 +425,10 @@
   "hat.immune_to_flashes": "Immune to flashes",
   "hat.immune_to_gas": "Immune to gas",
   "hat.has_night_vision": "Has night vision ability",
+  "equipment.absorption": "Ballistic absorption: ",
+  "equipment.stopping_power": "Stopping power: ",
+  "equipment.stun_threshold": "Stun threshold: ",
+  "equipment.durability_per_energy": "Durability loss per energy: ",
   "remote_detonator.information": "Right click to remotely detonate explosives within %d meters",
   "clothing.protection.level": "Protection Level",
   "clothing.casual": "Low",
@@ -429,6 +436,8 @@
   "clothing.military": "High",
   "clothing.movement_speed": "Movement speed: ",
   "clothing.immune_to_fire": "Immune to fire",
+  "clothing.damage_reduction": "Damage reduction: ",
+  "clothing.bleed_infection_reduction": "Bleed & infection reduction: ",
   "magazine.armor_penetration": "Armor penetration: ",
   "magazine.amount": "Amount: ",
   "magazine.entity_hit_recovery_chance": "Entity hit recovery chance: ",
@@ -467,5 +476,19 @@
   "dirty_rag.information": "Worn cloth",
   "bloody_rag.information": "Stained cloth",
   "clean_rag.information": "Stops bleeding",
-  "parachute.information": "Slows descent for safe landing"
+  "parachute.information": "Slows descent for safe landing",
+
+  "medical.use_duration": "Use Time:",
+  "medical.healing": "Healing:",
+  "medical.effect_duration": "Effect Duration:",
+  "medical.bleeding_stop": "Stops Bleeding",
+  "medical.bleeding_stop_chance": "Bleeding Stop Chance:",
+  "medical.infection_reduction_chance": "Infection Reduction Chance:",
+  "medical.trauma_reduction": "Trauma Reduction:",
+  "medical.adrenaline.speed_boost": "Speed Boost",
+  "medical.adrenaline.absorption": "Absorption Hearts",
+  "medical.adrenaline.aim_sway_reduction": "Aim Sway Reduction:",
+  "medical.adrenaline.slow_reduction": "Slowness Reduction:",
+  "medical.adrenaline.bleed_multiplier": "Bleed Treatment Effectiveness:",
+  "medical.syringe.empty": "Empty syringe for medical purposes"
 }

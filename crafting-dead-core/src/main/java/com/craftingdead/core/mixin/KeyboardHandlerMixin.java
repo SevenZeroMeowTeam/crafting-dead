@@ -30,8 +30,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(KeyboardHandler.class)
 public class KeyboardHandlerMixin {
 
-  @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
-  private void onKeyPress(long windowPointer, int key, int scancode, int action, int modifiers,
+  @SuppressWarnings("unused")
+  @Inject(method = "keyPress(JIIII)V", at = @At("HEAD"), cancellable = true)
+  private void onKeyPress(long ignoredWindowPointer, int key, int ignoredScancode, int action,
+      int ignoredModifiers,
       CallbackInfo ci) {
 
     var minecraft = Minecraft.getInstance();

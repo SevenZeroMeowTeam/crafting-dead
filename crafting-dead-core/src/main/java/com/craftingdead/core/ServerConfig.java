@@ -55,6 +55,38 @@ public class ServerConfig {
   public final ForgeConfigSpec.DoubleValue militaryClothingBleedAndInfectionReduction;
 
   // ================================================================================
+  // Medical Consumables Values
+  // ================================================================================
+
+  // Bandage
+  public final ForgeConfigSpec.DoubleValue bandageHealAmount;
+  public final ForgeConfigSpec.IntValue bandageDurationTicks;
+  public final ForgeConfigSpec.BooleanValue bandageRemovesBleeding;
+  public final ForgeConfigSpec.DoubleValue bandageBleedReductionChance;
+
+  // First Aid Kit
+  public final ForgeConfigSpec.DoubleValue firstAidKitHealAmount;
+  public final ForgeConfigSpec.IntValue firstAidKitDurationTicks;
+  public final ForgeConfigSpec.BooleanValue firstAidKitRemovesBleeding;
+  public final ForgeConfigSpec.DoubleValue firstAidKitInfectionReductionChance;
+  public final ForgeConfigSpec.IntValue firstAidKitTraumaSeverityReduction;
+
+  // Adrenaline Syringe
+  public final ForgeConfigSpec.IntValue adrenalineDurationTicks;
+  public final ForgeConfigSpec.IntValue adrenalineCooldownTicks;
+  public final ForgeConfigSpec.DoubleValue adrenalineAimSwayReductionFactor;
+  public final ForgeConfigSpec.DoubleValue adrenalineSlowReductionFactor;
+  public final ForgeConfigSpec.DoubleValue adrenalineBleedChanceMultiplier;
+
+  // Blood Syringe
+  public final ForgeConfigSpec.DoubleValue bloodSyringeHealAmount;
+  public final ForgeConfigSpec.IntValue bloodSyringeDurationTicks;
+
+  // Clean Rag
+  public final ForgeConfigSpec.IntValue cleanRagDurationTicks;
+  public final ForgeConfigSpec.BooleanValue cleanRagRemovesBleeding;
+
+  // ================================================================================
   // Burst-fire Values
   // ================================================================================
 
@@ -231,6 +263,108 @@ public class ServerConfig {
           .translation("options.craftingdead.server.militaryClothingBleedAndInfectionReduction")
           .comment("Sets the percentage of bleed and infection chance reduction. Default is 30% (0.30)")
           .defineInRange("militaryBleedAndInfectionReduction", 0.30F, 0.00F, 1.00F);
+    }
+    builder.pop();
+
+    // Medical Consumables Values
+    builder
+        .comment("Values regarding medical consumables behavior")
+        .push("medical-consumables");
+    {
+      // Bandage configuration
+      this.bandageHealAmount = builder
+          .translation("options.craftingdead.server.medical.bandage.heal_amount")
+          .comment("Amount of health restored by bandages")
+          .defineInRange("bandageHealAmount", 2.0F, 0.0F, 20.0F);
+
+      this.bandageDurationTicks = builder
+          .translation("options.craftingdead.server.medical.bandage.duration_ticks")
+          .comment("Duration in ticks to use a bandage")
+          .defineInRange("bandageDurationTicks", 16, 1, 200);
+
+      this.bandageRemovesBleeding = builder
+          .translation("options.craftingdead.server.medical.bandage.removes_bleeding")
+          .comment("Whether bandages remove bleeding effect")
+          .define("bandageRemovesBleeding", false);
+
+      this.bandageBleedReductionChance = builder
+          .translation("options.craftingdead.server.medical.bandage.bleed_reduction_chance")
+          .comment("Chance to reduce bleeding when using bandage")
+          .defineInRange("bandageBleedReductionChance", 0.50F, 0.0F, 1.0F);
+
+      // First Aid Kit configuration
+      this.firstAidKitHealAmount = builder
+          .translation("options.craftingdead.server.medical.first_aid_kit.heal_amount")
+          .comment("Amount of health restored by first aid kit")
+          .defineInRange("firstAidKitHealAmount", 8.0F, 0.0F, 20.0F);
+
+      this.firstAidKitDurationTicks = builder
+          .translation("options.craftingdead.server.medical.first_aid_kit.duration_ticks")
+          .comment("Duration in ticks to use a first aid kit")
+          .defineInRange("firstAidKitDurationTicks", 40, 1, 400);
+
+      this.firstAidKitRemovesBleeding = builder
+          .translation("options.craftingdead.server.medical.first_aid_kit.removes_bleeding")
+          .comment("Whether first aid kits remove bleeding effect")
+          .define("firstAidKitRemovesBleeding", true);
+
+      this.firstAidKitInfectionReductionChance = builder
+          .translation("options.craftingdead.server.medical.first_aid_kit.infection_reduction_chance")
+          .comment("Chance to reduce infection when using first aid kit")
+          .defineInRange("firstAidKitInfectionReductionChance", 0.65F, 0.0F, 1.0F);
+
+      this.firstAidKitTraumaSeverityReduction = builder
+          .translation("options.craftingdead.server.medical.first_aid_kit.trauma_severity_reduction")
+          .comment("Number of trauma severity tiers reduced by first aid kit")
+          .defineInRange("firstAidKitTraumaSeverityReduction", 1, 0, 3);
+
+      // Adrenaline Syringe configuration
+      this.adrenalineDurationTicks = builder
+          .translation("options.craftingdead.server.medical.adrenaline.duration_ticks")
+          .comment("Duration in ticks for adrenaline effect")
+          .defineInRange("adrenalineDurationTicks", 20 * 20, 1, 20 * 300);
+
+      this.adrenalineCooldownTicks = builder
+          .translation("options.craftingdead.server.medical.adrenaline.cooldown_ticks")
+          .comment("Cooldown in ticks before adrenaline can be used again")
+          .defineInRange("adrenalineCooldownTicks", 20 * 120, 0, 20 * 600);
+
+      this.adrenalineAimSwayReductionFactor = builder
+          .translation("options.craftingdead.server.medical.adrenaline.aim_sway_reduction_factor")
+          .comment("Factor by which adrenaline reduces aim sway (1.0 = complete reduction)")
+          .defineInRange("adrenalineAimSwayReductionFactor", 1.0F, 0.0F, 1.0F);
+
+      this.adrenalineSlowReductionFactor = builder
+          .translation("options.craftingdead.server.medical.adrenaline.slow_reduction_factor")
+          .comment("Factor by which adrenaline reduces slowness effect")
+          .defineInRange("adrenalineSlowReductionFactor", 0.5F, 0.0F, 1.0F);
+
+      this.adrenalineBleedChanceMultiplier = builder
+          .translation("options.craftingdead.server.medical.adrenaline.bleed_chance_multiplier")
+          .comment("Multiplier for bleeding chance while under adrenaline effect")
+          .defineInRange("adrenalineBleedChanceMultiplier", 1.10F, 0.5F, 2.0F);
+
+      // Blood Syringe configuration
+      this.bloodSyringeHealAmount = builder
+          .translation("options.craftingdead.server.medical.blood_syringe.heal_amount")
+          .comment("Amount of health restored by blood syringe")
+          .defineInRange("bloodSyringeHealAmount", 4.0F, 0.0F, 20.0F);
+
+      this.bloodSyringeDurationTicks = builder
+          .translation("options.craftingdead.server.medical.blood_syringe.duration_ticks")
+          .comment("Duration in ticks to use a blood syringe")
+          .defineInRange("bloodSyringeDurationTicks", 16, 1, 200);
+
+      // Clean Rag configuration
+      this.cleanRagDurationTicks = builder
+          .translation("options.craftingdead.server.medical.clean_rag.duration_ticks")
+          .comment("Duration in ticks to use a clean rag")
+          .defineInRange("cleanRagDurationTicks", 16, 1, 200);
+
+      this.cleanRagRemovesBleeding = builder
+          .translation("options.craftingdead.server.medical.clean_rag.removes_bleeding")
+          .comment("Whether clean rags remove bleeding effect")
+          .define("cleanRagRemovesBleeding", true);
     }
     builder.pop();
 

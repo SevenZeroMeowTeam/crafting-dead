@@ -35,7 +35,9 @@ import com.craftingdead.core.network.message.play.SetFireModeMessage;
 import com.craftingdead.core.network.message.play.SyncGunContainerSlotMessage;
 import com.craftingdead.core.network.message.play.SyncGunEquipmentSlotMessage;
 import com.craftingdead.core.network.message.play.SyncLivingMessage;
+import com.craftingdead.core.network.message.play.SyncProtectionConfigMessage;
 import com.craftingdead.core.network.message.play.TriggerPressedMessage;
+import com.craftingdead.core.network.message.play.TraumaPacket;
 import com.craftingdead.core.network.message.play.ValidatePendingHitMessage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkDirection;
@@ -172,13 +174,27 @@ public enum NetworkChannel {
           .decoder(OpenCraftingMenuMessage::decode)
           .consumer(OpenCraftingMenuMessage::handle)
           .add();
+
+      simpleChannel
+          .messageBuilder(TraumaPacket.class, 0x13, NetworkDirection.PLAY_TO_CLIENT)
+          .encoder(TraumaPacket::encode)
+          .decoder(TraumaPacket::decode)
+          .consumer(TraumaPacket::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(SyncProtectionConfigMessage.class, 0x14, NetworkDirection.PLAY_TO_CLIENT)
+          .encoder(SyncProtectionConfigMessage::encode)
+          .decoder(SyncProtectionConfigMessage::decode)
+          .consumer(SyncProtectionConfigMessage::handle)
+          .add();
     }
   };
 
   /**
    * Network protocol version.
    */
-  private static final String NETWORK_VERSION = "0.0.1.0";
+    private static final String NETWORK_VERSION = "0.0.1.2";
   /**
    * Prevents re-registering messages.
    */

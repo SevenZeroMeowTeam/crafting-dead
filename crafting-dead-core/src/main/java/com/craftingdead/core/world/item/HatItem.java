@@ -19,9 +19,12 @@
 package com.craftingdead.core.world.item;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 import com.craftingdead.core.capability.CapabilityUtil;
+import com.craftingdead.core.trauma.ProtectionConfig;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.core.world.item.equipment.SimpleHat;
 import com.google.common.collect.ImmutableMultimap;
@@ -37,6 +40,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class HatItem extends EquipmentItem {
@@ -71,13 +75,13 @@ public class HatItem extends EquipmentItem {
       TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, world, lines, tooltipFlag);
     if (this.headshotReductionPercentage > 0.0F) {
-      Component percentageText =
-          new TextComponent(String.format("%.0f", this.headshotReductionPercentage * 100.0F) + "%")
-              .withStyle(ChatFormatting.RED);
+    Component percentageText =
+      new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f%%",
+        this.headshotReductionPercentage * 100.0F))).withStyle(ChatFormatting.RED);
 
       lines.add(new TranslatableComponent("hat.headshot_reduction")
           .withStyle(ChatFormatting.GRAY)
-          .append(percentageText));
+      .append(Objects.requireNonNull(percentageText)));
     }
     if (this.immuneToFlashes) {
       lines.add(new TranslatableComponent("hat.immune_to_flashes")
@@ -91,6 +95,42 @@ public class HatItem extends EquipmentItem {
       lines.add(new TranslatableComponent("hat.has_night_vision")
           .withStyle(ChatFormatting.GRAY));
     }
+
+  var itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+  if (itemId != null) {
+    var profile = ProtectionConfig.get().helmetProfile(itemId);
+    if (!profile.isEmpty()) {
+    Component absorptionText =
+      new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f%%",
+        profile.absorption() * 100.0F))).withStyle(ChatFormatting.RED);
+    lines.add(new TranslatableComponent("equipment.absorption")
+      .withStyle(ChatFormatting.GRAY)
+      .append(Objects.requireNonNull(absorptionText)));
+
+    Component stoppingPowerText =
+      new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f",
+        profile.stoppingPower()))).withStyle(ChatFormatting.RED);
+    lines.add(new TranslatableComponent("equipment.stopping_power")
+      .withStyle(ChatFormatting.GRAY)
+      .append(Objects.requireNonNull(stoppingPowerText)));
+
+    if (profile.stunThreshold() > 0.0F) {
+      Component stunThresholdText =
+        new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f",
+          profile.stunThreshold()))).withStyle(ChatFormatting.RED);
+      lines.add(new TranslatableComponent("equipment.stun_threshold")
+        .withStyle(ChatFormatting.GRAY)
+        .append(Objects.requireNonNull(stunThresholdText)));
+    }
+
+    Component durabilityText =
+      new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.2f",
+        profile.durabilityPerEnergy()))).withStyle(ChatFormatting.RED);
+    lines.add(new TranslatableComponent("equipment.durability_per_energy")
+      .withStyle(ChatFormatting.GRAY)
+      .append(Objects.requireNonNull(durabilityText)));
+    }
+  }
   }
 
   @Override
@@ -116,7 +156,9 @@ public class HatItem extends EquipmentItem {
     private boolean waterBreathing;
 
     public Properties attributeModifier(Attribute attribute, AttributeModifier modifier) {
-      this.attributeModifiers.put(attribute, modifier);
+      this.attributeModifiers.put(
+          Objects.requireNonNull(attribute),
+          Objects.requireNonNull(modifier));
       return this;
     }
 

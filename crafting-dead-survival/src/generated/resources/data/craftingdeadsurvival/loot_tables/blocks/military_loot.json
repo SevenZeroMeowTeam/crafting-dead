@@ -43,12 +43,17 @@
         {
           "type": "minecraft:item",
           "weight": 10,
+          "name": "craftingdeadsurvival:water_canteen"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 10,
           "name": "craftingdeadsurvival:empty_flask"
         },
         {
           "type": "minecraft:item",
           "weight": 10,
-          "name": "craftingdeadsurvival:water_canteen"
+          "name": "craftingdeadsurvival:flask"
         },
         {
           "type": "minecraft:item",

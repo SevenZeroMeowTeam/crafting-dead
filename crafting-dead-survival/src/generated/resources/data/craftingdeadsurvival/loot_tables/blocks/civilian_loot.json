@@ -618,6 +618,11 @@
         {
           "type": "minecraft:item",
           "weight": 15,
+          "name": "craftingdeadsurvival:empty_flask"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 15,
           "name": "craftingdeadsurvival:flask"
         },
         {
@@ -709,11 +714,6 @@
           "type": "minecraft:item",
           "weight": 15,
           "name": "craftingdeadsurvival:zombie_energy"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 15,
-          "name": "craftingdeadsurvival:empty_flask"
         },
         {
           "type": "minecraft:item",

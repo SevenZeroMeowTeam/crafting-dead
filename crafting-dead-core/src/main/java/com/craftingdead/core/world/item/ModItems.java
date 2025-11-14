@@ -21,6 +21,7 @@ package com.craftingdead.core.world.item;
 import com.craftingdead.core.CommonConfig;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.ServerConfig;
+import com.craftingdead.core.trauma.ProtectionConfig;
 import com.craftingdead.core.client.animation.gun.InspectAnimation;
 import com.craftingdead.core.client.animation.gun.ReloadAnimation;
 import com.craftingdead.core.client.animation.gun.ShootAnimation;
@@ -43,6 +44,8 @@ import com.craftingdead.core.world.item.gun.aimable.AimableGunItem;
 import com.craftingdead.core.world.item.gun.attachment.Attachments;
 import com.craftingdead.core.world.item.gun.minigun.MinigunItem;
 import com.craftingdead.core.world.item.gun.skin.Skins;
+import com.craftingdead.core.world.item.MedicalItem;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -1928,15 +1931,53 @@ public class ModItems {
               .stacksTo(1)
               .tab(COMBAT_TAB)));
 
+    public static void contributeProtectionMappings(ProtectionConfig.Builder builder) {
+        builder.helmet(BLUE_HARD_HAT, "hard_hat");
+        builder.helmet(GREEN_HARD_HAT, "hard_hat");
+        builder.helmet(ORANGE_HARD_HAT, "hard_hat");
+        builder.helmet(YELLOW_HARD_HAT, "hard_hat");
+
+        builder.helmet(ARMY_HELMET, "military_helmet");
+        builder.helmet(GREEN_ARMY_HELMET, "military_helmet");
+        builder.helmet(CAMO_HELMET, "military_helmet");
+        builder.helmet(COMBAT_BDU_HELMET, "military_helmet");
+        builder.helmet(GREY_ARMY_HELMET, "military_helmet");
+        builder.helmet(WINTER_MILITARY_HELMET, "military_helmet");
+
+        builder.helmet(SPETSNAZ_HELMET, "ballistic_helmet");
+        builder.helmet(BLACK_BALLISTIC_HAT, "ballistic_helmet");
+        builder.helmet(GREEN_BALLISTIC_HELMET, "ballistic_helmet");
+
+        builder.helmet(RIOT_HAT, "riot_helmet");
+        builder.helmet(JUGGERNAUT_HELMET, "juggernaut_helmet");
+
+        builder.vest(BLACK_TACTICAL_VEST, "tactical_vest");
+        builder.vest(GREEN_TACTICAL_VEST, "tactical_vest");
+        builder.vest(GREY_TACTICAL_VEST, "tactical_vest");
+        builder.vest(TAN_TACTICAL_VEST, "tactical_vest");
+        builder.vest(GHILLIE_TACTICAL_VEST, "tactical_vest");
+        builder.vest(RIOT_VEST, "riot_vest");
+
+        builder.cosmeticHelmet(BEANIE_HAT);
+        builder.cosmeticHelmet(GAS_MASK);
+        builder.cosmeticHelmet(PILOT_HELMET);
+        builder.cosmeticHelmet(PAYDAY_MASK);
+        builder.cosmeticHelmet(PAYDAY2_MASK);
+        builder.cosmeticHelmet(SANTA_HAT);
+        builder.cosmeticHelmet(HAZMAT_HAT);
+        builder.cosmeticHelmet(MILITARY_HAZMAT_HAT);
+        builder.cosmeticHelmet(NV_GOGGLES_HAT);
+    }
+
   // ================================================================================
   // Medical
   // ================================================================================
 
   public static final RegistryObject<ActionItem> FIRST_AID_KIT =
       deferredRegister.register("first_aid_kit",
-          () -> new ActionItem(ActionTypes.USE_FIRST_AID_KIT, new Item.Properties()
+          () -> new MedicalItem(ActionTypes.USE_FIRST_AID_KIT, new Item.Properties()
               .stacksTo(3)
-              .tab(MEDICAL_TAB)));
+              .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.FIRST_AID_KIT));
 
   public static final RegistryObject<Item> DIRTY_RAG =
       deferredRegister.register("dirty_rag",
@@ -1952,33 +1993,33 @@ public class ModItems {
 
   public static final RegistryObject<Item> CLEAN_RAG =
       deferredRegister.register("clean_rag",
-      () -> new ActionItem(ActionTypes.USE_CLEAN_RAG, new Item.Properties()
+      () -> new MedicalItem(ActionTypes.USE_CLEAN_RAG, new Item.Properties()
           .stacksTo(3)
-          .tab(MEDICAL_TAB)));
+          .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.CLEAN_RAG));
 
   public static final RegistryObject<ActionItem> ADRENALINE_SYRINGE =
       deferredRegister.register("adrenaline_syringe",
-          () -> new ActionItem(ActionTypes.USE_ADRENALINE_SYRINGE, new Item.Properties()
+          () -> new MedicalItem(ActionTypes.USE_ADRENALINE_SYRINGE, new Item.Properties()
               .stacksTo(3)
-              .tab(MEDICAL_TAB)));
+              .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.ADRENALINE_SYRINGE));
 
   public static final RegistryObject<ActionItem> SYRINGE =
       deferredRegister.register("syringe",
-          () -> new ActionItem(ActionTypes.USE_SYRINGE, new Item.Properties()
+          () -> new MedicalItem(ActionTypes.USE_SYRINGE, new Item.Properties()
               .stacksTo(3)
-              .tab(MEDICAL_TAB)));
+              .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.SYRINGE));
 
   public static final RegistryObject<ActionItem> BLOOD_SYRINGE =
       deferredRegister.register("blood_syringe",
-          () -> new ActionItem(ActionTypes.USE_BLOOD_SYRINGE, new Item.Properties()
+          () -> new MedicalItem(ActionTypes.USE_BLOOD_SYRINGE, new Item.Properties()
               .stacksTo(3)
-              .tab(MEDICAL_TAB)));
+              .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.BLOOD_SYRINGE));
 
   public static final RegistryObject<ActionItem> BANDAGE =
       deferredRegister.register("bandage",
-          () -> new ActionItem(ActionTypes.USE_BANDAGE, new Item.Properties()
+          () -> new MedicalItem(ActionTypes.USE_BANDAGE, new Item.Properties()
               .stacksTo(3)
-              .tab(MEDICAL_TAB)));
+              .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.BANDAGE));
 
   // ================================================================================
   // Backpacks

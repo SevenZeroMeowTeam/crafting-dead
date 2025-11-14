@@ -772,11 +772,11 @@ public static final RegistryObject<BlockItem> CONCRETE_ROAD_BLOCK_WITH_RIPPED_ST
 
 public static final RegistryObject<BlockItem> ROAD_BARRICADE_1 =
     deferredRegister.register("road_barricade_1",
-        () -> new BlockItem(DecorationBlocks.ROAD_BARRICADE_3.get(),
+        () -> new BlockItem(DecorationBlocks.ROAD_BARRICADE_1.get(),
             new Item.Properties().tab(TAB)));
 public static final RegistryObject<BlockItem> ROAD_BARRICADE_2 =
     deferredRegister.register("road_barricade_2",
-        () -> new BlockItem(DecorationBlocks.ROAD_BARRICADE_3.get(),
+        () -> new BlockItem(DecorationBlocks.ROAD_BARRICADE_2.get(),
             new Item.Properties().tab(TAB)));
 public static final RegistryObject<BlockItem> ROAD_BARRICADE_3 =
     deferredRegister.register("road_barricade_3",

@@ -18,6 +18,8 @@
 
 package com.craftingdead.core;
 
+import java.util.Optional;
+
 import com.craftingdead.core.data.tags.ModBlockTagsProvider;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import com.craftingdead.core.data.tags.ModItemTagsProvider;
 import com.craftingdead.core.event.CombatPickupEvent;
 import com.craftingdead.core.network.NetworkChannel;
 import com.craftingdead.core.network.message.play.SyncLivingMessage;
+import com.craftingdead.core.network.message.play.SyncProtectionConfigMessage;
 import com.craftingdead.core.particle.ModParticleTypes;
 import com.craftingdead.core.server.ServerDist;
 import com.craftingdead.core.sounds.ModSoundEvents;
@@ -53,6 +56,8 @@ import com.craftingdead.core.world.item.gun.attachment.Attachments;
 import com.craftingdead.core.world.item.gun.magazine.Magazine;
 import com.craftingdead.core.world.item.gun.skin.Paint;
 import com.craftingdead.core.world.item.scope.Scope;
+import com.craftingdead.core.telemetry.TelemetryManager;
+import com.craftingdead.core.trauma.ProtectionConfig;
 import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import net.minecraft.data.DataGenerator;
@@ -89,11 +94,14 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.JarVersionLookupHandler;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.network.PacketDistributor;
+import com.craftingdead.core.trauma.TraumaHandler;
 
 @Mod(CraftingDead.ID)
 public class CraftingDead {
@@ -127,6 +135,8 @@ public class CraftingDead {
     modEventBus.addListener(this::handleCommonSetup);
     modEventBus.addListener(this::handleGatherData);
     modEventBus.addListener(this::handleRegisterCapabilities);
+  modEventBus.addListener(this::handleConfigLoading);
+  modEventBus.addListener(this::handleConfigReloading);
 
     ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.configSpec);
     ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.configSpec);
@@ -148,6 +158,9 @@ public class CraftingDead {
     GunTriggerPredicates.deferredRegister.register(modEventBus);
 
     MinecraftForge.EVENT_BUS.register(this);
+    MinecraftForge.EVENT_BUS.register(TraumaHandler.INSTANCE);
+
+    ProtectionConfig.load();
   }
 
   public ModDist getModDist() {
@@ -171,6 +184,8 @@ public class CraftingDead {
 
   private void handleCommonSetup(FMLCommonSetupEvent event) {
     logger.info("Starting Crafting Dead, version {}", VERSION);
+    TelemetryManager.initialize(ID, VERSION, Optional::empty, null,
+        scope -> scope.setTag("craftingdead.version", VERSION));
     NetworkChannel.loadChannels();
     event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(ModItems.SYRINGE.get()),
         Ingredient.of(Items.REDSTONE),
@@ -198,6 +213,24 @@ public class CraftingDead {
     event.register(Magazine.class);
     event.register(Scope.class);
     event.register(Paint.class);
+  }
+
+  private void handleConfigLoading(ModConfigEvent.Loading event) {
+    if (event.getConfig().getModId().equals(ID)) {
+      ProtectionConfig.load();
+      if (event.getConfig().getType() == ModConfig.Type.SERVER) {
+        this.syncProtectionConfigToAllPlayers();
+      }
+    }
+  }
+
+  private void handleConfigReloading(ModConfigEvent.Reloading event) {
+    if (event.getConfig().getModId().equals(ID)) {
+      ProtectionConfig.load();
+      if (event.getConfig().getType() == ModConfig.Type.SERVER) {
+        this.syncProtectionConfigToAllPlayers();
+      }
+    }
   }
 
   // ================================================================================
@@ -391,6 +424,7 @@ public class CraftingDead {
   @SubscribeEvent
   public void handlePlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
     startTracking(event.getPlayer(), (ServerPlayer) event.getPlayer());
+    this.syncProtectionConfig((ServerPlayer) event.getPlayer());
   }
 
   @SubscribeEvent
@@ -407,5 +441,22 @@ public class CraftingDead {
           PacketDistributor.PLAYER.with(() -> playerEntity),
           new SyncLivingMessage(trackedLiving.entity().getId(), data));
     });
+  }
+
+  private void syncProtectionConfig(ServerPlayer player) {
+    NetworkChannel.PLAY.getSimpleChannel().send(
+        PacketDistributor.PLAYER.with(() -> player),
+        new SyncProtectionConfigMessage(ProtectionConfig.getSerializedConfig()));
+  }
+
+  private void syncProtectionConfigToAllPlayers() {
+    var server = ServerLifecycleHooks.getCurrentServer();
+    if (server == null) {
+      return;
+    }
+    String serializedConfig = ProtectionConfig.getSerializedConfig();
+    server.getPlayerList().getPlayers().forEach(player -> NetworkChannel.PLAY.getSimpleChannel()
+        .send(PacketDistributor.PLAYER.with(() -> player),
+            new SyncProtectionConfigMessage(serializedConfig)));
   }
 }

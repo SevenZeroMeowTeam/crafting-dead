@@ -19,6 +19,7 @@
 package com.craftingdead.core.world.action;
 
 import com.craftingdead.core.CraftingDead;
+import com.craftingdead.core.ServerConfig;
 import com.craftingdead.core.tags.ModItemTags;
 import com.craftingdead.core.world.action.item.BlockItemActionType;
 import com.craftingdead.core.world.action.item.EntityItemActionType;
@@ -129,7 +130,9 @@ public class ActionTypes {
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(ModItems.FIRST_AID_KIT)
               .setFreezeMovement(true)
-              .effect(() -> new MobEffectInstance(MobEffects.HEAL, 1, 1))
+              .duration(ServerConfig.instance.firstAidKitDurationTicks.get())
+              .effect(() -> new MobEffectInstance(MobEffects.HEAL, 1, 
+                  (int) Math.max(0, ServerConfig.instance.firstAidKitHealAmount.get().floatValue() - 1)))
               .build());
 
   public static final RegistryObject<EntityItemActionType<?>> USE_ADRENALINE_SYRINGE =
@@ -139,25 +142,28 @@ public class ActionTypes {
               .duration(16)
               .resultItem(ModItems.SYRINGE)
               .useResultItemInCreative(false)
-              .effect(() -> new MobEffectInstance(ModMobEffects.ADRENALINE.get(), 20 * 20, 1))
+              .effect(() -> new MobEffectInstance(ModMobEffects.ADRENALINE.get(), 
+                  ServerConfig.instance.adrenalineDurationTicks.get(), 1))
               .build());
 
   public static final RegistryObject<EntityItemActionType<?>> USE_BLOOD_SYRINGE =
       deferredRegister.register("use_blood_syringe",
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(ModItems.BLOOD_SYRINGE)
-              .duration(16)
+              .duration(ServerConfig.instance.bloodSyringeDurationTicks.get())
               .resultItem(ModItems.SYRINGE)
               .useResultItemInCreative(false)
-              .effect(() -> new MobEffectInstance(MobEffects.HEAL, 1, 0))
+              .effect(() -> new MobEffectInstance(MobEffects.HEAL, 1, 
+                  (int) Math.max(0, ServerConfig.instance.bloodSyringeHealAmount.get().floatValue() - 1)))
               .build());
 
   public static final RegistryObject<EntityItemActionType<?>> USE_BANDAGE =
       deferredRegister.register("use_bandage",
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(ModItems.BANDAGE)
-              .duration(16)
-              .effect(() -> new MobEffectInstance(MobEffects.HEAL, 1, 0))
+              .duration(ServerConfig.instance.bandageDurationTicks.get())
+              .effect(() -> new MobEffectInstance(MobEffects.HEAL, 1, 
+                  (int) Math.max(0, ServerConfig.instance.bandageHealAmount.get().floatValue() - 1)))
               .build());
 
   public static final RegistryObject<EntityItemActionType<?>> USE_CLEAN_RAG =
@@ -165,7 +171,7 @@ public class ActionTypes {
           () -> EntityItemActionType
               .builder(TargetSelector.SELF_OR_OTHERS.hasEffect(ModMobEffects.BLEEDING))
               .forItem(ModItems.CLEAN_RAG)
-              .duration(16)
+              .duration(ServerConfig.instance.cleanRagDurationTicks.get())
               .resultItem(ModItems.BLOODY_RAG)
               .build());
 

@@ -20,8 +20,11 @@ package com.craftingdead.core.world.item;
 
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
+import com.craftingdead.core.trauma.ProtectionConfig;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -49,6 +52,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class StorageItem extends EquipmentItem {
 
@@ -110,6 +114,44 @@ public class StorageItem extends EquipmentItem {
   public void appendHoverText(ItemStack itemStack, Level world, List<Component> lines,
       TooltipFlag tooltipFlag) {
     super.appendHoverText(itemStack, world, lines, tooltipFlag);
+
+    if (this.slot == Equipment.Slot.VEST) {
+      var itemId = ForgeRegistries.ITEMS.getKey(itemStack.getItem());
+      if (itemId != null) {
+        var profile = ProtectionConfig.get().vestProfile(itemId);
+        if (!profile.isEmpty()) {
+          var absorptionText = new TextComponent(Objects.requireNonNull(
+                  String.format(Locale.ROOT, "%.0f%%", profile.absorption() * 100.0F)))
+                      .withStyle(ChatFormatting.RED);
+          lines.add(new TranslatableComponent("equipment.absorption")
+              .withStyle(ChatFormatting.GRAY)
+              .append(Objects.requireNonNull(absorptionText)));
+
+          var stoppingPowerText = new TextComponent(Objects.requireNonNull(
+                  String.format(Locale.ROOT, "%.0f", profile.stoppingPower())))
+                      .withStyle(ChatFormatting.RED);
+          lines.add(new TranslatableComponent("equipment.stopping_power")
+              .withStyle(ChatFormatting.GRAY)
+              .append(Objects.requireNonNull(stoppingPowerText)));
+
+          if (profile.stunThreshold() > 0.0F) {
+            var stunThresholdText = new TextComponent(Objects.requireNonNull(
+                    String.format(Locale.ROOT, "%.0f", profile.stunThreshold())))
+                        .withStyle(ChatFormatting.RED);
+            lines.add(new TranslatableComponent("equipment.stun_threshold")
+                .withStyle(ChatFormatting.GRAY)
+                .append(Objects.requireNonNull(stunThresholdText)));
+          }
+
+          var durabilityText = new TextComponent(Objects.requireNonNull(
+                  String.format(Locale.ROOT, "%.2f", profile.durabilityPerEnergy())))
+                      .withStyle(ChatFormatting.RED);
+          lines.add(new TranslatableComponent("equipment.durability_per_energy")
+              .withStyle(ChatFormatting.GRAY)
+              .append(Objects.requireNonNull(durabilityText)));
+        }
+      }
+    }
 
     itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         .ifPresent(itemHandler -> {
@@ -174,7 +216,9 @@ public class StorageItem extends EquipmentItem {
     private ItemHandlerMenuConstructor menuConstructor;
 
     public Properties attributeModifier(Attribute attribute, AttributeModifier modifier) {
-      this.attributeModifiers.put(attribute, modifier);
+      this.attributeModifiers.put(
+          Objects.requireNonNull(attribute),
+          Objects.requireNonNull(modifier));
       return this;
     }
 
