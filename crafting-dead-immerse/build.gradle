@@ -78,7 +78,6 @@ def lwjgl_natives = ['natives-windows', 'natives-linux', 'natives-macos']
 def skija_natives = ['skija-macos-x64', 'skija-macos-arm64', 'skija-linux', 'skija-windows']
 def releaseBuild = rootProject.extensions.extraProperties.has('releaseBuild') ?
     rootProject.extensions.extraProperties.get('releaseBuild') as Boolean : false
-def rocketConnectorProject = rootProject.findProject(':rocket-connector')
 
 configurations {
     lwjgl
@@ -107,10 +106,14 @@ if (!releaseBuild) {
 dependencies {
     implementation project(':crafting-dead-core')
 
+    def rocketConnectorProject = rootProject.findProject(':rocket-connector')
     if (rocketConnectorProject != null) {
         implementation rocketConnectorProject
     } else {
-        logger.lifecycle('rocket-connector project not present; skipping rocket dependency wiring for crafting-dead-immerse')
+    // Fall back to the published connector when the composite project is absent (e.g. CI checkout).
+    library group: 'net.rocketpowered', name: 'rocket-connector', version: '[0.0.8]'
+    jarJar group: 'net.rocketpowered', name: 'rocket-connector', version: '[0.0.8]'
+    minecraftLibrary group: 'net.rocketpowered', name: 'rocket-connector', version: '0.0.8'
     }
 
     library group: 'flare', name: 'flare-eventbus', version: '[2.0.1]'
@@ -160,16 +163,6 @@ if (releaseBuild) {
 }
 
 jarJar.enable()
-
-if (rocketConnectorProject == null) {
-    tasks.configureEach { task ->
-        if (task.name in ['compileJava', 'jarJar', 'classes', 'jar']) {
-            task.doFirst {
-                throw new org.gradle.api.GradleException('rocket-connector sources or artifacts are required to build crafting-dead-immerse. Please include the closed-source module locally before running this task.')
-            }
-        }
-    }
-}
 
 tasks.withType(Jar) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
