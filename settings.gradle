@@ -45,16 +45,14 @@ include 'crafting-dead-survival'
 include 'crafting-dead-decoration'
 include 'crafting-dead-worldguard'
 
-// Rocket modules - only include if not in CI environment
-if (!System.getenv('CI') && !System.getenv('GITHUB_ACTIONS')) {
-    include 'rocket-auth'
-    include 'rocket-common'
-    include 'rocket-connector'
-    include 'rocket-discord'
-    include 'rocket-gateway'
-    include 'rocket-placeholder'
-    include 'rocket-projects'
-    include 'rocket-sdk'
-    include 'rocket-service-common'
-    include 'rocket-social'
-}
+// Rocket modules
+include 'rocket-auth'
+include 'rocket-common'
+include 'rocket-connector'
+include 'rocket-discord'
+include 'rocket-gateway'
+include 'rocket-placeholder'
+include 'rocket-projects'
+include 'rocket-sdk'
+include 'rocket-service-common'
+include 'rocket-social'

@@ -162,32 +162,24 @@ public class MainMenuView extends ParentView {
   protected void added() {
     super.added();
     AtomicReference<Role> primaryRole = new AtomicReference<>();
-    try {
-      this.listener = Rocket.gameClientInterfaceFeed()
-          .flatMap(gateway -> gateway.getGameProfileFeed()
-              .doOnNext(__ -> primaryRole.set(null))
-              .flatMapIterable(GameProfile::roles)
-              .flatMap(gateway::getRoleFeed)
-              .doOnNext(role -> {
-                var newRole = primaryRole.updateAndGet(
-                    oldRole -> oldRole == null || role.compareTo(oldRole) > 0 ? role : oldRole);
-                this.roleTextView.setText(
-                    newRole == null ? TextComponent.EMPTY : new TextComponent(newRole.name()));
-              }))
-          .subscribe();
-    } catch (Exception e) {
-      // Rocket SDK not available - this is expected in CI/GitHub environments
-      // Set default role text
-      this.roleTextView.setText(TextComponent.EMPTY);
-    }
+    this.listener = Rocket.gameClientInterfaceFeed()
+        .flatMap(gateway -> gateway.getGameProfileFeed()
+            .doOnNext(__ -> primaryRole.set(null))
+            .flatMapIterable(GameProfile::roles)
+            .flatMap(gateway::getRoleFeed)
+            .doOnNext(role -> {
+              var newRole = primaryRole.updateAndGet(
+                  oldRole -> oldRole == null || role.compareTo(oldRole) > 0 ? role : oldRole);
+              this.roleTextView.setText(
+                  newRole == null ? TextComponent.EMPTY : new TextComponent(newRole.name()));
+            }))
+        .subscribe();
   }
 
   @Override
   protected void removed() {
     super.removed();
-    if (this.listener != null) {
-      this.listener.dispose();
-    }
+    this.listener.dispose();
   }
 
   private View createButton(ResourceLocation imageLocation, Properties properties,

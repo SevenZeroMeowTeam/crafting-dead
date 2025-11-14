@@ -3,21 +3,10 @@ plugins {
 }
 
 def rocketConnectorProject = rootProject.findProject(':rocket-connector')
-def rocketConnectorAvailable = false
-try {
-    if (rocketConnectorProject != null) {
-        // Try to access sourceSets to see if the project is properly configured
-        rocketConnectorProject.sourceSets
-        rocketConnectorAvailable = true
-    }
-} catch (Exception e) {
-    logger.lifecycle('rocket-connector project exists but is not properly configured; skipping rocket dependency wiring for crafting-dead-survival')
-}
-
-if (rocketConnectorAvailable) {
+if (rocketConnectorProject != null) {
     evaluationDependsOn(':rocket-connector')
 } else {
-    logger.lifecycle('rocket-connector project not present or not configured; skipping rocket dependency wiring for crafting-dead-survival')
+    logger.lifecycle('rocket-connector project not present; skipping rocket dependency wiring for crafting-dead-survival')
 }
 
 mixin {
@@ -48,7 +37,7 @@ minecraft {
                 craftingdeadimmerse {
                     source project(':crafting-dead-immerse').sourceSets.main
                 }
-                if (rocketConnectorAvailable) {
+                if (rocketConnectorProject != null) {
                     rocketconnector {
                         source project(':rocket-connector').sourceSets.main
                     }
@@ -78,7 +67,7 @@ minecraft {
                 craftingdeadimmerse {
                     source project(':crafting-dead-immerse').sourceSets.main
                 }
-                if (rocketConnectorAvailable) {
+                if (rocketConnectorProject != null) {
                     rocketconnector {
                         source project(':rocket-connector').sourceSets.main
                     }
@@ -111,7 +100,7 @@ minecraft {
                 craftingdeadimmerse {
                     source project(':crafting-dead-immerse').sourceSets.main
                 }
-                if (rocketConnectorAvailable) {
+                if (rocketConnectorProject != null) {
                     rocketconnector {
                         source project(':rocket-connector').sourceSets.main
                     }
@@ -125,7 +114,7 @@ dependencies {
     compileOnly project(':crafting-dead-core')
     compileOnly project(':crafting-dead-immerse')
     compileOnly project(':crafting-dead-decoration')
-    if (rocketConnectorAvailable) {
+    if (rocketConnectorProject != null) {
         compileOnly project(':rocket-connector')
     }
     minecraftLibrary project(path: ':crafting-dead-immerse', configuration: 'minecraftLibrary')
