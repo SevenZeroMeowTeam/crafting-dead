@@ -68,7 +68,7 @@ public final class YogaLayoutParent implements LayoutParent {
 
   @Override
   public void layout(float width, float height) {
-  Yoga.YGNodeMarkDirtyAndPropogateToDescendants(this.node);
+    Yoga.YGNodeMarkDirtyAndPropogateToDescendants(this.node);
     Yoga.YGNodeCalculateLayout(this.node, width, height, Yoga.YGDirectionLTR);
   }
 
