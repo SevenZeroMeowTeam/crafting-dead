@@ -30,24 +30,27 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.RangedAttackMob;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
-public class GunZombie extends Zombie implements RangedAttackMob {
+public class GunZombie extends ModZombie implements RangedAttackMob {
 
   private RangedAttackGoal rangedAttackGoal;
 
   private long triggerPressedStartTime;
 
-  public GunZombie(EntityType<? extends GunZombie> type, Level world) {
+  private final float accuracy;
+
+  public GunZombie(EntityType<? extends GunZombie> type, Level world, float accuracy) {
     super(type, world);
+    this.accuracy = accuracy;
   }
 
   @Override
   protected void registerGoals() {
     super.registerGoals();
-    this.rangedAttackGoal = new RangedAttackGoal(this, 1.0D, 40, 20F) {
+    this.rangedAttackGoal = new RangedAttackGoal(this, 1.0D, 40, this.getStopDistanceFromPlayer()) {
       @Override
       public boolean canUse() {
         return super.canUse() && GunZombie.this.getMainHandItem()
@@ -85,21 +88,34 @@ public class GunZombie extends Zombie implements RangedAttackMob {
           .ifPresent(living -> living.mainHandGun().ifPresent(gun -> {
             if (gun.isTriggerPressed()
                 && (!this.rangedAttackGoal.canContinueToUse() || (Util.getMillis()
-                    - this.triggerPressedStartTime > 1000 + this.random.nextInt(2000)))) {
-              gun.setTriggerPressed(living, false, true);
+                    - this.triggerPressedStartTime > 200 + this.random.nextInt(400)))) {
+              gun.setNPCTriggerPressed(living, false, true, this.accuracy);
             }
           }));
     }
   }
 
   @Override
-  public void performRangedAttack(LivingEntity livingEntity, float distance) {
+  public void performRangedAttack(@NotNull LivingEntity livingEntity, float distance) {
     if (!this.level.isClientSide()) {
       this.getCapability(LivingExtension.CAPABILITY)
           .ifPresent(living -> living.mainHandGun().ifPresent(gun -> {
             this.triggerPressedStartTime = Util.getMillis();
-            gun.setTriggerPressed(living, true, true);
+            gun.setNPCTriggerPressed(living, true, true, this.accuracy);
           }));
     }
+  }
+
+  @Override
+  public boolean isBaby() {
+    return false;
+  }
+
+  /**
+   *
+   * @return 1.0F = 1 Block
+   */
+  public float getStopDistanceFromPlayer() {
+    return 20.0F;
   }
 }

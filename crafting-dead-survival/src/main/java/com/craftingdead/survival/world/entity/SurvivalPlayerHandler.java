@@ -20,6 +20,7 @@ package com.craftingdead.survival.world.entity;
 
 import com.craftingdead.core.world.effect.ModMobEffects;
 import com.craftingdead.core.world.item.ClothingItem;
+import com.craftingdead.core.world.item.GunItem;
 import com.craftingdead.core.world.item.equipment.Equipment.Slot;
 import java.util.Objects;
 import java.util.Random;
@@ -108,11 +109,13 @@ public class SurvivalPlayerHandler implements PlayerHandler {
   @Override
   public boolean handleHurt(DamageSource source, float amount) {
     if (source.getEntity() instanceof Zombie) {
-      if (!this.player.getItemInSlot(Slot.CLOTHING).isEmpty()) {
-        this.infect(Objects.requireNonNull(ClothingItem.getClothingItem(this.player.entity()))
-            .calculateBleedAndInfectionChance(BASE_INFECTION_CHANCE));
-      } else {
-        this.infect(BASE_INFECTION_CHANCE);
+      if (!(((Zombie) source.getEntity()).getMainHandItem().getItem() instanceof GunItem)) {
+        if (!this.player.getItemInSlot(Slot.CLOTHING).isEmpty()) {
+          this.infect(Objects.requireNonNull(ClothingItem.getClothingItem(this.player.entity()))
+              .calculateBleedAndInfectionChance(BASE_INFECTION_CHANCE));
+        } else {
+          this.infect(BASE_INFECTION_CHANCE);
+        }
       }
     }
     return false;

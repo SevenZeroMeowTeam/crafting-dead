@@ -20,8 +20,11 @@ package com.craftingdead.survival.world.entity.extension;
 
 import com.craftingdead.core.world.entity.extension.BasicLivingExtension;
 import com.craftingdead.core.world.item.ModItems;
+import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.core.world.item.gun.Gun;
 import com.craftingdead.core.world.item.gun.ammoprovider.RefillableAmmoProvider;
+import com.craftingdead.survival.CraftingDeadSurvival;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
 
@@ -45,7 +48,24 @@ public class GiantZombieHandler extends ZombieHandler {
   }
 
   @Override
-  protected ItemStack getHatStack() {
+  protected ItemStack createHatItem() {
     return ModItems.ARMY_HELMET.get().getDefaultInstance();
+  }
+
+  @Override
+  public void applyEquipmentDropChances() {
+    var zombie = extension.entity();
+    extension.setEquipmentDropChance(Equipment.Slot.CLOTHING,
+        CraftingDeadSurvival.serverConfig.giantZombieClothingDropChance.get().floatValue());
+    extension.setEquipmentDropChance(Equipment.Slot.HAT,
+        CraftingDeadSurvival.serverConfig.giantZombieHatDropChance.get().floatValue());
+    extension.setEquipmentDropChance(Equipment.Slot.VEST,
+        CraftingDeadSurvival.serverConfig.giantZombieVestDropChance.get().floatValue());
+    extension.setEquipmentDropChance(Equipment.Slot.BACKPACK,
+        CraftingDeadSurvival.serverConfig.giantZombieBackpackDropChance.get().floatValue());
+    zombie.setDropChance(EquipmentSlot.MAINHAND,
+        CraftingDeadSurvival.serverConfig.giantZombieHandDropChance.get().floatValue());
+    zombie.setDropChance(EquipmentSlot.OFFHAND,
+        CraftingDeadSurvival.serverConfig.giantZombieHandDropChance.get().floatValue());
   }
 }

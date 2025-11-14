@@ -18,6 +18,24 @@
 
 package com.craftingdead.survival;
 
+import com.craftingdead.survival.world.entity.extension.ALFAZombieHandler;
+import com.craftingdead.survival.world.entity.extension.BountyHunterZombieHandler;
+import com.craftingdead.survival.world.entity.extension.DesertRaiderZombieHandler;
+import com.craftingdead.survival.world.entity.extension.FirefighterZombieHandler;
+import com.craftingdead.survival.world.entity.extension.HazmatZombieHandler;
+import com.craftingdead.survival.world.entity.extension.JuggernautZombieHandler;
+import com.craftingdead.survival.world.entity.extension.MinerZombieHandler;
+import com.craftingdead.survival.world.entity.extension.NinjaZombieHandler;
+import com.craftingdead.survival.world.entity.extension.PilotZombieHandler;
+import com.craftingdead.survival.world.entity.extension.ScoutZombieHandler;
+import com.craftingdead.survival.world.entity.extension.SniperZombieHandler;
+import com.craftingdead.survival.world.entity.extension.SoldierZombieHandler;
+import com.craftingdead.survival.world.entity.extension.SwatZombieHandler;
+import com.craftingdead.survival.world.entity.monster.NinjaZombieEntity;
+import com.craftingdead.survival.world.entity.monster.PilotZombieEntity;
+import com.craftingdead.survival.world.entity.monster.ScoutZombieEntity;
+import com.craftingdead.survival.world.entity.monster.SniperZombieEntity;
+import com.craftingdead.survival.world.entity.monster.SoldierZombieEntity;
 import java.util.Optional;
 import java.util.Random;
 
@@ -202,6 +220,32 @@ public class CraftingDeadSurvival {
         FastZombie.createAttributes().build());
     event.put(SurvivalEntityTypes.GIANT_ZOMBIE.get(),
         GiantZombie.createAttributes().build());
+    event.put(SurvivalEntityTypes.SCOUT_ZOMBIE.get(),
+        ScoutZombieEntity.createAttributes().build());
+    event.put(SurvivalEntityTypes.SNIPER_ZOMBIE.get(),
+        SniperZombieEntity.createAttributes().build());
+    event.put(SurvivalEntityTypes.PILOT_ZOMBIE.get(),
+        PilotZombieEntity.createAttributes().build());
+    event.put(SurvivalEntityTypes.SOLDIER_ZOMBIE.get(),
+        SoldierZombieEntity.createAttributes().build());
+    event.put(SurvivalEntityTypes.NINJA_ZOMBIE.get(),
+        NinjaZombieEntity.createAttributes().build());
+    event.put(SurvivalEntityTypes.ALFA_ZOMBIE.get(),
+        WeakZombie.createAttributes().build());
+    event.put(SurvivalEntityTypes.BOUNTY_HUNTER_ZOMBIE.get(),
+        WeakZombie.createAttributes().build());
+    event.put(SurvivalEntityTypes.DESERT_RAIDER_ZOMBIE.get(),
+        WeakZombie.createAttributes().build());
+    event.put(SurvivalEntityTypes.FIREFIGHTER_ZOMBIE.get(),
+        WeakZombie.createAttributes().build());
+    event.put(SurvivalEntityTypes.HAZMAT_ZOMBIE.get(),
+        WeakZombie.createAttributes().build());
+    event.put(SurvivalEntityTypes.JUGGERNAUT_ZOMBIE.get(),
+        WeakZombie.createAttributes().build());
+    event.put(SurvivalEntityTypes.MINER_ZOMBIE.get(),
+        WeakZombie.createAttributes().build());
+    event.put(SurvivalEntityTypes.SWAT_ZOMBIE.get(),
+        WeakZombie.createAttributes().build());
     event.put(SurvivalEntityTypes.POLICE_ZOMBIE.get(),
         PoliceZombieEntity.createAttributes().build());
     event.put(SurvivalEntityTypes.TANK_ZOMBIE.get(),
@@ -257,19 +301,23 @@ public class CraftingDeadSurvival {
               2, AttributeModifier.Operation.ADDITION));
 
       var extension = LivingExtension.getOrThrow(zombie);
-      if (extension == null) {
-        logger.warn("LivingExtension capability is not present on {}", this.toString());
-        return;
-      }
 
-      extension.setEquipmentDropChance(Equipment.Slot.CLOTHING,
-          serverConfig.zombieClothingDropChance.get().floatValue());
-      extension.setEquipmentDropChance(Equipment.Slot.HAT,
-          serverConfig.zombieHatDropChance.get().floatValue());
-      zombie.setDropChance(EquipmentSlot.MAINHAND,
-          serverConfig.zombieHandDropChance.get().floatValue());
-      zombie.setDropChance(EquipmentSlot.OFFHAND,
-          serverConfig.zombieHandDropChance.get().floatValue());
+      extension.getHandler(ZombieHandler.TYPE)
+          .ifPresentOrElse(ZombieHandler::applyEquipmentDropChances, () -> {
+            extension.setEquipmentDropChance(Equipment.Slot.CLOTHING,
+                serverConfig.zombieClothingDropChance.get().floatValue());
+            extension.setEquipmentDropChance(Equipment.Slot.HAT,
+                serverConfig.zombieHatDropChance.get().floatValue());
+            extension.setEquipmentDropChance(Equipment.Slot.VEST,
+                serverConfig.zombieVestDropChance.get().floatValue());
+            extension.setEquipmentDropChance(Equipment.Slot.BACKPACK,
+                serverConfig.zombieBackpackDropChance.get().floatValue());
+            zombie.setDropChance(EquipmentSlot.MAINHAND,
+                serverConfig.zombieHandDropChance.get().floatValue());
+            zombie.setDropChance(EquipmentSlot.OFFHAND,
+                serverConfig.zombieHandDropChance.get().floatValue());
+              }
+          );
     }
   }
 
@@ -322,6 +370,32 @@ public class CraftingDeadSurvival {
         handler = new GiantZombieHandler(extension);
       } else if (zombie.getType() == SurvivalEntityTypes.POLICE_ZOMBIE.get()) {
         handler = new PoliceZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.SCOUT_ZOMBIE.get()) {
+        handler = new ScoutZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.SNIPER_ZOMBIE.get()) {
+        handler = new SniperZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.PILOT_ZOMBIE.get()) {
+        handler = new PilotZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.SOLDIER_ZOMBIE.get()) {
+        handler = new SoldierZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.NINJA_ZOMBIE.get()) {
+        handler = new NinjaZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.ALFA_ZOMBIE.get()) {
+        handler = new ALFAZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.BOUNTY_HUNTER_ZOMBIE.get()) {
+        handler = new BountyHunterZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.DESERT_RAIDER_ZOMBIE.get()) {
+        handler = new DesertRaiderZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.FIREFIGHTER_ZOMBIE.get()) {
+        handler = new FirefighterZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.HAZMAT_ZOMBIE.get()) {
+        handler = new HazmatZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.JUGGERNAUT_ZOMBIE.get()) {
+        handler = new JuggernautZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.MINER_ZOMBIE.get()) {
+        handler = new MinerZombieHandler(extension);
+      } else if (zombie.getType() == SurvivalEntityTypes.SWAT_ZOMBIE.get()) {
+        handler = new SwatZombieHandler(extension);
       } else {
         handler = new ZombieHandler(extension);
       }

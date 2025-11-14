@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "craftingdead:acr_magazine",
+    "craftingdead:combat_knife",
+    "craftingdead:adrenaline_syringe",
+    "craftingdead:bandage"
+  ]
+}

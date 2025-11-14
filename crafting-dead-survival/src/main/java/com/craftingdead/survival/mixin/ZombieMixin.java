@@ -53,6 +53,11 @@ public abstract class ZombieMixin extends Monster {
         .ifPresent(handler -> handler.handleSetBaby(baby));
   }
 
+  @Inject(at = @At("RETURN"), method = "convertsInWater", cancellable = true)
+  public void convertsInWater(CallbackInfoReturnable<Boolean> callbackInfo) {
+    callbackInfo.setReturnValue(false);
+  }
+
   @Inject(at = @At("RETURN"), method = "isSunSensitive", cancellable = true)
   public void isSunSensitive(CallbackInfoReturnable<Boolean> callbackInfo) {
     callbackInfo.setReturnValue(false);

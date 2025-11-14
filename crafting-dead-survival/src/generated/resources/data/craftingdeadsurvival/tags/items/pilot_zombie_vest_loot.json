@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "craftingdead:m9_magazine",
+    "craftingdead:parachute",
+    "craftingdead:bandage",
+    "craftingdeadsurvival:multi_tool",
+    "craftingdeadsurvival:mre",
+    "craftingdeadsurvival:screwdriver"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "min": 1,
+        "max": 3
+      },
+      "entries": [
+        {
+          "type": "item",
+          "name": "craftingdead:acr_magazine",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "craftingdead:combat_knife",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "craftingdead:adrenaline_syringe",
+          "weight": 3
+        },
+        {
+          "type": "item",
+          "name": "craftingdead:bandage",
+          "weight": 12
+        }
+      ]
+    }
+  ]
+}

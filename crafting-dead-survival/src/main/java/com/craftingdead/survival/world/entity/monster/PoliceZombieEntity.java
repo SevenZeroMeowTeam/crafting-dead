@@ -18,6 +18,8 @@
 
 package com.craftingdead.survival.world.entity.monster;
 
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.monster.Zombie;
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import net.minecraft.nbt.CompoundTag;
@@ -32,7 +34,13 @@ import net.minecraft.world.level.ServerLevelAccessor;
 public class PoliceZombieEntity extends GunZombie {
 
   public PoliceZombieEntity(EntityType<? extends PoliceZombieEntity> type, Level world) {
-    super(type, world);
+    super(type, world, CraftingDeadSurvival.serverConfig.policeZombieGunAccuracy.get().floatValue());
+  }
+
+  public static  AttributeSupplier.Builder createAttributes() {
+    return Zombie.createAttributes()
+        .add(Attributes.MAX_HEALTH, 20.0D)
+        .add(Attributes.FOLLOW_RANGE, 10.0D);
   }
 
   @Nullable
@@ -42,8 +50,11 @@ public class PoliceZombieEntity extends GunZombie {
     groupData = super.finalizeSpawn(level, difficulty, spawnType, groupData, tag);
     this.getAttribute(Attributes.MAX_HEALTH)
         .setBaseValue(CraftingDeadSurvival.serverConfig.policeZombieMaxHealth.get());
-    this.getAttribute(Attributes.ATTACK_DAMAGE)
-        .setBaseValue(CraftingDeadSurvival.serverConfig.policeZombieAttackDamage.get());
     return groupData;
+  }
+
+  @Override
+  public float getStopDistanceFromPlayer() {
+    return CraftingDeadSurvival.serverConfig.pilotZombieAttackDistance.get().floatValue();
   }
 }

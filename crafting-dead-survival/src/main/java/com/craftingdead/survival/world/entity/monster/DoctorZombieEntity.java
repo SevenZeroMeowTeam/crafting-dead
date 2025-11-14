@@ -28,12 +28,11 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.InteractGoal;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 
-public class DoctorZombieEntity extends Zombie {
+public class DoctorZombieEntity extends ModZombie {
 
   private static final int COOLDOWN_TICKS = 20 * 20;
 
