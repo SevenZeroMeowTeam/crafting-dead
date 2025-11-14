@@ -13,6 +13,9 @@ repositories {
 
 dependencies {
     implementation 'cpw.mods:bootstraplauncher:1.0.0' // Add the required dependency
+    implementation('io.sentry:sentry:5.6.0') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
 }
 
 jar {
