@@ -36,17 +36,19 @@ public class GameRendererMixin {
   /**
    * Renders first person items for spectating entity.
    */
-  @Inject(at = @At("RETURN"), method = "renderItemInHand")
-  private void renderItemInHand(PoseStack matrixStack, Camera activeRenderInfo,
+  @SuppressWarnings("unused")
+  @Inject(method =
+      "renderItemInHand(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/Camera;F)V",
+      at = @At("RETURN"))
+  private void renderItemInHand(PoseStack poseStack, Camera ignoredCamera,
       float partialTicks, CallbackInfo callbackInfo) {
-    final Minecraft mc = Minecraft.getInstance();
-    if (mc.getCameraEntity() instanceof RemotePlayer) {
-      AbstractClientPlayer playerEntity =
-          (AbstractClientPlayer) mc.getCameraEntity();
+    final Minecraft minecraft = Minecraft.getInstance();
+    if (minecraft.getCameraEntity() instanceof RemotePlayer remotePlayer) {
+      AbstractClientPlayer player = remotePlayer;
       CraftingDeadImmerse.getInstance().getClientDist().getSpectatorRenderer()
-          .renderItemInFirstPerson(partialTicks, matrixStack,
-              mc.renderBuffers().bufferSource(), playerEntity,
-              mc.getEntityRenderDispatcher().getPackedLightCoords(playerEntity, partialTicks));
+          .renderItemInFirstPerson(partialTicks, poseStack,
+              minecraft.renderBuffers().bufferSource(), player,
+              minecraft.getEntityRenderDispatcher().getPackedLightCoords(player, partialTicks));
     }
   }
 }

@@ -29,7 +29,7 @@ import net.minecraft.server.MinecraftServer;
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
 
-  @Inject(method = "onServerCrash", at = @At("HEAD"))
+  @Inject(method = "onServerCrash(Lnet/minecraft/CrashReport;)V", at = @At("HEAD"))
   private void onServerCrash(CrashReport crashReport, CallbackInfo callbackInfo) {
     Sentry.captureException(crashReport.getException());
   }

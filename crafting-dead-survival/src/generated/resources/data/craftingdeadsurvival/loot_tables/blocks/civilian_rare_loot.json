@@ -852,7 +852,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 10,
+          "weight": 15,
           "name": "craftingdeadsurvival:flask"
         },
         {

@@ -24,6 +24,7 @@ import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.core.world.item.equipment.Equipment.Slot;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -45,6 +46,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -109,6 +111,34 @@ public class ClothingItem extends EquipmentItem {
     if (this.fireImmunity) {
       lines.add(new TranslatableComponent("clothing.immune_to_fire")
           .withStyle(ChatFormatting.GRAY));
+    }
+
+    float damageReductionPct = switch (this.clothingType) {
+      case CASUAL -> ServerConfig.instance.casualClothingDamageReduction.get().floatValue() * 100.0F;
+      case UTILITY -> ServerConfig.instance.utilityClothingDamageReduction.get().floatValue() * 100.0F;
+      case MILITARY -> ServerConfig.instance.militaryClothingDamageReduction.get().floatValue() * 100.0F;
+    };
+    if (damageReductionPct > 0.0F) {
+      var damageText = new TextComponent(Objects.requireNonNull(
+          String.format(Locale.ROOT, "%.0f%%", damageReductionPct)))
+              .withStyle(ChatFormatting.RED);
+      lines.add(new TranslatableComponent("clothing.damage_reduction")
+          .withStyle(ChatFormatting.GRAY)
+          .append(Objects.requireNonNull(damageText)));
+    }
+
+    float bleedReductionPct = switch (this.clothingType) {
+      case CASUAL -> ServerConfig.instance.casualClothingBleedAndInfectionReduction.get().floatValue() * 100.0F;
+      case UTILITY -> ServerConfig.instance.utilityClothingBleedAndInfectionReduction.get().floatValue() * 100.0F;
+      case MILITARY -> ServerConfig.instance.militaryClothingBleedAndInfectionReduction.get().floatValue() * 100.0F;
+    };
+    if (bleedReductionPct > 0.0F) {
+      var bleedText = new TextComponent(Objects.requireNonNull(
+          String.format(Locale.ROOT, "%.0f%%", bleedReductionPct)))
+              .withStyle(ChatFormatting.RED);
+      lines.add(new TranslatableComponent("clothing.bleed_infection_reduction")
+          .withStyle(ChatFormatting.GRAY)
+          .append(Objects.requireNonNull(bleedText)));
     }
   }
 

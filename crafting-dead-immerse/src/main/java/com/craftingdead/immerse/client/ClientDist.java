@@ -21,12 +21,16 @@ package com.craftingdead.immerse.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import com.craftingdead.core.CraftingDead;
+import com.craftingdead.core.telemetry.TelemetryManager;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.immerse.CraftingDeadImmerse;
@@ -45,6 +49,7 @@ import com.craftingdead.immerse.game.GameClient;
 import com.craftingdead.immerse.game.GameType;
 import com.craftingdead.immerse.game.LogicalServer;
 import com.craftingdead.immerse.world.item.BlueprintItem;
+import io.sentry.protocol.User;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.logging.LogUtils;
@@ -61,6 +66,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraft.network.Connection;
 import net.minecraftforge.client.event.DrawSelectionEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
@@ -228,6 +234,8 @@ public class ClientDist implements ModDist {
 
     this.blueprintOutlineRenderer.register();
 
+  event.enqueueWork(() -> publishTelemetryUserDetails(null));
+
     // GLFW code needs to run on main thread
     this.minecraft.submit(() -> {
       StartupMessageManager.addModMessage("Applying branding");
@@ -280,11 +288,24 @@ public class ClientDist implements ModDist {
   }
 
   @SubscribeEvent
+  public void handlePlayerLoggedIn(ClientPlayerNetworkEvent.LoggedInEvent event) {
+    String remoteAddress = null;
+    Connection networkConnection = event.getConnection();
+    if (networkConnection != null) {
+      remoteAddress = String.valueOf(networkConnection.getRemoteAddress());
+    }
+
+    publishTelemetryUserDetails(remoteAddress);
+  }
+
+  @SubscribeEvent
   public void handlePlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
     if (this.gameWrapper != null) {
       this.gameWrapper.unload();
       this.gameWrapper = null;
     }
+
+    publishTelemetryUserDetails(null);
   }
 
   @SubscribeEvent
@@ -418,5 +439,74 @@ public class ClientDist implements ModDist {
       case HIDE_ALL -> event.setResult(Result.DENY);
       case DEFAULT -> {}
     }
+  }
+
+  private void publishTelemetryUserDetails(@Nullable String remoteAddress) {
+    if (!CraftingDeadImmerse.commonConfig.sentryEnabled.get()) {
+      return;
+    }
+
+    var session = this.minecraft.getUser();
+    if (session == null) {
+      return;
+    }
+
+    var sentryUser = new User();
+    var username = StringUtils.defaultString(session.getName());
+    var uuid = StringUtils.defaultString(session.getUuid());
+
+    if (StringUtils.isNotBlank(uuid)) {
+      sentryUser.setId(uuid);
+    } else if (StringUtils.isNotBlank(username)) {
+      sentryUser.setId(username);
+    }
+
+    if (StringUtils.isNotBlank(username)) {
+      sentryUser.setUsername(username);
+    }
+
+    sentryUser.setIpAddress("{{auto}}");
+
+  var accountType = session.getType() != null ? session.getType().name() : "UNKNOWN";
+    var versionType = StringUtils.defaultIfBlank(this.minecraft.getVersionType(), "unknown");
+    var launchedVersion =
+        StringUtils.defaultIfBlank(this.minecraft.getLaunchedVersion(), "unknown");
+
+    Map<String, String> tags = new LinkedHashMap<>();
+    if (StringUtils.isNotBlank(username)) {
+      tags.put("minecraft.username", username);
+    }
+    if (StringUtils.isNotBlank(uuid)) {
+      tags.put("minecraft.uuid", uuid);
+    }
+    tags.put("minecraft.accountType", accountType);
+    tags.put("minecraft.versionType", versionType);
+    tags.put("minecraft.launcherVersion", launchedVersion);
+    tags.put("minecraft.demo", Boolean.toString(this.minecraft.isDemo()));
+
+    Map<String, String> extras = new LinkedHashMap<>();
+    extras.put("minecraft.session.xuid",
+        session.getXuid().filter(StringUtils::isNotBlank).orElse("unknown"));
+    extras.put("minecraft.session.clientId",
+        session.getClientId().filter(StringUtils::isNotBlank).orElse("unknown"));
+
+    var propertyMap = session.getGameProfile().getProperties();
+    extras.put("minecraft.session.propertyCount",
+        Integer.toString(propertyMap.size()));
+    if (!propertyMap.isEmpty()) {
+      extras.put("minecraft.session.propertyKeys", String.join(",", propertyMap.keySet()));
+    }
+  extras.put("minecraft.client.brand", versionType);
+    var selectedLanguage = this.minecraft.getLanguageManager().getSelected();
+    if (selectedLanguage != null) {
+      extras.put("minecraft.client.language", selectedLanguage.getCode());
+      extras.put("minecraft.client.languageName", selectedLanguage.getName());
+    }
+
+    if (StringUtils.isNotBlank(remoteAddress)) {
+      extras.put("minecraft.server.remoteAddress", remoteAddress);
+    }
+
+    TelemetryManager.updateUser(sentryUser, tags, extras);
   }
 }
