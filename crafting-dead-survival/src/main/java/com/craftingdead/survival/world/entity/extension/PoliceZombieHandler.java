@@ -20,8 +20,11 @@ package com.craftingdead.survival.world.entity.extension;
 
 import com.craftingdead.core.world.entity.extension.BasicLivingExtension;
 import com.craftingdead.core.world.item.ModItems;
+import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.core.world.item.gun.Gun;
 import com.craftingdead.core.world.item.gun.ammoprovider.RefillableAmmoProvider;
+import com.craftingdead.survival.CraftingDeadSurvival;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
 
@@ -35,7 +38,7 @@ public class PoliceZombieHandler extends ZombieHandler {
   protected ItemStack createHeldItem() {
     var gunStack = ModItems.G18.get().getDefaultInstance();
     gunStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> gun.setAmmoProvider(
-        new RefillableAmmoProvider(ModItems.G18_MAGAZINE.get().getDefaultInstance(), 0, true)));
+        new RefillableAmmoProvider(ModItems.G18_MAGAZINE.get().getDefaultInstance(), 2, false)));
     return gunStack;
   }
 
@@ -45,7 +48,24 @@ public class PoliceZombieHandler extends ZombieHandler {
   }
 
   @Override
-  protected ItemStack getHatStack() {
+  protected ItemStack createHatItem() {
     return ItemStack.EMPTY;
+  }
+
+  @Override
+  public void applyEquipmentDropChances() {
+    var zombie = extension.entity();
+    extension.setEquipmentDropChance(Equipment.Slot.CLOTHING,
+        CraftingDeadSurvival.serverConfig.policeZombieClothingDropChance.get().floatValue());
+    extension.setEquipmentDropChance(Equipment.Slot.HAT,
+        CraftingDeadSurvival.serverConfig.policeZombieHatDropChance.get().floatValue());
+    extension.setEquipmentDropChance(Equipment.Slot.VEST,
+        CraftingDeadSurvival.serverConfig.policeZombieVestDropChance.get().floatValue());
+    extension.setEquipmentDropChance(Equipment.Slot.BACKPACK,
+        CraftingDeadSurvival.serverConfig.policeZombieBackpackDropChance.get().floatValue());
+    zombie.setDropChance(EquipmentSlot.MAINHAND,
+        CraftingDeadSurvival.serverConfig.policeZombieHandDropChance.get().floatValue());
+    zombie.setDropChance(EquipmentSlot.OFFHAND,
+        CraftingDeadSurvival.serverConfig.policeZombieHandDropChance.get().floatValue());
   }
 }

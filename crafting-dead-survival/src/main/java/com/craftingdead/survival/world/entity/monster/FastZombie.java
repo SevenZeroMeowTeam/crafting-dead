@@ -31,7 +31,7 @@ import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 
-public class FastZombie extends Zombie {
+public class FastZombie extends ModZombie {
 
   public FastZombie(EntityType<? extends FastZombie> type, Level level) {
     super(type, level);

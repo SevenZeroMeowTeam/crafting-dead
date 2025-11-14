@@ -64,6 +64,7 @@ public class SurvivalEntityLoot extends EntityLoot {
     this.add(SurvivalEntityTypes.POLICE_ZOMBIE.get(), zombieLoot);
     this.add(SurvivalEntityTypes.DOCTOR_ZOMBIE.get(), zombieLoot);
     this.add(SurvivalEntityTypes.GIANT_ZOMBIE.get(), zombieLoot);
+    this.add(SurvivalEntityTypes.SCOUT_ZOMBIE.get(), zombieLoot);
   }
 
   @Override

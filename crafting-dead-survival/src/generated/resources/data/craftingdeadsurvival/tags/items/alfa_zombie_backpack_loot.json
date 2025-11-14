@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "craftingdead:first_aid_kit",
+    "craftingdeadsurvival:water_bottle",
+    "craftingdeadsurvival:mre",
+    "craftingdead:bandage",
+    "craftingdead:binoculars",
+    "craftingdead:red_dot_sight",
+    "craftingdead:suppressor"
+  ]
+}

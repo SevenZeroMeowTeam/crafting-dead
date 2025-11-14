@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "craftingdead:c4_explosive",
+    "craftingdead:remote_detonator",
+    "craftingdead:first_aid_kit",
+    "craftingdead:smoke_grenade",
+    "craftingdeadsurvival:water_canteen",
+    "craftingdeadsurvival:mre",
+    "craftingdead:bandage"
+  ]
+}

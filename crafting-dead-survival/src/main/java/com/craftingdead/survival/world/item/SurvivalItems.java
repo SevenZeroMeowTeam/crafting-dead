@@ -172,6 +172,11 @@ public class SurvivalItems {
   // Spawn Eggs
   // ================================================================================
 
+  public static final RegistryObject<Item> GIANT_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("giant_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.GIANT_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
   public static final RegistryObject<Item> FAST_ZOMBIE_SPAWN_EGG =
       deferredRegister.register("fast_zombie_spawn_egg",
           () -> new ForgeSpawnEggItem(SurvivalEntityTypes.FAST_ZOMBIE, 0x000000, 0xFFFFFF,
@@ -195,6 +200,71 @@ public class SurvivalItems {
   public static final RegistryObject<Item> DOCTOR_ZOMBIE_SPAWN_EGG =
       deferredRegister.register("doctor_zombie_spawn_egg",
           () -> new ForgeSpawnEggItem(SurvivalEntityTypes.DOCTOR_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> SCOUT_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("scout_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.SCOUT_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> SNIPER_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("sniper_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.SNIPER_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> PILOT_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("pilot_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.PILOT_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> SOLDIER_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("soldier_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.SOLDIER_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> NINJA_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("ninja_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.NINJA_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> ALFA_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("alfa_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.ALFA_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> BOUNTY_HUNTER_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("bounty_hunter_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.BOUNTY_HUNTER_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> DESERT_RAIDER_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("desert_raider_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.DESERT_RAIDER_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> FIREFIGHTER_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("firefighter_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.FIREFIGHTER_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> HAZMAT_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("hazmat_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.HAZMAT_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> JUGGERNAUT_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("juggernaut_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.JUGGERNAUT_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> MINER_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("miner_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.MINER_ZOMBIE, 0x000000, 0xFFFFFF,
+              new Item.Properties().tab(TAB)));
+
+  public static final RegistryObject<Item> SWAT_ZOMBIE_SPAWN_EGG =
+      deferredRegister.register("swat_zombie_spawn_egg",
+          () -> new ForgeSpawnEggItem(SurvivalEntityTypes.SWAT_ZOMBIE, 0x000000, 0xFFFFFF,
               new Item.Properties().tab(TAB)));
 
   // ================================================================================
@@ -300,6 +370,15 @@ public class SurvivalItems {
   public static final RegistryObject<Item> SPRITE =
       deferredRegister.register("sprite",
           () -> new ConsumableItem(new Properties().tab(TAB).stacksTo(3), 0, 0, 6, EMPTY_SPRITE,
+              Type.ONLY_DRINK));
+
+  public static final RegistryObject<Item> EMPTY_COLA =
+      deferredRegister.register("empty_cola",
+          () -> new Item(new Properties().tab(TAB).stacksTo(3)));
+
+  public static final RegistryObject<Item> COLA =
+      deferredRegister.register("cola",
+          () -> new ConsumableItem(new Properties().tab(TAB).stacksTo(3), 0, 0, 6, EMPTY_COLA,
               Type.ONLY_DRINK));
 
   public static final RegistryObject<Item> EMPTY_ZOMBIE_ENERGY =
@@ -535,6 +614,11 @@ public class SurvivalItems {
         }
 
         @Override
+        public boolean isRepairable(ItemStack stack) {
+          return false;
+        }
+
+        @Override
         public ItemStack getContainerItem(ItemStack itemStack) {
           if (itemStack.isEmpty()) {
             return ItemStack.EMPTY;
@@ -553,6 +637,11 @@ public class SurvivalItems {
         @Override
         public boolean hasContainerItem(ItemStack stack) {
           return !stack.isEmpty();
+        }
+
+        @Override
+        public boolean isRepairable(ItemStack stack) {
+          return false;
         }
 
         @Override
@@ -577,6 +666,11 @@ public class SurvivalItems {
         }
 
         @Override
+        public boolean isRepairable(ItemStack stack) {
+          return false;
+        }
+
+        @Override
         public ItemStack getContainerItem(ItemStack itemStack) {
           if (itemStack.isEmpty()) {
             return ItemStack.EMPTY;
@@ -587,6 +681,16 @@ public class SurvivalItems {
           return copy.getDamageValue() >= copy.getMaxDamage() ? ItemStack.EMPTY : copy;
         }
       });
+
+  // ================================================================================
+  // Miscellaneous
+  // ================================================================================
+
+  public static final RegistryObject<Item> ROPE =
+      deferredRegister.register("rope",
+          () -> new Item(new Item.Properties()
+              .stacksTo(1)
+              .tab(TAB)));
 
   static {
     var canOpenerTooltip = new TranslatableComponent("can_opener.information")

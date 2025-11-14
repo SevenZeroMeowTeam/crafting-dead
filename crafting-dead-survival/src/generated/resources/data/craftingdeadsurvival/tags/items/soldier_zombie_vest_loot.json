@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "craftingdead:taser",
+    "craftingdead:taser_cartridge",
+    "craftingdead:stanag_20_round_magazine",
+    "craftingdead:stanag_30_round_magazine",
+    "craftingdead:stanag_drum_magazine",
+    "craftingdead:frag_grenade",
+    "craftingdead:flash_grenade",
+    "craftingdead:combat_knife",
+    "craftingdead:bandage"
+  ]
+}

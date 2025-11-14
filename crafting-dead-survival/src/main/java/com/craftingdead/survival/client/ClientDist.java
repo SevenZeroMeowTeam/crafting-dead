@@ -21,6 +21,7 @@ package com.craftingdead.survival.client;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.client.ClientConfig;
 import com.craftingdead.core.client.renderer.entity.grenade.GrenadeRenderer;
+import com.craftingdead.core.client.renderer.entity.layers.ParachuteLayer;
 import com.craftingdead.core.client.util.RenderUtil;
 import com.craftingdead.core.world.effect.ModMobEffects;
 import com.craftingdead.survival.CraftingDeadSurvival;
@@ -36,6 +37,7 @@ import com.craftingdead.survival.world.entity.SurvivalEntityTypes;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.SpellParticle;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -74,6 +76,7 @@ public class ClientDist implements ModDist {
     this.minecraft = Minecraft.getInstance();
     final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
     modEventBus.addListener(this::handleEntityRenderers);
+    modEventBus.addListener(this::handleEntityRenderersAddLayers);
     modEventBus.addListener(this::handleParticleFactoryRegisterEvent);
     modEventBus.addListener(this::handleEntityRenderersLayerDefinitions);
 
@@ -102,6 +105,48 @@ public class ClientDist implements ModDist {
         AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.GIANT_ZOMBIE.get(),
         GiantZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.SCOUT_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.SNIPER_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.PILOT_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.SOLDIER_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.NINJA_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.ALFA_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.BOUNTY_HUNTER_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.DESERT_RAIDER_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.FIREFIGHTER_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.HAZMAT_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.JUGGERNAUT_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.MINER_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.SWAT_ZOMBIE.get(),
+        AdvancedZombieRenderer::new);
+  }
+
+  private void handleEntityRenderersAddLayers(EntityRenderersEvent.AddLayers event) {
+    LivingEntityRenderer<?, ?> soliderZombie = event.getRenderer(SurvivalEntityTypes.SOLDIER_ZOMBIE.get());
+    LivingEntityRenderer<?, ?> fastZombie = event.getRenderer(SurvivalEntityTypes.FAST_ZOMBIE.get());
+    LivingEntityRenderer<?, ?> scoutZombie = event.getRenderer(SurvivalEntityTypes.SCOUT_ZOMBIE.get());
+
+    if (soliderZombie instanceof AdvancedZombieRenderer soldierZombieRenderer) {
+      soldierZombieRenderer.addLayer(new ParachuteLayer<>(soldierZombieRenderer, event.getEntityModels()));
+    }
+    if (fastZombie instanceof AdvancedZombieRenderer fastZombieRenderer) {
+      fastZombieRenderer.addLayer(new ParachuteLayer<>(fastZombieRenderer, event.getEntityModels()));
+    }
+    if (scoutZombie instanceof AdvancedZombieRenderer scoutZombieRenderer) {
+      scoutZombieRenderer.addLayer(new ParachuteLayer<>(scoutZombieRenderer, event.getEntityModels()));
+    }
   }
 
   private void handleEntityRenderersLayerDefinitions(

@@ -42,6 +42,10 @@ public abstract class AbstractAdvancedZombieRenderer<T extends Zombie, M extends
         .useCrouchOrientation(true)
         .build());
     this.addLayer(EquipmentLayer.builder(this)
+        .slot(Equipment.Slot.BACKPACK)
+        .useCrouchOrientation(true)
+        .build());
+    this.addLayer(EquipmentLayer.builder(this)
         .slot(Equipment.Slot.VEST)
         .useCrouchOrientation(true)
         .build());

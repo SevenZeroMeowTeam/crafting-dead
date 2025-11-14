@@ -31,7 +31,7 @@ import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 
-public class TankZombie extends Zombie {
+public class TankZombie extends ModZombie {
 
   public TankZombie(EntityType<? extends TankZombie> type, Level world) {
     super(type, world);

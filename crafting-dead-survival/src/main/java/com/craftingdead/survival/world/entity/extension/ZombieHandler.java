@@ -18,6 +18,12 @@
 
 package com.craftingdead.survival.world.entity.extension;
 
+import com.craftingdead.core.world.item.gun.Gun;
+import com.craftingdead.core.world.item.gun.ammoprovider.MagazineAmmoProvider;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import com.craftingdead.core.world.entity.extension.BasicLivingExtension;
@@ -31,14 +37,24 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class ZombieHandler implements LivingHandler {
 
@@ -69,6 +85,10 @@ public class ZombieHandler implements LivingHandler {
       return;
     }
     var zombie = this.extension.entity();
+    if (zombie.getVehicle() instanceof Chicken) {
+      zombie.remove(Entity.RemovalReason.DISCARDED);
+      return;
+    }
     var healthAttribute = zombie.getAttribute(Attributes.MAX_HEALTH);
     healthAttribute.removeModifier(HEALTH_MODIFIER_BABY);
     if (baby) {
@@ -80,13 +100,23 @@ public class ZombieHandler implements LivingHandler {
     var zombie = this.extension.entity();
     zombie.setItemSlot(EquipmentSlot.MAINHAND, this.createHeldItem());
     this.extension.setItemInSlot(Equipment.Slot.CLOTHING, this.createClothingItem());
-    this.extension.setItemInSlot(Equipment.Slot.HAT, this.getHatStack());
+    this.extension.setItemInSlot(Equipment.Slot.HAT, this.createHatItem());
+    this.extension.setItemInSlot(Equipment.Slot.BACKPACK, this.createBackpackItem());
+    this.extension.setItemInSlot(Equipment.Slot.VEST, this.createVestItem());
   }
 
   protected ItemStack createHeldItem() {
     return this
         .getRandomItem(SurvivalItemTags.ZOMBIE_HAND_LOOT,
             CraftingDeadSurvival.serverConfig.zombieHandSpawnChance.get().floatValue())
+        .map(Item::getDefaultInstance)
+        .orElse(ItemStack.EMPTY);
+  }
+
+  protected ItemStack createHatItem() {
+    return this
+        .getRandomItem(SurvivalItemTags.ZOMBIE_HAT_LOOT,
+            CraftingDeadSurvival.serverConfig.zombieHatSpawnChance.get().floatValue())
         .map(Item::getDefaultInstance)
         .orElse(ItemStack.EMPTY);
   }
@@ -99,10 +129,18 @@ public class ZombieHandler implements LivingHandler {
         .orElse(ItemStack.EMPTY);
   }
 
-  protected ItemStack getHatStack() {
+  protected ItemStack createBackpackItem() {
     return this
-        .getRandomItem(SurvivalItemTags.ZOMBIE_HAT_LOOT,
-            CraftingDeadSurvival.serverConfig.zombieHatSpawnChance.get().floatValue())
+        .getRandomItem(SurvivalItemTags.ZOMBIE_BACKPACK_LOOT,
+            1.0F)
+        .map(Item::getDefaultInstance)
+        .orElse(ItemStack.EMPTY);
+  }
+
+  protected ItemStack createVestItem() {
+    return this
+        .getRandomItem(SurvivalItemTags.ZOMBIE_VEST_LOOT,
+            1.0F)
         .map(Item::getDefaultInstance)
         .orElse(ItemStack.EMPTY);
   }
@@ -115,6 +153,102 @@ public class ZombieHandler implements LivingHandler {
             .flatMap(tag -> tag.getRandomElement(random))
             .map(Holder::value)
         : Optional.empty();
+  }
+
+  protected ItemStack getRandomItem(List<Item> items) {
+    if (items == null || items.isEmpty()) {
+      return ItemStack.EMPTY;
+    }
+    return new ItemStack(items.get(this.extension.random().nextInt(items.size())));
+  }
+
+  protected ItemStack createFilledVestItem(float equipChance, ItemStack vestStack, ResourceLocation location) {
+    if (this.extension.random().nextFloat() >= equipChance) {
+      return ItemStack.EMPTY;
+    }
+    var level = (ServerLevel) this.extension.level();
+    var lootTable = level.getServer().getLootTables().get(location);
+    if (lootTable == LootTable.EMPTY) {
+      return vestStack;
+    }
+    LootContext.Builder builder = new LootContext.Builder(level)
+        .withParameter(LootContextParams.ORIGIN,
+            this.extension.entity().position());
+    var context = builder.create(LootContextParamSets.CHEST);
+    List<ItemStack> loot = lootTable.getRandomItems(context);
+    vestStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(inv -> {
+      List<Integer> slots = new ArrayList<>();
+      for (int i = 0; i < inv.getSlots(); i++) {
+        slots.add(i);
+      }
+      Collections.shuffle(slots, this.extension.random());
+      for (int i = 0; i < loot.size() && i < slots.size(); i++) {
+        inv.insertItem(slots.get(i), loot.get(i), false);
+      }
+    });
+    return vestStack;
+  }
+
+  protected ItemStack createFilledBackpackItem(float equipChance, ItemStack backpackStack, ResourceLocation location) {
+    if (this.extension.random().nextFloat() >= equipChance) {
+      return ItemStack.EMPTY;
+    }
+    var level = (ServerLevel) this.extension.level();
+    var lootTable = level.getServer().getLootTables().get(location);
+    if (lootTable == LootTable.EMPTY) {
+      return backpackStack;
+    }
+    LootContext.Builder builder = new LootContext.Builder(level)
+        .withParameter(LootContextParams.ORIGIN,
+            this.extension.entity().position());
+    var context = builder.create(LootContextParamSets.CHEST);
+    List<ItemStack> loot = lootTable.getRandomItems(context);
+    backpackStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(inv -> {
+      List<Integer> slots = new ArrayList<>();
+      for (int i = 0; i < inv.getSlots(); i++) {
+        slots.add(i);
+      }
+      Collections.shuffle(slots, this.extension.random());
+      for (int i = 0; i < loot.size() && i < slots.size(); i++) {
+        inv.insertItem(slots.get(i), loot.get(i), false);
+      }
+    });
+    return backpackStack;
+  }
+
+  public void applyEquipmentDropChances() {
+    var zombie = extension.entity();
+    extension.setEquipmentDropChance(Equipment.Slot.CLOTHING,
+        CraftingDeadSurvival.serverConfig.zombieClothingDropChance.get().floatValue());
+    extension.setEquipmentDropChance(Equipment.Slot.HAT,
+        CraftingDeadSurvival.serverConfig.zombieHatDropChance.get().floatValue());
+    extension.setEquipmentDropChance(Equipment.Slot.VEST,
+        CraftingDeadSurvival.serverConfig.zombieVestDropChance.get().floatValue());
+    extension.setEquipmentDropChance(Equipment.Slot.BACKPACK,
+        CraftingDeadSurvival.serverConfig.zombieBackpackDropChance.get().floatValue());
+    zombie.setDropChance(EquipmentSlot.MAINHAND,
+        CraftingDeadSurvival.serverConfig.zombieHandDropChance.get().floatValue());
+    zombie.setDropChance(EquipmentSlot.OFFHAND,
+        CraftingDeadSurvival.serverConfig.zombieHandDropChance.get().floatValue());
+  }
+
+  protected ResourceLocation createVestLootId(String id) {
+    return new ResourceLocation(CraftingDeadSurvival.ID, "vests/" + id);
+  }
+
+  protected ResourceLocation createBackpackLootId(String id) {
+    return new ResourceLocation(CraftingDeadSurvival.ID, "backpacks/" + id);
+  }
+
+  @Override
+  public boolean handleDeathLoot(DamageSource cause, Collection<ItemEntity> loot, int lootingLevel) {
+    // This override ensures that if a zombie drops a gun, it will not have infinite ammo.
+    // The dropped Gun will spawn with its #defaultMagazineStack
+    loot.stream()
+        .map(ItemEntity::getItem)
+        .forEach(item -> item.getCapability(Gun.CAPABILITY).ifPresent(gun ->
+            gun.setAmmoProvider(new MagazineAmmoProvider(gun.getDefaultMagazineStack()))));
+    return false;
   }
 
   @Override

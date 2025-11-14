@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "craftingdead:flash_grenade",
+    "craftingdead:m240b_magazine",
+    "craftingdead:bandage",
+    "craftingdead:smoke_grenade",
+    "craftingdead:bolt_cutters",
+    "craftingdeadsurvival:multi_tool"
+  ]
+}

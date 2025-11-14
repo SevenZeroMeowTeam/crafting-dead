@@ -36,7 +36,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 public class GiantZombie extends GunZombie {
 
   public GiantZombie(EntityType<? extends GiantZombie> type, Level world) {
-    super(type, world);
+    super(type, world, CraftingDeadSurvival.serverConfig.giantZombieGunAccuracy.get().floatValue());
   }
 
   public static AttributeSupplier.Builder createAttributes() {
@@ -61,5 +61,10 @@ public class GiantZombie extends GunZombie {
     this.getAttribute(Attributes.ATTACK_DAMAGE)
         .setBaseValue(CraftingDeadSurvival.serverConfig.giantZombieAttackDamage.get());
     return groupData;
+  }
+ 
+  @Override
+  public float getStopDistanceFromPlayer() {
+    return CraftingDeadSurvival.serverConfig.giantZombieAttackDistance.get().floatValue();
   }
 }

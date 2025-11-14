@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "craftingdead:binoculars",
+    "craftingdeadsurvival:canned_corned_beef",
+    "craftingdeadsurvival:canned_peaches",
+    "craftingdeadsurvival:canned_custard",
+    "craftingdeadsurvival:can_opener",
+    "craftingdeadsurvival:multi_tool",
+    "craftingdeadsurvival:splint"
+  ]
+}

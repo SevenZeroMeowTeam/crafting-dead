@@ -1,0 +1,48 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "min": 1,
+        "max": 3
+      },
+      "entries": [
+        {
+          "type": "item",
+          "name": "craftingdead:binoculars",
+          "weight": 4
+        },
+        {
+          "type": "item",
+          "name": "craftingdeadsurvival:canned_corned_beef",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "craftingdeadsurvival:canned_peaches",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "craftingdeadsurvival:canned_custard",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "craftingdeadsurvival:can_opener",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "craftingdeadsurvival:multi_tool",
+          "weight": 2
+        },
+        {
+          "type": "item",
+          "name": "craftingdeadsurvival:splint",
+          "weight": 3
+        }
+      ]
+    }
+  ]
+}

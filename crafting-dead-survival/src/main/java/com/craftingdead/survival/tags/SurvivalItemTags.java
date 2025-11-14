@@ -28,7 +28,23 @@ public class SurvivalItemTags {
 
   public static final TagKey<Item> ZOMBIE_CLOTHING_LOOT = bind("zombie_clothing_loot");
   public static final TagKey<Item> ZOMBIE_HAT_LOOT = bind("zombie_hat_loot");
+  public static final TagKey<Item> ZOMBIE_BACKPACK_LOOT = bind("zombie_backpack_loot");
+  public static final TagKey<Item> ZOMBIE_VEST_LOOT = bind("zombie_vest_loot");
   public static final TagKey<Item> ZOMBIE_HAND_LOOT = bind("zombie_hand_loot");
+  public static final TagKey<Item> ALFA_ZOMBIE_VEST_LOOT = bind("alfa_zombie_vest_loot");
+  public static final TagKey<Item> DESERT_RAIDER_ZOMBIE_VEST_LOOT = bind("desert_raider_zombie_vest_loot");
+  public static final TagKey<Item> JUGGERNAUT_ZOMBIE_VEST_LOOT = bind("juggernaut_zombie_vest_loot");
+  public static final TagKey<Item> PILOT_ZOMBIE_VEST_LOOT = bind("pilot_zombie_vest_loot");
+  public static final TagKey<Item> SNIPER_ZOMBIE_VEST_LOOT = bind("sniper_zombie_vest_loot");
+  public static final TagKey<Item> SOLDIER_ZOMBIE_VEST_LOOT = bind("soldier_zombie_vest_loot");
+  public static final TagKey<Item> SWAT_ZOMBIE_VEST_LOOT = bind("swat_zombie_vest_loot");
+  public static final TagKey<Item> ALFA_ZOMBIE_BACKPACK_LOOT = bind("alfa_zombie_backpack_loot");
+  public static final TagKey<Item> DESERT_RAIDER_ZOMBIE_BACKPACK_LOOT = bind("desert_raider_backpack_loot");
+  public static final TagKey<Item> JUGGERNAUT_ZOMBIE_BACKPACK_LOOT = bind("juggernaut_zombie_backpack_loot");
+  public static final TagKey<Item> SCOUT_ZOMBIE_BACKPACK_LOOT = bind("scout_zombie_backpack_loot");
+  public static final TagKey<Item> SNIPER_ZOMBIE_BACKPACK_LOOT = bind("sniper_zombie_backpack_loot");
+  public static final TagKey<Item> SOLDIER_ZOMBIE_BACKPACK_LOOT = bind("soldier_zombie_backpack_loot");
+  public static final TagKey<Item> SWAT_ZOMBIE_BACKPACK_LOOT = bind("swat_zombie_backpack_loot");
 
   private static TagKey<Item> bind(String name) {
     return ItemTags.create(new ResourceLocation(CraftingDeadSurvival.ID, name));
