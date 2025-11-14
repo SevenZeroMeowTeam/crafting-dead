@@ -169,17 +169,12 @@ if (releaseBuild) {
 }
 
 if (rocketConnectorProject == null) {
-    def isCI = System.getenv('CI') || System.getenv('GITHUB_ACTIONS') || project.hasProperty('ci')
-    if (!isCI) {
-        tasks.configureEach { task ->
-            if (task.name in ['compileJava', 'jarJar', 'classes', 'jar']) {
-                task.doFirst {
-                    throw new org.gradle.api.GradleException('rocket-connector sources or artifacts are required to build crafting-dead-immerse. Please include the closed-source module locally before running this task.')
-                }
+    tasks.configureEach { task ->
+        if (task.name in ['compileJava', 'jarJar', 'classes', 'jar']) {
+            task.doFirst {
+                throw new org.gradle.api.GradleException('rocket-connector sources or artifacts are required to build crafting-dead-immerse. Please include the closed-source module locally before running this task.')
             }
         }
-    } else {
-        logger.lifecycle('CI environment detected; allowing crafting-dead-immerse build without rocket-connector')
     }
 }
 

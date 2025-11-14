@@ -2,12 +2,7 @@ plugins {
     id 'crafting-dead'
 }
 
-def rocketConnectorProject = rootProject.findProject(':rocket-connector')
-if (rocketConnectorProject != null) {
-    evaluationDependsOn(':rocket-connector')
-} else {
-    logger.lifecycle('rocket-connector project not present; skipping rocket dependency wiring for crafting-dead-survival')
-}
+evaluationDependsOn(':rocket-connector')
 
 mixin {
     add sourceSets.main, 'craftingdeadsurvival.refmap.json'
@@ -37,10 +32,8 @@ minecraft {
                 craftingdeadimmerse {
                     source project(':crafting-dead-immerse').sourceSets.main
                 }
-                if (rocketConnectorProject != null) {
-                    rocketconnector {
-                        source project(':rocket-connector').sourceSets.main
-                    }
+                rocketconnector {
+                    source project(':rocket-connector').sourceSets.main
                 }
             }
         }
@@ -67,10 +60,8 @@ minecraft {
                 craftingdeadimmerse {
                     source project(':crafting-dead-immerse').sourceSets.main
                 }
-                if (rocketConnectorProject != null) {
-                    rocketconnector {
-                        source project(':rocket-connector').sourceSets.main
-                    }
+                rocketconnector {
+                    source project(':rocket-connector').sourceSets.main
                 }
             }
         }
@@ -100,10 +91,8 @@ minecraft {
                 craftingdeadimmerse {
                     source project(':crafting-dead-immerse').sourceSets.main
                 }
-                if (rocketConnectorProject != null) {
-                    rocketconnector {
-                        source project(':rocket-connector').sourceSets.main
-                    }
+                rocketconnector {
+                    source project(':rocket-connector').sourceSets.main
                 }
             }
         }
@@ -114,9 +103,7 @@ dependencies {
     compileOnly project(':crafting-dead-core')
     compileOnly project(':crafting-dead-immerse')
     compileOnly project(':crafting-dead-decoration')
-    if (rocketConnectorProject != null) {
-        compileOnly project(':rocket-connector')
-    }
+    compileOnly project(':rocket-connector')
     minecraftLibrary project(path: ':crafting-dead-immerse', configuration: 'minecraftLibrary')
     
     def yogaVersion = project(':crafting-dead-immerse').findProperty('lwjgl_version') ?: project.findProperty('lwjgl_version')
