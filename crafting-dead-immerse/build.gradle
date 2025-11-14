@@ -76,8 +76,7 @@ minecraft {
 
 def lwjgl_natives = ['natives-windows', 'natives-linux', 'natives-macos']
 def skija_natives = ['skija-macos-x64', 'skija-macos-arm64', 'skija-linux', 'skija-windows']
-def releaseBuild = rootProject.extensions.extraProperties.has('releaseBuild') ?
-    rootProject.extensions.extraProperties.get('releaseBuild') as Boolean : false
+def releaseBuild = rootProject.extensions.extraProperties.get('releaseBuild') as Boolean
 
 configurations {
     lwjgl
