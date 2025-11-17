@@ -18,7 +18,6 @@
 
 package com.craftingdead.survival.mixin;
 
-import com.craftingdead.survival.CraftingDeadSurvival;
 import net.minecraft.client.gui.components.SubtitleOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
