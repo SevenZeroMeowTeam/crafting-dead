@@ -18,7 +18,6 @@
 
 package com.craftingdead.survival.mixin;
 
-import com.craftingdead.survival.CraftingDeadSurvival;
 import net.minecraft.client.gui.components.SubtitleOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,8 +29,8 @@ public class SubtitleOverlayMixin {
 
   @Inject(method = "render", at = @At("HEAD"), cancellable = true)
   private void disableSoundTextRendering(CallbackInfo ci) {
-    if (!CraftingDeadSurvival.serverConfig.showSubtitles.get()) {
-      ci.cancel();
-    }
+//    if (!CraftingDeadSurvival.serverConfig.showSubtitles.get()) {
+//      ci.cancel();
+//    }
   }
 }
