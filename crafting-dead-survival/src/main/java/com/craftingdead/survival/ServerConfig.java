@@ -30,7 +30,6 @@ public class ServerConfig {
 
   public final ForgeConfigSpec.BooleanValue allowSupplyDropBreak;
   public final ForgeConfigSpec.IntValue supplyDropDuration;
-    public final ForgeConfigSpec.BooleanValue showSubtitles;
 
   // ================================================================================
   // Loot Values
@@ -256,11 +255,6 @@ public class ServerConfig {
           .translation("options.craftingdeadsurvival.server.supply_drop_duration")
           .comment("Duration in seconds before a Supply Drop disappears from the world")
           .defineInRange("supplyDropDuration", 1200, 1, Integer.MAX_VALUE);
-
-      this.showSubtitles = builder
-          .translation("options.craftingdeadsurvival.server.show_subtitles")
-          .comment("If true, allow the subtitles overlay to render for players")
-          .define("showSubtitles", true);
     }
     builder.pop();
 
