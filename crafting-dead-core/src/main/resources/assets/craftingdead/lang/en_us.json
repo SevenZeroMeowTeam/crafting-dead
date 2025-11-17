@@ -453,6 +453,7 @@
   "clothing_item.water_breathing": "Gives water breathing ability",
   "clothing_item.water_speed": "Increases swimming speed",
   "paint.accepted_guns":"Use with:",
+  "paint.no_guns": "Coming soon...",
 
   "attachment_multiplier_type.damage": "Damage",
   "attachment_multiplier_type.accuracy": "Accuracy",

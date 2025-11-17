@@ -19,6 +19,7 @@
 package com.craftingdead.core.world.item;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.OptionalInt;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.Nullable;
@@ -69,12 +70,20 @@ public class PaintItem extends Item {
   @Override
   public void appendHoverText(ItemStack itemStack, @Nullable Level level,
       List<Component> lines, TooltipFlag flag) {
+    var skins = Skins.REGISTRY.get(this.skin).getAcceptedGuns();
+    if (skins == null || skins.isEmpty()) {
+      lines.add(new TranslatableComponent("paint.no_guns")
+          .withStyle(ChatFormatting.GRAY));
+      return;
+    }
     lines.add(new TranslatableComponent("paint.accepted_guns")
         .withStyle(ChatFormatting.GRAY));
-    Skins.REGISTRY.get(this.skin).getAcceptedGuns().stream()
+    skins.stream()
         .map(ForgeRegistries.ITEMS::getValue)
+        .filter(Objects::nonNull)
         .map(Item::getDescription)
         .map(text -> text.copy().withStyle(ChatFormatting.RED))
         .forEach(lines::add);
   }
+
 }
