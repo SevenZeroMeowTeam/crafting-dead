@@ -96,25 +96,24 @@ public class Skins {
 
   static {
     register(VULCAN, ModItems.AK47);
-    register(ASMO, ModItems.AK47, ModItems.AWP, ModItems.M4A1, ModItems.P250, ModItems.P90,
-        ModItems.SCARL);
-    register(CANDY_APPLE, ModItems.AS50, ModItems.M107);
-    register(CYREX, ModItems.M4A1, ModItems.M9);
-    register(DIAMOND, ModItems.AS50, ModItems.DMR, ModItems.M107, ModItems.M4A1);
+    register(ASMO, ModItems.AK47, ModItems.AWP); // M4A1, P250, P90, SCAR-L
+    register(CANDY_APPLE); // AS50, M107
+    register(CYREX); // M4A1, M9
+    register(DIAMOND); // AS50, DMR, M107, M4A1
     register(DRAGON, ModItems.AWP);
-    register(FADE, ModItems.G18, ModItems.MAC10);
-    register(FURY, ModItems.MINIGUN);
-    register(GEM, ModItems.P90);
-    register(INFERNO, ModItems.DESERT_EAGLE, ModItems.M4A1);
-    register(RUBY, ModItems.P90);
-    register(SCORCHED, ModItems.AWP, ModItems.DESERT_EAGLE, ModItems.DMR, ModItems.M4A1);
-    register(SLAUGHTER, ModItems.VECTOR);
-    register(UV, ModItems.MAC10);
-    register(HYPER_BEAST, ModItems.M4A1);
-    register(EMPEROR_DRAGON, ModItems.M4A1);
+    register(FADE); // G18, MAC-10
+    register(FURY); // Minigun
+    register(GEM); // P90
+    register(INFERNO, ModItems.DESERT_EAGLE); // M4A1
+    register(RUBY); // P90
+    register(SCORCHED, ModItems.AWP, ModItems.DESERT_EAGLE); // DMR, M4A1
+    register(SLAUGHTER); // Vector
+    register(UV); // MAC-10
+    register(HYPER_BEAST); // M4A1
+    register(EMPEROR_DRAGON); // M4A1
     register(NUCLEAR_WINTER, ModItems.DESERT_EAGLE);
     register(MONARCH, ModItems.AWP);
-    register(LOVELACE, ModItems.DESERT_EAGLE, ModItems.M4A1);
+    register(LOVELACE, ModItems.DESERT_EAGLE); // M4A1
   }
 
   private static <T> ResourceKey<Registry<T>> createRegistryKey(String name) {
