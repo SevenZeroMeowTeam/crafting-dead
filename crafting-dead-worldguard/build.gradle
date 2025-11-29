@@ -18,9 +18,6 @@ repositories {
 dependencies {
     implementation project(':crafting-dead-core')
     implementation project(':crafting-dead-survival')
-    
-    // Optional immerse dependency - compile against it but don't require at runtime
-    compileOnly files('libs/craftingdeadimmerse.jar')
 
     implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.18.2-R0.1-SNAPSHOT'
     implementation group: 'com.sk89q.worldguard', name: 'worldguard-bukkit', version: '7.0.7'
