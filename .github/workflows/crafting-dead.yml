@@ -31,7 +31,6 @@ jobs:
     - name: Build with Gradle
       run: |
         ./gradlew crafting-dead-core:build
-        ./gradlew crafting-dead-immerse:build
         ./gradlew crafting-dead-survival:build
         ./gradlew crafting-dead-decoration:build
         ./gradlew crafting-dead-worldguard:jar
@@ -40,7 +39,6 @@ jobs:
         name: crafting-dead
         path: |
           ./crafting-dead-core/build/libs/*.jar
-          ./crafting-dead-immerse/build/libs/*.jar
           ./crafting-dead-survival/build/libs/*.jar
           ./crafting-dead-decoration/build/libs/*.jar
           ./crafting-dead-worldguard/build/libs/*.jar
