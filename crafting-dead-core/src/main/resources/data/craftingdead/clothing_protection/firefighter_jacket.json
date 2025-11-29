@@ -1,0 +1,20 @@
+{
+  "item": "craftingdead:fireman_clothing",
+  "description": "Heavy-duty firefighter jacket with flame-resistant material. Excellent bite protection due to thick outer layer, moderate blunt resistance, but heavy.",
+  "biteProtection": 0.65,
+  "stabResistance": 0.10,
+  "bluntResistance": 0.05,
+  "weightModifier": -0.03,
+  "clothingTier": "utility",
+  "attributes": {
+    "fireResistant": true,
+    "waterResistant": false,
+    "camouflage": false
+  },
+  "notes": [
+    "Bite protection is high due to thick, reinforced fabric",
+    "Stab resistance is low - fabric can be punctured by sharp objects",
+    "Blunt resistance minimal - padding is for heat, not impact",
+    "Weight penalty reflects bulky design"
+  ]
+}

@@ -64,10 +64,12 @@ public class MedicalItem extends ActionItem {
         
         if (ServerConfig.instance.bandageRemovesBleeding.get()) {
           float chance = ServerConfig.instance.bandageBleedReductionChance.get().floatValue() * 100.0f;
-          lines.add(new TranslatableComponent("medical.bleeding_stop_chance")
-              .withStyle(ChatFormatting.GRAY)
-              .append(new TextComponent(String.format(" %.0f%%", chance))
-                  .withStyle(ChatFormatting.GREEN)));
+          lines.add(new TextComponent("✚ ")
+              .withStyle(ChatFormatting.DARK_RED)
+              .append(new TranslatableComponent("medical.bleeding_stop_chance")
+                  .withStyle(ChatFormatting.GRAY)
+                  .append(new TextComponent(String.format(" %.0f%%", chance))
+                      .withStyle(ChatFormatting.GREEN))));
         }
       }
       case FIRST_AID_KIT -> {
@@ -75,62 +77,80 @@ public class MedicalItem extends ActionItem {
         addHealingTooltip(lines, ServerConfig.instance.firstAidKitHealAmount.get().floatValue());
         
         if (ServerConfig.instance.firstAidKitRemovesBleeding.get()) {
-          lines.add(new TranslatableComponent("medical.bleeding_stop")
-              .withStyle(ChatFormatting.GREEN));
+          lines.add(new TextComponent("✚ ")
+              .withStyle(ChatFormatting.DARK_RED)
+              .append(new TranslatableComponent("medical.bleeding_stop")
+                  .withStyle(ChatFormatting.GREEN)));
         }
         
         float infectionChance = ServerConfig.instance.firstAidKitInfectionReductionChance.get().floatValue() * 100.0f;
         if (infectionChance > 0) {
-          lines.add(new TranslatableComponent("medical.infection_reduction_chance")
-              .withStyle(ChatFormatting.GRAY)
-              .append(new TextComponent(String.format(" %.0f%%", infectionChance))
-                  .withStyle(ChatFormatting.GREEN)));
+          lines.add(new TextComponent("✦ ")
+              .withStyle(ChatFormatting.LIGHT_PURPLE)
+              .append(new TranslatableComponent("medical.infection_reduction_chance")
+                  .withStyle(ChatFormatting.GRAY)
+                  .append(new TextComponent(String.format(" %.0f%%", infectionChance))
+                      .withStyle(ChatFormatting.GREEN))));
         }
         
         int traumaReduction = ServerConfig.instance.firstAidKitTraumaSeverityReduction.get();
         if (traumaReduction > 0) {
-          lines.add(new TranslatableComponent("medical.trauma_reduction")
-              .withStyle(ChatFormatting.GRAY)
-              .append(new TextComponent(" " + traumaReduction + " levels")
-                  .withStyle(ChatFormatting.GREEN)));
+          lines.add(new TextComponent("◈ ")
+              .withStyle(ChatFormatting.GOLD)
+              .append(new TranslatableComponent("medical.trauma_reduction")
+                  .withStyle(ChatFormatting.GRAY)
+                  .append(new TextComponent(" " + traumaReduction + " levels")
+                      .withStyle(ChatFormatting.GREEN))));
         }
       }
       case ADRENALINE_SYRINGE -> {
         addDurationTooltip(lines, 16); // Fixed duration for adrenaline injection
         
         int effectDuration = ServerConfig.instance.adrenalineDurationTicks.get() / 20;
-        lines.add(new TranslatableComponent("medical.effect_duration")
-            .withStyle(ChatFormatting.GRAY)
-            .append(new TextComponent(" " + effectDuration + "s")
-                .withStyle(ChatFormatting.YELLOW)));
+        lines.add(new TextComponent("⌛ ")
+            .withStyle(ChatFormatting.YELLOW)
+            .append(new TranslatableComponent("medical.effect_duration")
+                .withStyle(ChatFormatting.GRAY)
+                .append(new TextComponent(" " + effectDuration + "s")
+                    .withStyle(ChatFormatting.YELLOW))));
         
-        lines.add(new TranslatableComponent("medical.adrenaline.speed_boost")
-            .withStyle(ChatFormatting.GREEN));
-        lines.add(new TranslatableComponent("medical.adrenaline.absorption")
-            .withStyle(ChatFormatting.GREEN));
+        lines.add(new TextComponent("» ")
+            .withStyle(ChatFormatting.YELLOW)
+            .append(new TranslatableComponent("medical.adrenaline.speed_boost")
+                .withStyle(ChatFormatting.GREEN)));
+        lines.add(new TextComponent("▣ ")
+            .withStyle(ChatFormatting.BLUE)
+            .append(new TranslatableComponent("medical.adrenaline.absorption")
+                .withStyle(ChatFormatting.GREEN)));
         
         float swayReduction = ServerConfig.instance.adrenalineAimSwayReductionFactor.get().floatValue() * 100.0f;
         if (swayReduction > 0) {
-          lines.add(new TranslatableComponent("medical.adrenaline.aim_sway_reduction")
-              .withStyle(ChatFormatting.GRAY)
-              .append(new TextComponent(String.format(" %.0f%%", swayReduction))
-                  .withStyle(ChatFormatting.GREEN)));
+          lines.add(new TextComponent("◈ ")
+              .withStyle(ChatFormatting.GOLD)
+              .append(new TranslatableComponent("medical.adrenaline.aim_sway_reduction")
+                  .withStyle(ChatFormatting.GRAY)
+                  .append(new TextComponent(String.format(" %.0f%%", swayReduction))
+                      .withStyle(ChatFormatting.GREEN))));
         }
         
         float slowReduction = ServerConfig.instance.adrenalineSlowReductionFactor.get().floatValue() * 100.0f;
         if (slowReduction > 0) {
-          lines.add(new TranslatableComponent("medical.adrenaline.slow_reduction")
-              .withStyle(ChatFormatting.GRAY)
-              .append(new TextComponent(String.format(" %.0f%%", slowReduction))
-                  .withStyle(ChatFormatting.GREEN)));
+          lines.add(new TextComponent("« ")
+              .withStyle(ChatFormatting.DARK_GRAY)
+              .append(new TranslatableComponent("medical.adrenaline.slow_reduction")
+                  .withStyle(ChatFormatting.GRAY)
+                  .append(new TextComponent(String.format(" %.0f%%", slowReduction))
+                      .withStyle(ChatFormatting.GREEN))));
         }
         
         float bleedMultiplier = ServerConfig.instance.adrenalineBleedChanceMultiplier.get().floatValue();
         if (bleedMultiplier != 1.0f) {
-          lines.add(new TranslatableComponent("medical.adrenaline.bleed_multiplier")
-              .withStyle(ChatFormatting.GRAY)
-              .append(new TextComponent(String.format(" %.1fx", bleedMultiplier))
-                  .withStyle(bleedMultiplier > 1.0f ? ChatFormatting.GREEN : ChatFormatting.YELLOW)));
+          lines.add(new TextComponent("✚ ")
+              .withStyle(ChatFormatting.DARK_RED)
+              .append(new TranslatableComponent("medical.adrenaline.bleed_multiplier")
+                  .withStyle(ChatFormatting.GRAY)
+                  .append(new TextComponent(String.format(" %.1fx", bleedMultiplier))
+                      .withStyle(bleedMultiplier > 1.0f ? ChatFormatting.GREEN : ChatFormatting.YELLOW))));
         }
       }
       case BLOOD_SYRINGE -> {
@@ -141,31 +161,39 @@ public class MedicalItem extends ActionItem {
         addDurationTooltip(lines, ServerConfig.instance.cleanRagDurationTicks.get());
         
         if (ServerConfig.instance.cleanRagRemovesBleeding.get()) {
-          lines.add(new TranslatableComponent("medical.bleeding_stop")
-              .withStyle(ChatFormatting.GREEN));
+          lines.add(new TextComponent("✚ ")
+              .withStyle(ChatFormatting.DARK_RED)
+              .append(new TranslatableComponent("medical.bleeding_stop")
+                  .withStyle(ChatFormatting.GREEN)));
         }
       }
       case SYRINGE -> {
-        lines.add(new TranslatableComponent("medical.syringe.empty")
-            .withStyle(ChatFormatting.GRAY));
+        lines.add(new TextComponent("✦ ")
+            .withStyle(ChatFormatting.LIGHT_PURPLE)
+            .append(new TranslatableComponent("medical.syringe.empty")
+                .withStyle(ChatFormatting.GRAY)));
       }
     }
   }
 
   private void addDurationTooltip(List<Component> lines, int durationTicks) {
     float durationSeconds = durationTicks / 20.0f;
-    lines.add(new TranslatableComponent("medical.use_duration")
-        .withStyle(ChatFormatting.GRAY)
-        .append(new TextComponent(String.format(" %.1fs", durationSeconds))
-            .withStyle(ChatFormatting.YELLOW)));
+    lines.add(new TextComponent("⌚ ")
+        .withStyle(ChatFormatting.AQUA)
+        .append(new TranslatableComponent("medical.use_duration")
+            .withStyle(ChatFormatting.GRAY)
+            .append(new TextComponent(String.format(" %.1fs", durationSeconds))
+                .withStyle(ChatFormatting.YELLOW))));
   }
 
   private void addHealingTooltip(List<Component> lines, float healAmount) {
     if (healAmount > 0) {
-      lines.add(new TranslatableComponent("medical.healing")
-          .withStyle(ChatFormatting.GRAY)
-          .append(new TextComponent(String.format(" %.1f", healAmount))
-              .withStyle(ChatFormatting.RED)));
+      lines.add(new TextComponent("♥ ")
+          .withStyle(ChatFormatting.RED)
+          .append(new TranslatableComponent("medical.healing")
+              .withStyle(ChatFormatting.GRAY)
+              .append(new TextComponent(String.format(" %.1f", healAmount))
+                  .withStyle(ChatFormatting.RED))));
     }
   }
 }

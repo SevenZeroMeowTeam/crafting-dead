@@ -35,6 +35,9 @@ import net.minecraftforge.network.PacketDistributor;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
 
+  // TODO: Fix this mixin - isImmobile() method doesn't exist in 1.18.2 LivingEntity
+  // The refmap has wrong method signature m_6107_()Z
+  /*
   @Inject(at = @At("RETURN"), method = "isImmobile", cancellable = true)
   private void isImmobile(CallbackInfoReturnable<Boolean> callbackInfo) {
     var self = (LivingEntity) (Object) this;
@@ -44,8 +47,11 @@ public abstract class LivingEntityMixin {
       }
     });
   }
+  */
 
   // TODO - temp until https://github.com/MinecraftForge/MinecraftForge/pull/7630 gets merged
+  // TODO: Also broken - refmap has wrong method mappings for 1.18.2
+  /*
   @Redirect(at = @At(value = "INVOKE",
       target = "Lnet/minecraft/world/item/ItemStack;matches(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z"),
       method = "collectEquipmentChanges")
@@ -66,4 +72,5 @@ public abstract class LivingEntityMixin {
     }
     return true;
   }
+  */
 }

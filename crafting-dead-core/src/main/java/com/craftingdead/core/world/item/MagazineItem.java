@@ -105,16 +105,20 @@ public class MagazineItem extends Item {
       Component amountText = new TextComponent(currentAmount + "/" + this.getSize())
           .withStyle(ChatFormatting.RED);
 
-      lines.add(new TranslatableComponent("magazine.amount")
-          .withStyle(ChatFormatting.GRAY)
-          .append(amountText));
+      lines.add(new TextComponent("■ ")
+          .withStyle(ChatFormatting.YELLOW)
+          .append(new TranslatableComponent("magazine.amount")
+              .withStyle(ChatFormatting.GRAY)
+              .append(amountText)));
     }
 
     if (this.armorPenetration > 0) {
-      lines.add(new TranslatableComponent("magazine.armor_penetration")
-          .withStyle(ChatFormatting.GRAY)
-          .append(new TextComponent(String.format("%.0f%%", this.armorPenetration))
-              .withStyle(ChatFormatting.RED)));
+      lines.add(new TextComponent("▣ ")
+          .withStyle(ChatFormatting.BLUE)
+          .append(new TranslatableComponent("magazine.armor_penetration")
+              .withStyle(ChatFormatting.GRAY)
+              .append(new TextComponent(String.format("%.0f%%", this.armorPenetration))
+                  .withStyle(ChatFormatting.RED))));
     }
   }
 

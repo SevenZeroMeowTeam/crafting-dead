@@ -74,63 +74,89 @@ public class HatItem extends EquipmentItem {
   public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> lines,
       TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, world, lines, tooltipFlag);
+    
+    // Special abilities with Unicode symbols
     if (this.headshotReductionPercentage > 0.0F) {
-    Component percentageText =
-      new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f%%",
-        this.headshotReductionPercentage * 100.0F))).withStyle(ChatFormatting.RED);
+      Component percentageText =
+        new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f%%",
+          this.headshotReductionPercentage * 100.0F))).withStyle(ChatFormatting.RED);
 
-      lines.add(new TranslatableComponent("hat.headshot_reduction")
-          .withStyle(ChatFormatting.GRAY)
-      .append(Objects.requireNonNull(percentageText)));
+      lines.add(new TextComponent("◈ ")
+          .withStyle(ChatFormatting.GOLD)
+          .append(new TranslatableComponent("hat.headshot_reduction")
+              .withStyle(ChatFormatting.GRAY)
+              .append(Objects.requireNonNull(percentageText))));
     }
+    
     if (this.immuneToFlashes) {
-      lines.add(new TranslatableComponent("hat.immune_to_flashes")
-          .withStyle(ChatFormatting.GRAY));
+      lines.add(new TextComponent("✦ ")
+          .withStyle(ChatFormatting.YELLOW)
+          .append(new TranslatableComponent("hat.immune_to_flashes")
+              .withStyle(ChatFormatting.GRAY)));
     }
+    
     if (this.immuneToGas) {
-      lines.add(new TranslatableComponent("hat.immune_to_gas")
-          .withStyle(ChatFormatting.GRAY));
+      lines.add(new TextComponent("☁ ")
+          .withStyle(ChatFormatting.GREEN)
+          .append(new TranslatableComponent("hat.immune_to_gas")
+              .withStyle(ChatFormatting.GRAY)));
     }
+    
     if (this.nightVision) {
-      lines.add(new TranslatableComponent("hat.has_night_vision")
-          .withStyle(ChatFormatting.GRAY));
+      lines.add(new TextComponent("★ ")
+          .withStyle(ChatFormatting.AQUA)
+          .append(new TranslatableComponent("hat.has_night_vision")
+              .withStyle(ChatFormatting.GRAY)));
     }
 
-  var itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
-  if (itemId != null) {
-    var profile = ProtectionConfig.get().helmetProfile(itemId);
-    if (!profile.isEmpty()) {
-    Component absorptionText =
-      new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f%%",
-        profile.absorption() * 100.0F))).withStyle(ChatFormatting.RED);
-    lines.add(new TranslatableComponent("equipment.absorption")
-      .withStyle(ChatFormatting.GRAY)
-      .append(Objects.requireNonNull(absorptionText)));
+    // Ballistic protection stats
+    var itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+    if (itemId != null) {
+      var profile = ProtectionConfig.get().helmetProfile(itemId);
+      if (!profile.isEmpty()) {
+        lines.add(TextComponent.EMPTY);
+        lines.add(new TranslatableComponent("equipment.ballistic_stats")
+            .withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
+        
+        Component absorptionText =
+          new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f%%",
+            profile.absorption() * 100.0F))).withStyle(ChatFormatting.RED);
+        lines.add(new TextComponent("▣ ")
+            .withStyle(ChatFormatting.BLUE)
+            .append(new TranslatableComponent("equipment.absorption")
+                .withStyle(ChatFormatting.GRAY)
+                .append(Objects.requireNonNull(absorptionText))));
 
-    Component stoppingPowerText =
-      new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f",
-        profile.stoppingPower()))).withStyle(ChatFormatting.RED);
-    lines.add(new TranslatableComponent("equipment.stopping_power")
-      .withStyle(ChatFormatting.GRAY)
-      .append(Objects.requireNonNull(stoppingPowerText)));
+        Component stoppingPowerText =
+          new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f",
+            profile.stoppingPower()))).withStyle(ChatFormatting.RED);
+        lines.add(new TextComponent("⚙ ")
+            .withStyle(ChatFormatting.GRAY)
+            .append(new TranslatableComponent("equipment.stopping_power")
+                .withStyle(ChatFormatting.GRAY)
+                .append(Objects.requireNonNull(stoppingPowerText))));
 
-    if (profile.stunThreshold() > 0.0F) {
-      Component stunThresholdText =
-        new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f",
-          profile.stunThreshold()))).withStyle(ChatFormatting.RED);
-      lines.add(new TranslatableComponent("equipment.stun_threshold")
-        .withStyle(ChatFormatting.GRAY)
-        .append(Objects.requireNonNull(stunThresholdText)));
+        if (profile.stunThreshold() > 0.0F) {
+          Component stunThresholdText =
+            new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f",
+              profile.stunThreshold()))).withStyle(ChatFormatting.RED);
+          lines.add(new TextComponent("✖ ")
+              .withStyle(ChatFormatting.YELLOW)
+              .append(new TranslatableComponent("equipment.stun_threshold")
+                  .withStyle(ChatFormatting.GRAY)
+                  .append(Objects.requireNonNull(stunThresholdText))));
+        }
+
+        Component durabilityText =
+          new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.2f",
+            profile.durabilityPerEnergy()))).withStyle(ChatFormatting.RED);
+        lines.add(new TextComponent("◊ ")
+            .withStyle(ChatFormatting.DARK_GRAY)
+            .append(new TranslatableComponent("equipment.durability_per_energy")
+                .withStyle(ChatFormatting.GRAY)
+                .append(Objects.requireNonNull(durabilityText))));
+      }
     }
-
-    Component durabilityText =
-      new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.2f",
-        profile.durabilityPerEnergy()))).withStyle(ChatFormatting.RED);
-    lines.add(new TranslatableComponent("equipment.durability_per_energy")
-      .withStyle(ChatFormatting.GRAY)
-      .append(Objects.requireNonNull(durabilityText)));
-    }
-  }
   }
 
   @Override

@@ -120,35 +120,47 @@ public class StorageItem extends EquipmentItem {
       if (itemId != null) {
         var profile = ProtectionConfig.get().vestProfile(itemId);
         if (!profile.isEmpty()) {
+          lines.add(TextComponent.EMPTY);
+          lines.add(new TranslatableComponent("equipment.ballistic_stats")
+              .withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
+          
           var absorptionText = new TextComponent(Objects.requireNonNull(
                   String.format(Locale.ROOT, "%.0f%%", profile.absorption() * 100.0F)))
                       .withStyle(ChatFormatting.RED);
-          lines.add(new TranslatableComponent("equipment.absorption")
-              .withStyle(ChatFormatting.GRAY)
-              .append(Objects.requireNonNull(absorptionText)));
+          lines.add(new TextComponent("▣ ")
+              .withStyle(ChatFormatting.BLUE)
+              .append(new TranslatableComponent("equipment.absorption")
+                  .withStyle(ChatFormatting.GRAY)
+                  .append(Objects.requireNonNull(absorptionText))));
 
           var stoppingPowerText = new TextComponent(Objects.requireNonNull(
                   String.format(Locale.ROOT, "%.0f", profile.stoppingPower())))
                       .withStyle(ChatFormatting.RED);
-          lines.add(new TranslatableComponent("equipment.stopping_power")
+          lines.add(new TextComponent("⚙ ")
               .withStyle(ChatFormatting.GRAY)
-              .append(Objects.requireNonNull(stoppingPowerText)));
+              .append(new TranslatableComponent("equipment.stopping_power")
+                  .withStyle(ChatFormatting.GRAY)
+                  .append(Objects.requireNonNull(stoppingPowerText))));
 
           if (profile.stunThreshold() > 0.0F) {
             var stunThresholdText = new TextComponent(Objects.requireNonNull(
                     String.format(Locale.ROOT, "%.0f", profile.stunThreshold())))
                         .withStyle(ChatFormatting.RED);
-            lines.add(new TranslatableComponent("equipment.stun_threshold")
-                .withStyle(ChatFormatting.GRAY)
-                .append(Objects.requireNonNull(stunThresholdText)));
+            lines.add(new TextComponent("✖ ")
+                .withStyle(ChatFormatting.YELLOW)
+                .append(new TranslatableComponent("equipment.stun_threshold")
+                    .withStyle(ChatFormatting.GRAY)
+                    .append(Objects.requireNonNull(stunThresholdText))));
           }
 
           var durabilityText = new TextComponent(Objects.requireNonNull(
                   String.format(Locale.ROOT, "%.2f", profile.durabilityPerEnergy())))
                       .withStyle(ChatFormatting.RED);
-          lines.add(new TranslatableComponent("equipment.durability_per_energy")
-              .withStyle(ChatFormatting.GRAY)
-              .append(Objects.requireNonNull(durabilityText)));
+          lines.add(new TextComponent("◊ ")
+              .withStyle(ChatFormatting.DARK_GRAY)
+              .append(new TranslatableComponent("equipment.durability_per_energy")
+                  .withStyle(ChatFormatting.GRAY)
+                  .append(Objects.requireNonNull(durabilityText))));
         }
       }
     }

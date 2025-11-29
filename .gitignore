@@ -7,3 +7,7 @@
 /.project
 
 /.idea
+/crafting-dead-core/.vscode
+/crafting-dead-decoration/.vscode
+/crafting-dead-survival/.vscode
+*.md

@@ -273,7 +273,9 @@ public class SurvivalItems {
 
   public static final RegistryObject<Item> EMPTY_WATER_BOTTLE =
       deferredRegister.register("empty_water_bottle",
-          () -> new Item(new Item.Properties().tab(TAB).stacksTo(3)));
+          () -> new MultiActionItem(new Item.Properties().tab(TAB).stacksTo(3),
+              SurvivalActionTypes.FILL_WATER_BOTTLE_FROM_PUMP,
+              SurvivalActionTypes.FILL_WATER_BOTTLE));
 
   public static final RegistryObject<Item> WATER_BOTTLE =
       deferredRegister.register("water_bottle",
@@ -282,8 +284,9 @@ public class SurvivalItems {
 
   public static final RegistryObject<Item> EMPTY_WATER_CANTEEN =
       deferredRegister.register("empty_water_canteen",
-          () -> new ActionItem(SurvivalActionTypes.FILL_WATER_CANTEEN,
-              new Item.Properties().tab(TAB).stacksTo(3)));
+          () -> new MultiActionItem(new Item.Properties().tab(TAB).stacksTo(3),
+              SurvivalActionTypes.FILL_WATER_CANTEEN_FROM_PUMP,
+              SurvivalActionTypes.FILL_WATER_CANTEEN));
 
   public static final RegistryObject<Item> WATER_CANTEEN =
       deferredRegister.register("water_canteen",
@@ -292,8 +295,9 @@ public class SurvivalItems {
 
   public static final RegistryObject<Item> EMPTY_FLASK =
       deferredRegister.register("empty_flask",
-          () -> new ActionItem(SurvivalActionTypes.FILL_FLASK,
-              new Item.Properties().tab(TAB).stacksTo(3)));
+          () -> new MultiActionItem(new Item.Properties().tab(TAB).stacksTo(3),
+              SurvivalActionTypes.FILL_FLASK_FROM_PUMP,
+              SurvivalActionTypes.FILL_FLASK));
 
   public static final RegistryObject<Item> FLASK =
       deferredRegister.register("flask",
@@ -693,15 +697,83 @@ public class SurvivalItems {
               .tab(TAB)));
 
   static {
-    var canOpenerTooltip = new TranslatableComponent("can_opener.information")
-        .withStyle(ChatFormatting.GRAY);
     var cannedFoodTooltip = new TranslatableComponent("canned_food.information")
         .withStyle(ChatFormatting.GRAY);
     var emptyCanteenFlaskTooltip  = new TranslatableComponent("empty_canteen_flask.information")
-        .withStyle(ChatFormatting.GRAY);
-    ArbitraryTooltips.registerTooltip(CAN_OPENER, canOpenerTooltip);
-    ArbitraryTooltips.registerTooltip(SCREWDRIVER, canOpenerTooltip);
-    ArbitraryTooltips.registerTooltip(MULTI_TOOL, canOpenerTooltip);
+        .withStyle(ChatFormatting.AQUA);
+    
+    // Tools
+    ArbitraryTooltips.registerTooltip(CAN_OPENER,
+        new TranslatableComponent("can_opener.information")
+            .withStyle(ChatFormatting.YELLOW));
+    ArbitraryTooltips.registerTooltip(SCREWDRIVER,
+        new TranslatableComponent("screwdriver.information")
+            .withStyle(ChatFormatting.YELLOW));
+    ArbitraryTooltips.registerTooltip(MULTI_TOOL,
+        new TranslatableComponent("multi_tool.information")
+            .withStyle(ChatFormatting.YELLOW));
+    ArbitraryTooltips.registerTooltip(ROPE,
+        new TranslatableComponent("rope.information")
+            .withStyle(ChatFormatting.GRAY));
+    
+    // Medical items
+    ArbitraryTooltips.registerTooltip(SPLINT,
+        new TranslatableComponent("splint.information")
+            .withStyle(ChatFormatting.GREEN));
+    ArbitraryTooltips.registerTooltip(MORPHINE_SYRINGE,
+        new TranslatableComponent("morphine_syringe.information")
+            .withStyle(ChatFormatting.GREEN));
+    ArbitraryTooltips.registerTooltip(RBI_SYRINGE,
+        new TranslatableComponent("rbi_syringe.information")
+            .withStyle(ChatFormatting.RED));
+    ArbitraryTooltips.registerTooltip(CURE_SYRINGE,
+        new TranslatableComponent("cure_syringe.information")
+            .withStyle(ChatFormatting.GREEN));
+    
+    // Explosives and radios
+    ArbitraryTooltips.registerTooltip(PIPE_BOMB,
+        new TranslatableComponent("pipe_bomb.information")
+            .withStyle(ChatFormatting.RED));
+    ArbitraryTooltips.registerTooltip(MEDICAL_DROP_RADIO,
+        new TranslatableComponent("medical_drop_radio.information")
+            .withStyle(ChatFormatting.GREEN));
+    ArbitraryTooltips.registerTooltip(MILITARY_DROP_RADIO,
+        new TranslatableComponent("military_drop_radio.information")
+            .withStyle(ChatFormatting.GOLD));
+    
+    // Loot blocks
+    ArbitraryTooltips.registerTooltip(MILITARY_LOOT_ITEM,
+        new TranslatableComponent("military_loot.information")
+            .withStyle(ChatFormatting.DARK_GREEN));
+    ArbitraryTooltips.registerTooltip(MILITARY_LOOT_GEN_ITEM,
+        new TranslatableComponent("military_loot_gen.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    ArbitraryTooltips.registerTooltip(POLICE_LOOT_ITEM,
+        new TranslatableComponent("police_loot.information")
+            .withStyle(ChatFormatting.BLUE));
+    ArbitraryTooltips.registerTooltip(POLICE_LOOT_GEN_ITEM,
+        new TranslatableComponent("police_loot_gen.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    ArbitraryTooltips.registerTooltip(MEDIC_LOOT_ITEM,
+        new TranslatableComponent("medic_loot.information")
+            .withStyle(ChatFormatting.LIGHT_PURPLE));
+    ArbitraryTooltips.registerTooltip(MEDIC_LOOT_GEN_ITEM,
+        new TranslatableComponent("medic_loot_gen.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    ArbitraryTooltips.registerTooltip(CIVILIAN_LOOT_ITEM,
+        new TranslatableComponent("civilian_loot.information")
+            .withStyle(ChatFormatting.WHITE));
+    ArbitraryTooltips.registerTooltip(CIVILIAN_LOOT_GEN_ITEM,
+        new TranslatableComponent("civilian_loot_gen.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    ArbitraryTooltips.registerTooltip(CIVILIAN_RARE_LOOT_ITEM,
+        new TranslatableComponent("civilian_rare_loot.information")
+            .withStyle(ChatFormatting.YELLOW));
+    ArbitraryTooltips.registerTooltip(CIVILIAN_RARE_LOOT_GEN_ITEM,
+        new TranslatableComponent("civilian_rare_loot_gen.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    
+    // Canned foods (need to be opened)
     ArbitraryTooltips.registerTooltip(CANNED_SWEETCORN, cannedFoodTooltip);
     ArbitraryTooltips.registerTooltip(CANNED_BEANS, cannedFoodTooltip);
     ArbitraryTooltips.registerTooltip(CANNED_TUNA, cannedFoodTooltip);
@@ -712,8 +784,12 @@ public class SurvivalItems {
     ArbitraryTooltips.registerTooltip(CANNED_PICKLES, cannedFoodTooltip);
     ArbitraryTooltips.registerTooltip(CANNED_DOG_FOOD, cannedFoodTooltip);
     ArbitraryTooltips.registerTooltip(CANNED_TOMATO_SOUP, cannedFoodTooltip);
+    
+    // Empty containers
     ArbitraryTooltips.registerTooltip(EMPTY_WATER_CANTEEN, emptyCanteenFlaskTooltip);
     ArbitraryTooltips.registerTooltip(EMPTY_FLASK, emptyCanteenFlaskTooltip);
+    
+    // Medical items
     ArbitraryTooltips.registerTooltip(SPLINT,
         new TranslatableComponent("splint.information")
             .withStyle(ChatFormatting.GRAY));
@@ -726,5 +802,156 @@ public class SurvivalItems {
     ArbitraryTooltips.registerTooltip(CURE_SYRINGE,
         new TranslatableComponent("cure_syringe.information")
             .withStyle(ChatFormatting.GRAY));
+    
+    // Drinks
+    ArbitraryTooltips.registerTooltip(WATER_BOTTLE,
+        new TranslatableComponent("water_bottle.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(WATER_CANTEEN,
+        new TranslatableComponent("water_canteen.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(FLASK,
+        new TranslatableComponent("flask.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(ICED_TEA,
+        new TranslatableComponent("iced_tea.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(IRON_BREW,
+        new TranslatableComponent("iron_brew.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(JUICE_POUCH,
+        new TranslatableComponent("juice_pouch.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(LEMON_SODA,
+        new TranslatableComponent("lemon_soda.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(MILK_CARTON,
+        new TranslatableComponent("milk_carton.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(ORANGE_SODA,
+        new TranslatableComponent("orange_soda.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(PEPE_SODA,
+        new TranslatableComponent("pepe_soda.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(SPRITE,
+        new TranslatableComponent("sprite.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(COLA,
+        new TranslatableComponent("cola.information")
+            .withStyle(ChatFormatting.AQUA));
+    ArbitraryTooltips.registerTooltip(ZOMBIE_ENERGY,
+        new TranslatableComponent("zombie_energy.information")
+            .withStyle(ChatFormatting.AQUA));
+    
+    // Snacks and packaged food
+    ArbitraryTooltips.registerTooltip(POWER_BAR,
+        new TranslatableComponent("power_bar.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(CANDY_BAR,
+        new TranslatableComponent("candy_bar.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(CEREAL,
+        new TranslatableComponent("cereal.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(NUTTY_CEREAL,
+        new TranslatableComponent("nutty_cereal.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(EMERALD_CEREAL,
+        new TranslatableComponent("emerald_cereal.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(FLAKE_CEREAL,
+        new TranslatableComponent("flake_cereal.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(CHIPS,
+        new TranslatableComponent("chips.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(RANCH_CHIPS,
+        new TranslatableComponent("ranch_chips.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(CHEESY_CHIPS,
+        new TranslatableComponent("cheesy_chips.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(SALTED_CHIPS,
+        new TranslatableComponent("salted_chips.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(POPCORN,
+        new TranslatableComponent("popcorn.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(RICE_BAG,
+        new TranslatableComponent("rice_bag.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(NOODLES,
+        new TranslatableComponent("noodles.information")
+            .withStyle(ChatFormatting.GOLD));
+    
+    // Fresh and rotten fruits
+    ArbitraryTooltips.registerTooltip(ORANGE,
+        new TranslatableComponent("orange.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(ROTTEN_ORANGE,
+        new TranslatableComponent("rotten_orange.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    ArbitraryTooltips.registerTooltip(PEAR,
+        new TranslatableComponent("pear.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(ROTTEN_PEAR,
+        new TranslatableComponent("rotten_pear.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    ArbitraryTooltips.registerTooltip(ROTTEN_APPLE,
+        new TranslatableComponent("rotten_apple.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    ArbitraryTooltips.registerTooltip(BLUEBERRY,
+        new TranslatableComponent("blueberry.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(ROTTEN_BLUEBERRY,
+        new TranslatableComponent("rotten_blueberry.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    ArbitraryTooltips.registerTooltip(RASPBERRY,
+        new TranslatableComponent("raspberry.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(ROTTEN_RASPBERRY,
+        new TranslatableComponent("rotten_raspberry.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    ArbitraryTooltips.registerTooltip(ROTTEN_MELON_SLICE,
+        new TranslatableComponent("rotten_melon_slice.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    
+    // MRE
+    ArbitraryTooltips.registerTooltip(MRE,
+        new TranslatableComponent("mre.information")
+            .withStyle(ChatFormatting.GOLD));
+    
+    // Opened canned foods
+    ArbitraryTooltips.registerTooltip(OPEN_CANNED_SWEETCORN,
+        new TranslatableComponent("open_canned_sweetcorn.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(OPEN_CANNED_BEANS,
+        new TranslatableComponent("open_canned_beans.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(OPEN_CANNED_TUNA,
+        new TranslatableComponent("open_canned_tuna.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(OPEN_CANNED_PEACHES,
+        new TranslatableComponent("open_canned_peaches.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(OPEN_CANNED_PASTA,
+        new TranslatableComponent("open_canned_pasta.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(OPEN_CANNED_CORNED_BEEF,
+        new TranslatableComponent("open_canned_corned_beef.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(OPEN_CANNED_CUSTARD,
+        new TranslatableComponent("open_canned_custard.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(OPEN_CANNED_PICKLES,
+        new TranslatableComponent("open_canned_pickles.information")
+            .withStyle(ChatFormatting.GOLD));
+    ArbitraryTooltips.registerTooltip(OPEN_CANNED_DOG_FOOD,
+        new TranslatableComponent("open_canned_dog_food.information")
+            .withStyle(ChatFormatting.DARK_GRAY));
+    ArbitraryTooltips.registerTooltip(OPEN_CANNED_TOMATO_SOUP,
+        new TranslatableComponent("open_canned_tomato_soup.information")
+            .withStyle(ChatFormatting.GOLD));
   }
 }

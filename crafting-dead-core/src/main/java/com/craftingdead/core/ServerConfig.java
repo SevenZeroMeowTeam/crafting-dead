@@ -54,6 +54,27 @@ public class ServerConfig {
   public final ForgeConfigSpec.DoubleValue militaryClothingDamageReduction;
   public final ForgeConfigSpec.DoubleValue militaryClothingBleedAndInfectionReduction;
 
+  // Passive Protection Values
+  public final ForgeConfigSpec.DoubleValue casualClothingBiteProtection;
+  public final ForgeConfigSpec.DoubleValue casualClothingStabResistance;
+  public final ForgeConfigSpec.DoubleValue casualClothingBluntResistance;
+  public final ForgeConfigSpec.DoubleValue casualClothingWeightModifier;
+
+  public final ForgeConfigSpec.DoubleValue utilityClothingBiteProtection;
+  public final ForgeConfigSpec.DoubleValue utilityClothingStabResistance;
+  public final ForgeConfigSpec.DoubleValue utilityClothingBluntResistance;
+  public final ForgeConfigSpec.DoubleValue utilityClothingWeightModifier;
+
+  public final ForgeConfigSpec.DoubleValue militaryClothingBiteProtection;
+  public final ForgeConfigSpec.DoubleValue militaryClothingStabResistance;
+  public final ForgeConfigSpec.DoubleValue militaryClothingBluntResistance;
+  public final ForgeConfigSpec.DoubleValue militaryClothingWeightModifier;
+
+  public final ForgeConfigSpec.DoubleValue heavyClothingBiteProtection;
+  public final ForgeConfigSpec.DoubleValue heavyClothingStabResistance;
+  public final ForgeConfigSpec.DoubleValue heavyClothingBluntResistance;
+  public final ForgeConfigSpec.DoubleValue heavyClothingWeightModifier;
+
   // ================================================================================
   // Medical Consumables Values
   // ================================================================================
@@ -263,6 +284,90 @@ public class ServerConfig {
           .translation("options.craftingdead.server.militaryClothingBleedAndInfectionReduction")
           .comment("Sets the percentage of bleed and infection chance reduction. Default is 30% (0.30)")
           .defineInRange("militaryBleedAndInfectionReduction", 0.30F, 0.00F, 1.00F);
+
+      // Passive Protection - Casual Tier
+      this.casualClothingBiteProtection = builder
+          .translation("options.craftingdead.server.casualClothingBiteProtection")
+          .comment("Bite protection for casual clothing (reduces infection chance). Default is 10% (0.10)")
+          .defineInRange("casualBiteProtection", 0.10F, 0.00F, 1.00F);
+
+      this.casualClothingStabResistance = builder
+          .translation("options.craftingdead.server.casualClothingStabResistance")
+          .comment("Stab resistance for casual clothing (reduces bleeding chance). Default is 5% (0.05)")
+          .defineInRange("casualStabResistance", 0.05F, 0.00F, 1.00F);
+
+      this.casualClothingBluntResistance = builder
+          .translation("options.craftingdead.server.casualClothingBluntResistance")
+          .comment("Blunt resistance for casual clothing (reduces blunt damage). Default is 2% (0.02)")
+          .defineInRange("casualBluntResistance", 0.02F, 0.00F, 1.00F);
+
+      this.casualClothingWeightModifier = builder
+          .translation("options.craftingdead.server.casualClothingWeightModifier")
+          .comment("Weight modifier for casual clothing (affects movement speed). Default is 0% (0.00)")
+          .defineInRange("casualWeightModifier", 0.00F, -1.00F, 1.00F);
+
+      // Passive Protection - Utility Tier
+      this.utilityClothingBiteProtection = builder
+          .translation("options.craftingdead.server.utilityClothingBiteProtection")
+          .comment("Bite protection for utility clothing. Default is 50% (0.50)")
+          .defineInRange("utilityBiteProtection", 0.50F, 0.00F, 1.00F);
+
+      this.utilityClothingStabResistance = builder
+          .translation("options.craftingdead.server.utilityClothingStabResistance")
+          .comment("Stab resistance for utility clothing. Default is 15% (0.15)")
+          .defineInRange("utilityStabResistance", 0.15F, 0.00F, 1.00F);
+
+      this.utilityClothingBluntResistance = builder
+          .translation("options.craftingdead.server.utilityClothingBluntResistance")
+          .comment("Blunt resistance for utility clothing. Default is 10% (0.10)")
+          .defineInRange("utilityBluntResistance", 0.10F, 0.00F, 1.00F);
+
+      this.utilityClothingWeightModifier = builder
+          .translation("options.craftingdead.server.utilityClothingWeightModifier")
+          .comment("Weight modifier for utility clothing. Default is -2.5% (-0.025)")
+          .defineInRange("utilityWeightModifier", -0.025F, -1.00F, 1.00F);
+
+      // Passive Protection - Military Tier
+      this.militaryClothingBiteProtection = builder
+          .translation("options.craftingdead.server.militaryClothingBiteProtection")
+          .comment("Bite protection for military clothing. Default is 40% (0.40)")
+          .defineInRange("militaryBiteProtection", 0.40F, 0.00F, 1.00F);
+
+      this.militaryClothingStabResistance = builder
+          .translation("options.craftingdead.server.militaryClothingStabResistance")
+          .comment("Stab resistance for military clothing. Default is 30% (0.30)")
+          .defineInRange("militaryStabResistance", 0.30F, 0.00F, 1.00F);
+
+      this.militaryClothingBluntResistance = builder
+          .translation("options.craftingdead.server.militaryClothingBluntResistance")
+          .comment("Blunt resistance for military clothing. Default is 15% (0.15)")
+          .defineInRange("militaryBluntResistance", 0.15F, 0.00F, 1.00F);
+
+      this.militaryClothingWeightModifier = builder
+          .translation("options.craftingdead.server.militaryClothingWeightModifier")
+          .comment("Weight modifier for military clothing. Default is -2% (-0.02)")
+          .defineInRange("militaryWeightModifier", -0.02F, -1.00F, 1.00F);
+
+      // Passive Protection - Heavy Tier (Juggernaut, etc.)
+      this.heavyClothingBiteProtection = builder
+          .translation("options.craftingdead.server.heavyClothingBiteProtection")
+          .comment("Bite protection for heavy clothing. Default is 60% (0.60)")
+          .defineInRange("heavyBiteProtection", 0.60F, 0.00F, 1.00F);
+
+      this.heavyClothingStabResistance = builder
+          .translation("options.craftingdead.server.heavyClothingStabResistance")
+          .comment("Stab resistance for heavy clothing. Default is 40% (0.40)")
+          .defineInRange("heavyStabResistance", 0.40F, 0.00F, 1.00F);
+
+      this.heavyClothingBluntResistance = builder
+          .translation("options.craftingdead.server.heavyClothingBluntResistance")
+          .comment("Blunt resistance for heavy clothing. Default is 30% (0.30)")
+          .defineInRange("heavyBluntResistance", 0.30F, 0.00F, 1.00F);
+
+      this.heavyClothingWeightModifier = builder
+          .translation("options.craftingdead.server.heavyClothingWeightModifier")
+          .comment("Weight modifier for heavy clothing. Default is -6% (-0.06)")
+          .defineInRange("heavyWeightModifier", -0.06F, -1.00F, 1.00F);
     }
     builder.pop();
 

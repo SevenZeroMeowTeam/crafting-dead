@@ -220,6 +220,8 @@ public class ClientDist implements ModDist {
     modBus.addListener(this::handleRegisterClientReloadListeners);
 
     MinecraftForge.EVENT_BUS.register(this);
+    // Auto-updater moved to crafting-dead-updater mod (separate optional mod)
+    // MinecraftForge.EVENT_BUS.register(new com.craftingdead.core.client.updater.ClientUpdateEventHandler());
     ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
 
     this.minecraft = Minecraft.getInstance();

@@ -1633,21 +1633,11 @@ public class ModItems {
   public static final RegistryObject<Item> JUGGERNAUT_CLOTHING =
       deferredRegister.register("juggernaut_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
-              .attributeModifier(Attributes.ARMOR, new AttributeModifier(
-                  ClothingItem.ARMOR_MODIFIER_ID,
-                  "Armor modifier",
-                  5,
-                  AttributeModifier.Operation.ADDITION))
-              .attributeModifier(Attributes.MOVEMENT_SPEED, new AttributeModifier(
-                  ClothingItem.ARMOR_MODIFIER_ID,
-                  "Slowness modifier",
-                  -0.15D,
-                  AttributeModifier.Operation.MULTIPLY_TOTAL))
               .fireImmunity()
               .stacksTo(1)
               .tab(COSMETICS_TAB),
               ActionTypes.SHRED_CLOTHING,
-              ClothingType.MILITARY));
+              ClothingType.HEAVY));
 
   public static final RegistryObject<Item> FIREMAN_CLOTHING =
       deferredRegister.register("fireman_clothing",

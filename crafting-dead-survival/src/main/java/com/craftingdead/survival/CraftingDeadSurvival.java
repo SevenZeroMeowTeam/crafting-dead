@@ -19,6 +19,7 @@
 package com.craftingdead.survival;
 
 import com.craftingdead.survival.world.entity.extension.ALFAZombieHandler;
+import com.craftingdead.survival.world.item.ConsumableConfigOverrides;
 import com.craftingdead.survival.world.entity.extension.BountyHunterZombieHandler;
 import com.craftingdead.survival.world.entity.extension.DesertRaiderZombieHandler;
 import com.craftingdead.survival.world.entity.extension.FirefighterZombieHandler;
@@ -41,7 +42,6 @@ import java.util.Random;
 
 import org.slf4j.Logger;
 
-import com.craftingdead.core.telemetry.TelemetryManager;
 import com.craftingdead.core.event.GunEvent;
 import com.craftingdead.core.event.LivingExtensionEvent;
 import com.craftingdead.core.world.action.ActionTypes;
@@ -185,10 +185,11 @@ public class CraftingDeadSurvival {
   // ================================================================================
 
   private void handleCommonSetup(FMLCommonSetupEvent event) {
-    TelemetryManager.initialize(ID, VERSION, Optional::empty, scope -> {
-      scope.setTag("survival.version", VERSION);
-      scope.setTag("survival.immerseLoaded", String.valueOf(this.isImmerseLoaded()));
-    });
+    // TelemetryManager.initialize(ID, VERSION, Optional::empty, scope -> {
+    //   scope.setTag("survival.version", VERSION);
+    //   scope.setTag("survival.immerseLoaded", String.valueOf(this.isImmerseLoaded()));
+    // });
+    // Sentry telemetry disabled - dependency not bundled
     event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(ModItems.SYRINGE.get()),
         Ingredient.of(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE),
         new ItemStack(SurvivalItems.CURE_SYRINGE.get())));
@@ -279,6 +280,13 @@ public class CraftingDeadSurvival {
       event.setMaxPackSize(12);
       event.setResult(Event.Result.ALLOW);
     }
+  }
+
+  @SubscribeEvent
+  public void handleServerAboutToStart(net.minecraftforge.event.server.ServerAboutToStartEvent event) {
+    // Load consumable config overrides on server start
+    ConsumableConfigOverrides.loadOverrides();
+    logger.info("Loaded consumable configuration overrides");
   }
 
   @SubscribeEvent
@@ -430,36 +438,58 @@ public class CraftingDeadSurvival {
       if (spawnEntry.type == EntityType.ZOMBIE) {
         iterator.remove();
         if (serverConfig.advancedZombiesEnabled.get()) {
+          int weight = applySpawnMultipliers(
+              serverConfig.advancedZombieSpawnWeight.get(),
+              serverConfig.civilianZombieSpawnMultiplier.get());
           iterator.add(new MobSpawnSettings.SpawnerData(
               EntityType.ZOMBIE,
-              serverConfig.advancedZombieSpawnWeight.get(),
+              weight,
               serverConfig.advancedZombieMinSpawn.get(),
               serverConfig.advancedZombieMaxSpawn.get()));
         }
 
         if (serverConfig.fastZombiesEnabled.get()) {
+          int weight = applySpawnMultipliers(
+              serverConfig.fastZombieSpawnWeight.get(),
+              serverConfig.civilianZombieSpawnMultiplier.get());
           iterator.add(new MobSpawnSettings.SpawnerData(
               SurvivalEntityTypes.FAST_ZOMBIE.get(),
-              serverConfig.fastZombieSpawnWeight.get(),
+              weight,
               serverConfig.fastZombieMinSpawn.get(),
               serverConfig.fastZombieMaxSpawn.get()));
         }
         if (serverConfig.tankZombiesEnabled.get()) {
+          int weight = applySpawnMultipliers(
+              serverConfig.tankZombieSpawnWeight.get(),
+              serverConfig.civilianZombieSpawnMultiplier.get());
           iterator.add(new MobSpawnSettings.SpawnerData(
               SurvivalEntityTypes.TANK_ZOMBIE.get(),
-              serverConfig.tankZombieSpawnWeight.get(),
+              weight,
               serverConfig.tankZombieMinSpawn.get(),
               serverConfig.tankZombieMaxSpawn.get()));
         }
         if (serverConfig.weakZombiesEnabled.get()) {
+          int weight = applySpawnMultipliers(
+              serverConfig.weakZombieSpawnWeight.get(),
+              serverConfig.civilianZombieSpawnMultiplier.get());
           iterator.add(new MobSpawnSettings.SpawnerData(
               SurvivalEntityTypes.WEAK_ZOMBIE.get(),
-              serverConfig.weakZombieSpawnWeight.get(),
+              weight,
               serverConfig.weakZombieMinSpawn.get(),
               serverConfig.weakZombieMaxSpawn.get()));
         }
       }
     }
+  }
+
+  /**
+   * Applies spawn multipliers to base spawn weight.
+   * Applies global multiplier first, then category multiplier.
+   */
+  private int applySpawnMultipliers(int baseWeight, double categoryMultiplier) {
+    double globalMult = serverConfig.globalZombieSpawnMultiplier.get();
+    double weight = baseWeight * globalMult * categoryMultiplier;
+    return Math.max(1, (int) Math.round(weight));
   }
 
   public static boolean checkZombieSpawnRules(EntityType<? extends Monster> type,

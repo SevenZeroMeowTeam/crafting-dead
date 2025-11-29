@@ -16,29 +16,22 @@
  * https://craftingdead.net/terms.php
  */
 
-package com.craftingdead.immerse.world.item.hydration;
+package com.craftingdead.survival.mixin;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
+import com.craftingdead.survival.CraftingDeadSurvival;
+import net.minecraft.client.gui.components.SubtitleOverlay;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Stub class for immerse Hydration capability.
- * This allows compilation without the immerse module.
- * The actual implementation will be loaded from the immerse mod at runtime.
- */
-public interface Hydration {
-  
-  Capability<Hydration> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+@Mixin(SubtitleOverlay.class)
+public class SubtitleOverlayMixin {
 
-  static Hydration fixed(int water) {
-    return new Hydration() {
-      @Override
-      public int getWater() {
-        return water;
-      }
-    };
+  @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+  private void disableSoundTextRendering(CallbackInfo ci) {
+    if (!CraftingDeadSurvival.serverConfig.showSubtitles.get()) {
+      ci.cancel();
+    }
   }
-
-  int getWater();
 }
