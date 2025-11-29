@@ -72,12 +72,10 @@ minecraft {
 
 dependencies {
     implementation project(':crafting-dead-core')
-    implementation project(':crafting-dead-immerse')
     
-    // Sentry inherited from core via api dependency - no need to redeclare
+    minecraftLibrary group: 'net.rocketpowered', name: 'rocket-sdk', version: '0.0.10'
+    minecraftLibrary group: 'net.rocketpowered', name: 'rocket-common', version: '0.0.7'
 }
-
-jarJar.enable()
 
 jar {
     manifest {
@@ -88,5 +86,4 @@ jar {
             'MixinConfigs': 'craftingdeadsurvival.mixins.json'
         ])
     }
-    finalizedBy 'reobfJar'
 }

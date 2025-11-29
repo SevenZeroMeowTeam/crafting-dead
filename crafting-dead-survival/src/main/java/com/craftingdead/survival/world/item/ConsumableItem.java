@@ -72,29 +72,11 @@ public class ConsumableItem extends Item {
   @Override
   public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag tag) {
     return (this.type != Type.ONLY_FOOD && CraftingDeadSurvival.instance().isImmerseLoaded())
-        ? createHydrationProvider(itemStack.getItem(), this.water) : null;
+        ? createHydrationProvider(this.water) : null;
   }
 
-  private static ICapabilityProvider createHydrationProvider(net.minecraft.world.item.Item item, int defaultWater) {
-    int water = defaultWater;
-    
-    // Check for per-item override (highest priority)
-    if (ConsumableConfigOverrides.isLoaded()) {
-      var override = ConsumableConfigOverrides.getDrinkOverride(
-          net.minecraft.core.Registry.ITEM.getKey(item));
-      if (override != null && override.hydration() != null) {
-        water = override.hydration();
-      } else {
-        // Apply global multiplier if no override
-        water = (int) Math.round(water * CraftingDeadSurvival.serverConfig.drinkHydrationMultiplier.get());
-      }
-    } else {
-      // Fall back to multiplier if overrides not loaded
-      water = (int) Math.round(water * CraftingDeadSurvival.serverConfig.drinkHydrationMultiplier.get());
-    }
-    
-    final int finalWater = water;
-    return CapabilityUtil.provider(() -> Hydration.fixed(finalWater), Hydration.CAPABILITY);
+  private static ICapabilityProvider createHydrationProvider(int water) {
+    return CapabilityUtil.provider(() -> Hydration.fixed(water), Hydration.CAPABILITY);
   }
 
   @Override
@@ -159,36 +141,8 @@ public class ConsumableItem extends Item {
   private void applyEffects(Player player) {
     player.awardStat(Stats.ITEM_USED.get(this));
     if (this.foodProperties != null) {
-      int nutrition = this.foodProperties.getNutrition();
-      float saturation = this.foodProperties.getSaturationModifier();
-      
-      // Check for per-item override (highest priority)
-      if (ConsumableConfigOverrides.isLoaded()) {
-        var override = ConsumableConfigOverrides.getFoodOverride(
-            net.minecraft.core.Registry.ITEM.getKey(this));
-        if (override != null) {
-          if (override.nutrition() != null) {
-            nutrition = override.nutrition();
-          } else {
-            nutrition = (int) Math.round(nutrition * CraftingDeadSurvival.serverConfig.foodNutritionMultiplier.get());
-          }
-          if (override.saturation() != null) {
-            saturation = override.saturation();
-          } else {
-            saturation = (float) (saturation * CraftingDeadSurvival.serverConfig.foodSaturationMultiplier.get());
-          }
-        } else {
-          // Apply global multipliers if no override
-          nutrition = (int) Math.round(nutrition * CraftingDeadSurvival.serverConfig.foodNutritionMultiplier.get());
-          saturation = (float) (saturation * CraftingDeadSurvival.serverConfig.foodSaturationMultiplier.get());
-        }
-      } else {
-        // Fall back to multipliers if overrides not loaded
-        nutrition = (int) Math.round(nutrition * CraftingDeadSurvival.serverConfig.foodNutritionMultiplier.get());
-        saturation = (float) (saturation * CraftingDeadSurvival.serverConfig.foodSaturationMultiplier.get());
-      }
-      
-      player.getFoodData().eat(nutrition, saturation);
+      player.getFoodData()
+          .eat(this.foodProperties.getNutrition(), this.foodProperties.getSaturationModifier());
     }
   }
 
