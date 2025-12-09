@@ -18,6 +18,7 @@
 
 package com.craftingdead.core.world.action.item;
 
+import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import java.util.Optional;
 import com.craftingdead.core.world.action.Action;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
@@ -30,6 +31,7 @@ public abstract class ItemAction implements Action {
 
   private final InteractionHand hand;
   private ItemStack originalStack;
+  public float progress;
 
   public ItemAction(InteractionHand hand) {
     this.hand = hand;
@@ -67,6 +69,7 @@ public abstract class ItemAction implements Action {
 
   @Override
   public void stop(StopReason reason) {
+    var extension = PlayerExtension.getOrThrow((Player) this.performer().entity());
     this.performer().entity().stopUsingItem();
     if (!reason.isCompleted()) {
       return;
@@ -77,6 +80,14 @@ public abstract class ItemAction implements Action {
     final var resultStack = this.getResultItem(this.performer())
         .map(Item::getDefaultInstance)
         .orElse(ItemStack.EMPTY);
+
+    if (!this.shouldConsumeItem(this.performer())
+        && this.type().getUsageDamage() >= 1) {
+      if (!heldStack.isEmpty() && heldStack.isDamageableItem()) {
+        heldStack.hurtAndBreak(this.type().getUsageDamage(), this.performer().entity(),
+            (p) -> p.broadcastBreakEvent(this.hand));
+      }
+    }
 
     if (this.shouldConsumeItem(this.performer())) {
       heldStack.shrink(1);
@@ -91,6 +102,7 @@ public abstract class ItemAction implements Action {
       }
     }
 
+    extension.setRightClickTicks(0);
     this.type().getFinishSound().ifPresent(
         sound -> this.performer().entity().playSound(sound, 1.0F, 1.0F));
   }
@@ -109,9 +121,11 @@ public abstract class ItemAction implements Action {
 
   @Override
   public boolean tick() {
-    if (!this.performer().entity().isUsingItem()
+    var extension = PlayerExtension.getOrThrow((Player) this.performer().entity());
+    if (!extension.isHoldingRightClick()
         || this.originalStack != this.getItemStack()) {
       this.performer().cancelAction(true);
+      extension.setRightClickTicks(0);
       return false;
     }
 
@@ -126,7 +140,8 @@ public abstract class ItemAction implements Action {
     if (!this.performer().entity().isUsingItem()) {
       return 0.0F;
     } else {
-      return (float) (this.performer().entity().getTicksUsingItem() + partialTicks)
+      this.progress = (this.performer().entity().getTicksUsingItem() + partialTicks) / this.type().getDurationTicks();
+      return (this.performer().entity().getTicksUsingItem() + partialTicks)
           / this.type().getDurationTicks();
     }
   }

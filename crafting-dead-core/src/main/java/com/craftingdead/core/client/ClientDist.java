@@ -20,6 +20,7 @@ package com.craftingdead.core.client;
 
 import com.craftingdead.core.client.gui.screen.inventory.CraftingScreen;
 import com.craftingdead.core.network.message.play.DamageHandcuffsMessage;
+import com.craftingdead.core.network.message.play.RightClickStateMessage;
 import com.craftingdead.core.network.message.play.TraumaPacket;
 import com.craftingdead.core.trauma.TraumaSeverity;
 import com.craftingdead.core.world.action.RemoveMagazineAction;
@@ -197,6 +198,9 @@ public class ClientDist implements ModDist {
 
   private boolean wasSneaking;
   private long lastSneakPressTime;
+
+  public int rightClickTicks = 0;
+  public boolean wasRightClickDown = false;
 
   private float lastPitch;
   private float lastYaw;
@@ -489,6 +493,26 @@ public class ClientDist implements ModDist {
     if (event.phase != TickEvent.Phase.START) {
       return;
     }
+
+    if (this.minecraft.player == null || this.minecraft.getConnection() == null) {
+      return;
+    }
+
+    boolean isRightClickDown = this.minecraft.options.keyUse.isDown();
+    int ticks = this.minecraft.player.getUseItemRemainingTicks();
+
+    if (isRightClickDown || ticks > 0) {
+      if (!this.wasRightClickDown || ticks == 0) {
+        this.rightClickTicks = 0;
+      }
+
+      this.rightClickTicks++;
+    } else {
+      this.rightClickTicks = 0;
+    }
+    this.wasRightClickDown = isRightClickDown;
+    NetworkChannel.PLAY.getSimpleChannel().sendToServer(new RightClickStateMessage(
+        isRightClickDown, this.rightClickTicks));
 
     var player = this.getPlayerExtension().orElse(null);
     if (player != null) {
