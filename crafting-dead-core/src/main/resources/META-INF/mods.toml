@@ -16,6 +16,13 @@ version = "${file.jarVersion}"
 
 [[dependencies.craftingdead]]
 mandatory = true
+modId = "craftingdeadanticheat"
+ordering = "AFTER"
+side = "BOTH"
+versionRange = "[1.0,)"
+
+[[dependencies.craftingdead]]
+mandatory = true
 modId = "forge"
 ordering = "NONE"
 side = "BOTH"

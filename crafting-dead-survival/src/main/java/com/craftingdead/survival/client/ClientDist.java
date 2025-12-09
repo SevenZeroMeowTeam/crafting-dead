@@ -32,6 +32,7 @@ import com.craftingdead.survival.client.model.geom.SurvivalModelLayers;
 import com.craftingdead.survival.client.renderer.entity.AdvancedZombieRenderer;
 import com.craftingdead.survival.client.renderer.entity.GiantZombieRenderer;
 import com.craftingdead.survival.client.renderer.entity.SupplyDropRenderer;
+// import com.craftingdead.survival.client.sound.MovementSoundAmplifier; // TODO: Fix API compatibility
 import com.craftingdead.survival.particles.SurvivalParticleTypes;
 import com.craftingdead.survival.world.entity.SurvivalEntityTypes;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -82,7 +83,13 @@ public class ClientDist implements ModDist {
 
     ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
 
+    // Register event handlers to Forge event bus
     MinecraftForge.EVENT_BUS.register(this);
+    // Register item frame gun interaction handler for shop displays
+    MinecraftForge.EVENT_BUS.register(new ItemFrameGunInteractionHandler());
+    // TODO: Re-enable once MovementSoundAmplifier is fixed for Forge 1.18.2 API
+    // Register CSGO-style movement sound amplifier for tactical awareness gameplay
+    // MinecraftForge.EVENT_BUS.register(new MovementSoundAmplifier());
   }
 
   private void handleEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {

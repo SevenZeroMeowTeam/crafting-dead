@@ -30,6 +30,7 @@ public class ServerConfig {
 
   public final ForgeConfigSpec.BooleanValue allowSupplyDropBreak;
   public final ForgeConfigSpec.IntValue supplyDropDuration;
+    public final ForgeConfigSpec.BooleanValue showSubtitles;
 
   // ================================================================================
   // Loot Values
@@ -221,6 +222,16 @@ public class ServerConfig {
   public final ForgeConfigSpec.DoubleValue fastZombieSpeed;
 
   // ================================================================================
+  // Zombie Spawn Multipliers
+  // ================================================================================
+
+  public final ForgeConfigSpec.DoubleValue globalZombieSpawnMultiplier;
+  public final ForgeConfigSpec.DoubleValue civilianZombieSpawnMultiplier;
+  public final ForgeConfigSpec.DoubleValue militaryZombieSpawnMultiplier;
+  public final ForgeConfigSpec.DoubleValue policeZombieSpawnMultiplier;
+  public final ForgeConfigSpec.DoubleValue medicZombieSpawnMultiplier;
+
+  // ================================================================================
   // Abilities Values
   // ================================================================================
 
@@ -240,6 +251,14 @@ public class ServerConfig {
   public final ForgeConfigSpec.DoubleValue pipeBombDamageMultiplier;
   public final ForgeConfigSpec.IntValue pipeBombTicksBeforeActivation;
 
+  // ================================================================================
+  // Food and Drink Values
+  // ================================================================================
+
+  public final ForgeConfigSpec.DoubleValue foodNutritionMultiplier;
+  public final ForgeConfigSpec.DoubleValue foodSaturationMultiplier;
+  public final ForgeConfigSpec.DoubleValue drinkHydrationMultiplier;
+
   public ServerConfig(ForgeConfigSpec.Builder builder) {
     // Game-Settings configuration
     builder
@@ -255,6 +274,11 @@ public class ServerConfig {
           .translation("options.craftingdeadsurvival.server.supply_drop_duration")
           .comment("Duration in seconds before a Supply Drop disappears from the world")
           .defineInRange("supplyDropDuration", 1200, 1, Integer.MAX_VALUE);
+
+      this.showSubtitles = builder
+          .translation("options.craftingdeadsurvival.server.show_subtitles")
+          .comment("If true, allow the subtitles overlay to render for players")
+          .define("showSubtitles", true);
     }
     builder.pop();
 
@@ -978,6 +1002,40 @@ public class ServerConfig {
           .comment("Additional knockback given to all zombies")
           .defineInRange("zombieAttackKnockback", 0D, 0D, 5.0D);
       builder.pop();
+
+      // Zombie Spawn Multipliers
+      builder
+          .comment("Global multipliers for zombie spawn rates",
+              "These multiply the individual spawn weights, allowing easy difficulty tuning",
+              "Example: globalZombieSpawnMultiplier=2.0 doubles all zombie spawns")
+          .push("spawn_multipliers");
+      {
+        this.globalZombieSpawnMultiplier = builder
+            .translation("options.craftingdeadsurvival.server.zombies.spawn_multipliers.global")
+            .comment("Global multiplier applied to ALL zombie spawn rates (1.0 = normal, 0.5 = half spawns, 2.0 = double spawns)")
+            .defineInRange("global_spawn_multiplier", 1.0D, 0.0D, 10.0D);
+
+        this.civilianZombieSpawnMultiplier = builder
+            .translation("options.craftingdeadsurvival.server.zombies.spawn_multipliers.civilian")
+            .comment("Spawn rate multiplier for civilian zombie types (Advanced, Tank, Fast, Weak)")
+            .defineInRange("civilian_spawn_multiplier", 1.0D, 0.0D, 10.0D);
+
+        this.militaryZombieSpawnMultiplier = builder
+            .translation("options.craftingdeadsurvival.server.zombies.spawn_multipliers.military")
+            .comment("Spawn rate multiplier for military zombie types (Soldier, Juggernaut, Sniper, etc.)")
+            .defineInRange("military_spawn_multiplier", 1.0D, 0.0D, 10.0D);
+
+        this.policeZombieSpawnMultiplier = builder
+            .translation("options.craftingdeadsurvival.server.zombies.spawn_multipliers.police")
+            .comment("Spawn rate multiplier for police zombie types (Police, SWAT)")
+            .defineInRange("police_spawn_multiplier", 1.0D, 0.0D, 10.0D);
+
+        this.medicZombieSpawnMultiplier = builder
+            .translation("options.craftingdeadsurvival.server.zombies.spawn_multipliers.medic")
+            .comment("Spawn rate multiplier for medic/doctor zombie types")
+            .defineInRange("medic_spawn_multiplier", 1.0D, 0.0D, 10.0D);
+      }
+      builder.pop();
     }
     builder.pop();
 
@@ -1036,6 +1094,28 @@ public class ServerConfig {
           .translation("options.craftingdeadsurvival.server.explosives.pipe_bomb.activation_tick")
           .comment("How long before the bomb activates automatically (Ticks)")
           .defineInRange("pipeBombTicksBeforeActivation", 100, 0, 18000);
+    }
+    builder.pop();
+
+    // Food and Drink configuration
+    builder
+        .comment("Configure food nutrition, saturation, and drink hydration values")
+        .push("food-and-drink");
+    {
+      this.foodNutritionMultiplier = builder
+          .translation("options.craftingdeadsurvival.server.food_drink.nutrition_multiplier")
+          .comment("Multiplier for all food nutrition values (1.0 = default, 2.0 = double nutrition)")
+          .defineInRange("foodNutritionMultiplier", 1.0D, 0.0D, 10.0D);
+
+      this.foodSaturationMultiplier = builder
+          .translation("options.craftingdeadsurvival.server.food_drink.saturation_multiplier")
+          .comment("Multiplier for all food saturation values (1.0 = default, 2.0 = double saturation)")
+          .defineInRange("foodSaturationMultiplier", 1.0D, 0.0D, 10.0D);
+
+      this.drinkHydrationMultiplier = builder
+          .translation("options.craftingdeadsurvival.server.food_drink.hydration_multiplier")
+          .comment("Multiplier for all drink hydration/water values (1.0 = default, 2.0 = double hydration)")
+          .defineInRange("drinkHydrationMultiplier", 1.0D, 0.0D, 10.0D);
     }
     builder.pop();
   }

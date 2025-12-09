@@ -123,7 +123,7 @@ public class RefillableAmmoProvider implements AmmoProvider {
     } else {
       out.writeBoolean(false);
     }
-    this.getExpectedMagazine().encode(out, writeAll);
+    this.getMagazine().ifPresent(magazine -> magazine.encode(out, writeAll));
 
     out.writeVarInt(this.reserveSize);
     this.reserveSizeChanged = false;
@@ -136,7 +136,7 @@ public class RefillableAmmoProvider implements AmmoProvider {
       this.infiniteAmmo = in.readBoolean();
     }
 
-    this.getExpectedMagazine().decode(in);
+    this.getMagazine().ifPresent(magazine -> magazine.decode(in));
     this.reserveSize = in.readVarInt();
   }
 

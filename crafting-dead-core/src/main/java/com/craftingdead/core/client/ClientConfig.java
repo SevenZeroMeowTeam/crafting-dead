@@ -42,7 +42,7 @@ public class ClientConfig {
           .define("displayBlood", true);
       this.killSound = builder
           .translation("options.craftingdead.client.kill_sound")
-          .define("killSound", SoundEvents.TRIDENT_RETURN.getRegistryName().toString(),
+          .define("killSound", SoundEvents.TRIDENT_RETURN.getLocation().toString(),
               v -> v instanceof String && ResourceLocation.isValidResourceLocation((String) v));
       this.tutorialStep = builder
           .comment("Internal")

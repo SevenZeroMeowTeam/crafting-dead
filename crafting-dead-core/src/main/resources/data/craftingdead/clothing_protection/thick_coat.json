@@ -1,0 +1,22 @@
+{
+  "item": "craftingdead:winter_army_clothing",
+  "description": "Heavy winter coat with multiple layers. Excellent bite protection from thick material but offers minimal protection against weapons.",
+  "biteProtection": 0.70,
+  "stabResistance": 0.05,
+  "bluntResistance": 0.15,
+  "weightModifier": -0.04,
+  "clothingTier": "utility",
+  "attributes": {
+    "fireResistant": false,
+    "waterResistant": true,
+    "camouflage": false,
+    "weatherProtection": "excellent"
+  },
+  "notes": [
+    "Bite protection very high - multiple thick layers resist zombie bites",
+    "Stab resistance very low - soft padding offers no protection",
+    "Blunt resistance moderate - padding absorbs some impact",
+    "Significant weight penalty from bulky design",
+    "Primary purpose is weather/cold protection, combat protection is secondary"
+  ]
+}
