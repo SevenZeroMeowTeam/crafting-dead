@@ -19,6 +19,7 @@
 package com.craftingdead.core.network;
 
 import com.craftingdead.core.CraftingDead;
+import com.craftingdead.core.network.message.play.BlockDestroyActionMessage;
 import com.craftingdead.core.network.message.play.CancelActionMessage;
 import com.craftingdead.core.network.message.play.CrouchMessage;
 import com.craftingdead.core.network.message.play.DamageHandcuffsMessage;
@@ -30,6 +31,7 @@ import com.craftingdead.core.network.message.play.OpenEquipmentMenuMessage;
 import com.craftingdead.core.network.message.play.OpenStorageMessage;
 import com.craftingdead.core.network.message.play.ParachuteSyncMessage;
 import com.craftingdead.core.network.message.play.PerformActionMessage;
+import com.craftingdead.core.network.message.play.RightClickStateMessage;
 import com.craftingdead.core.network.message.play.SecondaryActionMessage;
 import com.craftingdead.core.network.message.play.SetFireModeMessage;
 import com.craftingdead.core.network.message.play.SyncGunContainerSlotMessage;
@@ -187,6 +189,20 @@ public enum NetworkChannel {
           .encoder(SyncProtectionConfigMessage::encode)
           .decoder(SyncProtectionConfigMessage::decode)
           .consumer(SyncProtectionConfigMessage::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(RightClickStateMessage.class, 0x15, NetworkDirection.PLAY_TO_SERVER)
+          .encoder(RightClickStateMessage::encode)
+          .decoder(RightClickStateMessage::decode)
+          .consumer(RightClickStateMessage::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(BlockDestroyActionMessage.class, 0x16, NetworkDirection.PLAY_TO_SERVER)
+          .encoder(BlockDestroyActionMessage::encode)
+          .decoder(BlockDestroyActionMessage::decode)
+          .consumer(BlockDestroyActionMessage::handle)
           .add();
     }
   };

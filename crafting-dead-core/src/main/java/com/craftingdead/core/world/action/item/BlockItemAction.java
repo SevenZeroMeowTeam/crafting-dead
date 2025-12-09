@@ -18,6 +18,8 @@
 
 package com.craftingdead.core.world.action.item;
 
+import com.craftingdead.core.network.NetworkChannel;
+import com.craftingdead.core.network.message.play.BlockDestroyActionMessage;
 import com.craftingdead.core.world.action.ActionObserver;
 import com.craftingdead.core.world.action.ProgressBar;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
@@ -75,11 +77,17 @@ public class BlockItemAction extends ItemAction {
         && this.type.getPredicate().test(this.blockState);
   }
 
+
   @Override
   public boolean tick() {
     if (!this.performer.level().isClientSide() && !this.isWithinMaxDistance()) {
       this.performer.cancelAction(true);
       return false;
+    }
+    // Makes sure it happens when the action is finished
+    // this.progress might not reach so >= 0.99F is the safer
+    if (this.progress >= 0.99F) {
+      this.destroyBlockAction();
     }
     return super.tick();
   }
@@ -97,5 +105,12 @@ public class BlockItemAction extends ItemAction {
   @Override
   public ItemActionType<?> type() {
     return this.type;
+  }
+
+  public void destroyBlockAction() {
+    var pos = this.context.getClickedPos();
+    if (this.type.getDestroyPredicate().test(this.performer.level().getBlockState(pos))) {
+      NetworkChannel.PLAY.getSimpleChannel().sendToServer(new BlockDestroyActionMessage(pos));
+    }
   }
 }

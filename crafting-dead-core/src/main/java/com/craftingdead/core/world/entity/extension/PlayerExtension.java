@@ -44,6 +44,14 @@ public interface PlayerExtension<E extends Player>
     return CapabilityUtil.get(LivingExtension.CAPABILITY, player, PlayerExtension.class);
   }
 
+  boolean isHoldingRightClick();
+
+  int getRightClickTicks();
+
+  void setHoldingRightClick(boolean value);
+
+  void setRightClickTicks(int ticks);
+
   boolean isCombatModeEnabled();
 
   void setCombatModeEnabled(boolean combatModeEnabled);

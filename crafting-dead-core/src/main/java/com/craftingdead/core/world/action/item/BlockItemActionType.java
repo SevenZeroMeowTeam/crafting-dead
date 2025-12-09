@@ -27,6 +27,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -34,16 +35,22 @@ import net.minecraft.world.level.material.FluidState;
 public class BlockItemActionType extends ItemActionType<BlockItemAction> {
 
   private final Predicate<BlockState> predicate;
+  private final Predicate<BlockState> destroyPredicate;
   private final double maxDistanceSquared;
 
   protected BlockItemActionType(Builder builder) {
     super(builder);
     this.predicate = builder.predicate;
+    this.destroyPredicate = builder.destroyPredicate;
     this.maxDistanceSquared = builder.maxDistanceSquared;
   }
 
   public Predicate<BlockState> getPredicate() {
     return this.predicate;
+  }
+
+  public Predicate<BlockState> getDestroyPredicate() {
+    return this.destroyPredicate;
   }
 
   public double getMaxDistanceSquared() {
@@ -74,6 +81,7 @@ public class BlockItemActionType extends ItemActionType<BlockItemAction> {
   public static final class Builder extends ItemActionType.Builder<Builder> {
 
     private Predicate<BlockState> predicate;
+    private Predicate<BlockState> destroyPredicate;
     private double maxDistanceSquared = 4.0D;
 
     public Builder forBlock(Predicate<BlockState> predicate) {
@@ -102,8 +110,34 @@ public class BlockItemActionType extends ItemActionType<BlockItemAction> {
       return this;
     }
 
+    public Builder destroyBlock(Block... blocks) {
+      Predicate<BlockState> blockPredicate = state -> {
+        for (Block block : blocks) {
+          if (state.is(block)) {
+            return true;
+          }
+        }
+        return false;
+      };
+      if (this.destroyPredicate != null) {
+        this.destroyPredicate = this.destroyPredicate.and(blockPredicate);
+      } else {
+        this.destroyPredicate = blockPredicate;
+      }
+      if (this.predicate == null) {
+        this.predicate = this.destroyPredicate;
+      }
+      return this;
+    }
+
     @Override
     public BlockItemActionType build() {
+      if (this.predicate == null) {
+        this.predicate = state -> false;
+      }
+      if (this.destroyPredicate == null) {
+        this.destroyPredicate = state -> false;
+      }
       return new BlockItemActionType(this);
     }
   }

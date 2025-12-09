@@ -43,6 +43,7 @@ public abstract class ItemActionType<T extends ItemAction>
   private final int durationTicks;
   private final Predicate<ItemStack> heldItemPredicate;
   private final boolean consumeItem;
+  private final int usageDamage;
   @Nullable
   private final Supplier<? extends Item> resultItem;
   @Nullable
@@ -56,6 +57,7 @@ public abstract class ItemActionType<T extends ItemAction>
     this.durationTicks = builder.durationTicks;
     this.heldItemPredicate = builder.heldItemPredicate;
     this.consumeItem = builder.consumeItem;
+    this.usageDamage = builder.usageDamage;
     this.resultItem = builder.resultItem;
     this.finishSound = builder.finishSound;
     this.consumeItemInCreative = builder.consumeItemInCreative;
@@ -76,6 +78,10 @@ public abstract class ItemActionType<T extends ItemAction>
 
   public boolean shouldConsumeItem() {
     return this.consumeItem;
+  }
+
+  public int getUsageDamage() {
+    return this.usageDamage;
   }
 
   public Optional<Item> getResultItem() {
@@ -121,6 +127,7 @@ public abstract class ItemActionType<T extends ItemAction>
     private Predicate<ItemStack> heldItemPredicate = Predicates.alwaysTrue();
 
     private boolean consumeItem = true;
+    private int usageDamage = 0;
     @Nullable
     private Supplier<? extends Item> resultItem;
     @Nullable
@@ -160,6 +167,11 @@ public abstract class ItemActionType<T extends ItemAction>
 
     public SELF consumeItem(boolean consumeItem) {
       this.consumeItem = consumeItem;
+      return this.self();
+    }
+
+    public SELF usageDamage(int usageDamage) {
+      this.usageDamage = usageDamage;
       return this.self();
     }
 

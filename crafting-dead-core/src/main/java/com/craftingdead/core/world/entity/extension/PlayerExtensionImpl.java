@@ -65,12 +65,20 @@ final class PlayerExtensionImpl<E extends Player>
   private static final EntityDataAccessor<ItemStack> HANDCUFFS =
       new EntityDataAccessor<>(0x01, EntityDataSerializers.ITEM_STACK);
 
+  private static final EntityDataAccessor<Boolean> HOLDING_RIGHT_CLICK =
+      new EntityDataAccessor<>(0x02, EntityDataSerializers.BOOLEAN);
+
+  private static final EntityDataAccessor<Integer> RIGHT_CLICK_TICKS =
+      new EntityDataAccessor<>(0x03, EntityDataSerializers.INT);
+
   private boolean cachedCombatModeEnabled;
 
   PlayerExtensionImpl(E entity) {
     super(entity);
     this.data.register(COMBAT_MODE_ENABLED, false);
     this.data.register(HANDCUFFS, ItemStack.EMPTY);
+    this.data.register(HOLDING_RIGHT_CLICK, false);
+    this.data.register(RIGHT_CLICK_TICKS, 0);
   }
 
   @Override
@@ -160,6 +168,26 @@ final class PlayerExtensionImpl<E extends Player>
 
   public boolean handleBlockBreak(BlockPos pos, BlockState block, MutableInt xp) {
     return this.handlers.values().stream().anyMatch(e -> e.handleBlockBreak(pos, block, xp));
+  }
+
+  @Override
+  public boolean isHoldingRightClick() {
+    return this.data.get(HOLDING_RIGHT_CLICK);
+  }
+
+  @Override
+  public int getRightClickTicks() {
+    return this.data.get(RIGHT_CLICK_TICKS);
+  }
+
+  @Override
+  public void setHoldingRightClick(boolean value) {
+    this.data.set(HOLDING_RIGHT_CLICK, value);
+  }
+
+  @Override
+  public void setRightClickTicks(int ticks) {
+    this.data.set(RIGHT_CLICK_TICKS, ticks);
   }
 
   @Override
