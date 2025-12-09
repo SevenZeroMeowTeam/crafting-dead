@@ -12,11 +12,22 @@ repositories {
 }
 
 dependencies {
-    implementation 'cpw.mods:bootstraplauncher:1.0.0' // Add the required dependency
-    api('io.sentry:sentry:5.6.0') {
+    implementation 'cpw.mods:bootstraplauncher:1.0.0'
+    
+    // Sentry for error tracking - available in dev, bundled via jarJar for production
+    api('io.sentry:sentry:6.34.0') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+    jarJar(group: 'io.sentry', name: 'sentry', version: '[6.34.0,6.35.0)') {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 }
+
+mixin {
+    add sourceSets.main, 'craftingdead.refmap.json'
+}
+
+jarJar.enable()
 
 jar {
     manifest {
@@ -24,13 +35,10 @@ jar {
             "Implementation-Title": project.name,
             "Implementation-Version": project.version,
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": 'craftingdead.mixins.json'
+            "MixinConfigs": "craftingdead.mixins.json"
         ])
     }
-}
-
-mixin {
-    add sourceSets.main, 'craftingdead.refmap.json'
+    finalizedBy 'reobfJar'
 }
 
 minecraft {

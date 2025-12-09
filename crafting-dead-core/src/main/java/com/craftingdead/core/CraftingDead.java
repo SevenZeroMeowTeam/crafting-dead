@@ -56,8 +56,10 @@ import com.craftingdead.core.world.item.gun.attachment.Attachments;
 import com.craftingdead.core.world.item.gun.magazine.Magazine;
 import com.craftingdead.core.world.item.gun.skin.Paint;
 import com.craftingdead.core.world.item.scope.Scope;
-import com.craftingdead.core.telemetry.TelemetryManager;
 import com.craftingdead.core.trauma.ProtectionConfig;
+import com.craftingdead.core.event.LivingExtensionEvent;
+import com.craftingdead.core.world.entity.extension.ClothingProtectionHandler;
+import com.craftingdead.core.world.entity.extension.LivingHandlerType;
 import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import net.minecraft.data.DataGenerator;
@@ -184,8 +186,9 @@ public class CraftingDead {
 
   private void handleCommonSetup(FMLCommonSetupEvent event) {
     logger.info("Starting Crafting Dead, version {}", VERSION);
-    TelemetryManager.initialize(ID, VERSION, Optional::empty, null,
-        scope -> scope.setTag("craftingdead.version", VERSION));
+    // TelemetryManager.initialize(ID, VERSION, Optional::empty, null,
+    //     scope -> scope.setTag("craftingdead.version", VERSION));
+    // Sentry telemetry disabled - dependency not bundled
     NetworkChannel.loadChannels();
     event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(ModItems.SYRINGE.get()),
         Ingredient.of(Items.REDSTONE),
@@ -410,6 +413,17 @@ public class CraftingDead {
           () -> living, LivingExtension.CAPABILITY));
       living.load();
     }
+  }
+
+  @SubscribeEvent
+  public void handleLivingExtensionLoad(LivingExtensionEvent.Load event) {
+    // Register clothing protection handler for all living entities
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    var living = (LivingExtension) event.getLiving();
+    living.registerHandler(
+        ClothingProtectionHandler.TYPE,
+        new ClothingProtectionHandler(event.getLiving())
+    );
   }
 
   @SubscribeEvent

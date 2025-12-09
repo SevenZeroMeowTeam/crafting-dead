@@ -70,15 +70,53 @@ public class MeleeWeaponItem extends ToolItem {
   @Override
   public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip,
       @NotNull TooltipFlag flag) {
-    tooltip.add(new TranslatableComponent("item.craftingdead.damage").append(" ").append(
-            new TranslatableComponent(String.valueOf(this.attackDamage))
-                .withStyle(style -> style.withColor(ChatFormatting.RED)))
-        .withStyle(style -> style.withColor(ChatFormatting.GRAY)));
-
-    tooltip.add(new TranslatableComponent("item.craftingdead.durability").append(" ").append(
-            new TranslatableComponent(String.valueOf(stack.getMaxDamage() - stack.getDamageValue()))
-                .withStyle(style -> style.withColor(ChatFormatting.RED)))
-        .withStyle(style -> style.withColor(ChatFormatting.GRAY)));
+    super.appendHoverText(stack, world, tooltip, flag);
+    
+    // Calculate attack speed (convert from modifier to actual attacks per second)
+    double attackSpeed = 4.0D; // Base attack speed
+    for (var modifier : this.attributeModifiers.get(Attributes.ATTACK_SPEED)) {
+      attackSpeed += modifier.getAmount();
+    }
+    
+    // Melee Stats Header
+    tooltip.add(new TranslatableComponent("melee.stats")
+        .withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
+    
+    // Damage
+    tooltip.add(new TranslatableComponent("✖ ")
+        .withStyle(ChatFormatting.DARK_GRAY)
+        .append(new TranslatableComponent("melee.damage")
+            .withStyle(ChatFormatting.GRAY))
+        .append(": ")
+        .append(new TranslatableComponent(String.valueOf(this.attackDamage))
+            .withStyle(ChatFormatting.RED)));
+    
+    // Attack Speed
+    String attacksPerSecond = String.format("%.1f", attackSpeed);
+    tooltip.add(new TranslatableComponent("» ")
+        .withStyle(ChatFormatting.DARK_GRAY)
+        .append(new TranslatableComponent("melee.attack_speed")
+            .withStyle(ChatFormatting.GRAY))
+        .append(": ")
+        .append(new TranslatableComponent(attacksPerSecond)
+            .withStyle(ChatFormatting.AQUA)));
+    
+    // Durability
+    int durability = stack.getMaxDamage() - stack.getDamageValue();
+    int maxDurability = stack.getMaxDamage();
+    ChatFormatting durabilityColor = durability > maxDurability * 0.5 
+        ? ChatFormatting.GREEN 
+        : durability > maxDurability * 0.25 
+            ? ChatFormatting.YELLOW 
+            : ChatFormatting.RED;
+    
+    tooltip.add(new TranslatableComponent("◆ ")
+        .withStyle(ChatFormatting.DARK_GRAY)
+        .append(new TranslatableComponent("melee.durability")
+            .withStyle(ChatFormatting.GRAY))
+        .append(": ")
+        .append(new TranslatableComponent(durability + "/" + maxDurability)
+            .withStyle(durabilityColor)));
   }
 
   @Override

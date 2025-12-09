@@ -1,0 +1,21 @@
+{
+  "item": "craftingdead:army_clothing",
+  "description": "Military-grade tactical vest with reinforced plating. Balanced protection against multiple threat types with minimal weight penalty.",
+  "biteProtection": 0.45,
+  "stabResistance": 0.35,
+  "bluntResistance": 0.20,
+  "weightModifier": -0.02,
+  "clothingTier": "military",
+  "attributes": {
+    "fireResistant": false,
+    "waterResistant": true,
+    "camouflage": true
+  },
+  "notes": [
+    "Bite protection moderate - tightly woven fabric resists teeth",
+    "Stab resistance good - kevlar layers protect against sharp weapons",
+    "Blunt resistance fair - some padding absorbs impact",
+    "Lightweight design minimizes movement penalty",
+    "Designed for combat situations with balanced protection"
+  ]
+}

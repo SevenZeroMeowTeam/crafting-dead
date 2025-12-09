@@ -146,7 +146,12 @@ public abstract class GunItem extends ProjectileWeaponItem {
   }
 
   public GunConfiguration getConfiguration(Registry<GunConfiguration> registry) {
-    return registry.get(this.configurationKey);
+    var baseConfig = registry.get(this.configurationKey);
+    // Apply config overrides if available
+    return com.craftingdead.core.world.item.gun.GunConfigOverrides.isLoaded()
+        ? com.craftingdead.core.world.item.gun.GunConfigOverrides.applyOverride(baseConfig, 
+            this.configurationKey.location())
+        : baseConfig;
   }
 
   @Override
@@ -167,48 +172,67 @@ public abstract class GunItem extends ProjectileWeaponItem {
 
     if (level != null) {
       var configuration = this.getConfiguration(level.registryAccess());
-      var damageText =
-          new TextComponent(String.valueOf(configuration.getDamage()))
-              .withStyle(ChatFormatting.RED);
-      var headshotDamageText = new TextComponent(
-          String.valueOf((int) (configuration.getDamage()
-              * ServerConfig.instance.headshotBonusDamage.get())))
-                  .withStyle(ChatFormatting.RED);
-      var accuracyText =
-          new TextComponent((int) (configuration.getAccuracyPercent() * 100.0F) + "%")
-              .withStyle(ChatFormatting.RED);
-      var rpmText =
-          new TextComponent(String.valueOf(configuration.getFireRateRPM()))
-              .withStyle(ChatFormatting.RED);
-      var rangeText =
-          new TextComponent(configuration.getRange() + " blocks")
-              .withStyle(ChatFormatting.RED);
+      
+      lines.add(TextComponent.EMPTY);
+      lines.add(new TranslatableComponent("gun.stats_header")
+          .withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
+      
       if (configuration.getRoundsPerShot() > 1) {
         var pelletsText = new TextComponent(String.valueOf(configuration.getRoundsPerShot()))
             .withStyle(ChatFormatting.RED);
 
-        lines.add(new TranslatableComponent("gun.pellets_shot")
-            .withStyle(ChatFormatting.GRAY)
-            .append(pelletsText));
+        lines.add(new TextComponent("◆ ")
+            .withStyle(ChatFormatting.GOLD)
+            .append(new TranslatableComponent("gun.pellets_shot")
+                .withStyle(ChatFormatting.GRAY)
+                .append(pelletsText)));
       }
 
-      lines.add(new TranslatableComponent("gun.rpm")
-          .withStyle(ChatFormatting.GRAY)
-          .append(rpmText));
+      var rpmText =
+          new TextComponent(String.valueOf(configuration.getFireRateRPM()))
+              .withStyle(ChatFormatting.RED);
+      lines.add(new TextComponent("» ")
+          .withStyle(ChatFormatting.DARK_GRAY)
+          .append(new TranslatableComponent("gun.rpm")
+              .withStyle(ChatFormatting.GRAY)
+              .append(rpmText)));
 
-      lines.add(new TranslatableComponent("gun.damage")
-          .withStyle(ChatFormatting.GRAY)
-          .append(damageText));
-      lines.add(new TranslatableComponent("gun.headshot_damage")
-          .withStyle(ChatFormatting.GRAY)
-          .append(headshotDamageText));
+      var damageText =
+          new TextComponent(String.valueOf(configuration.getDamage()))
+              .withStyle(ChatFormatting.RED);
+      lines.add(new TextComponent("✖ ")
+          .withStyle(ChatFormatting.RED)
+          .append(new TranslatableComponent("gun.damage")
+              .withStyle(ChatFormatting.GRAY)
+              .append(damageText)));
+      
+      var headshotDamageText = new TextComponent(
+          String.valueOf((int) (configuration.getDamage()
+              * ServerConfig.instance.headshotBonusDamage.get())))
+                  .withStyle(ChatFormatting.RED);
+      lines.add(new TextComponent("◈ ")
+          .withStyle(ChatFormatting.GOLD)
+          .append(new TranslatableComponent("gun.headshot_damage")
+              .withStyle(ChatFormatting.GRAY)
+              .append(headshotDamageText)));
 
-      lines.add(new TranslatableComponent("gun.accuracy")
-          .withStyle(ChatFormatting.GRAY)
-          .append(accuracyText));
-      lines.add(new TranslatableComponent("gun.range")
-          .withStyle(ChatFormatting.GRAY)
-          .append(rangeText));
+      var accuracyText =
+          new TextComponent((int) (configuration.getAccuracyPercent() * 100.0F) + "%")
+              .withStyle(ChatFormatting.RED);
+      lines.add(new TextComponent("+ ")
+          .withStyle(ChatFormatting.GREEN)
+          .append(new TranslatableComponent("gun.accuracy")
+              .withStyle(ChatFormatting.GRAY)
+              .append(accuracyText)));
+      
+      var rangeText =
+          new TextComponent(configuration.getRange() + " blocks")
+              .withStyle(ChatFormatting.RED);
+      lines.add(new TextComponent("─ ")
+          .withStyle(ChatFormatting.AQUA)
+          .append(new TranslatableComponent("gun.range")
+              .withStyle(ChatFormatting.GRAY)
+              .append(rangeText)));
     }
 
     itemStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> {
@@ -216,17 +240,21 @@ public abstract class GunItem extends ProjectileWeaponItem {
           .map(Magazine::getSize)
           .orElse(0))).withStyle(ChatFormatting.RED);
 
-      lines.add(new TranslatableComponent("gun.ammo_amount")
-          .withStyle(ChatFormatting.GRAY)
-          .append(ammoCount));
+      lines.add(new TextComponent("■ ")
+          .withStyle(ChatFormatting.YELLOW)
+          .append(new TranslatableComponent("gun.ammo_amount")
+              .withStyle(ChatFormatting.GRAY)
+              .append(ammoCount)));
 
       for (var attachment : gun.getAttachments().values()) {
         Component attachmentName = attachment.getDescription()
             .plainCopy()
             .withStyle(ChatFormatting.RED);
-        lines.add(new TranslatableComponent("gun.attachment")
-            .withStyle(ChatFormatting.GRAY)
-            .append(attachmentName));
+        lines.add(new TextComponent("◊ ")
+            .withStyle(ChatFormatting.DARK_GRAY)
+            .append(new TranslatableComponent("gun.attachment")
+                .withStyle(ChatFormatting.GRAY)
+                .append(attachmentName)));
       }
     });
   }

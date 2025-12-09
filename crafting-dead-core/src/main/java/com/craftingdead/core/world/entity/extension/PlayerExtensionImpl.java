@@ -41,6 +41,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -274,6 +275,11 @@ final class PlayerExtensionImpl<E extends Player>
 
     if (!wasDeath) {
       this.setHandcuffs(that.getHandcuffs());
+    } else {
+      // Clear trauma effects on death (they shouldn't persist after respawn)
+      this.entity().removeEffect(MobEffects.BLINDNESS);
+      this.entity().removeEffect(MobEffects.CONFUSION);
+      this.entity().removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
     }
   }
 
