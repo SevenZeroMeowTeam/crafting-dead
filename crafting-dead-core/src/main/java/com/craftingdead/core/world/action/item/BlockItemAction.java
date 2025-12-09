@@ -85,7 +85,7 @@ public class BlockItemAction extends ItemAction {
       return false;
     }
     // Makes sure it happens when the action is finished
-    // this.progress might not reach so >= 0.99F is the safer
+    // this.progress might not reach 1.00F so >= 0.99F is safer
     if (this.progress >= 0.99F) {
       this.destroyBlockAction();
     }
