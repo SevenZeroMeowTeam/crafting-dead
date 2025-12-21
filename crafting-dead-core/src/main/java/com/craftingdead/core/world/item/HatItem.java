@@ -19,12 +19,9 @@
 package com.craftingdead.core.world.item;
 
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.UUID;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.capability.CapabilityUtil;
-import com.craftingdead.core.trauma.ProtectionConfig;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.core.world.item.equipment.SimpleHat;
 import com.google.common.collect.ImmutableMultimap;
@@ -40,7 +37,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class HatItem extends EquipmentItem {
@@ -74,88 +70,26 @@ public class HatItem extends EquipmentItem {
   public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> lines,
       TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, world, lines, tooltipFlag);
-    
-    // Special abilities with Unicode symbols
     if (this.headshotReductionPercentage > 0.0F) {
       Component percentageText =
-        new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f%%",
-          this.headshotReductionPercentage * 100.0F))).withStyle(ChatFormatting.RED);
+          new TextComponent(String.format("%.0f", this.headshotReductionPercentage * 100.0F) + "%")
+              .withStyle(ChatFormatting.RED);
 
-      lines.add(new TextComponent("◈ ")
-          .withStyle(ChatFormatting.GOLD)
-          .append(new TranslatableComponent("hat.headshot_reduction")
-              .withStyle(ChatFormatting.GRAY)
-              .append(Objects.requireNonNull(percentageText))));
+      lines.add(new TranslatableComponent("hat.headshot_reduction")
+          .withStyle(ChatFormatting.GRAY)
+          .append(percentageText));
     }
-    
     if (this.immuneToFlashes) {
-      lines.add(new TextComponent("✦ ")
-          .withStyle(ChatFormatting.YELLOW)
-          .append(new TranslatableComponent("hat.immune_to_flashes")
-              .withStyle(ChatFormatting.GRAY)));
+      lines.add(new TranslatableComponent("hat.immune_to_flashes")
+          .withStyle(ChatFormatting.GRAY));
     }
-    
     if (this.immuneToGas) {
-      lines.add(new TextComponent("☁ ")
-          .withStyle(ChatFormatting.GREEN)
-          .append(new TranslatableComponent("hat.immune_to_gas")
-              .withStyle(ChatFormatting.GRAY)));
+      lines.add(new TranslatableComponent("hat.immune_to_gas")
+          .withStyle(ChatFormatting.GRAY));
     }
-    
     if (this.nightVision) {
-      lines.add(new TextComponent("★ ")
-          .withStyle(ChatFormatting.AQUA)
-          .append(new TranslatableComponent("hat.has_night_vision")
-              .withStyle(ChatFormatting.GRAY)));
-    }
-
-    // Ballistic protection stats
-    var itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
-    if (itemId != null) {
-      var profile = ProtectionConfig.get().helmetProfile(itemId);
-      if (!profile.isEmpty()) {
-        lines.add(TextComponent.EMPTY);
-        lines.add(new TranslatableComponent("equipment.ballistic_stats")
-            .withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
-        
-        Component absorptionText =
-          new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f%%",
-            profile.absorption() * 100.0F))).withStyle(ChatFormatting.RED);
-        lines.add(new TextComponent("▣ ")
-            .withStyle(ChatFormatting.BLUE)
-            .append(new TranslatableComponent("equipment.absorption")
-                .withStyle(ChatFormatting.GRAY)
-                .append(Objects.requireNonNull(absorptionText))));
-
-        Component stoppingPowerText =
-          new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f",
-            profile.stoppingPower()))).withStyle(ChatFormatting.RED);
-        lines.add(new TextComponent("⚙ ")
-            .withStyle(ChatFormatting.GRAY)
-            .append(new TranslatableComponent("equipment.stopping_power")
-                .withStyle(ChatFormatting.GRAY)
-                .append(Objects.requireNonNull(stoppingPowerText))));
-
-        if (profile.stunThreshold() > 0.0F) {
-          Component stunThresholdText =
-            new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.0f",
-              profile.stunThreshold()))).withStyle(ChatFormatting.RED);
-          lines.add(new TextComponent("✖ ")
-              .withStyle(ChatFormatting.YELLOW)
-              .append(new TranslatableComponent("equipment.stun_threshold")
-                  .withStyle(ChatFormatting.GRAY)
-                  .append(Objects.requireNonNull(stunThresholdText))));
-        }
-
-        Component durabilityText =
-          new TextComponent(Objects.requireNonNull(String.format(Locale.ROOT, "%.2f",
-            profile.durabilityPerEnergy()))).withStyle(ChatFormatting.RED);
-        lines.add(new TextComponent("◊ ")
-            .withStyle(ChatFormatting.DARK_GRAY)
-            .append(new TranslatableComponent("equipment.durability_per_energy")
-                .withStyle(ChatFormatting.GRAY)
-                .append(Objects.requireNonNull(durabilityText))));
-      }
+      lines.add(new TranslatableComponent("hat.has_night_vision")
+          .withStyle(ChatFormatting.GRAY));
     }
   }
 
@@ -182,9 +116,7 @@ public class HatItem extends EquipmentItem {
     private boolean waterBreathing;
 
     public Properties attributeModifier(Attribute attribute, AttributeModifier modifier) {
-      this.attributeModifiers.put(
-          Objects.requireNonNull(attribute),
-          Objects.requireNonNull(modifier));
+      this.attributeModifiers.put(attribute, modifier);
       return this;
     }
 

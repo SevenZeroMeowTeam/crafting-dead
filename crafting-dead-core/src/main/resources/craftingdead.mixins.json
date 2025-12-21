@@ -5,6 +5,7 @@
   "minVersion": "0.8",
   "refmap": "craftingdead.refmap.json",
   "mixins": [
+    "AbstractContainerMenuMixin",
     "EntityMixin",
     "ItemEntityMixin",
     "ExplosionMixin",
@@ -18,6 +19,7 @@
     "ModelBakeryMixin",
     "MouseHandlerMixin",
     "KeyboardHandlerMixin",
+    "InventoryMixin",
     "PlayerRendererMixin"
   ],
   "injectors": {

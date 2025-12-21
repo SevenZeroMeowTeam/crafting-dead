@@ -20,11 +20,8 @@ package com.craftingdead.core.world.item;
 
 
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
-import com.craftingdead.core.trauma.ProtectionConfig;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -52,7 +49,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class StorageItem extends EquipmentItem {
 
@@ -65,6 +61,7 @@ public class StorageItem extends EquipmentItem {
   private final Equipment.Slot slot;
   private final int itemRows;
   private final ItemHandlerMenuConstructor menuConstructor;
+  private final TranslatableComponent component;
 
   public StorageItem(Properties properties) {
     super(properties);
@@ -72,6 +69,7 @@ public class StorageItem extends EquipmentItem {
     this.slot = properties.slot;
     this.itemRows = properties.itemRows;
     this.menuConstructor = properties.menuConstructor;
+    this.component = properties.component;
   }
 
   @Override
@@ -115,54 +113,8 @@ public class StorageItem extends EquipmentItem {
       TooltipFlag tooltipFlag) {
     super.appendHoverText(itemStack, world, lines, tooltipFlag);
 
-    if (this.slot == Equipment.Slot.VEST) {
-      var itemId = ForgeRegistries.ITEMS.getKey(itemStack.getItem());
-      if (itemId != null) {
-        var profile = ProtectionConfig.get().vestProfile(itemId);
-        if (!profile.isEmpty()) {
-          lines.add(TextComponent.EMPTY);
-          lines.add(new TranslatableComponent("equipment.ballistic_stats")
-              .withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
-          
-          var absorptionText = new TextComponent(Objects.requireNonNull(
-                  String.format(Locale.ROOT, "%.0f%%", profile.absorption() * 100.0F)))
-                      .withStyle(ChatFormatting.RED);
-          lines.add(new TextComponent("▣ ")
-              .withStyle(ChatFormatting.BLUE)
-              .append(new TranslatableComponent("equipment.absorption")
-                  .withStyle(ChatFormatting.GRAY)
-                  .append(Objects.requireNonNull(absorptionText))));
-
-          var stoppingPowerText = new TextComponent(Objects.requireNonNull(
-                  String.format(Locale.ROOT, "%.0f", profile.stoppingPower())))
-                      .withStyle(ChatFormatting.RED);
-          lines.add(new TextComponent("⚙ ")
-              .withStyle(ChatFormatting.GRAY)
-              .append(new TranslatableComponent("equipment.stopping_power")
-                  .withStyle(ChatFormatting.GRAY)
-                  .append(Objects.requireNonNull(stoppingPowerText))));
-
-          if (profile.stunThreshold() > 0.0F) {
-            var stunThresholdText = new TextComponent(Objects.requireNonNull(
-                    String.format(Locale.ROOT, "%.0f", profile.stunThreshold())))
-                        .withStyle(ChatFormatting.RED);
-            lines.add(new TextComponent("✖ ")
-                .withStyle(ChatFormatting.YELLOW)
-                .append(new TranslatableComponent("equipment.stun_threshold")
-                    .withStyle(ChatFormatting.GRAY)
-                    .append(Objects.requireNonNull(stunThresholdText))));
-          }
-
-          var durabilityText = new TextComponent(Objects.requireNonNull(
-                  String.format(Locale.ROOT, "%.2f", profile.durabilityPerEnergy())))
-                      .withStyle(ChatFormatting.RED);
-          lines.add(new TextComponent("◊ ")
-              .withStyle(ChatFormatting.DARK_GRAY)
-              .append(new TranslatableComponent("equipment.durability_per_energy")
-                  .withStyle(ChatFormatting.GRAY)
-                  .append(Objects.requireNonNull(durabilityText))));
-        }
-      }
+    if (this.component != null) {
+      lines.add(this.component.copy().withStyle(ChatFormatting.GRAY));
     }
 
     itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
@@ -221,16 +173,15 @@ public class StorageItem extends EquipmentItem {
 
   public static class Properties extends Item.Properties {
 
-    private ImmutableMultimap.Builder<Attribute, AttributeModifier> attributeModifiers =
+    private final ImmutableMultimap.Builder<Attribute, AttributeModifier> attributeModifiers =
         ImmutableMultimap.builder();
     private Equipment.Slot slot;
     private int itemRows;
     private ItemHandlerMenuConstructor menuConstructor;
+    private TranslatableComponent component;
 
     public Properties attributeModifier(Attribute attribute, AttributeModifier modifier) {
-      this.attributeModifiers.put(
-          Objects.requireNonNull(attribute),
-          Objects.requireNonNull(modifier));
+      this.attributeModifiers.put(attribute, modifier);
       return this;
     }
 
@@ -246,6 +197,11 @@ public class StorageItem extends EquipmentItem {
 
     public Properties menuConstructor(ItemHandlerMenuConstructor menuConstructor) {
       this.menuConstructor = menuConstructor;
+      return this;
+    }
+
+    public Properties toolTip(TranslatableComponent component) {
+      this.component = component;
       return this;
     }
   }

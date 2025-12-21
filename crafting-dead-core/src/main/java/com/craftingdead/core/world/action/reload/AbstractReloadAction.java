@@ -18,6 +18,7 @@
 
 package com.craftingdead.core.world.action.reload;
 
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.ServerConfig;
 import com.craftingdead.core.client.animation.Animation;
@@ -35,6 +36,8 @@ public abstract class AbstractReloadAction extends TimedAction {
 
   protected final Gun gun;
 
+  protected final int slot;
+
   protected final ItemStack oldMagazineStack;
 
   @Nullable
@@ -42,6 +45,11 @@ public abstract class AbstractReloadAction extends TimedAction {
 
   public AbstractReloadAction(LivingExtension<?, ?> performer) {
     this.performer = performer;
+    if (this.performer.entity() instanceof Player player) {
+      this.slot = player.getInventory().selected;
+    } else {
+      this.slot = -1;
+    }
     this.gun = performer.mainHandItem().getCapability(Gun.CAPABILITY)
         .orElseThrow(() -> new IllegalStateException("Performer not holding gun"));
     this.oldMagazineStack = this.gun.getAmmoProvider().getMagazineStack();
@@ -88,8 +96,11 @@ public abstract class AbstractReloadAction extends TimedAction {
   @Override
   public boolean tick() {
     if (!this.performer().level().isClientSide()
-        && (!this.performer.mainHandItem().is(this.gun.getItemStack().getItem())
-        || this.performer().mainHandItem().isEmpty()
+        && (this.performer().mainHandItem().isEmpty()
+        || !this.performer.mainHandItem().is(this.gun.getItemStack().getItem())
+        || (this.slot != -1
+        && this.performer().entity() instanceof Player player
+        && player.getInventory().selected != this.slot)
         || this.performer().entity().isSprinting())) {
       this.performer.cancelAction(true);
       return false;

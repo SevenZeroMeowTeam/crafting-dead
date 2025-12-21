@@ -468,6 +468,7 @@
   "clothing_item.water_breathing": "Gives water breathing ability",
   "clothing_item.water_speed": "Increases swimming speed",
   "paint.accepted_guns":"Use with:",
+  "paint.no_guns": "Coming soon...",
 
   "attachment_multiplier_type.damage": "Damage",
   "attachment_multiplier_type.accuracy": "Accuracy",
@@ -492,6 +493,10 @@
   "bloody_rag.information": "Stained cloth",
   "clean_rag.information": "Stops bleeding",
   "parachute.information": "Slows descent for safe landing",
+  "small_backpack.information": "Compact backpack for light travel",
+  "medium_backpack.information": "Reliable backpack for everyday adventuring",
+  "large_backpack.information": "Heavy-duty backpack built for long journeys",
+  "gunbag.information": "Specialized carry bag for firearms",
 
   "medical.use_duration": "Use Time:",
   "medical.healing": "Healing:",

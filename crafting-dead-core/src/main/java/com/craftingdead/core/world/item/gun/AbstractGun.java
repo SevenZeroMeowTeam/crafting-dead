@@ -32,6 +32,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import com.craftingdead.core.ServerConfig;
@@ -689,7 +690,12 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
             .map(Hat.class::cast)
             .map(Hat::headshotReductionPercentage)
             .orElse(0.0F);
-        damage *= headshotDamagePercent * ServerConfig.instance.headshotBonusDamage.get();
+        damage *= (float) (headshotDamagePercent * ServerConfig.instance.headshotBonusDamage.get());
+        if (entity instanceof ServerPlayer player) {
+          player.playNotifySound(SoundEvents.ITEM_BREAK, player.getSoundSource(), 0.65F, 1.5F);
+        }
+        hitEntity.level.playSound(null, hitEntity.getX(), hitEntity.getY(), hitEntity.getZ(),
+            SoundEvents.ITEM_BREAK, hitEntity.getSoundSource(), 0.65F, 1.5F);
       }
     }
 
@@ -775,6 +781,8 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
             .map(Hat::headshotReductionPercentage)
             .orElse(0.0F);
         damage *= (float) (headshotDamagePercent * ServerConfig.instance.headshotBonusDamage.get());
+        hitEntity.level.playSound(null, hitEntity.getX(), hitEntity.getY(), hitEntity.getZ(),
+            SoundEvents.ITEM_BREAK, hitEntity.getSoundSource(), 0.65F, 1.5F);
       }
     }
 

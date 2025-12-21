@@ -83,8 +83,8 @@ public class ConsumableItem extends Item {
   public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level,
       @NotNull Player player, @NotNull InteractionHand hand) {
     boolean canConsume = (this.type == Type.ONLY_FOOD && this.canEat(player)) || (this.type == Type.FOOD_AND_DRINK && (
-            this.canEat(player) || this.canDrink(player))) || (this.type == Type.ONLY_DRINK && this.canDrink(player)
-            && CraftingDeadSurvival.instance().isImmerseLoaded());
+        this.canEat(player) || this.canDrink(player))) || (this.type == Type.ONLY_DRINK && this.canDrink(player)
+        && CraftingDeadSurvival.instance().isImmerseLoaded());
     return canConsume ? ItemUtils.startUsingInstantly(level, player, hand)
         : InteractionResultHolder.fail(player.getItemInHand(hand));
   }
@@ -175,11 +175,11 @@ public class ConsumableItem extends Item {
       @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
     if (this.foodProperties != null) {
       tooltip.add(new TranslatableComponent("item.craftingdeadsurvival.consumable.food_info").withStyle(
-              ChatFormatting.GRAY).append(new TextComponent(" " + this.foodProperties.getNutrition()).withStyle(ChatFormatting.RED)));
+          ChatFormatting.GRAY).append(new TextComponent(" " + this.foodProperties.getNutrition()).withStyle(ChatFormatting.RED)));
     }
     if (this.water > 0) {
       tooltip.add(new TranslatableComponent("item.craftingdeadsurvival.consumable.water_info").withStyle(
-                  ChatFormatting.GRAY).append(new TextComponent(" " + this.water).withStyle(ChatFormatting.RED)));
+          ChatFormatting.GRAY).append(new TextComponent(" " + this.water).withStyle(ChatFormatting.RED)));
     }
   }
 }

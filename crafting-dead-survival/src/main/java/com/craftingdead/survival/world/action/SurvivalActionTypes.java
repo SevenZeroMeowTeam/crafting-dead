@@ -33,6 +33,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -88,7 +89,7 @@ public class SurvivalActionTypes {
               .durationSeconds(3)
               .forFluid(FluidTags.WATER)
               .forItem(SurvivalItems.EMPTY_WATER_CANTEEN)
-              .finishSound(SoundEvents.BOTTLE_FILL)
+              .finishSound(SoundEvents.BOTTLE_FILL, 1.0F, 1.0F)
               .resultItem(SurvivalItems.WATER_CANTEEN)
               .consumeItemInCreative(true)
               .build());
@@ -96,12 +97,13 @@ public class SurvivalActionTypes {
   public static final RegistryObject<ItemActionType<?>> FILL_WATER_CANTEEN_FROM_PUMP =
       deferredRegister.register("fill_water_canteen_from_pump",
           () -> BlockItemActionType.builder()
-              .durationSeconds(0.5F)
+              .durationSeconds(5)
               .forBlock(blockState -> blockState.getBlock().getRegistryName() != null
                   && (blockState.getBlock().getRegistryName().toString().equals("craftingdeadimmerse:water_pump")
                   || blockState.getBlock().getRegistryName().toString().equals("craftingdeadimmerse:water_pump_tall")
                   || blockState.getBlock().getRegistryName().toString().equals("craftingdeadimmerse:water_pump_rusted")
-                  || blockState.getBlock().getRegistryName().toString().equals("craftingdeadimmerse:water_pump_tall_rusted")))
+                  || blockState.getBlock().getRegistryName().toString().equals("craftingdeadimmerse:water_pump_tall_rusted")
+                  || blockState.getBlock().equals(Blocks.DIRT)))
               .forItem(SurvivalItems.EMPTY_WATER_CANTEEN)
               .finishSound(SoundEvents.BOTTLE_FILL)
               .resultItem(SurvivalItems.WATER_CANTEEN)
@@ -114,7 +116,7 @@ public class SurvivalActionTypes {
               .durationSeconds(3)
               .forFluid(FluidTags.WATER)
               .forItem(SurvivalItems.EMPTY_FLASK)
-              .finishSound(SoundEvents.BOTTLE_FILL)
+              .finishSound(SoundEvents.BOTTLE_FILL, 1.0F, 1.0F)
               .resultItem(SurvivalItems.FLASK)
               .consumeItemInCreative(true)
               .build());

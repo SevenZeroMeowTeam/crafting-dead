@@ -41,37 +41,37 @@ public class ClothingProtectionInitializer {
    * Applies protection attributes to clothing items when they enter the world.
    * This ensures loot, mob drops, and spawned items get protection values.
    */
-  @SubscribeEvent
-  public static void onItemEntitySpawn(EntityJoinWorldEvent event) {
-    if (event.getWorld().isClientSide()) {
-      return; // Only process on server side
-    }
-
-    Entity entity = event.getEntity();
-    if (entity instanceof ItemEntity itemEntity) {
-      ItemStack itemStack = itemEntity.getItem();
-      initializeClothingProtection(itemStack);
-    }
-  }
+//  @SubscribeEvent
+//  public static void onItemEntitySpawn(EntityJoinWorldEvent event) {
+//    if (event.getWorld().isClientSide()) {
+//      return; // Only process on server side
+//    }
+//
+//    Entity entity = event.getEntity();
+//    if (entity instanceof ItemEntity itemEntity) {
+//      ItemStack itemStack = itemEntity.getItem();
+//      initializeClothingProtection(itemStack);
+//    }
+//  }
 
   /**
    * Applies protection attributes when players craft clothing items.
    */
-  @SubscribeEvent
-  public static void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
-    ItemStack itemStack = event.getCrafting();
-    initializeClothingProtection(itemStack);
-  }
+//  @SubscribeEvent
+//  public static void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
+//    ItemStack itemStack = event.getCrafting();
+//    initializeClothingProtection(itemStack);
+//  }
 
   /**
    * Applies protection attributes when players pick up clothing items.
    * This is a backup to ensure all clothing gets initialized.
    */
-  @SubscribeEvent
-  public static void onItemPickup(EntityItemPickupEvent event) {
-    ItemStack itemStack = event.getItem().getItem();
-    initializeClothingProtection(itemStack);
-  }
+//  @SubscribeEvent
+//  public static void onItemPickup(EntityItemPickupEvent event) {
+//    ItemStack itemStack = event.getItem().getItem();
+//    initializeClothingProtection(itemStack);
+//  }
 
   /**
    * Initializes protection attributes on a clothing item if it doesn't have them yet.

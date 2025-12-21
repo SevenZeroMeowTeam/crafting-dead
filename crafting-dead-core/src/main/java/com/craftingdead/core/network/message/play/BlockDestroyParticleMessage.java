@@ -18,38 +18,33 @@
 
 package com.craftingdead.core.network.message.play;
 
-import com.craftingdead.core.network.NetworkChannel;
 import java.util.function.Supplier;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
 
-public record BlockDestroyActionMessage(BlockPos pos) {
+public record BlockDestroyParticleMessage(BlockPos pos, BlockState state) {
 
-  public static void encode(BlockDestroyActionMessage msg, FriendlyByteBuf buf) {
+  public static void encode(BlockDestroyParticleMessage msg, FriendlyByteBuf buf) {
     buf.writeBlockPos(msg.pos());
+    buf.writeVarInt(Block.getId(msg.state()));
   }
 
-  public static BlockDestroyActionMessage decode(FriendlyByteBuf buf) {
-    return new BlockDestroyActionMessage(buf.readBlockPos());
+  public static BlockDestroyParticleMessage decode(FriendlyByteBuf buf) {
+    return new BlockDestroyParticleMessage(buf.readBlockPos(), Block.stateById(buf.readVarInt()));
   }
 
-  public static void handle(BlockDestroyActionMessage msg, Supplier<NetworkEvent.Context> ctx) {
+  public static void handle(BlockDestroyParticleMessage msg, Supplier<NetworkEvent.Context> ctx) {
     ctx.get().enqueueWork(() -> {
-      var player = ctx.get().getSender();
+      var player = Minecraft.getInstance().player;
       if (player != null) {
-        var level = player.getLevel();
-        var state = level.getBlockState(msg.pos);
-        if (!state.isAir()) {
-          NetworkChannel.PLAY.getSimpleChannel().send(PacketDistributor.TRACKING_CHUNK.with(() ->
-              level.getChunkAt(msg.pos())), new BlockDestroyParticleMessage(msg.pos(), state));
-          player.getLevel().setBlock(msg.pos, Blocks.AIR.defaultBlockState(), 3);
-        }
+        var state = player.getLevel().getBlockState(msg.pos);
+        player.level.addDestroyBlockEffect(msg.pos, state);
       }
     });
     ctx.get().setPacketHandled(true);
   }
 }
-

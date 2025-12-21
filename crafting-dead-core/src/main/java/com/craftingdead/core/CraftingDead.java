@@ -18,8 +18,6 @@
 
 package com.craftingdead.core;
 
-import java.util.Optional;
-
 import com.craftingdead.core.data.tags.ModBlockTagsProvider;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.slf4j.Logger;
@@ -59,7 +57,6 @@ import com.craftingdead.core.world.item.scope.Scope;
 import com.craftingdead.core.trauma.ProtectionConfig;
 import com.craftingdead.core.event.LivingExtensionEvent;
 import com.craftingdead.core.world.entity.extension.ClothingProtectionHandler;
-import com.craftingdead.core.world.entity.extension.LivingHandlerType;
 import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import net.minecraft.data.DataGenerator;
@@ -103,7 +100,6 @@ import net.minecraftforge.fml.loading.JarVersionLookupHandler;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.network.PacketDistributor;
-import com.craftingdead.core.trauma.TraumaHandler;
 
 @Mod(CraftingDead.ID)
 public class CraftingDead {
@@ -160,7 +156,7 @@ public class CraftingDead {
     GunTriggerPredicates.deferredRegister.register(modEventBus);
 
     MinecraftForge.EVENT_BUS.register(this);
-    MinecraftForge.EVENT_BUS.register(TraumaHandler.INSTANCE);
+//    MinecraftForge.EVENT_BUS.register(TraumaHandler.INSTANCE);
 
     ProtectionConfig.load();
   }
