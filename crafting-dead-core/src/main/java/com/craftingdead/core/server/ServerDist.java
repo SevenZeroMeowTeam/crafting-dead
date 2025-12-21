@@ -20,17 +20,9 @@ package com.craftingdead.core.server;
 
 import com.craftingdead.core.ModDist;
 import net.minecraft.core.RegistryAccess;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class ServerDist implements ModDist {
-
-  public ServerDist() {
-    // Auto-updater moved to crafting-dead-updater mod (separate optional mod)
-    // Server-side updater is now handled by the crafting-dead-updater mod
-    // This keeps the main Crafting Dead mods CurseForge-compliant
-  }
 
   @SuppressWarnings("deprecation")
   @Override

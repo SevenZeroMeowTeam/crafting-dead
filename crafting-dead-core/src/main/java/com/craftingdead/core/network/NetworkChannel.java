@@ -19,6 +19,7 @@
 package com.craftingdead.core.network;
 
 import com.craftingdead.core.CraftingDead;
+import com.craftingdead.core.network.message.play.BlockDestroyParticleMessage;
 import com.craftingdead.core.network.message.play.BlockDestroyActionMessage;
 import com.craftingdead.core.network.message.play.CancelActionMessage;
 import com.craftingdead.core.network.message.play.CrouchMessage;
@@ -199,7 +200,14 @@ public enum NetworkChannel {
           .add();
 
       simpleChannel
-          .messageBuilder(BlockDestroyActionMessage.class, 0x16, NetworkDirection.PLAY_TO_SERVER)
+          .messageBuilder(BlockDestroyParticleMessage.class, 0x16, NetworkDirection.PLAY_TO_CLIENT)
+          .encoder(BlockDestroyParticleMessage::encode)
+          .decoder(BlockDestroyParticleMessage::decode)
+          .consumer(BlockDestroyParticleMessage::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(BlockDestroyActionMessage.class, 0x17, NetworkDirection.PLAY_TO_SERVER)
           .encoder(BlockDestroyActionMessage::encode)
           .decoder(BlockDestroyActionMessage::decode)
           .consumer(BlockDestroyActionMessage::handle)

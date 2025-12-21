@@ -48,6 +48,8 @@ public abstract class ItemActionType<T extends ItemAction>
   private final Supplier<? extends Item> resultItem;
   @Nullable
   private final Supplier<SoundEvent> finishSound;
+  private final float finishSoundVolume;
+  private final float finishSoundPitch;
   private final boolean consumeItemInCreative;
   private final boolean useResultItemInCreative;
 
@@ -60,6 +62,8 @@ public abstract class ItemActionType<T extends ItemAction>
     this.usageDamage = builder.usageDamage;
     this.resultItem = builder.resultItem;
     this.finishSound = builder.finishSound;
+    this.finishSoundVolume = builder.finishSoundVolume;
+    this.finishSoundPitch = builder.finishSoundPitch;
     this.consumeItemInCreative = builder.consumeItemInCreative;
     this.useResultItemInCreative = builder.useResultItemInCreative;
   }
@@ -90,6 +94,14 @@ public abstract class ItemActionType<T extends ItemAction>
 
   public Optional<SoundEvent> getFinishSound() {
     return Optional.ofNullable(this.finishSound).map(Supplier::get);
+  }
+
+  public float getFinishSoundVolume() {
+    return finishSoundVolume;
+  }
+
+  public float getFinishSoundPitch() {
+    return finishSoundPitch;
   }
 
   public boolean shouldConsumeItemInCreative() {
@@ -132,6 +144,8 @@ public abstract class ItemActionType<T extends ItemAction>
     private Supplier<? extends Item> resultItem;
     @Nullable
     private Supplier<SoundEvent> finishSound;
+    private float finishSoundVolume = 1.0F;
+    private float finishSoundPitch = 1.0F;
 
     private boolean consumeItemInCreative;
 
@@ -181,11 +195,20 @@ public abstract class ItemActionType<T extends ItemAction>
     }
 
     public SELF finishSound(SoundEvent finishSound) {
-      return this.finishSound(() -> finishSound);
+      return this.finishSound(finishSound, this.finishSoundVolume, this.finishSoundPitch);
     }
 
-    public SELF finishSound(Supplier<SoundEvent> finishSound) {
+    public SELF finishSound(SoundEvent finishSound, float volume, float pitch) {
+      this.finishSound = () -> finishSound;
+      this.finishSoundVolume = volume;
+      this.finishSoundPitch = pitch;
+      return this.self();
+    }
+
+    public SELF finishSound(Supplier<SoundEvent> finishSound, float volume, float pitch) {
       this.finishSound = finishSound;
+      this.finishSoundVolume = volume;
+      this.finishSoundPitch = pitch;
       return this.self();
     }
 

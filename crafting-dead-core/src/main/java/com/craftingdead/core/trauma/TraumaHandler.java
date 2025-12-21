@@ -44,46 +44,46 @@ public final class TraumaHandler {
   private TraumaHandler() {
   }
 
-  @SubscribeEvent
-  public void handleGunEntityDamaged(GunEvent.EntityDamaged event) {
-    if (!event.headshot() || !(event.target() instanceof LivingEntity living)) {
-      return;
-    }
-    if (living.getLevel().isClientSide()) {
-      return;
-    }
-
-    var target = LivingExtension.get(living);
-    if (target == null) {
-      return;
-    }
-
-    var config = ProtectionConfig.get();
-    var settings = config.headTrauma();
-    if (!settings.enabled()) {
-      return;
-    }
-
-    float incomingEnergy = Math.max(0.0F, event.damage() * settings.damageToEnergyScale());
-    var result = ProtectionLookup.INSTANCE.resolveHeadshot(target, incomingEnergy);
-
-    if (LOGGER.isDebugEnabled()) {
-      logHeadshotDebug(event, living, target, incomingEnergy, result);
-    }
-
-    var effect = result.effect();
-    if (result.severity() == TraumaSeverity.NONE || effect.isEmpty()) {
-      return;
-    }
-
-    applyMobEffects(living, effect);
-
-    if (living instanceof ServerPlayer player) {
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          PacketDistributor.PLAYER.with(() -> player),
-          new TraumaPacket(result.severity(), effect.aimSwayTicks(), effect.aimSwayStrength()));
-    }
-  }
+//  @SubscribeEvent
+//  public void handleGunEntityDamaged(GunEvent.EntityDamaged event) {
+//    if (!event.headshot() || !(event.target() instanceof LivingEntity living)) {
+//      return;
+//    }
+//    if (living.getLevel().isClientSide()) {
+//      return;
+//    }
+//
+//    var target = LivingExtension.get(living);
+//    if (target == null) {
+//      return;
+//    }
+//
+//    var config = ProtectionConfig.get();
+//    var settings = config.headTrauma();
+//    if (!settings.enabled()) {
+//      return;
+//    }
+//
+//    float incomingEnergy = Math.max(0.0F, event.damage() * settings.damageToEnergyScale());
+//    var result = ProtectionLookup.INSTANCE.resolveHeadshot(target, incomingEnergy);
+//
+//    if (LOGGER.isDebugEnabled()) {
+//      logHeadshotDebug(event, living, target, incomingEnergy, result);
+//    }
+//
+//    var effect = result.effect();
+//    if (result.severity() == TraumaSeverity.NONE || effect.isEmpty()) {
+//      return;
+//    }
+//
+//    applyMobEffects(living, effect);
+//
+//    if (living instanceof ServerPlayer player) {
+//      NetworkChannel.PLAY.getSimpleChannel().send(
+//          PacketDistributor.PLAYER.with(() -> player),
+//          new TraumaPacket(result.severity(), effect.aimSwayTicks(), effect.aimSwayStrength()));
+//    }
+//  }
 
   private void applyMobEffects(LivingEntity living, ProtectionConfig.TraumaEffect effect) {
     if (effect.blindnessTicks() > 0) {

@@ -107,6 +107,11 @@ public class SupplyDrop extends Entity implements MenuProvider {
       }
     }
 
+    if (this.dropActive) {
+      var motion = this.getDeltaMovement();
+      this.setDeltaMovement(0.0D, Math.min(motion.y, 0.0D), 0.0D);
+    }
+
     if (!this.isNoGravity()) {
       this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.0025D, 0.0D));
     }

@@ -44,7 +44,6 @@ import com.craftingdead.core.world.item.gun.aimable.AimableGunItem;
 import com.craftingdead.core.world.item.gun.attachment.Attachments;
 import com.craftingdead.core.world.item.gun.minigun.MinigunItem;
 import com.craftingdead.core.world.item.gun.skin.Skins;
-import com.craftingdead.core.world.item.MedicalItem;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -1131,7 +1130,7 @@ public class ModItems {
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> SLEDGEHAMMER = deferredRegister.register("sledgehammer",
-      () -> new ModPickaxeItem(Tiers.IRON, 1.0F, 10, -2.4F,
+      () -> new ModPickaxeItem(Tiers.IRON, 0.55F, 10, -2.4F,
           new Item.Properties()
               .durability(110)
               .tab(COMBAT_TAB)));
@@ -1173,7 +1172,7 @@ public class ModItems {
           .tab(COMBAT_TAB)));
 
   public static final RegistryObject<Item> PICKAXE = deferredRegister.register("pickaxe",
-      () -> new ModPickaxeItem(Tiers.IRON, 1.5F, 10, -2.4F, new Item.Properties()
+      () -> new ModPickaxeItem(Tiers.IRON, 0.8F, 10, -2.4F, new Item.Properties()
           .durability(210)
           .tab(COMBAT_TAB)));
 
@@ -1637,7 +1636,7 @@ public class ModItems {
               .stacksTo(1)
               .tab(COSMETICS_TAB),
               ActionTypes.SHRED_CLOTHING,
-              ClothingType.HEAVY));
+              ClothingType.MILITARY));
 
   public static final RegistryObject<Item> FIREMAN_CLOTHING =
       deferredRegister.register("fireman_clothing",
@@ -1965,9 +1964,9 @@ public class ModItems {
 
   public static final RegistryObject<ActionItem> FIRST_AID_KIT =
       deferredRegister.register("first_aid_kit",
-          () -> new MedicalItem(ActionTypes.USE_FIRST_AID_KIT, new Item.Properties()
+          () -> new ActionItem(ActionTypes.USE_FIRST_AID_KIT, new Item.Properties()
               .stacksTo(3)
-              .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.FIRST_AID_KIT));
+              .tab(MEDICAL_TAB)));
 
   public static final RegistryObject<Item> DIRTY_RAG =
       deferredRegister.register("dirty_rag",
@@ -1983,33 +1982,33 @@ public class ModItems {
 
   public static final RegistryObject<Item> CLEAN_RAG =
       deferredRegister.register("clean_rag",
-      () -> new MedicalItem(ActionTypes.USE_CLEAN_RAG, new Item.Properties()
+      () -> new ActionItem(ActionTypes.USE_CLEAN_RAG, new Item.Properties()
           .stacksTo(3)
-          .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.CLEAN_RAG));
+          .tab(MEDICAL_TAB)));
 
   public static final RegistryObject<ActionItem> ADRENALINE_SYRINGE =
       deferredRegister.register("adrenaline_syringe",
-          () -> new MedicalItem(ActionTypes.USE_ADRENALINE_SYRINGE, new Item.Properties()
+          () -> new ActionItem(ActionTypes.USE_ADRENALINE_SYRINGE, new Item.Properties()
               .stacksTo(3)
-              .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.ADRENALINE_SYRINGE));
+              .tab(MEDICAL_TAB)));
 
   public static final RegistryObject<ActionItem> SYRINGE =
       deferredRegister.register("syringe",
-          () -> new MedicalItem(ActionTypes.USE_SYRINGE, new Item.Properties()
+          () -> new ActionItem(ActionTypes.USE_SYRINGE, new Item.Properties()
               .stacksTo(3)
-              .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.SYRINGE));
+              .tab(MEDICAL_TAB)));
 
   public static final RegistryObject<ActionItem> BLOOD_SYRINGE =
       deferredRegister.register("blood_syringe",
-          () -> new MedicalItem(ActionTypes.USE_BLOOD_SYRINGE, new Item.Properties()
+          () -> new ActionItem(ActionTypes.USE_BLOOD_SYRINGE, new Item.Properties()
               .stacksTo(3)
-              .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.BLOOD_SYRINGE));
+              .tab(MEDICAL_TAB)));
 
   public static final RegistryObject<ActionItem> BANDAGE =
       deferredRegister.register("bandage",
-          () -> new MedicalItem(ActionTypes.USE_BANDAGE, new Item.Properties()
+          () -> new ActionItem(ActionTypes.USE_BANDAGE, new Item.Properties()
               .stacksTo(3)
-              .tab(MEDICAL_TAB), MedicalItem.MedicalItemType.BANDAGE));
+              .tab(MEDICAL_TAB)));
 
   // ================================================================================
   // Backpacks
@@ -2126,6 +2125,7 @@ public class ModItems {
         .slot(Equipment.Slot.BACKPACK)
         .itemRows(2)
         .menuConstructor(GenericMenu::createSmallBackpack)
+        .toolTip(new TranslatableComponent("small_backpack.information"))
         .stacksTo(1)
         .tab(COSMETICS_TAB));
   }
@@ -2135,6 +2135,7 @@ public class ModItems {
         .slot(Equipment.Slot.BACKPACK)
         .itemRows(3)
         .menuConstructor(GenericMenu::createMediumBackpack)
+        .toolTip(new TranslatableComponent("medium_backpack.information"))
         .stacksTo(1)
         .tab(COSMETICS_TAB));
   }
@@ -2144,6 +2145,7 @@ public class ModItems {
         .slot(Equipment.Slot.BACKPACK)
         .itemRows(4)
         .menuConstructor(GenericMenu::createLargeBackpack)
+        .toolTip(new TranslatableComponent("large_backpack.information"))
         .stacksTo(1)
         .tab(COSMETICS_TAB));
   }
@@ -2153,6 +2155,7 @@ public class ModItems {
         .slot(Equipment.Slot.BACKPACK)
         .itemRows(2)
         .menuConstructor(GenericMenu::createGunBag)
+        .toolTip(new TranslatableComponent("gunbag.information"))
         .stacksTo(1)
         .tab(COSMETICS_TAB));
   }

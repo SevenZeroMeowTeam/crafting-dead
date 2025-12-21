@@ -22,10 +22,8 @@ import com.craftingdead.core.ServerConfig;
 import com.craftingdead.core.world.action.item.ItemActionType;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
-import com.craftingdead.core.world.item.equipment.ClothingProtection;
 import com.craftingdead.core.world.item.equipment.Equipment.Slot;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -47,7 +45,6 @@ import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -97,179 +94,26 @@ public class ClothingItem extends EquipmentItem {
   @Override
   public void appendHoverText(ItemStack stack, Level world, List<Component> lines, TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, world, lines, tooltipFlag);
-    
-    // Clothing tier display
     switch (this.clothingType) {
       case CASUAL -> lines.add(new TranslatableComponent("clothing.protection.level")
           .withStyle(ChatFormatting.GRAY)
           .append(" ")
           .append(new TranslatableComponent("clothing.casual")
-          .withStyle(ChatFormatting.WHITE)));
+              .withStyle(ChatFormatting.RED)));
       case UTILITY -> lines.add(new TranslatableComponent("clothing.protection.level")
           .withStyle(ChatFormatting.GRAY)
           .append(" ")
           .append(new TranslatableComponent("clothing.utility")
-          .withStyle(ChatFormatting.GREEN)));
+              .withStyle(ChatFormatting.RED)));
       case MILITARY -> lines.add(new TranslatableComponent("clothing.protection.level")
           .withStyle(ChatFormatting.GRAY)
           .append(" ")
           .append(new TranslatableComponent("clothing.military")
-          .withStyle(ChatFormatting.AQUA)));
-      case HEAVY -> lines.add(new TranslatableComponent("clothing.protection.level")
-          .withStyle(ChatFormatting.GRAY)
-          .append(" ")
-          .append(new TranslatableComponent("clothing.heavy")
-          .withStyle(ChatFormatting.GOLD)));
+              .withStyle(ChatFormatting.RED)));
     }
-    
-    // Fire immunity indicator
     if (this.fireImmunity) {
-      lines.add(new TextComponent("※ ")
-          .withStyle(ChatFormatting.GOLD)
-          .append(new TranslatableComponent("clothing.immune_to_fire")
-              .withStyle(ChatFormatting.GOLD)));
-    }
-
-    // Add blank line for separation
-    lines.add(TextComponent.EMPTY);
-    
-    // Protection Stats Header
-    lines.add(new TranslatableComponent("clothing.protection.stats")
-        .withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
-
-    // Get protection values from NBT if available, otherwise show config defaults
-    float biteProtection = ClothingProtection.getBiteProtection(stack);
-    float stabResistance = ClothingProtection.getStabResistance(stack);
-    float bluntResistance = ClothingProtection.getBluntResistance(stack);
-    float weightModifier = ClothingProtection.getWeightModifier(stack);
-    
-    // Get legacy values
-    float damageReductionPct = switch (this.clothingType) {
-      case CASUAL -> ServerConfig.instance.casualClothingDamageReduction.get().floatValue() * 100.0F;
-      case UTILITY -> ServerConfig.instance.utilityClothingDamageReduction.get().floatValue() * 100.0F;
-      case MILITARY -> ServerConfig.instance.militaryClothingDamageReduction.get().floatValue() * 100.0F;
-      case HEAVY -> ServerConfig.instance.militaryClothingDamageReduction.get().floatValue() * 100.0F;
-    };
-    
-    float bleedReductionPct = switch (this.clothingType) {
-      case CASUAL -> ServerConfig.instance.casualClothingBleedAndInfectionReduction.get().floatValue() * 100.0F;
-      case UTILITY -> ServerConfig.instance.utilityClothingBleedAndInfectionReduction.get().floatValue() * 100.0F;
-      case MILITARY -> ServerConfig.instance.militaryClothingBleedAndInfectionReduction.get().floatValue() * 100.0F;
-      case HEAVY -> ServerConfig.instance.militaryClothingBleedAndInfectionReduction.get().floatValue() * 100.0F;
-    };
-    
-    // If no NBT data yet, show what values will be applied
-    if (!ClothingProtection.hasProtectionAttributes(stack)) {
-      biteProtection = switch (this.clothingType) {
-        case CASUAL -> ServerConfig.instance.casualClothingBiteProtection.get().floatValue();
-        case UTILITY -> ServerConfig.instance.utilityClothingBiteProtection.get().floatValue();
-        case MILITARY -> ServerConfig.instance.militaryClothingBiteProtection.get().floatValue();
-        case HEAVY -> ServerConfig.instance.heavyClothingBiteProtection.get().floatValue();
-      };
-      stabResistance = switch (this.clothingType) {
-        case CASUAL -> ServerConfig.instance.casualClothingStabResistance.get().floatValue();
-        case UTILITY -> ServerConfig.instance.utilityClothingStabResistance.get().floatValue();
-        case MILITARY -> ServerConfig.instance.militaryClothingStabResistance.get().floatValue();
-        case HEAVY -> ServerConfig.instance.heavyClothingStabResistance.get().floatValue();
-      };
-      bluntResistance = switch (this.clothingType) {
-        case CASUAL -> ServerConfig.instance.casualClothingBluntResistance.get().floatValue();
-        case UTILITY -> ServerConfig.instance.utilityClothingBluntResistance.get().floatValue();
-        case MILITARY -> ServerConfig.instance.militaryClothingBluntResistance.get().floatValue();
-        case HEAVY -> ServerConfig.instance.heavyClothingBluntResistance.get().floatValue();
-      };
-      weightModifier = switch (this.clothingType) {
-        case CASUAL -> ServerConfig.instance.casualClothingWeightModifier.get().floatValue();
-        case UTILITY -> ServerConfig.instance.utilityClothingWeightModifier.get().floatValue();
-        case MILITARY -> ServerConfig.instance.militaryClothingWeightModifier.get().floatValue();
-        case HEAVY -> ServerConfig.instance.heavyClothingWeightModifier.get().floatValue();
-      };
-    }
-    
-    // General Damage Reduction (if any)
-    if (damageReductionPct > 0.0F) {
-      var damageText = new TextComponent(String.format(Locale.ROOT, "%.0f%%", damageReductionPct))
-          .withStyle(ChatFormatting.GREEN);
-      lines.add(new TextComponent("■ ")
-          .withStyle(ChatFormatting.DARK_GRAY)
-          .append(new TranslatableComponent("clothing.protection.general_damage")
-              .withStyle(ChatFormatting.GRAY))
-          .append(": ")
-          .append(damageText));
-    }
-    
-    // Bite Protection (zombies)
-    if (biteProtection > 0.0F) {
-      var biteText = new TextComponent(String.format(Locale.ROOT, "%.0f%%", biteProtection * 100.0F))
-          .withStyle(ChatFormatting.GREEN);
-      lines.add(new TextComponent("☠ ")
-          .withStyle(ChatFormatting.DARK_GRAY)
-          .append(new TranslatableComponent("clothing.protection.bite")
-              .withStyle(ChatFormatting.GRAY))
-          .append(": ")
-          .append(biteText));
-    }
-    
-    // Stab Resistance (knives, blades)
-    if (stabResistance > 0.0F) {
-      var stabText = new TextComponent(String.format(Locale.ROOT, "%.0f%%", stabResistance * 100.0F))
-          .withStyle(ChatFormatting.GREEN);
-      lines.add(new TextComponent("† ")
-          .withStyle(ChatFormatting.DARK_GRAY)
-          .append(new TranslatableComponent("clothing.protection.stab")
-              .withStyle(ChatFormatting.GRAY))
-          .append(": ")
-          .append(stabText));
-    }
-    
-    // Blunt Resistance (clubs, fists)
-    if (bluntResistance > 0.0F) {
-      var bluntText = new TextComponent(String.format(Locale.ROOT, "%.0f%%", bluntResistance * 100.0F))
-          .withStyle(ChatFormatting.GREEN);
-      lines.add(new TextComponent("◆ ")
-          .withStyle(ChatFormatting.DARK_GRAY)
-          .append(new TranslatableComponent("clothing.protection.blunt")
-              .withStyle(ChatFormatting.GRAY))
-          .append(": ")
-          .append(bluntText));
-    }
-    
-    // Bullet Resistance (minimal for clothing, use vests for real protection)
-    float bulletProtection = Math.max(biteProtection, stabResistance) * 0.1F;
-    if (bulletProtection > 0.001F) {
-      var bulletText = new TextComponent(String.format(Locale.ROOT, "%.0f%%", bulletProtection * 100.0F))
-          .withStyle(ChatFormatting.DARK_GREEN);
-      lines.add(new TextComponent("✖ ")
-          .withStyle(ChatFormatting.DARK_GRAY)
-          .append(new TranslatableComponent("clothing.protection.bullet")
-              .withStyle(ChatFormatting.GRAY))
-          .append(": ")
-          .append(bulletText));
-    }
-    
-    // Infection Resistance
-    if (bleedReductionPct > 0.0F) {
-      var infectionText = new TextComponent(String.format(Locale.ROOT, "%.0f%%", bleedReductionPct))
-          .withStyle(ChatFormatting.GREEN);
-      lines.add(new TextComponent("✦ ")
-          .withStyle(ChatFormatting.DARK_GRAY)
-          .append(new TranslatableComponent("clothing.protection.infection")
-              .withStyle(ChatFormatting.GRAY))
-          .append(": ")
-          .append(infectionText));
-    }
-    
-    // Weight Modifier (affects movement speed)
-    if (Math.abs(weightModifier) > 0.001F) {
-      var weightColor = weightModifier < 0 ? ChatFormatting.RED : ChatFormatting.GREEN;
-      var weightText = new TextComponent(String.format(Locale.ROOT, "%+.0f%%", weightModifier * 100.0F))
-          .withStyle(weightColor);
-      lines.add(new TextComponent("» ")
-          .withStyle(ChatFormatting.DARK_GRAY)
-          .append(new TranslatableComponent("clothing.protection.weight")
-              .withStyle(ChatFormatting.GRAY))
-          .append(": ")
-          .append(weightText));
+      lines.add(new TranslatableComponent("clothing.immune_to_fire")
+          .withStyle(ChatFormatting.GRAY));
     }
   }
 
@@ -377,9 +221,7 @@ public class ClothingItem extends EquipmentItem {
           casualClothingDamageReduction.get().floatValue();
       case UTILITY -> 1.00F - ServerConfig.instance.
           utilityClothingDamageReduction.get().floatValue();
-      case MILITARY -> 1.00F - ServerConfig.instance.
-          militaryClothingDamageReduction.get().floatValue();
-      case HEAVY -> 1.00F - ServerConfig.instance.
+      case MILITARY, HEAVY -> 1.00F - ServerConfig.instance.
           militaryClothingDamageReduction.get().floatValue();
     };
     return damage * reductionFactor;
@@ -391,9 +233,7 @@ public class ClothingItem extends EquipmentItem {
           casualClothingBleedAndInfectionReduction.get().floatValue();
       case UTILITY -> 1.00F - ServerConfig.instance.
           utilityClothingBleedAndInfectionReduction.get().floatValue();
-      case MILITARY -> 1.00F - ServerConfig.instance.
-          militaryClothingBleedAndInfectionReduction.get().floatValue();
-      case HEAVY -> 1.00F - ServerConfig.instance.
+      case MILITARY, HEAVY -> 1.00F - ServerConfig.instance.
           militaryClothingBleedAndInfectionReduction.get().floatValue();
     };
     return baseChance * reductionFactor;

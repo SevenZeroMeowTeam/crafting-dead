@@ -36,6 +36,8 @@ public class RemoveMagazineAction extends TimedAction {
 
   private final Gun gun;
 
+  protected final int slot;
+
   private final ItemStack oldMagazineStack;
 
   private final MagazineAmmoProvider ammoProvider;
@@ -45,6 +47,11 @@ public class RemoveMagazineAction extends TimedAction {
 
   public RemoveMagazineAction(LivingExtension<?, ?> performer) {
     this.performer = performer;
+    if (this.performer.entity() instanceof Player player) {
+      this.slot = player.getInventory().selected;
+    } else {
+      this.slot = -1;
+    }
     this.gun = performer.mainHandGun()
         .orElseThrow(() -> new IllegalStateException("Performer not holding gun"));
     AmmoProvider ammoProvider = this.gun.getAmmoProvider();
@@ -89,10 +96,13 @@ public class RemoveMagazineAction extends TimedAction {
 
   @Override
   public boolean tick() {
-    if (!this.performer().level().isClientSide() &&
-        (this.performer.mainHandItem().isEmpty() ||
-            !this.performer.mainHandItem().is(this.gun.getItemStack().getItem()) ||
-            this.performer().entity().isSprinting())) {
+    if (!this.performer().level().isClientSide()
+        && (this.performer.mainHandItem().isEmpty()
+        || !this.performer.mainHandItem().is(this.gun.getItemStack().getItem())
+        || (this.slot != -1
+        && this.performer().entity() instanceof Player player
+        && player.getInventory().selected != this.slot)
+        || this.performer().entity().isSprinting())) {
       this.performer().cancelAction(true);
       return false;
     }
