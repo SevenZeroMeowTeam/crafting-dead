@@ -129,7 +129,6 @@ public class ActionTypes {
       deferredRegister.register("use_first_aid_kit",
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(ModItems.FIRST_AID_KIT)
-              .setFreezeMovement(true)
               .duration(ServerConfig.instance.firstAidKitDurationTicks.get())
               .effect(() -> new MobEffectInstance(MobEffects.HEAL, 1, 
                   (int) Math.max(0, ServerConfig.instance.firstAidKitHealAmount.get().floatValue() - 1)))
