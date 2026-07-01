@@ -1,1 +1,120 @@
+<root>
+<text>
 
+§4§lChernarus Open Beta Test is Live!§r
+
+§aThe wait is over! Chernarus is now available for open beta testing
+
+§rJoin the fight for survival in this massive open-world experience. Explore, loot, and battle your way through the infected wasteland§r
+
+New expansive Chernarus map  
+Safe zones Black Market (Coming Soon)  
+Loot placement still being adjusted  
+Hero/Bandit reputation system in development  
+Modpack is in **BETA**, expect frequent updates and changes  
+
+§eWe need your feedback!§r  
+Join our Discord and share your thoughts, report bugs, and help shape the future of Chernarus!  
+
+§a§lDead Island is now open for beta!§r
+
+§rYou can find more information about the beta in the #dead-island channel in our Discord server.
+
+§oWe are looking for builders to continue expanding and updating our maps so send in your applications on Discord!
+
+§4§lVersion 1.7.5§r
+
+- Updated Forge to 36.2.23
+- Updated Mods (SecurityCraft, Mekanism, Mobs and many more)
+- Patched Several Bugs
+- Added New Mods (Lamps and Furniture)
+- You can also see the changelog on the website
+- Updated Terms and Conditions
+
+§4§lVersion 1.7.4§r
+
+- Updated Forge to 36.2.20 to patch Log4Shell exploit.
+
+§4§lVersion 1.7.4§r
+
+- Removed Better Animals Plus in favour of Alex's Mobs.
+- Removed Macaw's Furniture Mod due to bug.
+
+§4§lVersion 1.7.3§r
+
+- Removed Sodium due to crashing
+- Updated mods
+
+§4§lVersion 1.7.2§r
+
+- Added the rest of Pam's HarvestCraft *finally*
+- Added Vanilla Builders Extension
+- Added Sodium for improved performance
+
+Legacy maps are in the process of being ported - expect to see Dead Island and Atlanta appearing in the near future.
+
+The new gun models are estimated to be finished by the end of October - this means they can be fully implemented by around mid January to Febuary.
+
+- §6Sm0keySa1m0n
+
+§4§lVersion 1.7.1§r
+
+Removed Tough As Nails.
+
+§4§lVersion 1.7.0§r
+
+Updated a few mods and added Traveler's Backpack and Tough As Nails.
+
+§4§lVersion 1.6.0§r
+
+This update swaps Xaero's World Map for JourneyMap and adds:
+
+- Pam's HarvestCraft 2 - Crops
+- Applied Energistics
+- Cooking for Blockheads 
+- Tinkers construct
+
+- §6Sm0keySa1m0n
+
+§4§lVersion 1.5.0§r
+
+In this update we've added MrCrayfish's Vehicle Mod and updated the core Crafting Dead mods.
+
+Crafting Dead Core/Survival/Immerse Changelog:
+
+- Fixed health/armor int rounding on HUD
+- Fix gun firing bug
+- Remove debug sysout
+- Added Russian translation
+- Tweaked zombie spawn rate
+- Changed supply drop radio recipes
+- Prevent fire damage + spread
+- Fix threading bugs/improve thread safety
+
+- §6Sm0keySa1m0n
+
+§4§lVersion 1.4.0§r
+
+This update fixes a few bugs that have been occuring:
+
+- Fire no longer crashes the game
+- Player stats no longer disappear when travelling between dimensions
+- Smelting iron ore has been fixed
+- Fixed fire rate bug
+- Fixed vest GUI
+
+We're still waiting on the new models to be finished. In the mean time, I have been working on a new base system for the mod, more information on this will be released further on in development.
+
+- §6Sm0keySa1m0n
+
+§4§lVersion 1.2.0§r
+
+This update features the first full release of Crafting Dead Immerse. Immerse adds a fancy new menu which you're looking at right now, but most excitingly it brings the much anticipated game mode system. We are currently hosting a single Team Deathmatch server which you can check out by pressing the play button to your left but there's more on its way in future updates.
+
+Also, at the time of writing this, new gun models are in development which will replace all existing models in the game. This will bring a much needed refresh to the original 1.6.4 models (which you may notice are a bit glitchy in 1.16 due to the conversion to the new model format).
+
+Our builders are still hard at work finishing off the maps for the official (survival) servers. In the mean time hop on to our alpha server, play some TDM, perhaps start a server of your own or play solo in a singleplayer world.
+
+- §6Sm0keySa1m0n
+</text>
+</root>
