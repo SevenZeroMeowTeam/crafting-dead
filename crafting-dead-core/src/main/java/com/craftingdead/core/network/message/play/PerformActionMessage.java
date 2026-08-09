@@ -1,67 +1,57 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core.network.message.play;
 
 import java.util.function.Supplier;
-import com.craftingdead.core.action.ActionType;
-import com.craftingdead.core.capability.ModCapabilities;
-import com.craftingdead.core.capability.living.ILiving;
-import com.craftingdead.core.network.util.NetworkUtil;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import com.craftingdead.core.network.NetworkUtil;
+import com.craftingdead.core.world.action.ActionType;
+import com.craftingdead.core.world.entity.extension.LivingExtension;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.network.NetworkEvent;
 
-public class PerformActionMessage {
+public record PerformActionMessage(ActionType<?> actionType, int performerEntityId,
+    FriendlyByteBuf buf) {
 
-  private final ActionType<?> actionType;
-  /**
-   * Ignored on server reception - assumed to be the player who sent the message.
-   */
-  private final int performerEntityId;
-  private final int targetEntityId;
-
-  public PerformActionMessage(ActionType<?> actionType, int performerEntityId,
-      int targetEntityId) {
-    this.actionType = actionType;
-    this.performerEntityId = performerEntityId;
-    this.targetEntityId = targetEntityId;
+  public void encode(FriendlyByteBuf out) {
+    out.writeRegistryId(this.actionType);
+    out.writeVarInt(this.performerEntityId);
+    out.writeVarInt(this.buf.readableBytes());
+    out.writeBytes(this.buf);
+    this.buf.release();
   }
 
-  public static void encode(PerformActionMessage msg, PacketBuffer out) {
-    out.writeRegistryId(msg.actionType);
-    out.writeVarInt(msg.performerEntityId);
-    out.writeVarInt(msg.targetEntityId);
+  public static PerformActionMessage decode(FriendlyByteBuf in) {
+    return new PerformActionMessage(in.readRegistryId(), in.readVarInt(),
+        new FriendlyByteBuf(in.readBytes(in.readVarInt())));
   }
 
-  public static PerformActionMessage decode(PacketBuffer in) {
-    return new PerformActionMessage(in.readRegistryId(), in.readVarInt(), in.readVarInt());
-  }
-
-  public static boolean handle(PerformActionMessage msg, Supplier<NetworkEvent.Context> ctx) {
-    NetworkUtil.getEntity(ctx.get(), msg.performerEntityId).ifPresent(performerEntity -> {
-      ILiving<?, ?> performer =
-          performerEntity.getCapability(ModCapabilities.LIVING).orElse(null);
-      ILiving<?, ?> target = msg.targetEntityId == -1 ? null
-          : performerEntity.getEntityWorld().getEntityByID(msg.targetEntityId)
-              .getCapability(ModCapabilities.LIVING).orElse(null);
-      final boolean isServer = ctx.get().getDirection().getReceptionSide().isServer();
-      if (!isServer || msg.actionType.isTriggeredByClient()) {
-        performer.performAction(msg.actionType.createAction(performer, target), isServer);
+  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
+    ctx.get().enqueueWork(() -> {
+      final var performerEntity =
+          NetworkUtil.getEntityOrSender(ctx.get(), this.performerEntityId, LivingEntity.class);
+      final var performer = LivingExtension.getOrThrow(performerEntity);
+      final var serverSide = ctx.get().getDirection().getReceptionSide().isServer();
+      if (!serverSide || this.actionType.isTriggeredByClient()) {
+        performer.performAction(this.actionType.decode(performer, this.buf), serverSide);
       }
+      this.buf.release();
     });
     return true;
   }

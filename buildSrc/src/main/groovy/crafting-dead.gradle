@@ -1,0 +1,62 @@
+plugins {
+    id 'net.minecraftforge.gradle'
+    id 'java'
+    id 'eclipse'
+    id 'org.cadixdev.licenser'
+    id 'org.spongepowered.mixin'
+}
+
+group = 'com.craftingdead'
+version = "${minecraft_version}-${mod_version}." + (System.env.GITHUB_RUN_NUMBER ?: "homebaked")
+
+minecraft {
+    mappings channel: 'official', version: "${minecraft_version}"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://dl.brad.ac/releases'
+        mavenContent {
+            releasesOnly()
+        }
+    }
+    maven {
+        name 'sponge'
+        url 'https://repo.spongepowered.org/repository/maven-public/'
+    }
+}
+
+dependencies {
+    minecraft group: 'net.minecraftforge', name:'forge', version: "${minecraft_version}-${forge_version}"
+    implementation group: 'org.spongepowered', name: 'mixin', version: "${mixin_version}"
+    annotationProcessor("org.spongepowered:mixin:${mixin_version}:processor")
+    testAnnotationProcessor("org.spongepowered:mixin:${mixin_version}:processor")
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+jar {
+    archiveBaseName = project.name
+    from rootProject.file('LICENSE.txt')
+    finalizedBy('reobfJar') 
+}
+
+license {
+    include 'com/craftingdead/**/*.java'
+    header = rootProject.file('HEADER.txt')
+    ext {
+        organization = 'NexusNode LTD'
+        year = 2022
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

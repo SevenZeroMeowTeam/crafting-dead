@@ -1,41 +1,48 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core.network;
 
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.network.message.play.CancelActionMessage;
 import com.craftingdead.core.network.message.play.CrouchMessage;
+import com.craftingdead.core.network.message.play.DamageHandcuffsMessage;
+import com.craftingdead.core.network.message.play.EnableCombatModeMessage;
 import com.craftingdead.core.network.message.play.HitMessage;
-import com.craftingdead.core.network.message.play.KillFeedMessage;
-import com.craftingdead.core.network.message.play.OpenModInventoryMessage;
+import com.craftingdead.core.network.message.play.NPCTriggerPressedMessage;
+import com.craftingdead.core.network.message.play.OpenCraftingMenuMessage;
+import com.craftingdead.core.network.message.play.OpenEquipmentMenuMessage;
 import com.craftingdead.core.network.message.play.OpenStorageMessage;
+import com.craftingdead.core.network.message.play.ParachuteSyncMessage;
 import com.craftingdead.core.network.message.play.PerformActionMessage;
-import com.craftingdead.core.network.message.play.SetSlotsMessage;
-import com.craftingdead.core.network.message.play.SyncGunMessage;
-import com.craftingdead.core.network.message.play.SyncPlayerMessage;
-import com.craftingdead.core.network.message.play.ToggleFireModeMessage;
-import com.craftingdead.core.network.message.play.ToggleRightMouseAbility;
+import com.craftingdead.core.network.message.play.SecondaryActionMessage;
+import com.craftingdead.core.network.message.play.SetFireModeMessage;
+import com.craftingdead.core.network.message.play.SyncGunContainerSlotMessage;
+import com.craftingdead.core.network.message.play.SyncGunEquipmentSlotMessage;
+import com.craftingdead.core.network.message.play.SyncLivingMessage;
+import com.craftingdead.core.network.message.play.SyncProtectionConfigMessage;
 import com.craftingdead.core.network.message.play.TriggerPressedMessage;
+import com.craftingdead.core.network.message.play.TraumaPacket;
 import com.craftingdead.core.network.message.play.ValidatePendingHitMessage;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public enum NetworkChannel {
 
@@ -43,31 +50,31 @@ public enum NetworkChannel {
     @Override
     public void registerMessages(SimpleChannel simpleChannel) {
       simpleChannel
-          .messageBuilder(SyncPlayerMessage.class, 0x00, NetworkDirection.PLAY_TO_CLIENT)
-          .encoder(SyncPlayerMessage::encode)
-          .decoder(SyncPlayerMessage::decode)
-          .consumer(SyncPlayerMessage::handle)
+          .messageBuilder(SyncLivingMessage.class, 0x00, NetworkDirection.PLAY_TO_CLIENT)
+          .encoder(SyncLivingMessage::encode)
+          .decoder(SyncLivingMessage::decode)
+          .consumer(SyncLivingMessage::handle)
           .add();
 
       simpleChannel
-          .messageBuilder(OpenModInventoryMessage.class, 0x01, NetworkDirection.PLAY_TO_SERVER)
-          .encoder(OpenModInventoryMessage::encode)
-          .decoder(OpenModInventoryMessage::decode)
-          .consumer(OpenModInventoryMessage::handle)
+          .messageBuilder(OpenEquipmentMenuMessage.class, 0x01, NetworkDirection.PLAY_TO_SERVER)
+          .encoder(OpenEquipmentMenuMessage::encode)
+          .decoder(OpenEquipmentMenuMessage::decode)
+          .consumer(OpenEquipmentMenuMessage::handle)
           .add();
 
       simpleChannel
-          .messageBuilder(ToggleRightMouseAbility.class, 0x02, NetworkDirection.PLAY_TO_SERVER)
-          .encoder(ToggleRightMouseAbility::encode)
-          .decoder(ToggleRightMouseAbility::decode)
-          .consumer(ToggleRightMouseAbility::handle)
+          .messageBuilder(SecondaryActionMessage.class, 0x02)
+          .encoder(SecondaryActionMessage::encode)
+          .decoder(SecondaryActionMessage::decode)
+          .consumer(SecondaryActionMessage::handle)
           .add();
 
       simpleChannel
-          .messageBuilder(ToggleFireModeMessage.class, 0x03)
-          .encoder(ToggleFireModeMessage::encode)
-          .decoder(ToggleFireModeMessage::decode)
-          .consumer(ToggleFireModeMessage::handle)
+          .messageBuilder(SetFireModeMessage.class, 0x03)
+          .encoder(SetFireModeMessage::encode)
+          .decoder(SetFireModeMessage::decode)
+          .consumer(SetFireModeMessage::handle)
           .add();
 
       simpleChannel
@@ -78,17 +85,17 @@ public enum NetworkChannel {
           .add();
 
       simpleChannel
-          .messageBuilder(SyncGunMessage.class, 0x05, NetworkDirection.PLAY_TO_CLIENT)
-          .encoder(SyncGunMessage::encode)
-          .decoder(SyncGunMessage::decode)
-          .consumer(SyncGunMessage::handle)
+          .messageBuilder(NPCTriggerPressedMessage.class, 0x05)
+          .encoder(NPCTriggerPressedMessage::encode)
+          .decoder(NPCTriggerPressedMessage::decode)
+          .consumer(NPCTriggerPressedMessage::handle)
           .add();
 
       simpleChannel
-          .messageBuilder(SetSlotsMessage.class, 0x06, NetworkDirection.PLAY_TO_CLIENT)
-          .encoder(SetSlotsMessage::encode)
-          .decoder(SetSlotsMessage::decode)
-          .consumer(SetSlotsMessage::handle)
+          .messageBuilder(SyncGunContainerSlotMessage.class, 0x06, NetworkDirection.PLAY_TO_CLIENT)
+          .encoder(SyncGunContainerSlotMessage::encode)
+          .decoder(SyncGunContainerSlotMessage::decode)
+          .consumer(SyncGunContainerSlotMessage::handle)
           .add();
 
       simpleChannel
@@ -134,10 +141,52 @@ public enum NetworkChannel {
           .add();
 
       simpleChannel
-          .messageBuilder(KillFeedMessage.class, 0x0D, NetworkDirection.PLAY_TO_CLIENT)
-          .encoder(KillFeedMessage::encode)
-          .decoder(KillFeedMessage::decode)
-          .consumer(KillFeedMessage::handle)
+          .messageBuilder(SyncGunEquipmentSlotMessage.class, 0x0D, NetworkDirection.PLAY_TO_CLIENT)
+          .encoder(SyncGunEquipmentSlotMessage::encode)
+          .decoder(SyncGunEquipmentSlotMessage::decode)
+          .consumer(SyncGunEquipmentSlotMessage::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(EnableCombatModeMessage.class, 0x0E, NetworkDirection.PLAY_TO_SERVER)
+          .encoder(EnableCombatModeMessage::encode)
+          .decoder(EnableCombatModeMessage::decode)
+          .consumer(EnableCombatModeMessage::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(DamageHandcuffsMessage.class, 0x0F, NetworkDirection.PLAY_TO_SERVER)
+          .encoder(DamageHandcuffsMessage::encode)
+          .decoder(DamageHandcuffsMessage::decode)
+          .consumer(DamageHandcuffsMessage::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(ParachuteSyncMessage.class, 0x11, NetworkDirection.PLAY_TO_CLIENT)
+          .encoder(ParachuteSyncMessage::encode)
+          .decoder(ParachuteSyncMessage::decode)
+          .consumer(ParachuteSyncMessage::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(OpenCraftingMenuMessage.class, 0x12, NetworkDirection.PLAY_TO_SERVER)
+          .encoder(OpenCraftingMenuMessage::encode)
+          .decoder(OpenCraftingMenuMessage::decode)
+          .consumer(OpenCraftingMenuMessage::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(TraumaPacket.class, 0x13, NetworkDirection.PLAY_TO_CLIENT)
+          .encoder(TraumaPacket::encode)
+          .decoder(TraumaPacket::decode)
+          .consumer(TraumaPacket::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(SyncProtectionConfigMessage.class, 0x14, NetworkDirection.PLAY_TO_CLIENT)
+          .encoder(SyncProtectionConfigMessage::encode)
+          .decoder(SyncProtectionConfigMessage::decode)
+          .consumer(SyncProtectionConfigMessage::handle)
           .add();
     }
   };
@@ -145,7 +194,7 @@ public enum NetworkChannel {
   /**
    * Network protocol version.
    */
-  private static final String NETWORK_VERSION = "0.0.1.0";
+    private static final String NETWORK_VERSION = "0.0.1.2";
   /**
    * Prevents re-registering messages.
    */
@@ -155,7 +204,7 @@ public enum NetworkChannel {
    */
   private final SimpleChannel simpleChannel;
 
-  private NetworkChannel(ResourceLocation channelName) {
+  NetworkChannel(ResourceLocation channelName) {
     this.simpleChannel = NetworkRegistry.ChannelBuilder
         .named(channelName)
         .clientAcceptedVersions(NETWORK_VERSION::equals)

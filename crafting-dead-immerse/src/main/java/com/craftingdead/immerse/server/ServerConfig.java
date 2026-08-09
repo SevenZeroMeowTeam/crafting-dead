@@ -1,20 +1,21 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.immerse.server;
 
 import java.util.List;
@@ -24,13 +25,38 @@ import net.minecraftforge.common.ForgeConfigSpec;
 public class ServerConfig {
 
   public final ForgeConfigSpec.ConfigValue<List<? extends String>> gameRotation;
+  public final ForgeConfigSpec.EnumValue<NametagMode> nametagMode;
+  public final ForgeConfigSpec.IntValue hydrateCommandCooldownMinutes;
 
   public ServerConfig(ForgeConfigSpec.Builder builder) {
     builder.push("server");
     {
       this.gameRotation = builder.translation("options.craftingdeadimmerse.server.game_rotation")
-          .defineList("game_rotation", ImmutableList.of("default"), gameName -> true);
+          .defineList("game_rotation", ImmutableList.of(), gameName -> true);
     }
     builder.pop();
+
+    builder.push("gameplay");
+    {
+      this.nametagMode = builder
+          .translation("options.craftingdeadimmerse.gameplay.nametag_mode")
+          .comment("Allows to define how nametags should be shown to the player.",
+              "DEFAULT: Default minecraft behaviour",
+              "LOOK: The player must be looking at another player to see it's nametag",
+              "HIDE_PLAYER: Hide player nametags",
+              "HIDE_ALL: Hide all nametags")
+          .defineEnum("nametag_mode", NametagMode.DEFAULT);
+
+    this.hydrateCommandCooldownMinutes = builder
+      .translation("options.craftingdeadimmerse.gameplay.hydrate_command_cooldown_minutes")
+      .comment("Cooldown, in minutes, applied to players using the /hydrate command.",
+        "Set to 0 to disable the cooldown entirely.")
+      .defineInRange("hydrate_command_cooldown_minutes", 30, 0, Integer.MAX_VALUE);
+    }
+    builder.pop();
+  }
+
+  public enum NametagMode {
+    DEFAULT, LOOK, HIDE_PLAYER, HIDE_ALL
   }
 }
