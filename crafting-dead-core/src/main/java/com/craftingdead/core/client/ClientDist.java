@@ -1,164 +1,162 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core.client;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Function;
-import org.apache.commons.lang3.tuple.Pair;
+import java.util.Set;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import com.craftingdead.core.CraftingDead;
-import com.craftingdead.core.IModDist;
-import com.craftingdead.core.capability.ModCapabilities;
-import com.craftingdead.core.capability.SerializableCapabilityProvider;
-import com.craftingdead.core.capability.gun.IGun;
-import com.craftingdead.core.capability.living.ILiving;
-import com.craftingdead.core.capability.living.IPlayer;
-import com.craftingdead.core.capability.living.Player;
-import com.craftingdead.core.capability.paint.IPaint;
-import com.craftingdead.core.client.audio.EffectsManager;
+import com.craftingdead.core.ModDist;
+import com.craftingdead.core.ServerConfig;
 import com.craftingdead.core.client.crosshair.CrosshairManager;
 import com.craftingdead.core.client.gui.IngameGui;
+import com.craftingdead.core.client.gui.screen.inventory.EquipmentScreen;
 import com.craftingdead.core.client.gui.screen.inventory.GenericContainerScreen;
-import com.craftingdead.core.client.gui.screen.inventory.PlayerScreen;
-import com.craftingdead.core.client.model.PerspectiveAwareModel;
+import com.craftingdead.core.client.model.C4ExplosiveModel;
+import com.craftingdead.core.client.model.CylinderGrenadeModel;
+import com.craftingdead.core.client.model.FragGrenadeModel;
+import com.craftingdead.core.client.model.SlimGrenadeModel;
+import com.craftingdead.core.client.model.geom.ModModelLayers;
+import com.craftingdead.core.client.particle.FlashParticle;
 import com.craftingdead.core.client.particle.GrenadeSmokeParticle;
-import com.craftingdead.core.client.particle.RGBFlashParticle;
 import com.craftingdead.core.client.renderer.CameraManager;
-import com.craftingdead.core.client.renderer.entity.AdvancedZombieRenderer;
-import com.craftingdead.core.client.renderer.entity.GiantZombieRenderer;
-import com.craftingdead.core.client.renderer.entity.SupplyDropRenderer;
 import com.craftingdead.core.client.renderer.entity.grenade.C4ExplosiveRenderer;
-import com.craftingdead.core.client.renderer.entity.grenade.CylinderGrenadeRenderer;
-import com.craftingdead.core.client.renderer.entity.grenade.FragGrenadeRenderer;
-import com.craftingdead.core.client.renderer.entity.grenade.SlimGrenadeRenderer;
-import com.craftingdead.core.client.renderer.entity.layer.ClothingLayer;
-import com.craftingdead.core.client.renderer.entity.layer.EquipmentLayer;
-import com.craftingdead.core.client.renderer.item.ItemRendererManager;
-import com.craftingdead.core.client.tutorial.IModTutorialStep;
+import com.craftingdead.core.client.renderer.entity.grenade.GrenadeRenderer;
+import com.craftingdead.core.client.renderer.entity.layers.ClothingLayer;
+import com.craftingdead.core.client.renderer.entity.layers.EquipmentLayer;
+import com.craftingdead.core.client.renderer.entity.layers.HandcuffsLayer;
+import com.craftingdead.core.client.renderer.entity.layers.ParachuteLayer;
+import com.craftingdead.core.client.renderer.item.GunRenderer;
+import com.craftingdead.core.client.renderer.item.ItemRenderDispatcher;
+import com.craftingdead.core.client.sounds.EffectsManager;
+import com.craftingdead.core.client.tutorial.ModTutorialStepInstance;
 import com.craftingdead.core.client.tutorial.ModTutorialSteps;
 import com.craftingdead.core.client.util.RenderUtil;
-import com.craftingdead.core.entity.ModEntityTypes;
-import com.craftingdead.core.entity.grenade.FlashGrenadeEntity;
-import com.craftingdead.core.inventory.InventorySlotType;
-import com.craftingdead.core.inventory.container.ModContainerTypes;
-import com.craftingdead.core.item.GunItem;
-import com.craftingdead.core.item.ModItemModelsProperties;
-import com.craftingdead.core.item.ModItems;
-import com.craftingdead.core.item.PaintItem;
+import com.craftingdead.core.event.RenderArmClothingEvent;
 import com.craftingdead.core.network.NetworkChannel;
-import com.craftingdead.core.network.message.play.OpenModInventoryMessage;
+import com.craftingdead.core.network.message.play.OpenEquipmentMenuMessage;
 import com.craftingdead.core.particle.ModParticleTypes;
-import com.craftingdead.core.potion.ModEffects;
-import com.craftingdead.core.util.ArbitraryTooltips;
-import com.craftingdead.core.util.ArbitraryTooltips.TooltipFunction;
-import com.craftingdead.core.util.Text;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import io.noties.tumbleweed.TweenManager;
+import com.craftingdead.core.util.MutableVector2f;
+import com.craftingdead.core.world.effect.ModMobEffects;
+import com.craftingdead.core.world.entity.ModEntityTypes;
+import com.craftingdead.core.world.entity.extension.LivingExtension;
+import com.craftingdead.core.world.entity.extension.PlayerExtension;
+import com.craftingdead.core.world.entity.grenade.FlashGrenadeEntity;
+import com.craftingdead.core.world.inventory.ModMenuTypes;
+import com.craftingdead.core.world.item.ArbitraryTooltips;
+import com.craftingdead.core.world.item.GunItem;
+import com.craftingdead.core.world.item.RegisterGunColor;
+import com.craftingdead.core.world.item.equipment.Clothing;
+import com.craftingdead.core.world.item.equipment.Equipment;
+import com.craftingdead.core.world.item.gun.Gun;
+import com.craftingdead.core.world.item.gun.skin.Paint;
+import com.craftingdead.core.world.item.gun.skin.Skins;
+import com.craftingdead.core.world.item.scope.Scope;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
+import net.minecraft.Util;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.color.item.ItemColor;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.HumanoidModel.ArmPose;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.color.IItemColor;
-import net.minecraft.client.renderer.entity.LivingRenderer;
-import net.minecraft.client.renderer.entity.PlayerRenderer;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.entity.model.BipedModel.ArmPose;
-import net.minecraft.client.renderer.entity.model.PlayerModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.shader.ShaderGroup;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.tutorial.Tutorial;
 import net.minecraft.client.tutorial.TutorialSteps;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.FOVUpdateEvent;
-import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.FOVModifierEvent;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.client.event.ScreenOpenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.StartupMessageManager;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.util.thread.EffectiveSide;
+import net.minecraftforge.registries.ForgeRegistries;
 
-public class ClientDist implements IModDist {
+public class ClientDist implements ModDist {
 
-  public static final KeyBinding RELOAD =
-      new KeyBinding("key.reload", GLFW.GLFW_KEY_R, "key.categories.gameplay");
-  public static final KeyBinding REMOVE_MAGAZINE =
-      new KeyBinding("key.remove_magazine", GLFW.GLFW_KEY_J, "key.categories.gameplay");
-  public static final KeyBinding TOGGLE_FIRE_MODE =
-      new KeyBinding("key.toggle_fire_mode", GLFW.GLFW_KEY_V, "key.categories.gameplay");
-  public static final KeyBinding OPEN_MOD_INVENTORY =
-      new KeyBinding("key.craftingdead.inventory", GLFW.GLFW_KEY_Z, "key.categories.inventory");
+  // TODO: Maybe make it a configuration option? - juan
+  private static final Set<String> gunPoseBlacklist =
+      Set.of("de.maxhenkel.corpse.entities.DummyPlayer",
+          "de.maxhenkel.corpse.entities.DummySkeleton");
+
+  public static final KeyMapping RELOAD =
+      new KeyMapping("key.reload", GLFW.GLFW_KEY_R, "key.categories.gameplay");
+  public static final KeyMapping REMOVE_MAGAZINE =
+      new KeyMapping("key.remove_magazine", GLFW.GLFW_KEY_J, "key.categories.gameplay");
+  public static final KeyMapping TOGGLE_FIRE_MODE =
+      new KeyMapping("key.toggle_fire_mode", GLFW.GLFW_KEY_V, "key.categories.gameplay");
+  public static final KeyMapping OPEN_EQUIPMENT_MENU =
+      new KeyMapping("key.equipment_menu", GLFW.GLFW_KEY_Z, "key.categories.inventory");
 
   public static final ClientConfig clientConfig;
   public static final ForgeConfigSpec clientConfigSpec;
 
   static {
-    final Pair<ClientConfig, ForgeConfigSpec> clientConfigPair =
-        new ForgeConfigSpec.Builder().configure(ClientConfig::new);
+    var clientConfigPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
     clientConfigSpec = clientConfigPair.getRight();
     clientConfig = clientConfigPair.getLeft();
   }
 
   private static final ResourceLocation ADRENALINE_SHADER =
       new ResourceLocation(CraftingDead.ID, "shaders/post/adrenaline.json");
+
+  private static final Vector3f mutableCameraRotations = new Vector3f();
+  private static final MutableVector2f FOV = new MutableVector2f();
 
   private static final int DOUBLE_CLICK_DURATION = 500;
 
@@ -168,7 +166,7 @@ public class ClientDist implements IModDist {
 
   private final IngameGui ingameGui;
 
-  private final ItemRendererManager itemRendererManager;
+  private final ItemRenderDispatcher itemRenderDispatcher;
 
   private final CameraManager cameraManager;
 
@@ -178,50 +176,58 @@ public class ClientDist implements IModDist {
 
   private long adrenalineShaderStartTime = 0L;
 
-  private TweenManager tweenManager = TweenManager.create();
-
-  private float lastTime = 0F;
-
   private boolean wasAdrenalineActive;
-
-  private float lastFov;
-
-  private float fov;
 
   private boolean wasSneaking;
   private long lastSneakPressTime;
 
+  private float lastPitch;
+  private float lastYaw;
+  private float lastRoll;
+
   public ClientDist() {
-    final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-    // modBus.addListener(this::handleSoundLoad);
-    modBus.addListener(this::handleModelRegistry);
-    modBus.addListener(this::handleModelBake);
+    final var modBus = FMLJavaModLoadingContext.get().getModEventBus();
     modBus.addListener(this::handleClientSetup);
     modBus.addListener(this::handleParticleFactoryRegisterEvent);
     modBus.addListener(this::handleItemColor);
     modBus.addListener(this::handleTextureStitch);
     modBus.addListener(this::handleSoundLoad);
+    modBus.addListener(this::handleConfigReloading);
+    modBus.addListener(this::handleEntityRenderers);
+    modBus.addListener(this::handleEntityRenderersAddLayers);
+    modBus.addListener(this::handleEntityRenderersLayerDefinitions);
+    modBus.addListener(this::handleRegisterClientReloadListeners);
 
     MinecraftForge.EVENT_BUS.register(this);
     ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
 
     this.minecraft = Minecraft.getInstance();
     this.crosshairManager = new CrosshairManager();
-    // Minecraft is null on date gen launch
-    if (this.minecraft != null) {
-      ((IReloadableResourceManager) this.minecraft.getResourceManager())
-          .addReloadListener(this.crosshairManager);
-    }
-    this.ingameGui = new IngameGui(this.minecraft, this, CrosshairManager.DEFAULT_CROSSHAIR);
-    this.itemRendererManager = new ItemRendererManager();
+    this.itemRenderDispatcher = new ItemRenderDispatcher();
+
+    this.ingameGui =
+        new IngameGui(this.minecraft, this, new ResourceLocation(clientConfig.crosshair.get()));
     this.cameraManager = new CameraManager();
+  }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public RegistryAccess registryAccess() {
+    var minecraft = Minecraft.getInstance();
+    if (EffectiveSide.get().isServer() && minecraft.getSingleplayerServer() != null) {
+      return minecraft.getSingleplayerServer().registryAccess();
+    } else if (EffectiveSide.get().isClient() && minecraft.player != null) {
+      return minecraft.player.connection.registryAccess();
+    }
+
+    return ModDist.super.registryAccess();
   }
 
   public void setTutorialStep(ModTutorialSteps step) {
     clientConfig.tutorialStep.set(step);
     Tutorial tutorial = this.minecraft.getTutorial();
     tutorial.setStep(TutorialSteps.NONE);
-    tutorial.tutorialStep = step.create(this);
+    tutorial.instance = step.create(this);
   }
 
   public CrosshairManager getCrosshairManager() {
@@ -232,23 +238,19 @@ public class ClientDist implements IModDist {
     return this.ingameGui;
   }
 
-  public TweenManager getTweenManager() {
-    return this.tweenManager;
-  }
-
   public CameraManager getCameraManager() {
     return this.cameraManager;
   }
 
-  public ItemRendererManager getItemRendererManager() {
-    return this.itemRendererManager;
+  public ItemRenderDispatcher getItemRendererManager() {
+    return this.itemRenderDispatcher;
   }
 
   /**
    * Get the {@link Minecraft} instance. If accessing {@link Minecraft} from a common class
    * (contains both client and server code) don't access fields directly from {@link Minecraft} as
    * it will cause class loading problems. To safely access {@link ClientPlayerEntity} in a
-   * multi-sided environment, use {@link #getPlayer()}.
+   * multi-sided environment, use {@link #getPlayerExtension()}.
    * 
    * @return {@link Minecraft}
    */
@@ -256,202 +258,169 @@ public class ClientDist implements IModDist {
     return this.minecraft;
   }
 
-  @SuppressWarnings("unchecked")
-  public Optional<IPlayer<ClientPlayerEntity>> getPlayer() {
-    return this.minecraft.player.getCapability(ModCapabilities.LIVING)
-        .filter(living -> living instanceof IPlayer)
-        .map(living -> (IPlayer<ClientPlayerEntity>) living);
+  public Optional<PlayerExtension<LocalPlayer>> getPlayerExtension() {
+    return this.minecraft.player == null
+        ? Optional.empty()
+        : Optional.ofNullable(PlayerExtension.get(this.minecraft.player));
   }
 
-  @SuppressWarnings("unchecked")
-  public IPlayer<ClientPlayerEntity> getExpectedPlayer() {
-    return ModCapabilities.getExpected(ModCapabilities.LIVING, this.minecraft.player,
-        IPlayer.class);
+  public boolean isRightMouseDown() {
+    return this.minecraft.options.keyUse.isDown();
+  }
+
+  public boolean isLocalPlayer(Entity entity) {
+    return entity == this.minecraft.player;
+  }
+
+  public void handleHit(Vec3 hitPos, boolean dead) {
+    ServerConfig.instance.hitMarkerMode.get().createHitMarker(hitPos, dead)
+        .ifPresent(this.ingameGui::setHitMarker);
+    if (dead && ServerConfig.instance.killSoundEnabled.get()) {
+      // Plays a sound that follows the player
+      SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(
+          new ResourceLocation(ClientDist.clientConfig.killSound.get()));
+      if (soundEvent != null) {
+        this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEvent, 5.0F, 1.5F));
+      }
+    }
+  }
+
+  @Nullable
+  public PlayerExtension<AbstractClientPlayer> getCameraPlayer() {
+    return this.minecraft.getCameraEntity() instanceof AbstractClientPlayer player
+        ? PlayerExtension.get(player)
+        : null;
   }
 
   // ================================================================================
   // Mod Events
   // ================================================================================
 
+  private void handleRegisterClientReloadListeners(RegisterClientReloadListenersEvent event) {
+    event.registerReloadListener(this.crosshairManager);
+    event.registerReloadListener(this.itemRenderDispatcher);
+  }
+
   /**
    * This has to be handled on the mod bus and forge bus.
    */
   @SubscribeEvent
   public void handleSoundLoad(SoundLoadEvent event) {
-    this.effectsManager = new EffectsManager(event.getManager());
+    this.effectsManager = new EffectsManager(event.getEngine());
   }
 
-  private void handleModelRegistry(ModelRegistryEvent event) {
-    StartupMessageManager.addModMessage("Registering model loaders");
-    ModelLoaderRegistry.registerLoader(new ResourceLocation(CraftingDead.ID, "perspective_aware"),
-        PerspectiveAwareModel.Loader.INSTANCE);
-    StartupMessageManager.addModMessage("Gathering item renderers");
-    this.itemRendererManager.gatherItemRenderers();
-    StartupMessageManager.addModMessage("Registering special models");
-    this.itemRendererManager.getModelDependencies().forEach(ModelLoader::addSpecialModel);
-  }
-
-  private void handleModelBake(ModelBakeEvent event) {
-    this.itemRendererManager.refreshCachedModels();
+  private void handleConfigReloading(ModConfigEvent.Reloading event) {
+    if (event.getConfig().getSpec() == clientConfigSpec) {
+      this.ingameGui.setCrosshairLocation(new ResourceLocation(clientConfig.crosshair.get()));
+    }
   }
 
   private void handleClientSetup(FMLClientSetupEvent event) {
-    ModItemModelsProperties.register();
-
-    StartupMessageManager.addModMessage("Registering tooltips");
-
-    ArbitraryTooltips.registerTooltip(ModItems.SCUBA_MASK,
-        (stack, world, tooltipFlags) -> Text
-            .translate("item_lore.clothing_item.water_breathing")
-            .mergeStyle(TextFormatting.GRAY));
-
-    ArbitraryTooltips.registerTooltip(ModItems.SCUBA_CLOTHING,
-        (stack, world, tooltipFlags) -> Text
-            .translate("item_lore.clothing_item.water_speed")
-            .mergeStyle(TextFormatting.GRAY));
-
-    StartupMessageManager.addModMessage("Registering container screen factories");
-
-    ScreenManager.registerFactory(ModContainerTypes.PLAYER.get(), PlayerScreen::new);
-    ScreenManager.registerFactory(ModContainerTypes.VEST.get(), GenericContainerScreen::new);
-
-    StartupMessageManager.addModMessage("Registering key bindings");
+    MenuScreens.register(ModMenuTypes.EQUIPMENT.get(), EquipmentScreen::new);
+    MenuScreens.register(ModMenuTypes.VEST.get(), GenericContainerScreen::new);
+    MenuScreens.register(ModMenuTypes.SMALL_BACKPACK.get(), GenericContainerScreen::new);
+    MenuScreens.register(ModMenuTypes.MEDIUM_BACKPACK.get(), GenericContainerScreen::new);
+    MenuScreens.register(ModMenuTypes.LARGE_BACKPACK.get(), GenericContainerScreen::new);
+    MenuScreens.register(ModMenuTypes.GUN_BAG.get(), GenericContainerScreen::new);
 
     ClientRegistry.registerKeyBinding(TOGGLE_FIRE_MODE);
     ClientRegistry.registerKeyBinding(RELOAD);
     ClientRegistry.registerKeyBinding(REMOVE_MAGAZINE);
-    ClientRegistry.registerKeyBinding(OPEN_MOD_INVENTORY);
+    ClientRegistry.registerKeyBinding(OPEN_EQUIPMENT_MENU);
 
-    StartupMessageManager.addModMessage("Registering entity renderers");
-
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.advancedZombie,
-        AdvancedZombieRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.fastZombie,
-        AdvancedZombieRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.tankZombie,
-        AdvancedZombieRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.weakZombie,
-        AdvancedZombieRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.policeZombie,
-        AdvancedZombieRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.doctorZombie,
-        AdvancedZombieRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.giantZombie,
-        GiantZombieRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.supplyDrop,
-        SupplyDropRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.c4Explosive,
-        C4ExplosiveRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.fireGrenade,
-        CylinderGrenadeRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.fragGrenade,
-        FragGrenadeRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.pipeGrenade,
-        CylinderGrenadeRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.decoyGrenade,
-        SlimGrenadeRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.smokeGrenade,
-        CylinderGrenadeRenderer::new);
-    RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.flashGrenade,
-        SlimGrenadeRenderer::new);
-
-    StartupMessageManager.addModMessage("Loading model layers");
-
-    this.registerPlayerLayer(ClothingLayer::new);
-    this.registerPlayerLayer(
-        renderer -> new EquipmentLayer.Builder<AbstractClientPlayerEntity, PlayerModel<AbstractClientPlayerEntity>>()
-            .withRenderer(renderer)
-            .withSlot(InventorySlotType.MELEE)
-            .withCrouchingOrientation(true)
-            .build());
-    this.registerPlayerLayer(
-        renderer -> new EquipmentLayer.Builder<AbstractClientPlayerEntity, PlayerModel<AbstractClientPlayerEntity>>()
-            .withRenderer(renderer)
-            .withSlot(InventorySlotType.VEST)
-            .withCrouchingOrientation(true)
-            .build());
-    this.registerPlayerLayer(
-        renderer -> new EquipmentLayer.Builder<AbstractClientPlayerEntity, PlayerModel<AbstractClientPlayerEntity>>()
-            .withRenderer(renderer)
-            .withSlot(InventorySlotType.HAT)
-            .withHeadOrientation(true)
-            // Inverts X and Y rotation. This is from Mojang, based on HeadLayer.class.
-            // TODO Find a reason to not remove this line. Also, if you remove it, you will
-            // need to change the json file of every helmet since the scale affects positions.
-            .withArbitraryTransformation(matrix -> matrix.scale(-1F, -1F, 1F))
-            .build());
-    this.registerPlayerLayer(
-        renderer -> new EquipmentLayer.Builder<AbstractClientPlayerEntity, PlayerModel<AbstractClientPlayerEntity>>()
-            .withRenderer(renderer)
-            .withSlot(InventorySlotType.GUN)
-            .withCrouchingOrientation(true)
-            .build());
+    ArbitraryTooltips.registerAll();
   }
 
-  /**
-   * Registers a layer into {@link PlayerRenderer}. Can be used normally during
-   * {@link FMLClientSetupEvent}.
-   *
-   * @param function - {@link Function} with a {@link PlayerRenderer} as input and a
-   *        {@link LayerRenderer} as output.
-   */
-  private void registerPlayerLayer(
-      Function<PlayerRenderer, LayerRenderer<AbstractClientPlayerEntity, PlayerModel<AbstractClientPlayerEntity>>> function) {
-    // A little dirty way, blame Mojang
-    this.minecraft.getRenderManager().getSkinMap().forEach((skin, renderer) -> {
-      renderer.addLayer(function.apply(renderer));
-    });
+  private void handleEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+    event.registerEntityRenderer(ModEntityTypes.C4_EXPLOSIVE.get(),
+        C4ExplosiveRenderer::new);
+    event.registerEntityRenderer(ModEntityTypes.FIRE_GRENADE.get(),
+        GrenadeRenderer.cylinder());
+    event.registerEntityRenderer(ModEntityTypes.FRAG_GRENADE.get(),
+        GrenadeRenderer.frag());
+    event.registerEntityRenderer(ModEntityTypes.DECOY_GRENADE.get(),
+        GrenadeRenderer.slim());
+    event.registerEntityRenderer(ModEntityTypes.SMOKE_GRENADE.get(),
+        GrenadeRenderer.cylinder());
+    event.registerEntityRenderer(ModEntityTypes.FLASH_GRENADE.get(),
+        GrenadeRenderer.slim());
+  }
+
+  private void handleEntityRenderersAddLayers(EntityRenderersEvent.AddLayers event) {
+    for (var skin : event.getSkins()) {
+      var renderer = (PlayerRenderer) event.getSkin(skin);
+      renderer.addLayer(new ParachuteLayer<>(renderer, event.getEntityModels()));
+      renderer.addLayer(new HandcuffsLayer<>(renderer, event.getEntityModels()));
+      renderer.addLayer(new ClothingLayer<>(renderer));
+      renderer.addLayer(EquipmentLayer.builder(renderer)
+          .slot(Equipment.Slot.MELEE)
+          .useCrouchOrientation(true)
+          .build());
+      renderer.addLayer(EquipmentLayer.builder(renderer)
+          .slot(Equipment.Slot.VEST)
+          .useCrouchOrientation(true)
+          .build());
+      renderer.addLayer(EquipmentLayer.builder(renderer)
+          .slot(Equipment.Slot.HAT)
+          .useHeadOrientation(true)
+          .transformation(poseStack -> poseStack.scale(-1F, -1F, 1F))
+          .build());
+      renderer.addLayer(EquipmentLayer.builder(renderer)
+          .slot(Equipment.Slot.GUN)
+          .useCrouchOrientation(true)
+          .build());
+      renderer.addLayer(EquipmentLayer.builder(renderer)
+          .slot(Equipment.Slot.BACKPACK)
+          .useCrouchOrientation(true)
+          .build());
+    }
+  }
+
+  private void handleEntityRenderersLayerDefinitions(
+      EntityRenderersEvent.RegisterLayerDefinitions event) {
+    event.registerLayerDefinition(ModModelLayers.MUZZLE_FLASH,
+        GunRenderer::createMuzzleFlashBodyLayer);
+    event.registerLayerDefinition(ModModelLayers.PARACHUTE,
+        ParachuteLayer::createParachuteBodyLayer);
+    event.registerLayerDefinition(ModModelLayers.HANDCUFFS,
+        HandcuffsLayer::createHandcuffsBodyLayer);
+    event.registerLayerDefinition(ModModelLayers.C4_EXPLOSIVE,
+        C4ExplosiveModel::createBodyLayer);
+    event.registerLayerDefinition(ModModelLayers.CYLINDER_GRENADE,
+        CylinderGrenadeModel::createBodyLayer);
+    event.registerLayerDefinition(ModModelLayers.FRAG_GRENADE,
+        FragGrenadeModel::createBodyLayer);
+    event.registerLayerDefinition(ModModelLayers.SLIM_GRENADE,
+        SlimGrenadeModel::createBodyLayer);
   }
 
   private void handleParticleFactoryRegisterEvent(ParticleFactoryRegisterEvent event) {
-    final ParticleManager particleManager = this.minecraft.particles;
-    particleManager.registerFactory(ModParticleTypes.RGB_FLASH.get(),
-        RGBFlashParticle.Factory::new);
-    particleManager.registerFactory(ModParticleTypes.GRENADE_SMOKE.get(),
+    var particleEngine = this.minecraft.particleEngine;
+    particleEngine.register(ModParticleTypes.GRENADE_SMOKE.get(),
         GrenadeSmokeParticle.Factory::new);
+    particleEngine.register(ModParticleTypes.RGB_FLASH.get(), FlashParticle.Factory::new);
   }
 
   private void handleItemColor(ColorHandlerEvent.Item event) {
-    // Color for stacks with GUN_CONTROLLER capability
-    IItemColor gunColor = (stack,
-        tintIndex) -> stack
-            .getCapability(ModCapabilities.GUN)
-            .map(gunController -> gunController
-                .getPaintStack()
-                .getCapability(ModCapabilities.PAINT)
-                .map(IPaint::getColour)
-                .orElse(Optional.empty()))
-            .orElse(Optional.empty())
-            .orElse(0xFFFFFF) | 0xFF << 24;
-
-
-    // Registers the color for every matching CD item
-    ModItems.ITEMS
-        .getEntries()
-        .stream()
-        .map(RegistryObject::get)
-        .filter(item -> item instanceof GunItem)
-        .forEach(item -> event.getItemColors().register(gunColor, item));
-
-    // Color for stacks with PAINT_COLOR capability
-    IItemColor paintStackColor = (stack, tintIndex) -> stack
-        .getCapability(ModCapabilities.PAINT)
-        .map(IPaint::getColour)
-        .orElse(Optional.empty())
-        .orElse(Integer.MAX_VALUE);
-
-    // Registers the color for every matching CD item
-    ModItems.ITEMS
-        .getEntries()
-        .stream()
-        .map(RegistryObject::get)
-        .filter(item -> item instanceof PaintItem)
-        .forEach(item -> event.getItemColors().register(paintStackColor, () -> item));
+    ItemColor gunColour =
+        (itemStack, tintIndex) -> itemStack.getCapability(Gun.CAPABILITY)
+            .resolve()
+            .flatMap(gun -> gun.getPaintStack().getCapability(Paint.CAPABILITY).resolve())
+            .stream()
+            .flatMapToInt(paint -> paint.getColor().stream())
+            .findAny()
+            .orElse(0xFFFFFFFF);
+    ForgeRegistries.ITEMS.getValues().stream()
+        .filter(item -> item.getClass().isAnnotationPresent(RegisterGunColor.class))
+        .forEach(item -> event.getItemColors().register(gunColour, item));
   }
 
   private void handleTextureStitch(TextureStitchEvent.Pre event) {
-    if (event.getMap().getTextureLocation().equals(PlayerContainer.LOCATION_BLOCKS_TEXTURE)) {
-      this.itemRendererManager.getTexturesToStitch().forEach(event::addSprite);
+    this.itemRenderDispatcher.getTextures(event.getAtlas().location()).forEach(event::addSprite);
+    if (event.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
+      Skins.REGISTRY.stream()
+          .flatMap(skin -> skin.getAcceptedGuns().stream().map(skin::getTextureLocation))
+          .forEach(event::addSprite);
     }
   }
 
@@ -461,15 +430,13 @@ public class ClientDist implements IModDist {
 
   @SubscribeEvent
   public void handleTooltipEvent(ItemTooltipEvent event) {
-    Collection<TooltipFunction> functions =
-        ArbitraryTooltips.getFunctions(event.getItemStack().getItem());
+    var functions = ArbitraryTooltips.getFunctions(event.getItemStack().getItem());
     int lineIndex = 1;
 
-    // Applies the arbitrary tooltip
-    for (TooltipFunction function : functions) {
-      World world = event.getEntity() != null ? event.getEntity().world : null;
-      ITextComponent tooltip =
-          function.createTooltip(event.getItemStack(), world, event.getFlags());
+    // Applies the arbitrary tooltips
+    for (var function : functions) {
+      var level = event.getEntity() != null ? event.getEntity().getLevel() : null;
+      var tooltip = function.createTooltip(event.getItemStack(), level, event.getFlags());
       if (tooltip != null) {
         event.getToolTip().add(lineIndex++, tooltip);
       }
@@ -478,253 +445,313 @@ public class ClientDist implements IModDist {
 
   @SubscribeEvent
   public void handleClientTick(TickEvent.ClientTickEvent event) {
-    switch (event.phase) {
-      case START:
-        this.lastTime = (float) Math.ceil(this.lastTime);
-        if (this.minecraft.player != null && this.minecraft.isGamePaused()) {
-          IPlayer<ClientPlayerEntity> player = IPlayer.getExpected(this.minecraft.player);
-          ItemStack heldStack = this.minecraft.player.getHeldItemMainhand();
-          heldStack.getCapability(ModCapabilities.GUN).ifPresent(gun -> {
-            gun.setTriggerPressed(player, heldStack, false, true);
-            if (gun.isPerformingRightMouseAction()) {
-              gun.toggleRightMouseAction(player, true);
-            }
-          });
-        }
-        if (this.minecraft.loadingGui == null
-            && (this.minecraft.currentScreen == null || this.minecraft.currentScreen.passEvents)) {
-          IPlayer<ClientPlayerEntity> player = IPlayer.getExpected(this.minecraft.player);
-          final ItemStack heldStack = this.minecraft.player.getHeldItemMainhand();
-          while (TOGGLE_FIRE_MODE.isPressed()) {
-            heldStack
-                .getCapability(ModCapabilities.GUN)
-                .ifPresent(gun -> gun.toggleFireMode(player, true));
-          }
-          while (RELOAD.isPressed()) {
-            heldStack.getCapability(ModCapabilities.GUN).ifPresent(gun -> gun.reload(player));
-          }
-          while (REMOVE_MAGAZINE.isPressed()) {
-            heldStack.getCapability(ModCapabilities.GUN)
-                .ifPresent(gun -> gun.removeMagazine(player));
-          }
-          if (this.minecraft.player.isSneaking() != this.wasSneaking) {
-            if (this.minecraft.player.isSneaking()) {
-              final long currentTime = Util.milliTime();
-              if (currentTime - this.lastSneakPressTime <= DOUBLE_CLICK_DURATION) {
-                player.setCrouching(true, true);
-              }
-              this.lastSneakPressTime = Util.milliTime();
-            } else {
-              player.setCrouching(false, true);
-            }
-            this.wasSneaking = this.minecraft.player.isSneaking();
-          }
-          while (OPEN_MOD_INVENTORY.isPressed()) {
-            NetworkChannel.PLAY.getSimpleChannel().sendToServer(new OpenModInventoryMessage());
-            if (this.minecraft.getTutorial().tutorialStep instanceof IModTutorialStep) {
-              ((IModTutorialStep) this.minecraft.getTutorial().tutorialStep).openModInventory();
-            }
-          }
+    if (event.phase != TickEvent.Phase.START) {
+      return;
+    }
 
-          TutorialSteps currentTutorialStep = this.minecraft.gameSettings.tutorialStep;
-          if (this.lastTutorialStep != currentTutorialStep) {
-            if (currentTutorialStep == TutorialSteps.NONE) {
-              this.setTutorialStep(clientConfig.tutorialStep.get());
-            }
-            this.lastTutorialStep = currentTutorialStep;
+    var player = this.getPlayerExtension().orElse(null);
+    if (player != null) {
+      var gun = player.mainHandGun().orElse(null);
+
+      var levelFocused = !this.minecraft.isPaused() && this.minecraft.getOverlay() == null
+          && (this.minecraft.screen == null);
+
+      this.cameraManager.tick();
+
+      if (!levelFocused || player.entity().isSpectator()) {
+        // Stop gun actions if level not focused.
+        if (gun != null) {
+          if (gun.isTriggerPressed()) {
+            gun.setTriggerPressed(player, false, true);
           }
-          if (this.minecraft.player.isPotionActive(ModEffects.ADRENALINE.get())) {
-            this.wasAdrenalineActive = true;
-            this.effectsManager.setHighpassLevels(1.0F, 0.015F);
-            this.effectsManager.setDirectHighpassForAll();
-          } else if (this.wasAdrenalineActive) {
-            this.wasAdrenalineActive = false;
-            this.effectsManager.removeFilterForAll();
+          if (gun.isPerformingSecondaryAction()) {
+            gun.setPerformingSecondaryAction(player, false, true);
           }
         }
-        break;
-      default:
-        break;
+        return;
+      }
+
+      // Update gun input
+      if (gun != null) {
+        while (TOGGLE_FIRE_MODE.consumeClick()) {
+          gun.toggleFireMode(player, true);
+        }
+        while (RELOAD.consumeClick()) {
+          gun.getAmmoProvider().reload(player);
+        }
+        while (REMOVE_MAGAZINE.consumeClick()) {
+          gun.getAmmoProvider().unload(player);
+        }
+      }
+
+      // Update crouching
+      if (this.minecraft.player.isShiftKeyDown() != this.wasSneaking) {
+        if (this.minecraft.player.isShiftKeyDown()) {
+          final long currentTime = Util.getMillis();
+          if (currentTime - this.lastSneakPressTime <= DOUBLE_CLICK_DURATION) {
+            player.setCrouching(true, true);
+          }
+          this.lastSneakPressTime = Util.getMillis();
+        } else {
+          player.setCrouching(false, true);
+        }
+        this.wasSneaking = this.minecraft.player.isShiftKeyDown();
+      }
+
+      // Update tutorial
+      while (OPEN_EQUIPMENT_MENU.consumeClick()) {
+        NetworkChannel.PLAY.getSimpleChannel().sendToServer(new OpenEquipmentMenuMessage());
+        if (this.minecraft.getTutorial().instance instanceof ModTutorialStepInstance) {
+          ((ModTutorialStepInstance) this.minecraft.getTutorial().instance).openEquipmentMenu();
+        }
+      }
+      TutorialSteps currentTutorialStep = this.minecraft.options.tutorialStep;
+      if (this.lastTutorialStep != currentTutorialStep) {
+        if (currentTutorialStep == TutorialSteps.NONE) {
+          this.setTutorialStep(clientConfig.tutorialStep.get());
+        }
+        this.lastTutorialStep = currentTutorialStep;
+      }
+
+      // Update adrenaline effects
+      if (this.minecraft.player.hasEffect(ModMobEffects.ADRENALINE.get())) {
+        this.wasAdrenalineActive = true;
+        this.effectsManager.setHighpassLevels(1.0F, 0.015F);
+        this.effectsManager.setDirectHighpassForAll();
+      } else if (this.wasAdrenalineActive) {
+        this.wasAdrenalineActive = false;
+        this.effectsManager.removeFilterForAll();
+      }
+
     }
   }
 
   @SubscribeEvent
   public void handleRawMouse(InputEvent.RawMouseEvent event) {
-    if (this.minecraft.getConnection() != null && this.minecraft.currentScreen == null) {
-      if (this.minecraft.gameSettings.keyBindAttack.matchesMouseKey(event.getButton())) {
-        boolean triggerPressed = event.getAction() == GLFW.GLFW_PRESS;
-        ItemStack heldStack = this.minecraft.player.getHeldItemMainhand();
-        heldStack.getCapability(ModCapabilities.GUN).ifPresent(gun -> {
+    var player = this.getPlayerExtension().orElse(null);
+    if (player == null
+        || this.minecraft.getOverlay() != null
+        || this.minecraft.screen != null
+        || player.entity().isSpectator()) {
+      return;
+    }
+
+    var gun = player.mainHandGun().orElse(null);
+    if (this.minecraft.options.keyAttack.matchesMouse(event.getButton())) {
+      var triggerPressed = event.getAction() == GLFW.GLFW_PRESS;
+      if (gun != null) {
+        // Allow minecraft to register release, preventing from certain actions freezing when the
+        // player swap items
+        if (triggerPressed) {
           event.setCanceled(true);
-          gun.setTriggerPressed(IPlayer.getExpected(this.minecraft.player), heldStack,
-              triggerPressed, true);
-        });
-      } else if (this.minecraft.gameSettings.keyBindUseItem.matchesMouseKey(event.getButton())) {
-        ItemStack heldStack = this.minecraft.player.getHeldItemMainhand();
-        heldStack.getCapability(ModCapabilities.GUN)
-            .filter(gun -> gun
-                .getRightMouseActionTriggerType() == IGun.RightMouseActionTriggerType.HOLD)
-            .ifPresent(gun -> {
-              if ((event.getAction() == GLFW.GLFW_PRESS && !gun.isPerformingRightMouseAction())
-                  || (event.getAction() == GLFW.GLFW_RELEASE
-                      && gun.isPerformingRightMouseAction())) {
-                gun.toggleRightMouseAction(IPlayer.getExpected(this.minecraft.player), true);
-              }
-              event.setCanceled(true);
-            });
+        }
+        gun.setTriggerPressed(player, triggerPressed, true);
+      }
+    } else if (this.minecraft.options.keyUse.matchesMouse(event.getButton())) {
+      if (gun != null) {
+        switch (gun.getSecondaryActionTrigger()) {
+          case HOLD -> gun.setPerformingSecondaryAction(
+              player, event.getAction() == GLFW.GLFW_PRESS, true);
+          case TOGGLE -> {
+            if (event.getAction() == GLFW.GLFW_PRESS) {
+              gun.setPerformingSecondaryAction(player, !gun.isPerformingSecondaryAction(), true);
+            }
+          }
+        }
+        event.setCanceled(true);
       }
     }
   }
 
   @SubscribeEvent
-  public void handleAttachEntityCapabilities(AttachCapabilitiesEvent<Entity> event) {
-    if (event.getObject() instanceof AbstractClientPlayerEntity) {
-      event.addCapability(ILiving.ID,
-          new SerializableCapabilityProvider<>(
-              new Player<>((AbstractClientPlayerEntity) event.getObject()),
-              () -> ModCapabilities.LIVING));
-    }
-  }
-
-  @SubscribeEvent
-  public void handleRenderLiving(RenderLivingEvent.Pre<?, BipedModel<?>> event) {
-    ItemStack heldStack = event.getEntity().getHeldItemMainhand();
-    if (event.getRenderer().getEntityModel() instanceof BipedModel
-        && heldStack.getItem() instanceof GunItem) {
-      BipedModel<?> model = event.getRenderer().getEntityModel();
-      switch (event.getEntity().getPrimaryHand()) {
-        case LEFT:
+  public void handleRenderLiving(RenderLivingEvent.Pre<?, ?> event) {
+    final var heldStack = event.getEntity().getMainHandItem();
+    // TODO Unpleasant way of setting pose for gun. Introduce nicer system (with better poses).
+    if (event.getRenderer().getModel() instanceof HumanoidModel<?> model
+        && heldStack.getItem() instanceof GunItem
+        && !gunPoseBlacklist.contains(event.getEntity().getClass().getName())) {
+      switch (event.getEntity().getMainArm()) {
+        case LEFT -> {
           model.leftArmPose = ArmPose.BOW_AND_ARROW;
-          break;
-        case RIGHT:
+        }
+        case RIGHT -> {
           model.rightArmPose = ArmPose.BOW_AND_ARROW;
-          break;
-        default:
-          break;
+        }
       }
+    }
+  }
+
+  @SubscribeEvent
+  public void handleRenderGameOverlayPreLayer(RenderGameOverlayEvent.PreLayer event) {
+    var player = this.getCameraPlayer();
+    if (player == null) {
+      return;
+    }
+
+    final var overlay = event.getOverlay();
+    if (overlay == ForgeIngameGui.PLAYER_HEALTH_ELEMENT
+        || overlay == ForgeIngameGui.HOTBAR_ELEMENT
+        || overlay == ForgeIngameGui.EXPERIENCE_BAR_ELEMENT
+        || overlay == ForgeIngameGui.MOUNT_HEALTH_ELEMENT
+        || overlay == ForgeIngameGui.FOOD_LEVEL_ELEMENT
+        || overlay == ForgeIngameGui.AIR_LEVEL_ELEMENT
+        || overlay == ForgeIngameGui.ARMOR_LEVEL_ELEMENT) {
+      event.setCanceled(player.isCombatModeEnabled());
+    } else if (overlay == ForgeIngameGui.CROSSHAIR_ELEMENT) {
+      var aiming = player.mainHandItem().getCapability(Scope.CAPABILITY)
+          .map(scope -> scope.isScoping(player))
+          .orElse(false);
+      if (player.getActionObserver()
+          .map(observer -> observer.getProgressBar().isPresent())
+          .orElse(false) || aiming || player.isHandcuffed()) {
+        event.setCanceled(true);
+        return;
+      }
+
+      player.mainHandGun().ifPresent(gun -> {
+        event.setCanceled(true);
+        if (gun.getClient().isCrosshairEnabled()) {
+          this.ingameGui.renderCrosshairs(event.getMatrixStack(),
+              gun.getAccuracy(player),
+              event.getPartialTicks(), event.getWindow().getGuiScaledWidth(),
+              event.getWindow().getGuiScaledHeight());
+        }
+      });
     }
   }
 
   @SubscribeEvent
   public void handleRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
-    final IPlayer<ClientPlayerEntity> player = this.getPlayer().orElse(null);
+    var player = this.getCameraPlayer();
+    if (player == null) {
+      return;
+    }
+
+    var heldStack = player.mainHandItem();
+    var gun = heldStack.getCapability(Gun.CAPABILITY).orElse(null);
     switch (event.getType()) {
-      case ALL:
-        if (player != null) {
-          this.ingameGui.renderOverlay(player, event.getMatrixStack(),
-              event.getWindow().getScaledWidth(), event.getWindow().getScaledHeight(),
-              event.getPartialTicks());
-        }
-        break;
-      case CROSSHAIRS:
-        if (player != null) {
-          ItemStack heldStack = this.minecraft.player.getHeldItemMainhand();
-          event.setCanceled(player.getActionProgress().isPresent()
-              || heldStack.getCapability(ModCapabilities.SCOPE)
-                  .map(scope -> scope.isAiming(this.minecraft.player, heldStack))
-                  .orElse(false));
-          if (!event.isCanceled()) {
-            heldStack.getCapability(ModCapabilities.GUN).ifPresent(gun -> {
-              event.setCanceled(true);
-              if (gun.hasCrosshair()) {
-                this.ingameGui.renderCrosshairs(gun.getAccuracy(player, heldStack),
-                    event.getPartialTicks(), event.getWindow().getScaledWidth(),
-                    event.getWindow().getScaledHeight());
-              }
-            });
-          }
-        }
-        break;
-      default:
-        break;
+      case ALL -> {
+        this.ingameGui.renderOverlay(player, heldStack, gun, event.getMatrixStack(),
+            event.getWindow().getGuiScaledWidth(), event.getWindow().getGuiScaledHeight(),
+            event.getPartialTicks());
+      }
+      default -> {}
     }
   }
 
   @SubscribeEvent
   public void handleCameraSetup(EntityViewRenderEvent.CameraSetup event) {
-    final Vector3f rotations = this.cameraManager.getCameraRotation();
-    event.setPitch(event.getPitch() + rotations.getX());
-    event.setYaw(event.getYaw() + rotations.getY());
-    event.setRoll(event.getRoll() + rotations.getZ());
-  }
-
-  @SubscribeEvent
-  public void handeFOVUpdate(FOVUpdateEvent event) {
-    event.setNewfov(event.getNewfov() + this.cameraManager.getFov());
-  }
-
-  @SubscribeEvent
-  public void handeFOVUpdate(EntityViewRenderEvent.FOVModifier event) {
-    if (this.minecraft.player != null) {
-      ItemStack heldStack = this.minecraft.player.getHeldItemMainhand();
-      float newFov = heldStack.getCapability(ModCapabilities.SCOPE)
-          .filter(scope -> scope.isAiming(this.minecraft.player, heldStack))
-          .map(scope -> 1 / scope.getZoomMultiplier(this.minecraft.player, heldStack)).orElse(1.0F);
-
-      this.lastFov = this.fov;
-      this.fov = MathHelper.lerp(0.25F, this.fov, newFov);
-
-      event.setFOV(event.getFOV()
-          * MathHelper.lerp(this.minecraft.getRenderPartialTicks(), this.lastFov, this.fov));
+    this.cameraManager.getCameraRotations((float) event.getPartialTicks(),
+        mutableCameraRotations);
+    if (this.minecraft.cameraEntity instanceof LivingEntity livingEntity) {
+      var itemStack = livingEntity.getMainHandItem();
+      var itemRenderer = this.itemRenderDispatcher.getItemRenderer(itemStack.getItem());
+      if (itemRenderer != null) {
+        itemRenderer.rotateCamera(itemStack, livingEntity, (float) event.getPartialTicks(),
+            mutableCameraRotations);
+      }
     }
+
+    this.lastPitch = Mth.lerp(0.1F, this.lastPitch, mutableCameraRotations.x());
+    this.lastYaw = Mth.lerp(0.1F, this.lastYaw, mutableCameraRotations.y());
+    this.lastRoll = Mth.lerp(0.1F, this.lastRoll, mutableCameraRotations.z());
+    mutableCameraRotations.set(0.0F, 0.0F, 0.0F);
+    event.setPitch(event.getPitch() + this.lastPitch);
+    event.setYaw(event.getYaw() + this.lastYaw);
+    event.setRoll(event.getRoll() + this.lastRoll);
+  }
+
+  @SubscribeEvent
+  public void handeFOVModifier(FOVModifierEvent event) {
+    var player = this.getCameraPlayer();
+    if (player != null) {
+      var scope = player.entity().getMainHandItem().getCapability(Scope.CAPABILITY).orElse(null);
+      if (scope != null && scope.isScoping(player)) {
+        event.setNewfov(1.0F / scope.getZoomMultiplier(player));
+      }
+    }
+    event.setNewfov(event.getNewfov() + this.cameraManager.getFov(this.minecraft.getFrameTime()));
   }
 
   @SubscribeEvent
   public void handleRenderTick(TickEvent.RenderTickEvent event) {
     switch (event.phase) {
-      case START:
-        float currentTime = (float) Math.floor(this.lastTime) + event.renderTickTime;
-        float deltaTime = (currentTime - this.lastTime) * 50;
-        this.lastTime = currentTime;
-        this.tweenManager.update(deltaTime);
-
+      case START -> {
         if (this.minecraft.player != null) {
-          final Vector2f rotationVelocity = this.cameraManager.getLookRotationVelocity();
-          this.minecraft.player.rotateTowards(rotationVelocity.y, rotationVelocity.x);
+          this.cameraManager.getLookRotationDelta(FOV);
+          this.minecraft.player.turn(FOV.getY(), FOV.getX());
         }
-        break;
-      case END:
+      }
+      case END -> {
         if (this.minecraft.player != null) {
           this.updateAdrenalineShader(event.renderTickTime);
+          if (this.minecraft.screen == null) {
+            this.ingameGui.renderFlashBangOverlay(this.minecraft.player, new PoseStack(),
+                this.minecraft.getWindow().getGuiScaledWidth(),
+                this.minecraft.getWindow().getGuiScaledHeight(), event.renderTickTime);
+          }
         }
-        break;
-      default:
-        break;
-    }
-  }
-
-  private void updateAdrenalineShader(float partialTicks) {
-    final GameRenderer gameRenderer = this.minecraft.gameRenderer;
-    final boolean shaderLoaded = gameRenderer.getShaderGroup() != null
-        && gameRenderer.getShaderGroup().getShaderGroupName()
-            .equals(ADRENALINE_SHADER.toString());
-    if (this.minecraft.player.isPotionActive(ModEffects.ADRENALINE.get())) {
-      final long currentTime = Util.milliTime();
-      if (this.adrenalineShaderStartTime == 0L) {
-        this.adrenalineShaderStartTime = currentTime;
       }
-      float progress = MathHelper.clamp(
-          ((currentTime - this.adrenalineShaderStartTime) - partialTicks) / 5000.0F, 0.0F, 1.0F);
-      if (!shaderLoaded) {
-        if (gameRenderer.getShaderGroup() != null) {
-          gameRenderer.stopUseShader();
-        }
-        gameRenderer.loadShader(ADRENALINE_SHADER);
-      }
-      ShaderGroup shaderGroup = gameRenderer.getShaderGroup();
-      RenderUtil.updateUniform("Saturation", progress * 0.25F, shaderGroup);
-    } else if (shaderLoaded) {
-      this.adrenalineShaderStartTime = 0L;
-      gameRenderer.stopUseShader();
     }
   }
 
   @SubscribeEvent
-  public void handleGuiOpen(GuiOpenEvent event) {
-    // Prevents current GUI being closed before new one opens.
-    if (this.minecraft.currentScreen instanceof PlayerScreen && event.getGui() == null
-        && ((PlayerScreen) this.minecraft.currentScreen).isTransitioning()) {
+  public void handleRenderScreen(ScreenEvent.DrawScreenEvent.Pre event) {
+    if (this.minecraft.player != null) {
+      this.ingameGui.renderFlashBangOverlay(this.minecraft.player, new PoseStack(),
+          this.minecraft.getWindow().getGuiScaledWidth(),
+          this.minecraft.getWindow().getGuiScaledHeight(), event.getPartialTicks());
+    }
+  }
+
+  private void updateAdrenalineShader(float partialTicks) {
+    final var gameRenderer = this.minecraft.gameRenderer;
+    final var shaderLoaded = gameRenderer.currentEffect() != null
+        && gameRenderer.currentEffect().getName().equals(ADRENALINE_SHADER.toString());
+    if (this.minecraft.player.hasEffect(ModMobEffects.ADRENALINE.get())) {
+      final long currentTime = Util.getMillis();
+      if (this.adrenalineShaderStartTime == 0L) {
+        this.adrenalineShaderStartTime = currentTime;
+      }
+      float progress = Mth.clamp(
+          ((currentTime - this.adrenalineShaderStartTime) - partialTicks) / 5000.0F, 0.0F, 1.0F);
+      if (!shaderLoaded) {
+        if (gameRenderer.currentEffect() != null) {
+          gameRenderer.shutdownEffect();
+        }
+        gameRenderer.loadEffect(ADRENALINE_SHADER);
+      }
+      PostChain shaderGroup = gameRenderer.currentEffect();
+      RenderUtil.updateUniform("Saturation", progress * 0.25F, shaderGroup);
+    } else if (shaderLoaded) {
+      this.adrenalineShaderStartTime = 0L;
+      gameRenderer.shutdownEffect();
+    }
+  }
+
+  @SubscribeEvent
+  public void handleScreenOpen(ScreenOpenEvent event) {
+    // Prevents current screen being closed before new one opens.
+    if (this.minecraft.screen instanceof EquipmentScreen screen
+        && event.getScreen() == null
+        && screen.isTransitioning()) {
       event.setCanceled(true);
+    }
+  }
+
+  @SubscribeEvent
+  public void handleRenderHand(RenderHandEvent event) {
+    final var player = this.getCameraPlayer();
+    if (player != null) {
+      event.setCanceled(player.isHandcuffed());
+    }
+  }
+
+  @SubscribeEvent
+  public void handleClickInput(InputEvent.ClickInputEvent event) {
+    final var player = this.getCameraPlayer();
+    if (player != null && player.isHandcuffed()) {
+      event.setSwingHand(false);
     }
   }
 
@@ -736,58 +763,52 @@ public class ClientDist implements IModDist {
     // Applies the flash effect at client side for a better delay compensation
     // and better FOV calculation
     int duration = flashGrenadeEntity.calculateDuration(this.minecraft.player,
-        RenderUtil.isInsideGameFOV(flashGrenadeEntity, false));
+        RenderUtil.isInsideFrustum(flashGrenadeEntity, false));
     if (duration > 0) {
-      EffectInstance flashEffect = new EffectInstance(ModEffects.FLASH_BLINDNESS.get(), duration);
-      ModEffects.applyOrOverrideIfLonger(this.minecraft.player, flashEffect);
+      var flashEffect = new MobEffectInstance(ModMobEffects.FLASH_BLINDNESS.get(), duration);
+      ModMobEffects.applyOrOverrideIfLonger(this.minecraft.player, flashEffect);
     }
   }
 
   // ================================================================================
-  // ASM Hooks
+  // Hooks
   // ================================================================================
 
-  public static boolean renderLivingPre(LivingRenderer<?, ?> renderer, final LivingEntity entity,
-      final MatrixStack matrixStack, final IVertexBuilder builder, final int light,
-      final int overlay, final float limbSwing, final float limbSwingAmount, final float ageInTicks,
-      final float netHeadYaw, final float headPitch) {
-    return false;
-  }
+  /**
+   * @see com.craftingdead.core.mixin.PlayerRendererMixin
+   */
+  public static void renderArmWithClothing(PlayerRenderer renderer, PoseStack poseStack,
+      MultiBufferSource bufferSource, int packedLight, AbstractClientPlayer playerEntity,
+      ModelPart arm, ModelPart sleeve) {
 
-  public static void renderLivingPost(LivingRenderer<?, ?> renderer, final LivingEntity entity,
-      final MatrixStack matrixStack, final IVertexBuilder builder, final int light,
-      final int overlay, final float limbSwing, final float limbSwingAmount, final float ageInTicks,
-      final float netHeadYaw, final float headPitch) {}
+    var clothingTexture = playerEntity.getCapability(LivingExtension.CAPABILITY)
+        .resolve()
+        .flatMap(living -> living.getEquipmentInSlot(Equipment.Slot.CLOTHING, Clothing.class))
+        .map(clothing -> clothing.getTexture(playerEntity.getModelName()))
+        .orElse(null);
 
-  public static void renderArmWithClothing(PlayerRenderer renderer, MatrixStack matrixStack,
-      IRenderTypeBuffer renderTypeBuffer,
-      int packedLight, AbstractClientPlayerEntity playerEntity, ModelRenderer armRenderer,
-      ModelRenderer armwearRenderer) {
-    playerEntity.getCapability(ModCapabilities.LIVING).ifPresent(living -> {
-      String skinType = playerEntity.getSkinType();
-      ItemStack clothingStack =
-          living.getItemHandler().getStackInSlot(InventorySlotType.CLOTHING.getIndex());
-      clothingStack.getCapability(ModCapabilities.CLOTHING).ifPresent(clothing -> {
-        ResourceLocation clothingSkin = clothing.getTexture(skinType);
+    RenderArmClothingEvent event = new RenderArmClothingEvent(playerEntity, clothingTexture);
+    MinecraftForge.EVENT_BUS.post(event);
+    clothingTexture = event.getClothingTexture();
 
-        PlayerModel<AbstractClientPlayerEntity> playerModel = renderer.getEntityModel();
-        playerModel.swingProgress = 0.0F;
-        playerModel.isSneak = false;
-        playerModel.swimAnimation = 0.0F;
-        playerModel.setRotationAngles(playerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+    if (clothingTexture != null) {
+      final var model = renderer.getModel();
+      model.attackTime = 0.0F;
+      model.crouching = false;
+      model.swimAmount = 0.0F;
+      model.setupAnim(playerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 
-        armRenderer.showModel = true;
-        armwearRenderer.showModel = true;
+      arm.visible = true;
+      sleeve.visible = true;
 
-        armRenderer.rotateAngleX = 0.0F;
-        armRenderer.render(matrixStack,
-            renderTypeBuffer.getBuffer(RenderType.getEntityTranslucent(clothingSkin)), packedLight,
-            OverlayTexture.NO_OVERLAY);
-        armwearRenderer.rotateAngleX = 0.0F;
-        armwearRenderer.render(matrixStack,
-            renderTypeBuffer.getBuffer(RenderType.getEntityTranslucent(clothingSkin)), packedLight,
-            OverlayTexture.NO_OVERLAY);
-      });
-    });
+      arm.xRot = 0.0F;
+      arm.render(poseStack,
+          bufferSource.getBuffer(RenderType.entityTranslucent(clothingTexture)), packedLight,
+          OverlayTexture.NO_OVERLAY);
+      sleeve.xRot = 0.0F;
+      sleeve.render(poseStack,
+          bufferSource.getBuffer(RenderType.entityTranslucent(clothingTexture)), packedLight,
+          OverlayTexture.NO_OVERLAY);
+    }
   }
 }

@@ -1,20 +1,21 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core.particle;
 
 import java.util.Locale;
@@ -22,11 +23,11 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleType;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 
-public class GrenadeSmokeParticleData implements IParticleData {
+public class GrenadeSmokeParticleData implements ParticleOptions {
 
   public static final Codec<GrenadeSmokeParticleData> CODEC =
       RecordCodecBuilder.create(instance -> instance
@@ -37,10 +38,10 @@ public class GrenadeSmokeParticleData implements IParticleData {
           .apply(instance, GrenadeSmokeParticleData::new));
 
   @SuppressWarnings("deprecation")
-  public static final IParticleData.IDeserializer<GrenadeSmokeParticleData> DESERIALIZER =
-      new IParticleData.IDeserializer<GrenadeSmokeParticleData>() {
+  public static final ParticleOptions.Deserializer<GrenadeSmokeParticleData> DESERIALIZER =
+      new ParticleOptions.Deserializer<GrenadeSmokeParticleData>() {
         @Override
-        public GrenadeSmokeParticleData deserialize(
+        public GrenadeSmokeParticleData fromCommand(
             ParticleType<GrenadeSmokeParticleData> particleType, StringReader stringReader)
             throws CommandSyntaxException {
           stringReader.expect(' ');
@@ -55,8 +56,8 @@ public class GrenadeSmokeParticleData implements IParticleData {
         }
 
         @Override
-        public GrenadeSmokeParticleData read(ParticleType<GrenadeSmokeParticleData> particleType,
-            PacketBuffer packetBuffer) {
+        public GrenadeSmokeParticleData fromNetwork(ParticleType<GrenadeSmokeParticleData> particleType,
+            FriendlyByteBuf packetBuffer) {
           return new GrenadeSmokeParticleData(packetBuffer.readFloat(), packetBuffer.readFloat(),
               packetBuffer.readFloat(), packetBuffer.readFloat());
         }
@@ -75,7 +76,7 @@ public class GrenadeSmokeParticleData implements IParticleData {
   }
 
   @Override
-  public void write(PacketBuffer packetBuffer) {
+  public void writeToNetwork(FriendlyByteBuf packetBuffer) {
     packetBuffer.writeFloat(this.red);
     packetBuffer.writeFloat(this.green);
     packetBuffer.writeFloat(this.blue);
@@ -83,7 +84,7 @@ public class GrenadeSmokeParticleData implements IParticleData {
   }
 
   @Override
-  public String getParameters() {
+  public String writeToString() {
     return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f",
         this.getType().getRegistryName(), this.red, this.green, this.blue, this.scale);
   }

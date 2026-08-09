@@ -1,130 +1,235 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.immerse.client;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.function.Predicate;
-import javax.annotation.Nullable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.io.UncheckedIOException;
+import org.jdesktop.core.animation.timing.Animator;
+import org.jdesktop.core.animation.timing.sources.ManualTimingSource;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 import com.craftingdead.core.CraftingDead;
-import com.craftingdead.core.capability.living.IPlayer;
+import com.craftingdead.core.world.entity.extension.LivingExtension;
+import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.immerse.CraftingDeadImmerse;
-import com.craftingdead.immerse.IModDist;
-import com.craftingdead.immerse.client.gui.screen.StartScreen;
-import com.craftingdead.immerse.client.gui.transition.TransitionManager;
-import com.craftingdead.immerse.client.gui.transition.Transitions;
-import com.craftingdead.immerse.client.shader.RoundedFrameShader;
+import com.craftingdead.immerse.ModDist;
+import com.craftingdead.immerse.client.fake.FakePlayer;
+import com.craftingdead.immerse.client.gui.IngameGui;
+import com.craftingdead.immerse.client.gui.screen.menu.MainMenuView;
+import com.craftingdead.immerse.client.renderer.BlueprintOutlineRenderer;
+import com.craftingdead.immerse.client.renderer.SpectatorRenderer;
+import com.craftingdead.immerse.client.renderer.entity.layer.TeamClothingLayer;
+import com.craftingdead.immerse.client.shader.RectShader;
 import com.craftingdead.immerse.client.shader.RoundedRectShader;
+import com.craftingdead.immerse.client.shader.RoundedTexShader;
+import com.craftingdead.immerse.game.ClientGameWrapper;
+import com.craftingdead.immerse.game.GameClient;
 import com.craftingdead.immerse.game.GameType;
-import com.craftingdead.immerse.game.IGameClient;
-import com.craftingdead.immerse.server.LogicalServer;
+import com.craftingdead.immerse.game.LogicalServer;
+import com.craftingdead.immerse.world.item.BlueprintItem;
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.logging.LogUtils;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.screen.DisconnectedScreen;
-import net.minecraft.client.gui.screen.MainMenuScreen;
-import net.minecraft.client.network.play.ClientPlayNetHandler;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.player.RemotePlayer;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
+import net.minecraftforge.client.event.DrawSelectionEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderNameplateEvent;
+import net.minecraftforge.client.event.ScreenOpenEvent;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.Event.Result;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.progress.StartupMessageManager;
-import net.minecraftforge.resource.IResourceType;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
+import net.rocketpowered.connector.client.gui.RocketToast;
+import net.rocketpowered.sdk.Rocket;
+import reactor.core.scheduler.Schedulers;
+import sm0keysa1m0n.bliss.Bliss;
+import sm0keysa1m0n.bliss.minecraft.platform.MinecraftGraphicsContext;
+import sm0keysa1m0n.bliss.minecraft.platform.MinecraftPlatform;
+import sm0keysa1m0n.bliss.style.StyleSheetManager;
+import sm0keysa1m0n.bliss.view.ViewScreen;
 
-public class ClientDist implements IModDist, ISelectiveResourceReloadListener {
+public class ClientDist implements ModDist {
+
+  private static final ManualTimingSource timingSource = new ManualTimingSource();
+
+  public static final KeyMapping SWITCH_TEAMS =
+      new KeyMapping("key.switch_teams", KeyConflictContext.UNIVERSAL, KeyModifier.NONE,
+          InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_M), "key.categories.gameplay");
+  public static final KeyMapping TOGGLE_STATS =
+      new KeyMapping("key.toggle_stats", KeyConflictContext.UNIVERSAL, KeyModifier.NONE,
+          InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_UNKNOWN), KeyMapping.CATEGORY_MISC);
 
   public static final ResourceLocation BLUR_SHADER =
       new ResourceLocation(CraftingDeadImmerse.ID, "shaders/post/fade_in_blur.json");
 
-  private static final String DISCORD_CLIENT_ID = "475405055302828034";
+  private static final Logger logger = LogUtils.getLogger();
 
-  private static final Logger logger = LogManager.getLogger();
+  static {
+    Animator.setDefaultTimingSource(timingSource);
+  }
 
   private final Minecraft minecraft;
 
-  private final TransitionManager transitionManager;
-
-  private float lastTime = 0F;
-
-  private float deltaTime;
+  private MinecraftGraphicsContext graphicsContext;
 
   @Nullable
   private LogicalServer logicalServer;
 
-  private IGameClient<?> gameClient;
+  private ClientGameWrapper gameWrapper;
+
+  private final SpectatorRenderer spectatorRenderer;
+
+  private final BlueprintOutlineRenderer blueprintOutlineRenderer;
+
+  private final IngameGui ingameGui;
+
+  private boolean firstLoad = true;
+
+  @Nullable
+  private static RectShader rectShader;
+  @Nullable
+  private static RoundedRectShader roundedRectShader;
+  @Nullable
+  private static RoundedTexShader roundedTexShader;
 
   public ClientDist() {
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::handleClientSetup);
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::handleLoadComplete);
+    final var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    modBus.addListener(this::handleClientSetup);
+    modBus.addListener(this::handleEntityRenderersAddLayers);
+    modBus.addListener(this::handleRegisterShaders);
+    modBus.addListener(this::handleRegisterClientReloadListeners);
     MinecraftForge.EVENT_BUS.register(this);
     this.minecraft = Minecraft.getInstance();
-    this.transitionManager = new TransitionManager(minecraft, Transitions.GROW);
-    ((IReloadableResourceManager) this.minecraft.getResourceManager()).addReloadListener(this);
+    this.spectatorRenderer = new SpectatorRenderer();
+    this.blueprintOutlineRenderer = new BlueprintOutlineRenderer();
+    this.ingameGui = new IngameGui();
   }
 
+  public MinecraftGraphicsContext getGraphicsContext() {
+    // Lazy-init this as there's no good time/place to create it.
+    if (this.graphicsContext == null) {
+      this.graphicsContext = new MinecraftGraphicsContext(
+          this.minecraft.getWindow().getWindow(), this.minecraft.getMainRenderTarget());
+    }
+    return this.graphicsContext;
+  }
+
+  @Nullable
+  public ClientGameWrapper getGameWrapper() {
+    return this.gameWrapper;
+  }
+
+  @Nullable
+  public GameClient getGameClient() {
+    return this.gameWrapper == null ? null : this.gameWrapper.getGame();
+  }
+
+  public SpectatorRenderer getSpectatorRenderer() {
+    return this.spectatorRenderer;
+  }
+
+  public IngameGui getIngameGui() {
+    return this.ingameGui;
+  }
+
+  public void loadGame(GameType gameType) {
+    logger.info("Loading game: {}", gameType.getRegistryName().toString());
+    try {
+      if (this.gameWrapper != null) {
+        this.gameWrapper.unload();
+      }
+      this.gameWrapper = new ClientGameWrapper(gameType.createGameClient());
+      this.gameWrapper.load();
+    } catch (Exception e) {
+      logger.error("Failed to load game", e);
+    }
+  }
+
+  @Nullable
+  public static RectShader getRectShader() {
+    return rectShader;
+  }
+
+  @Nullable
+  public static RoundedRectShader getRoundedRectShader() {
+    return roundedRectShader;
+  }
+
+  @Nullable
+  public static RoundedTexShader getRoundedTexShader() {
+    return roundedTexShader;
+  }
 
   @Override
   public LogicalServer createLogicalServer(MinecraftServer minecraftServer) {
     return new LogicalServer(minecraftServer);
   }
 
-  public void loadGame(GameType gameType) {
-    logger.info("Loading game: {}", gameType.getRegistryName().toString());
-    try {
-      this.gameClient = gameType.createGameClient();
-    } catch (Exception e) {
-      this.minecraft.displayGuiScreen(new DisconnectedScreen(new MainMenuScreen(),
-          new TranslationTextComponent("connect.failed"),
-          new TranslationTextComponent("disconnect.genericReason", e.toString())));
-    }
-  }
-
-  @Override
-  public void onResourceManagerReload(IResourceManager resourceManager,
-      Predicate<IResourceType> resourcePredicate) {
-    RoundedRectShader.INSTANCE.compile(resourceManager);
-    RoundedFrameShader.INSTANCE.compile(resourceManager);
-  }
-
-  public float getDeltaTime() {
-    return this.deltaTime;
-  }
-
   // ================================================================================
   // Mod Events
   // ================================================================================
 
+  private void handleRegisterClientReloadListeners(RegisterClientReloadListenersEvent event) {
+    event.registerReloadListener(StyleSheetManager.getInstance());
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  private void handleEntityRenderersAddLayers(EntityRenderersEvent.AddLayers event) {
+    event.getSkins().forEach(skin -> {
+      var renderer = event.getSkin(skin);
+      renderer.addLayer(new TeamClothingLayer(renderer));
+    });
+  }
+
   private void handleClientSetup(FMLClientSetupEvent event) {
+    Bliss.initialize(this.graphicsContext, new MinecraftPlatform(this.minecraft));
+
+    ClientRegistry.registerKeyBinding(SWITCH_TEAMS);
+    ClientRegistry.registerKeyBinding(TOGGLE_STATS);
+
+    this.blueprintOutlineRenderer.register();
+
     // GLFW code needs to run on main thread
-    this.minecraft.enqueue(() -> {
+    this.minecraft.submit(() -> {
       StartupMessageManager.addModMessage("Applying branding");
       try {
         InputStream smallIcon = this.minecraft
@@ -137,17 +242,30 @@ public class ClientDist implements IModDist, ISelectiveResourceReloadListener {
             .getResource(
                 new ResourceLocation(CraftingDeadImmerse.ID, "textures/gui/icons/icon_32x32.png"))
             .getInputStream();
-        this.minecraft.getMainWindow().setWindowIcon(smallIcon, mediumIcon);
+        this.minecraft.getWindow().setIcon(smallIcon, mediumIcon);
       } catch (IOException e) {
         logger.error("Couldn't set icon", e);
       }
     });
   }
 
-  private void handleLoadComplete(FMLLoadCompleteEvent event) {
-    StartupMessageManager.addModMessage("Loading Discord integration");
-    DiscordPresence.initialize(DISCORD_CLIENT_ID);
-    DiscordPresence.updateState(DiscordPresence.GameState.IDLE, this);
+  private void handleRegisterShaders(RegisterShadersEvent event) {
+    try {
+      event.registerShader(new ShaderInstance(event.getResourceManager(),
+          new ResourceLocation(CraftingDeadImmerse.ID, "rect"),
+          DefaultVertexFormat.POSITION_COLOR),
+          shader -> rectShader = new RectShader(shader));
+      event.registerShader(new ShaderInstance(event.getResourceManager(),
+          new ResourceLocation(CraftingDeadImmerse.ID, "rounded_rect"),
+          DefaultVertexFormat.POSITION_COLOR),
+          shader -> roundedRectShader = new RoundedRectShader(shader));
+      event.registerShader(new ShaderInstance(event.getResourceManager(),
+          new ResourceLocation(CraftingDeadImmerse.ID, "rounded_tex"),
+          DefaultVertexFormat.POSITION_TEX),
+          shader -> roundedTexShader = new RoundedTexShader(shader));
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 
   // ================================================================================
@@ -155,15 +273,50 @@ public class ClientDist implements IModDist, ISelectiveResourceReloadListener {
   // ================================================================================
 
   @SubscribeEvent
+  public void handleRenderNameplate(RenderNameplateEvent event) {
+    if (event.getEntity() instanceof FakePlayer) {
+      event.setResult(Event.Result.DENY);
+    }
+  }
+
+  @SubscribeEvent
+  public void handlePlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+    if (this.gameWrapper != null) {
+      this.gameWrapper.unload();
+      this.gameWrapper = null;
+    }
+  }
+
+  @SubscribeEvent
   public void handleRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
-    final IPlayer<ClientPlayerEntity> player =
-        CraftingDead.getInstance().getClientDist().getPlayer().orElse(null);
+    final PlayerExtension<LocalPlayer> player =
+        CraftingDead.getInstance().getClientDist().getPlayerExtension().orElse(null);
+    final PlayerExtension<AbstractClientPlayer> viewingPlayer =
+        this.minecraft.getCameraEntity() instanceof AbstractClientPlayer
+            ? ((AbstractClientPlayer) this.minecraft.getCameraEntity())
+                .getCapability(LivingExtension.CAPABILITY)
+                .<PlayerExtension<AbstractClientPlayer>>cast()
+                .orElse(null)
+            : null;
+
     switch (event.getType()) {
       case ALL:
-        if (player != null && this.gameClient != null) {
-          this.gameClient.renderOverlay(this.minecraft, player, event.getMatrixStack(),
-              event.getWindow().getScaledWidth(),
-              event.getWindow().getScaledHeight(), event.getPartialTicks());
+        if (viewingPlayer != null && this.getGameClient() != null) {
+          this.ingameGui.renderOverlay(viewingPlayer, event.getMatrixStack(),
+              event.getWindow().getGuiScaledWidth(), event.getWindow().getGuiScaledHeight(),
+              event.getPartialTicks());
+          event.setCanceled(this.getGameClient().renderOverlay(viewingPlayer,
+              event.getMatrixStack(),
+              event.getWindow().getGuiScaledWidth(), event.getWindow().getGuiScaledHeight(),
+              event.getPartialTicks()));
+        }
+        break;
+      case PLAYER_LIST:
+        if (player != null && this.getGameClient() != null) {
+          event.setCanceled(this.getGameClient().renderPlayerList(player,
+              event.getMatrixStack(),
+              event.getWindow().getGuiScaledWidth(), event.getWindow().getGuiScaledHeight(),
+              event.getPartialTicks()));
         }
         break;
       default:
@@ -172,52 +325,53 @@ public class ClientDist implements IModDist, ISelectiveResourceReloadListener {
   }
 
   @SubscribeEvent
-  public void handleClientPlayerLoggedIn(ClientPlayerNetworkEvent.LoggedInEvent event) {
-    if (event.getPlayer() == this.minecraft.player) {
-      ClientPlayNetHandler connection = this.minecraft.getConnection();
-      if (connection != null && connection.getNetworkManager().isChannelOpen()) {
-        if (this.minecraft.getIntegratedServer() != null
-            && !this.minecraft.getIntegratedServer().getPublic()) {
-          DiscordPresence.updateState(DiscordPresence.GameState.SINGLEPLAYER, this);
-        } else if (this.minecraft.isConnectedToRealms()) {
-          DiscordPresence.updateState(DiscordPresence.GameState.REALMS, this);
-        } else if (this.minecraft.getIntegratedServer() == null
-            && (this.minecraft.getCurrentServerData() == null
-                || !this.minecraft.getCurrentServerData().isOnLAN())) {
-          DiscordPresence.updateState(DiscordPresence.GameState.MULTIPLAYER, this);
-        } else {
-          DiscordPresence.updateState(DiscordPresence.GameState.LAN, this);
-        }
+  public void handleScreenOpen(ScreenOpenEvent event) {
+    if (event.getScreen() instanceof TitleScreen && this.firstLoad) {
+      // Do this here to make sure font is loaded for toasts
+      Rocket.gameClientInterfaceFeed()
+          .doOnNext(__ -> RocketToast.info(this.minecraft, "Connected to Rocket"))
+          .flatMap(connection -> connection.onClose()
+              .doOnSuccess(__ -> RocketToast.info(this.minecraft, "Disconnected from Rocket")))
+          .publishOn(Schedulers.fromExecutor(this.minecraft))
+          .subscribe();
+      this.firstLoad = false;
+    }
+
+    if (event.getScreen() instanceof TitleScreen
+        || event.getScreen() instanceof JoinMultiplayerScreen) {
+      if (this.minecraft.screen instanceof ViewScreen screen
+          && screen.getRoot() instanceof MainMenuView) {
+        event.setCanceled(true);
+        return;
       }
+      event.setScreen(MainMenuView.createScreen());
     }
-  }
-
-  @SubscribeEvent
-  public void handleClientPlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
-    DiscordPresence.updateState(DiscordPresence.GameState.IDLE, this);
-  }
-
-  @SubscribeEvent
-  public void handleGuiOpen(GuiOpenEvent event) {
-    if (event.getGui() instanceof MainMenuScreen) {
-       event.setGui(new StartScreen());
-    }
-  }
-
-  @SubscribeEvent
-  public void handleDrawScreenPre(DrawScreenEvent.Pre event) {
-    event.setCanceled(
-        this.transitionManager.checkDrawTransition(event.getMatrixStack(), event.getMouseX(),
-            event.getMouseY(), event.getRenderPartialTicks(), event.getGui()));
   }
 
   @SubscribeEvent
   public void handleClientTick(TickEvent.ClientTickEvent event) {
     switch (event.phase) {
       case START:
-        this.lastTime = (float) Math.ceil(this.lastTime);
-        if (this.gameClient != null) {
-          this.gameClient.tick();
+        if (this.gameWrapper != null) {
+          this.gameWrapper.tick();
+        }
+
+        if (this.minecraft.player != null) {
+          var worldFocused = !this.minecraft.isPaused() && this.minecraft.getOverlay() == null
+              && (this.minecraft.screen == null);
+
+          if (this.minecraft.player.isSpectator()) {
+            if (this.minecraft.getCameraEntity() instanceof RemotePlayer) {
+              this.spectatorRenderer
+                  .tick((AbstractClientPlayer) this.minecraft.getCameraEntity());
+            }
+          }
+
+          if (worldFocused && this.getGameClient() != null) {
+            if (this.getGameClient().disableSwapHands()) {
+              while (this.minecraft.options.keySwapOffhand.consumeClick());
+            }
+          }
         }
         break;
       default:
@@ -229,12 +383,40 @@ public class ClientDist implements IModDist, ISelectiveResourceReloadListener {
   public void handleRenderTick(TickEvent.RenderTickEvent event) {
     switch (event.phase) {
       case START:
-        float currentTime = (float) Math.floor(this.lastTime) + event.renderTickTime;
-        this.deltaTime = (currentTime - this.lastTime) * 50;
-        this.lastTime = currentTime;
+        timingSource.tick();
         break;
       default:
         break;
+    }
+  }
+
+  @SubscribeEvent
+  public void handleDrawHighlightBlock(DrawSelectionEvent.HighlightBlock event) {
+    var cameraPlayer = CraftingDead.getInstance().getClientDist().getCameraPlayer();
+    if (cameraPlayer != null
+        && cameraPlayer.mainHandItem().getItem() instanceof BlueprintItem blueprint) {
+      event.setCanceled(true);
+      this.blueprintOutlineRenderer.render(cameraPlayer, blueprint, event.getTarget(),
+          event.getCamera(), event.getPoseStack(), event.getMultiBufferSource());
+    }
+  }
+
+  @SubscribeEvent
+  public void handleNameplate(RenderNameplateEvent event) {
+    switch (CraftingDeadImmerse.serverConfig.nametagMode.get()) {
+      case LOOK -> {
+        if (event.getEntity() instanceof Player
+            && Minecraft.getInstance().crosshairPickEntity != event.getEntity()) {
+          event.setResult(Result.DENY);
+        }
+      }
+      case HIDE_PLAYER -> {
+        if (event.getEntity() instanceof Player) {
+          event.setResult(Result.DENY);
+        }
+      }
+      case HIDE_ALL -> event.setResult(Result.DENY);
+      case DEFAULT -> {}
     }
   }
 }

@@ -1,87 +1,90 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core.client.particle;
 
 import com.craftingdead.core.particle.GrenadeSmokeParticleData;
-import net.minecraft.client.particle.IAnimatedSprite;
-import net.minecraft.client.particle.IParticleFactory;
-import net.minecraft.client.particle.IParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.SpriteTexturedParticle;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.util.Mth;
 
 /**
  * Lightweight smoke particle for grenades.
  */
-public class GrenadeSmokeParticle extends SpriteTexturedParticle {
-  private final IAnimatedSprite animatedSprite;
+public class GrenadeSmokeParticle extends TextureSheetParticle {
 
-  private GrenadeSmokeParticle(GrenadeSmokeParticleData data, IAnimatedSprite animatedSprite,
-      ClientWorld world, double x, double y, double z) {
-    super(world, x, y, z);
+  private final SpriteSet animatedSprite;
+
+  private GrenadeSmokeParticle(GrenadeSmokeParticleData data, SpriteSet animatedSprite,
+      ClientLevel level, double x, double y, double z) {
+    super(level, x, y, z);
     this.animatedSprite = animatedSprite;
     float colorScale = 1.0F - (float) (Math.random() * (double) 0.3F);
-    this.particleRed = colorScale * data.getRed();
-    this.particleGreen = colorScale * data.getGreen();
-    this.particleBlue = colorScale * data.getBlue();
-    this.particleScale *= data.getScale();
+    this.rCol = colorScale * data.getRed();
+    this.gCol = colorScale * data.getGreen();
+    this.bCol = colorScale * data.getBlue();
+    this.quadSize *= data.getScale();
 
     // From vanilla's Cloud particle
     int i = (int) (10.0D / (Math.random() * 0.8D + 0.3D));
-    this.maxAge = (int) Math.max((float) i * 2.5F, 1.0F);
+    this.lifetime = (int) Math.max((float) i * 2.5F, 1.0F);
 
-    this.canCollide = false;
-    this.selectSpriteWithAge(animatedSprite);
+    this.hasPhysics = false;
+    this.setSpriteFromAge(animatedSprite);
   }
 
   @Override
-  public IParticleRenderType getRenderType() {
-    return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+  public ParticleRenderType getRenderType() {
+    return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
   }
 
   @Override
-  public float getScale(float partialTicks) {
-    return this.particleScale * MathHelper
-        .clamp(((float) this.age + partialTicks) / (float) this.maxAge * 32.0F, 0.0F, 1.0F);
+  public float getQuadSize(float partialTicks) {
+    return this.quadSize * Mth
+        .clamp(((float) this.age + partialTicks) / (float) this.lifetime * 32.0F, 0.0F, 1.0F);
   }
 
   @Override
   public void tick() {
-    this.prevPosX = this.posX;
-    this.prevPosY = this.posY;
-    this.prevPosZ = this.posZ;
-    if (this.age++ >= this.maxAge) {
-      this.setExpired();
+    this.xo = this.x;
+    this.yo = this.y;
+    this.zo = this.z;
+    if (this.age++ >= this.lifetime) {
+      this.remove();
     } else {
-      this.selectSpriteWithAge(this.animatedSprite);
+      this.setSpriteFromAge(this.animatedSprite);
     }
   }
 
-  public static class Factory implements IParticleFactory<GrenadeSmokeParticleData> {
-    private final IAnimatedSprite spriteSet;
+  public static class Factory implements ParticleProvider<GrenadeSmokeParticleData> {
 
-    public Factory(IAnimatedSprite animatedSprite) {
+    private final SpriteSet spriteSet;
+
+    public Factory(SpriteSet animatedSprite) {
       this.spriteSet = animatedSprite;
     }
 
     @Override
-    public Particle makeParticle(GrenadeSmokeParticleData data, ClientWorld world, double xPos,
+    public Particle createParticle(GrenadeSmokeParticleData data, ClientLevel world, double xPos,
         double yPos, double zPos, double xVelocity, double yVelocity, double zVelocity) {
       return new GrenadeSmokeParticle(data, this.spriteSet, world, xPos, yPos, zPos);
     }

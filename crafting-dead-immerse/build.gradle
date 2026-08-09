@@ -1,13 +1,9 @@
-repositories {
-	mavenCentral()
-	maven {
-		name 'jitpack'
-		url 'https://jitpack.io' 
-	}
-	maven {
-      	url 'http://maven.ferenyr.info/artifactory/ourten'
-    }
-    google()
+plugins {
+    id 'crafting-dead'
+}
+
+mixin {
+    add sourceSets.main, 'craftingdeadimmerse.refmap.json'
 }
 
 minecraft {
@@ -15,12 +11,13 @@ minecraft {
 
     runs {
         client {
-        	taskName 'runImmerseClient'
-        
-            workingDirectory project.file('client')
+            taskName 'runImmerseClient'
+
+            workingDirectory project.file('run/client')
 
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            
+            property 'forge.logging.console.level', 'debug'
+
             args '--mixin', 'craftingdeadimmerse.mixins.json', '--mixin', 'craftingdead.mixins.json'
 
             mods {
@@ -34,13 +31,36 @@ minecraft {
         }
 
         server {
-        	taskName 'runImmerseServer'
-        
-            workingDirectory project.file('server')
+            taskName 'runImmerseServer'
+
+            workingDirectory project.file('run/server')
 
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            
-            args '--mixin', 'craftingdeadimmerse.mixins.json'
+            property 'forge.logging.console.level', 'debug'
+
+            args '--mixin', 'craftingdeadimmerse.mixins.json', '--mixin', 'craftingdead.mixins.json'
+
+            mods {
+                craftingdeadimmerse {
+                    source sourceSets.main
+                }
+                craftingdead {
+                    source project(':crafting-dead-core').sourceSets.main
+                }
+            }
+        }
+        
+        data {
+            taskName 'runImmerseData'
+      
+            workingDirectory project.file('run/data')
+
+            property 'forge.logging.markers', 'SCAN,REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+
+            args '--mod', 'craftingdeadimmerse', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+
+            environment 'target', 'fmluserdevdata'
 
             mods {
                 craftingdeadimmerse {
@@ -54,17 +74,80 @@ minecraft {
     }
 }
 
-dependencies {
-    implementation group: 'io.noties', name: 'tumbleweed', version: '2.1.0'
-	implementation group: 'com.github.Vatuu', name: 'discord-rpc', version: '1.6.2'
-	compileOnly project(':crafting-dead-core')
-	implementation "org.lwjgl:lwjgl-yoga:${lwjgl_version}"
-	runtimeOnly "org.lwjgl:lwjgl-yoga::${lwjgl_natives}"
+def lwjgl_natives = ['natives-windows', 'natives-linux', 'natives-macos']
+def skija_natives = ['skija-macos-x64', 'skija-macos-arm64', 'skija-linux', 'skija-windows']
+
+configurations {
+    lwjgl
+    lwjglNative
+    minecraftLibrary.extendsFrom lwjgl
+    minecraftLibrary.extendsFrom lwjglNative
+    
+    library
+    minecraftLibrary.extendsFrom library
+    jarJar.extendsFrom library
 }
 
-eclipse {
-    classpath {
-    	// Temp hack - see https://github.com/eclipse/buildship/issues/939
-        plusConfigurations += [ configurations.compileOnly ]
-   	}
+dependencies {
+    implementation project(':crafting-dead-core')
+
+    library group: 'flare', name: 'flare-eventbus', version: '[2.0.1]'
+    // eventbus transitive dependencies
+    jarJar group: 'flare', name: 'flare-commons', version: '[0.0.2]'
+    jarJar group: 'com.esotericsoftware', name: 'reflectasm', version: '[1.11.9]'
+
+    lwjgl(group: 'org.lwjgl', name: 'lwjgl-yoga', version: "[${lwjgl_version}]") {
+        exclude group: 'org.lwjgl', module: 'lwjgl'
+    }
+    lwjgl_natives.each {
+        lwjglNative(group: 'org.lwjgl', name: 'lwjgl-yoga', version: lwjgl_version, classifier: it) {
+             transitive = false
+        }
+    }
+
+    skija_natives.each {
+        library group: 'io.github.humbleui', name: it, version: '[0.106.0]'
+    }
+    // Skija transitive JarJar dependencies
+    jarJar group: 'io.github.humbleui', name: 'skija-shared', version: '[0.106.0]'
+    jarJar group: 'io.github.humbleui', name: 'types', version: '[0.1.1]'
+
+	library group: 'net.java.timingframework', name: 'timingframework-core', version: '[7.3.1]'
+
+    library(group: 'io.sentry', name: 'sentry', version: '[5.6.0]') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+
+    minecraftLibrary group: 'net.rocketpowered', name: 'rocket-sdk', version: '0.0.8'
+    implementation fg.deobf("net.rocketpowered:rocket-connector:${minecraft_version}-0.0.13")
+}
+
+reobf { jarJar { } }
+
+jarJar.enable()
+
+tasks.withType(Jar) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    into 'lwjgl-natives', {
+        exclude 'META-INF/'
+        from {   
+            project.configurations.lwjglNative.collect { it.isDirectory() ? it : zipTree(it) }
+        }
+    }
+
+    from {
+        project.configurations.lwjgl.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            'MixinConfigs': 'craftingdeadimmerse.mixins.json'
+        ])
+    }
 }
