@@ -1,0 +1,125 @@
+{
+  "headTrauma": {
+    "enabled": true,
+    "damageToEnergyScale": 6.0,
+    "noHelmetMultiplier": 1.25,
+    "minorThreshold": 20.0,
+    "moderateThreshold": 60.0,
+    "severeThreshold": 120.0,
+    "helmetAbsorptionFactor": 0.8,
+    "aimSwayMaxTicks": 120,
+    "slowRecovery": 0.9,
+    "effects": {
+      "minor": {
+        "blindnessTicks": 12,
+        "nauseaTicks": 0,
+        "slownessTicks": 0,
+        "slownessAmplifier": 0,
+        "aimSwayTicks": 10,
+        "aimSwayStrength": 0.15
+      },
+      "moderate": {
+        "blindnessTicks": 0,
+        "nauseaTicks": 100,
+        "slownessTicks": 60,
+        "slownessAmplifier": 0,
+        "aimSwayTicks": 40,
+        "aimSwayStrength": 0.4
+      },
+      "severe": {
+        "blindnessTicks": 0,
+        "nauseaTicks": 160,
+        "slownessTicks": 80,
+        "slownessAmplifier": 1,
+        "aimSwayTicks": 60,
+        "aimSwayStrength": 0.6
+      }
+    }
+  },
+  "profiles": {
+    "hard_hat": {
+      "absorption": 0.25,
+      "stoppingPower": 25.0,
+      "durabilityPerEnergy": 0.02,
+      "stunThreshold": 70.0
+    },
+    "military_helmet": {
+      "absorption": 0.35,
+      "stoppingPower": 45.0,
+      "durabilityPerEnergy": 0.03,
+      "stunThreshold": 90.0
+    },
+    "ballistic_helmet": {
+      "absorption": 0.38,
+      "stoppingPower": 50.0,
+      "durabilityPerEnergy": 0.032,
+      "stunThreshold": 95.0
+    },
+    "riot_helmet": {
+      "absorption": 0.4,
+      "stoppingPower": 55.0,
+      "durabilityPerEnergy": 0.035,
+      "stunThreshold": 100.0
+    },
+    "juggernaut_helmet": {
+      "absorption": 0.45,
+      "stoppingPower": 65.0,
+      "durabilityPerEnergy": 0.05,
+      "stunThreshold": 120.0
+    },
+    "tactical_vest": {
+      "absorption": 0.3,
+      "stoppingPower": 40.0,
+      "durabilityPerEnergy": 0.025,
+      "stunThreshold": 0.0
+    },
+    "riot_vest": {
+      "absorption": 0.45,
+      "stoppingPower": 65.0,
+      "durabilityPerEnergy": 0.04,
+      "stunThreshold": 0.0
+    },
+    "juggernaut_vest": {
+      "absorption": 0.55,
+      "stoppingPower": 80.0,
+      "durabilityPerEnergy": 0.05,
+      "stunThreshold": 0.0
+    }
+  },
+  "helmets": {
+    "craftingdead:blue_hard_hat": "hard_hat",
+    "craftingdead:green_hard_hat": "hard_hat",
+    "craftingdead:orange_hard_hat": "hard_hat",
+    "craftingdead:yellow_hard_hat": "hard_hat",
+    "craftingdead:army_helmet": "military_helmet",
+    "craftingdead:green_army_helmet": "military_helmet",
+    "craftingdead:camo_helmet": "military_helmet",
+    "craftingdead:combat_bdu_helmet": "military_helmet",
+    "craftingdead:grey_army_helmet": "military_helmet",
+    "craftingdead:winter_military_helmet": "military_helmet",
+    "craftingdead:riot_hat": "riot_helmet",
+    "craftingdead:spetsnaz_helmet": "ballistic_helmet",
+    "craftingdead:black_ballistic_hat": "ballistic_helmet",
+    "craftingdead:green_ballistic_helmet": "ballistic_helmet",
+    "craftingdead:juggernaut_helmet": "juggernaut_helmet"
+  },
+  "vests": {
+    "craftingdead:black_tactical_vest": "tactical_vest",
+    "craftingdead:green_tactical_vest": "tactical_vest",
+    "craftingdead:grey_tactical_vest": "tactical_vest",
+    "craftingdead:tan_tactical_vest": "tactical_vest",
+    "craftingdead:ghillie_tactical_vest": "tactical_vest",
+    "craftingdead:riot_vest": "riot_vest"
+  },
+  "cosmeticHelmets": [
+    "craftingdead:beanie_hat",
+    "craftingdead:gas_mask",
+    "craftingdead:pilot_helmet",
+    "craftingdead:payday_mask",
+    "craftingdead:payday2_mask",
+    "craftingdead:santa_hat",
+    "craftingdead:hazmat_hat",
+    "craftingdead:military_hazmat_hat",
+    "craftingdead:nv_goggles_hat"
+  ]
+}

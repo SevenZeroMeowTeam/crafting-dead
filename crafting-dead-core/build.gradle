@@ -1,83 +1,78 @@
+plugins {
+    id 'crafting-dead'
+    id 'java-library'
+}
+
 repositories {
-	maven {
-        name 'cursemaven'
-        url 'https://www.cursemaven.com'
-        content {
-            includeGroup 'curse.maven'
-        }
+    maven {
+        name = 'Forge'
+        url = 'https://maven.minecraftforge.net/'
     }
-	google()
+    mavenCentral() // Fallback repository
 }
 
 dependencies {
-    shaded group: 'io.noties', name: 'tumbleweed', version: '2.1.0'
-	implementation fg.deobf("curse.maven:travelers-backpack-${travelers_backpack_project_id}:${travelers_backpack_file_id}")
+    implementation 'cpw.mods:bootstraplauncher:1.0.0'
+    
+    // Sentry for error tracking - available in dev, bundled via jarJar for production
+    api('io.sentry:sentry:6.34.0') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+    jarJar(group: 'io.sentry', name: 'sentry', version: '[6.34.0,6.35.0)') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
 }
+
+mixin {
+    add sourceSets.main, 'craftingdead.refmap.json'
+}
+
+jarJar.enable()
 
 jar {
-	manifest {
+    manifest {
         attributes([
-        	"Implementation-Title": project.name,
-        	"Implementation-Version": project.version,
+            "Implementation-Title": project.name,
+            "Implementation-Version": project.version,
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": 'craftingdead.mixins.json'
+            "MixinConfigs": "craftingdead.mixins.json"
         ])
-	}
+    }
+    finalizedBy 'reobfJar'
 }
 
-minecraft {    
+minecraft {
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
-        client {
-            taskName 'runCoreClient'
- 
-            workingDirectory project.file('client')
-
+        configureEach {
             property 'forge.logging.console.level', 'debug'
-            
             args '--mixin', 'craftingdead.mixins.json'
-            
+
             mods {
                 craftingdead {
                     source sourceSets.main
                 }
             }
+        }
+
+        client {
+            taskName 'runCoreClient'
+            workingDirectory project.file('run/client')
         }
 
         server {
             taskName 'runCoreServer'
-        
-            workingDirectory project.file('server')
-
-            property 'forge.logging.console.level', 'debug'
-            
-            args '--mixin', 'craftingdead.mixins.json'
-            
-            mods {
-                craftingdead {
-                    source sourceSets.main
-                }
-            }
+            workingDirectory project.file('run/server')
         }
-        
+
         data {
             taskName 'runCoreData'
-      
-            workingDirectory project.file('data')
-
-            property 'forge.logging.markers', 'SCAN,REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
+            workingDirectory project.file('run/data')
 
             args '--mod', 'craftingdead', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             environment 'target', 'fmluserdevdata'
-
-            mods {
-                craftingdead {
-                    source sourceSets.main
-                }
-            }
         }
     }
 }

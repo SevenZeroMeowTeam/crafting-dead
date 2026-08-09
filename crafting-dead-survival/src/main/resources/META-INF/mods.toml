@@ -1,0 +1,25 @@
+issueTrackerURL = "https://github.com/nexusnode/crafting-dead/issues"
+license = "GPL v3.0"
+loaderVersion = "[27,)"
+modLoader = "javafml"
+
+[[mods]]
+authors = "Sm0keySa1m0n, Hallzmine"
+credits = "Sm0keySa1m0n, Hallzmine"
+displayName = "Crafting Dead Survival"
+displayURL = "www.craftingdead.com"
+modId = "craftingdeadsurvival"
+version = "${file.jarVersion}"
+
+[[dependencies.craftingdeadsurvival]]
+mandatory = true
+modId = "craftingdead"
+side = "BOTH"
+versionRange = "[1.6.0-alpha,)"
+
+[[dependencies.craftingdeadsurvival]]
+mandatory = true
+modId = "forge"
+ordering = "NONE"
+side = "BOTH"
+versionRange = "[40.1.80,)"

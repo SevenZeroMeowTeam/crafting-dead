@@ -1,4 +1,10 @@
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.6.0'
+}
+
 rootProject.name = 'crafting-dead'
 
 include 'crafting-dead-core'
-include 'crafting-dead-immerse'
+include 'crafting-dead-survival'
+include 'crafting-dead-decoration'
+include 'crafting-dead-worldguard'

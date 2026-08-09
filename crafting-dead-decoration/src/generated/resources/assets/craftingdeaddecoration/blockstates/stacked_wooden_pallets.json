@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "craftingdeaddecoration:block/stacked_wooden_pallets"
+    },
+    "facing=south": {
+      "model": "craftingdeaddecoration:block/stacked_wooden_pallets",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "craftingdeaddecoration:block/stacked_wooden_pallets",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "craftingdeaddecoration:block/stacked_wooden_pallets",
+      "y": 90
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "craftingdead:stanag_30_round_magazine",
+    "craftingdead:stanag_drum_magazine",
+    "craftingdead:combat_knife",
+    "craftingdead:binoculars",
+    "craftingdead:dirty_rag"
+  ]
+}

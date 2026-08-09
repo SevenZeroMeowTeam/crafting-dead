@@ -1,40 +1,90 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core;
 
+import com.craftingdead.core.telemetry.TelemetryEnvironment;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class CommonConfig {
+  
+  public static final CommonConfig instance;
+  public static final ForgeConfigSpec configSpec;
 
-  public final ForgeConfigSpec.ConfigValue<String> masterServerHost;
+  static {
+    var pair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
+    configSpec = pair.getRight();
+    instance = pair.getLeft();
+  }
 
-  public final ForgeConfigSpec.IntValue masterServerPort;
+  public final ForgeConfigSpec.EnumValue<TelemetryEnvironment> telemetryEnvironment;
+  public final ForgeConfigSpec.ConfigValue<String> telemetryDsnExperimental;
+  public final ForgeConfigSpec.ConfigValue<String> telemetryDsnProduction;
+  public final ForgeConfigSpec.ConfigValue<String> telemetryPasswordSalt;
+  public final ForgeConfigSpec.ConfigValue<String> telemetryPasswordHash;
+  public final ForgeConfigSpec.BooleanValue telemetryClientEnabled;
+  public final ForgeConfigSpec.BooleanValue telemetryServerEnabled;
+  public final ForgeConfigSpec.ConfigValue<String> telemetryModpackId;
+  public final ForgeConfigSpec.DoubleValue telemetryTracesSampleRate;
 
-  public CommonConfig(ForgeConfigSpec.Builder builder) {
-    builder.push("common");
-    {
-      this.masterServerHost = builder //
-          .translation("options.craftingdead.common.master_server_host") //
-          .define("masterServerHost", "localhost");
-      this.masterServerPort = builder //
-          .translation("options.craftingdead.common.master_server_port") //
-          .defineInRange("masterServerPort", 25578, 0, 65535);
-    }
-    builder.pop();
+  public final ForgeConfigSpec.DoubleValue weakVestArmor;
+  public final ForgeConfigSpec.DoubleValue weakVestArmorToughness;
+
+  public final ForgeConfigSpec.DoubleValue strongVestArmor;
+  public final ForgeConfigSpec.DoubleValue strongVestArmorToughness;
+
+  private CommonConfig(ForgeConfigSpec.Builder builder) {
+  builder.push("telemetry");
+  this.telemetryEnvironment = builder.comment("Controls which DSN block is used.")
+    .defineEnum("environment", TelemetryEnvironment.PRODUCTION);
+  this.telemetryDsnExperimental = builder.comment("Experimental Sentry DSN.")
+    .define("dsnExperimental",
+      "https://31d8ac34b0c24ddf98223098d42fd526@o1128514.ingest.sentry.io/6174174");
+  this.telemetryDsnProduction = builder.comment("Production Sentry DSN.")
+    .define("dsnProduction",
+      "https://31d8ac34b0c24ddf98223098d42fd526@o1128514.ingest.sentry.io/6174174");
+  this.telemetryPasswordSalt = builder.comment(
+    "Salt used when hashing the reporting password. Configure before enabling telemetry.")
+  .define("passwordSalt", "");
+  this.telemetryPasswordHash = builder.comment(
+    "Hex encoded SHA-256 hash of the salt concatenated with the reporting password.")
+  .define("passwordHash", "");
+  this.telemetryClientEnabled = builder.comment(
+    "Allow client installs to emit telemetry when credentials are valid.")
+  .define("enableClient", true);
+  this.telemetryServerEnabled = builder.comment(
+    "Allow dedicated servers to emit telemetry when credentials are valid.")
+  .define("enableServer", true);
+  this.telemetryModpackId = builder.comment("Optional label applied to telemetry events.")
+    .define("modpackId", "");
+  this.telemetryTracesSampleRate = builder.comment(
+    "Performance tracing sample rate between 0.0 and 1.0.")
+  .defineInRange("tracesSampleRate", 1.0D, 0.0D, 1.0D);
+  builder.pop();
+
+  this.weakVestArmor =
+    builder.defineInRange("weakVestArmor", 8.0F, 0.0F, Float.MAX_VALUE);
+  this.weakVestArmorToughness =
+    builder.defineInRange("weakVestArmorToughness", 1.0F, 0.0F, Float.MAX_VALUE);
+
+  this.strongVestArmor =
+    builder.defineInRange("strongVestArmor", 12.0F, 0.0F, Float.MAX_VALUE);
+  this.strongVestArmorToughness =
+    builder.defineInRange("strongVestArmorToughness", 2.0F, 0.0F, Float.MAX_VALUE);
   }
 }
