@@ -1,280 +1,178 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core.util;
 
 import java.util.Optional;
-import java.util.Random;
-import net.minecraft.block.AbstractGlassBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DoorBlock;
-import net.minecraft.block.FenceBlock;
-import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.TrapDoorBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
 public class RayTraceUtil {
 
-  public static Iterable<Entity> filterEntities(Entity fromEntity, Vector3d scaledLook) {
-    return fromEntity
-        .getEntityWorld()
-        .getEntitiesInAABBexcluding(fromEntity,
-            fromEntity.getBoundingBox().expand(scaledLook).grow(1.0D, 1.0D, 1.0D),
-            (entityTest) -> {
-              // Ignores entities that cannot be collided
-              if (entityTest.isSpectator() || !entityTest.canBeCollidedWith()) {
-                return false;
-              }
-              if (entityTest instanceof LivingEntity) {
-                LivingEntity livingEntity = (LivingEntity) entityTest;
-
-                // Ignores dead entities
-                if (livingEntity.getHealth() <= 0F) {
-                  return false;
-                }
-              }
-              return true;
-            });
-  }
-
-  public static Optional<EntityRayTraceResult> rayTraceEntities(Entity fromEntity) {
-    ModifiableAttributeInstance reachDistanceAttribute =
-        fromEntity instanceof PlayerEntity
-            ? ((PlayerEntity) fromEntity).getAttribute(ForgeMod.REACH_DISTANCE.get())
-            : null;
-    double distance = reachDistanceAttribute == null ? 4.0D : reachDistanceAttribute.getValue();
-    Vector3d start = fromEntity.getEyePosition(1.0F);
-    Vector3d look = fromEntity.getLook(1.0F);
-    Vector3d scaledLook = look.scale(distance);
-    Vector3d end = start.add(scaledLook);
-    return RayTraceUtil.rayTraceEntities(fromEntity, start, end,
-        filterEntities(fromEntity, scaledLook), distance * distance);
+  public static Optional<EntityHitResult> rayTraceEntities(Entity fromEntity) {
+    var reachDistanceAttribute = fromEntity instanceof Player player
+        ? player.getAttribute(ForgeMod.REACH_DISTANCE.get())
+        : null;
+    var distance = reachDistanceAttribute == null ? 4.0D : reachDistanceAttribute.getValue();
+    var startPos = fromEntity.getEyePosition(1.0F);
+    var look = fromEntity.getViewVector(1.0F);
+    var scaledLook = look.scale(distance);
+    var endPos = startPos.add(scaledLook);
+    return Optional.ofNullable(ProjectileUtil.getEntityHitResult(fromEntity, startPos, endPos,
+        fromEntity.getBoundingBox().expandTowards(scaledLook).inflate(1.0D, 1.0D, 1.0D),
+        EntitySelector.ENTITY_STILL_ALIVE.and(EntitySelector.NO_CREATIVE_OR_SPECTATOR),
+        distance * distance));
   }
 
   /**
-   * Ray trace the specified entities from the parsed entity.
+   * Ray traces blocks and entities.
    *
    * @param fromEntity - the entity performing the ray trace
-   * @param start - the start {@link Vector3d}
-   * @param end - the end {@link Vector3d}
-   * @param entities - the entities to ray trace
-   * @param sqrDistance - the square distance
-   * @return the {@link EntityRayTraceResult} as an {@link Optional}
+   * @param distance - maximum distance
+   * @param partialTick - partialTick for frame interpolation
+   * @return an optional hit result
    */
-  public static Optional<EntityRayTraceResult> rayTraceEntities(Entity fromEntity, Vector3d start,
-      Vector3d end, Iterable<Entity> entities, double sqrDistance) {
-    Entity finalHitEntity = null;
-    Vector3d finalHitVec = null;
+  public static Optional<? extends HitResult> rayTrace(Entity fromEntity,
+      double distance, float partialTick, float pitchOffset, float yawOffset) {
+    var startPos = fromEntity.getEyePosition(partialTick);
 
-    double sqrDistanceToLastHit = sqrDistance;
-    for (Entity otherEntity : entities) {
-      AxisAlignedBB otherEntityCollisionBox =
-          otherEntity.getBoundingBox().grow(otherEntity.getCollisionBorderSize());
-      Optional<Vector3d> potentialHit = otherEntityCollisionBox.rayTrace(start, end);
+    var look = calculateViewVector(fromEntity.getViewXRot(partialTick) + pitchOffset,
+        fromEntity.getViewYRot(partialTick) + yawOffset);
 
-      if (otherEntityCollisionBox.contains(start) && sqrDistanceToLastHit >= 0.0D) {
-        finalHitEntity = otherEntity;
-        finalHitVec = potentialHit.orElse(start);
-        sqrDistanceToLastHit = 0.0D;
-      } else if (potentialHit.isPresent()) {
-        Vector3d hitVec = potentialHit.get();
-        double sqrDistanceToHit = start.squareDistanceTo(hitVec);
-        if (sqrDistanceToHit < sqrDistanceToLastHit || sqrDistanceToLastHit == 0.0D) {
-          if (otherEntity.getLowestRidingEntity() == fromEntity.getLowestRidingEntity()) {
-            if (sqrDistanceToHit == 0.0D) {
-              finalHitEntity = otherEntity;
-              finalHitVec = hitVec;
-            }
-          } else {
-            finalHitEntity = otherEntity;
-            finalHitVec = hitVec;
-            sqrDistanceToLastHit = sqrDistanceToHit;
-          }
-        }
-      }
-    }
+    var scaledLook = look.scale(distance);
+    var endPos = startPos.add(scaledLook);
 
-    return Optional
-        .ofNullable(
-            finalHitEntity != null ? new EntityRayTraceResult(finalHitEntity, finalHitVec) : null);
-  }
+    var blockHitResult = rayTraceBlocks(startPos, distance, look, fromEntity.getLevel());
 
-  public static Optional<BlockRayTraceResult> rayTraceBlocks(LivingEntity fromEntity,
-      RayTraceContext.FluidMode fluidMode, double distance, float partialTicks) {
-    Vector3d start = fromEntity.getEyePosition(partialTicks);
-    Vector3d look = fromEntity.getLook(partialTicks);
-    Vector3d scaledLook = look.scale(distance);
-    Vector3d end = start.add(scaledLook);
-    return Optional.ofNullable(fromEntity.world.rayTraceBlocks(new RayTraceContext(start, end,
-        RayTraceContext.BlockMode.COLLIDER, fluidMode, fromEntity)));
-  }
-
-  /**
-   * Perform a full ray trace from the parsed entity.
-   *
-   * @param fromEntity - the entity performing the ray trace
-   * @param distance - the distance
-   * @return the {@link RayTraceResult} as an {@link Optional}
-   */
-  public static Optional<? extends RayTraceResult> rayTrace(final Entity fromEntity,
-      final double distance, final float accuracy, final Random random) {
-    return rayTrace(fromEntity, distance, 1.0F, accuracy, random);
-  }
-
-  /**
-   * Perform a full ray trace from the parsed entity, ignoring blocks that are
-   * {@link #isBlockPierceable}
-   *
-   * @param fromEntity - the entity performing the ray trace
-   * @param distance - the distance
-   * @param partialTicks - the partialTicks
-   * @return the {@link RayTraceResult} as an {@link Optional}
-   */
-  public static Optional<? extends RayTraceResult> rayTrace(final Entity fromEntity,
-      final double distance, final float partialTicks, final float accuracy, final Random random) {
-    Vector3d start = fromEntity.getEyePosition(partialTicks);
-
-    float pitchOffset = 0.0F;
-    float yawOffset = 0.0F;
-    if (accuracy < 1.0F) {
-      pitchOffset += (1.0F + accuracy * (random.nextInt(5) % 2 == 0 ? -1.0F : 1.0F));
-      yawOffset += (1.0F + accuracy * (random.nextInt(5) % 2 == 0 ? -1.0F : 1.0F));
-    }
-
-    Vector3d look = getVectorForRotation(fromEntity.getPitch(partialTicks) + pitchOffset,
-        fromEntity.getYaw(partialTicks) + yawOffset);
-
-    Vector3d scaledLook = look.scale(distance);
-    Vector3d end = start.add(scaledLook);
-
-    Optional<BlockRayTraceResult> blockRayTraceResult =
-        rayTraceBlocksPiercing(start, distance, look,
-            fromEntity.getEntityWorld());
-
-    final double sqrDistance = blockRayTraceResult.isPresent()
-        ? blockRayTraceResult.get().getHitVec().squareDistanceTo(start)
+    var sqrDistance = blockHitResult.isPresent()
+        ? blockHitResult.get().getLocation().distanceToSqr(startPos)
         : distance * distance;
 
-    Optional<EntityRayTraceResult> entityRayTraceResult = rayTraceEntities(fromEntity, start, end,
-        filterEntities(fromEntity, scaledLook), sqrDistance);
+    var entityHitResult = ProjectileUtil.getEntityHitResult(fromEntity, startPos, endPos,
+        fromEntity.getBoundingBox().expandTowards(scaledLook).inflate(1.0D, 1.0D, 1.0D),
+        EntitySelector.ENTITY_STILL_ALIVE.and(EntitySelector.NO_CREATIVE_OR_SPECTATOR),
+        sqrDistance);
 
-    return entityRayTraceResult.isPresent() ? entityRayTraceResult : blockRayTraceResult;
+    return entityHitResult == null ? blockHitResult : Optional.of(entityHitResult);
   }
 
   /**
-   * Perform a ray trace looking for blocks, ignoring blocks that are {@link #isBlockPierceable}
+   * Ray traces blocks, ignoring fluids.
+   * 
+   * @param startPos- start position
+   * @param distance- maximum distance
+   * @param look- look/rotation vector
+   * @param level- the level
+   * @return an optional hit result
    */
-  public static Optional<BlockRayTraceResult> rayTraceBlocksPiercing(Vector3d start,
-      double distance,
-      Vector3d look,
-      World world) {
-    return rayTraceBlocksPiercing(start, distance, look, RayTraceContext.BlockMode.COLLIDER,
-        RayTraceContext.FluidMode.NONE, world);
+  public static Optional<BlockHitResult> rayTraceBlocks(Vec3 startPos, double distance,
+      Vec3 look, Level level) {
+    return rayTraceBlocks(startPos, distance, look,
+        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, level);
   }
 
   /**
-   * Perform a ray trace looking for blocks, ignoring blocks that are {@link #isBlockPierceable}
+   * Ray traces blocks.
+   * 
+   * @param startPos - start position
+   * @param distance - maximum distance
+   * @param look - look/rotation vector
+   * @param blockMode - block clipping mode
+   * @param fluidMode - fluid clipping mode
+   * @param level - the level
+   * @return an optional hit result
    */
-  public static Optional<BlockRayTraceResult> rayTraceBlocksPiercing(Vector3d start,
-      double distance,
-      Vector3d look,
-      RayTraceContext.BlockMode blockMode,
-      RayTraceContext.FluidMode fluidMode,
-      World world) {
-    Vector3d newStart = start;
-    Vector3d end = start.add(look.scale(distance));
-    boolean pierceableBlock;
-    BlockRayTraceResult blockRayTraceResult = null;
+  public static Optional<BlockHitResult> rayTraceBlocks(Vec3 startPos, double distance,
+      Vec3 look, ClipContext.Block blockMode, ClipContext.Fluid fluidMode, Level level) {
+    var currentPos = startPos;
+    final var endPos = startPos.add(look.scale(distance));
+
+    BlockHitResult hitResult = null;
     BlockPos lastBlockPos = null;
-    do {
-      if (newStart.distanceTo(start) >= distance) {
+    while (true) {
+      if (currentPos.distanceTo(startPos) >= distance) {
         break;
       }
 
-      pierceableBlock = false;
-      RayTraceContext context = new RayTraceContext(newStart, end, blockMode, fluidMode, null);
-      blockRayTraceResult = world.rayTraceBlocks(context);
+      var context = new ClipContext(currentPos, endPos, blockMode, fluidMode, null);
+      hitResult = level.clip(context);
 
-      if (blockRayTraceResult != null) {
+      if (hitResult != null) {
         // Not sure about this one, but I have a concern about inaccuracy of Double which could lead
         // to an endless loop
-        BlockPos blockPos = blockRayTraceResult.getPos();
+        var blockPos = hitResult.getBlockPos();
         if (lastBlockPos != null && lastBlockPos.equals(blockPos)) {
           break;
         }
         lastBlockPos = blockPos;
 
-        BlockState blockState = world.getBlockState(blockPos);
-        Block block = blockState.getBlock();
-        pierceableBlock = isBlockPierceable(block);
-        if (pierceableBlock) {
-          Vector3d hitVec = blockRayTraceResult.getHitVec();
-          AxisAlignedBB bb = context.getBlockShape(blockState, world, blockPos).getBoundingBox();
-          double xDist = look.getX() < 0d ? hitVec.getX() - bb.minX - blockPos.getX()
-              : blockPos.getX() - hitVec.getX() + bb.maxX;
-          double yDist = look.getY() < 0d ? hitVec.getY() - bb.minY - blockPos.getY()
-              : blockPos.getY() - hitVec.getY() + bb.maxY;
-          double zDist = look.getZ() < 0d ? hitVec.getZ() - bb.minZ - blockPos.getZ()
-              : blockPos.getZ() - hitVec.getZ() + bb.maxZ;
-          double xRayDist =
-              Math.abs(look.getX()) != 0d ? xDist / Math.abs(look.getX()) : Double.MAX_VALUE;
-          double yRayDist =
-              Math.abs(look.getY()) != 0d ? yDist / Math.abs(look.getY()) : Double.MAX_VALUE;
-          double zRayDist =
-              Math.abs(look.getZ()) != 0d ? zDist / Math.abs(look.getZ()) : Double.MAX_VALUE;
+        var blockState = level.getBlockState(blockPos);
+        if (blockState.canOcclude()) {
+          break;
+        }
 
-          double rayDist = Math.min(xRayDist, Math.min(zRayDist, yRayDist));
-          newStart = hitVec.add(look.scale(rayDist));
+        var hitPos = hitResult.getLocation();
+        var shape = context.getBlockShape(blockState, level, blockPos);
+        if (!shape.isEmpty()) {
+          var bounds = shape.bounds();
+          var xDist = look.x() < 0.0D
+              ? hitPos.x() - bounds.minX - blockPos.getX()
+              : blockPos.getX() - hitPos.x() + bounds.maxX;
+          var yDist = look.y() < 0.0D
+              ? hitPos.y() - bounds.minY - blockPos.getY()
+              : blockPos.getY() - hitPos.y() + bounds.maxY;
+          var zDist = look.z() < 0.0D
+              ? hitPos.z() - bounds.minZ - blockPos.getZ()
+              : blockPos.getZ() - hitPos.z() + bounds.maxZ;
+          var xRayDist =
+              Math.abs(look.x()) != 0.0D ? xDist / Math.abs(look.x()) : Double.MAX_VALUE;
+          var yRayDist =
+              Math.abs(look.y()) != 0.0D ? yDist / Math.abs(look.y()) : Double.MAX_VALUE;
+          var zRayDist =
+              Math.abs(look.z()) != 0.0D ? zDist / Math.abs(look.z()) : Double.MAX_VALUE;
+
+          var rayDist = Math.min(xRayDist, Math.min(zRayDist, yRayDist));
+          currentPos = hitPos.add(look.scale(rayDist));
         }
       }
-    } while (pierceableBlock);
+    }
 
-    return Optional.ofNullable(blockRayTraceResult);
+    return Optional.ofNullable(hitResult);
   }
 
-  public static boolean isBlockPierceable(Block block) {
-    return block instanceof FenceBlock
-        || block instanceof DoorBlock
-        || block instanceof AbstractGlassBlock
-        || block instanceof LeavesBlock
-        || block instanceof TrapDoorBlock;
-  }
-
-  public static Vector3d getVectorForRotation(float pitch, float yaw) {
+  public static Vec3 calculateViewVector(float pitch, float yaw) {
     float pitchRad = pitch * ((float) Math.PI / 180F);
     float yawRad = -yaw * ((float) Math.PI / 180F);
-    float yawCos = MathHelper.cos(yawRad);
-    float yawSin = MathHelper.sin(yawRad);
-    float pitchCos = MathHelper.cos(pitchRad);
-    float pitchSin = MathHelper.sin(pitchRad);
-    return new Vector3d((yawSin * pitchCos), (-pitchSin), (yawCos * pitchCos));
+    float yawCos = Mth.cos(yawRad);
+    float yawSin = Mth.sin(yawRad);
+    float pitchCos = Mth.cos(pitchRad);
+    float pitchSin = Mth.sin(pitchRad);
+    return new Vec3((yawSin * pitchCos), (-pitchSin), (yawCos * pitchCos));
   }
 }

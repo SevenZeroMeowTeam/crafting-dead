@@ -1,91 +1,83 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core.network.message.play;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
-import com.craftingdead.core.capability.ModCapabilities;
-import com.craftingdead.core.capability.gun.PendingHit;
-import com.craftingdead.core.capability.living.EntitySnapshot;
-import com.craftingdead.core.capability.living.IPlayer;
+import com.craftingdead.core.world.entity.extension.EntitySnapshot;
+import com.craftingdead.core.world.entity.extension.LivingExtension;
+import com.craftingdead.core.world.entity.extension.PlayerExtension;
+import com.craftingdead.core.world.item.gun.PendingHit;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
-public class ValidatePendingHitMessage {
+public record ValidatePendingHitMessage(Map<Integer, Collection<PendingHit>> hits) {
 
-  private final Map<Integer, Collection<PendingHit>> hits;
-
-  public ValidatePendingHitMessage(Map<Integer, Collection<PendingHit>> hits) {
-    this.hits = hits;
-  }
-
-  public static void encode(ValidatePendingHitMessage msg, PacketBuffer out) {
-    out.writeVarInt(msg.hits.size());
-    for (Map.Entry<Integer, Collection<PendingHit>> hit : msg.hits.entrySet()) {
+  public void encode(FriendlyByteBuf out) {
+    out.writeVarInt(this.hits.size());
+    for (var hit : this.hits.entrySet()) {
       out.writeVarInt(hit.getKey());
       out.writeVarInt(hit.getValue().size());
-      for (PendingHit value : hit.getValue()) {
-        out.writeByte(value.getTickOffset());
-        value.getPlayerSnapshot().write(out);
-        value.getHitSnapshot().write(out);
-        out.writeVarLong(value.getRandomSeed());
+      for (var value : hit.getValue()) {
+        out.writeByte(value.tickOffset());
+        value.playerSnapshot().encode(out);
+        value.hitSnapshot().encode(out);
+        out.writeVarLong(value.randomSeed());
+        out.writeVarInt(value.shotCount());
       }
     }
   }
 
-  public static ValidatePendingHitMessage decode(PacketBuffer in) {
+  public static ValidatePendingHitMessage decode(FriendlyByteBuf in) {
     final int hitsSize = in.readVarInt();
-    Map<Integer, Collection<PendingHit>> hits = new Int2ObjectLinkedOpenHashMap<>();
+    var hits = new Int2ObjectLinkedOpenHashMap<Collection<PendingHit>>();
     for (int i = 0; i < hitsSize; i++) {
       int key = in.readVarInt();
       int valueSize = in.readVarInt();
-      Collection<PendingHit> value = new ObjectArrayList<PendingHit>();
+      var value = new ObjectArrayList<PendingHit>();
       for (int j = 0; j < valueSize; j++) {
-        value.add(new PendingHit(in.readByte(), EntitySnapshot.read(in), EntitySnapshot.read(in),
-            in.readVarLong()));
+        value.add(new PendingHit(in.readByte(), EntitySnapshot.decode(in), EntitySnapshot.decode(in),
+            in.readVarLong(), in.readVarInt()));
       }
       hits.put(key, value);
     }
     return new ValidatePendingHitMessage(hits);
   }
 
-  public static boolean handle(ValidatePendingHitMessage msg, Supplier<NetworkEvent.Context> ctx) {
-    ServerPlayerEntity playerEntity = ctx.get().getSender();
-    IPlayer<ServerPlayerEntity> player = IPlayer.getExpected(playerEntity);
-    ItemStack heldStack = playerEntity.getHeldItemMainhand();
-    heldStack.getCapability(ModCapabilities.GUN).ifPresent(gun -> {
-      for (Map.Entry<Integer, Collection<PendingHit>> hit : msg.hits.entrySet()) {
-        final Entity hitEntity = playerEntity.getEntityWorld().getEntityByID(hit.getKey());
-        Optional.ofNullable(hitEntity)
-            .flatMap(e -> e.getCapability(ModCapabilities.LIVING).resolve())
-            .ifPresent(hitLiving -> {
-              for (PendingHit value : hit.getValue()) {
-                gun.validatePendingHit(player, heldStack, hitLiving, value);
-              }
-            });
-      }
+  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
+    ctx.get().enqueueWork(() -> {
+      var player = PlayerExtension.getOrThrow(ctx.get().getSender());
+      player.getMainHandGun().ifPresent(gun -> {
+        for (var hit : this.hits.entrySet()) {
+          Optional.ofNullable(player.getLevel().getEntity(hit.getKey()))
+              .flatMap(entity -> entity.getCapability(LivingExtension.CAPABILITY).resolve())
+              .ifPresent(hitLiving -> {
+                for (var value : hit.getValue()) {
+                  gun.validatePendingHit(player, hitLiving, value);
+                }
+              });
+        }
+      });
     });
     return true;
   }

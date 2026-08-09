@@ -1,26 +1,30 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.immerse.game;
 
 import java.util.function.Supplier;
-import com.craftingdead.immerse.server.LogicalServer;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
+import com.craftingdead.immerse.game.network.NetworkProtocol;
+import com.mojang.serialization.Codec;
+import net.minecraft.Util;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.DistExecutor.SafeCallable;
@@ -28,31 +32,39 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public class GameType extends ForgeRegistryEntry<GameType> {
 
-  private final IGameServerFactory gameServerFactory;
-  private final Supplier<SafeCallable<IGameClient<?>>> gameClientFactory;
+  public static final Codec<GameType> CODEC =
+      ExtraCodecs.lazyInitializedCodec(() -> GameTypes.registry.get().getCodec());
 
-  public GameType(IGameServerFactory gameServerFactory,
-      Supplier<SafeCallable<IGameClient<?>>> gameClientFactory) {
-    this.gameServerFactory = gameServerFactory;
+  private final Codec<? extends GameServer> gameServerCodec;
+  private final Supplier<SafeCallable<GameClient>> gameClientFactory;
+
+  private final NetworkProtocol networkProtocol;
+
+  public GameType(Codec<? extends GameServer> gameServerCodec,
+      Supplier<SafeCallable<GameClient>> gameClientFactory,
+      NetworkProtocol networkProtocol) {
+    this.gameServerCodec = gameServerCodec;
     this.gameClientFactory = gameClientFactory;
+    this.networkProtocol = networkProtocol;
   }
 
-  public IGameServer<?> createGameServer(LogicalServer logicalServer,
-      JsonDeserializationContext deserializationContext, JsonObject json) {
-    return this.gameServerFactory.create(logicalServer, deserializationContext, json);
+  public Codec<? extends GameServer> getGameServerCodec() {
+    return this.gameServerCodec;
   }
 
-  public IGameClient<?> createGameClient() {
-    IGameClient<?> gameClient = DistExecutor.safeCallWhenOn(Dist.CLIENT, this.gameClientFactory);
+  public GameClient createGameClient() {
+    GameClient gameClient = DistExecutor.safeCallWhenOn(Dist.CLIENT, this.gameClientFactory);
     if (gameClient == null) {
-      throw new IllegalStateException("Attempting to create game client on wrong dist");
+      throw new IllegalStateException("Attempting to create game client on a server!");
     }
     return gameClient;
   }
 
-  @FunctionalInterface
-  public static interface IGameServerFactory {
-    IGameServer<?> create(LogicalServer logicalServer,
-        JsonDeserializationContext deserializationContext, JsonObject json);
+  public NetworkProtocol getNetworkProtocol() {
+    return this.networkProtocol;
+  }
+
+  public Component getDisplayName() {
+    return new TranslatableComponent(Util.makeDescriptionId("game", this.getRegistryName()));
   }
 }

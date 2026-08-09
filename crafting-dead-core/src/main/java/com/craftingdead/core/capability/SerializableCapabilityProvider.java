@@ -1,46 +1,52 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core.capability;
 
 import java.util.Set;
 import java.util.function.Supplier;
-import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullFunction;
 
-public class SerializableCapabilityProvider<C extends INBTSerializable<S>, S extends INBT>
-    extends SimpleCapabilityProvider<C> implements INBTSerializable<S> {
+class SerializableCapabilityProvider<C extends INBTSerializable<T>, T extends Tag>
+    extends SimpleCapabilityProvider<C> implements INBTSerializable<T> {
 
-  public SerializableCapabilityProvider(C capability, Supplier<Capability<? super C>> capabilityHolder) {
-    super(capability, capabilityHolder);
-  }
+  private final Supplier<T> emptyTag;
 
-  public SerializableCapabilityProvider(C capability, Set<Supplier<Capability<? super C>>> capabilityHolder) {
-    super(capability, capabilityHolder);
+  public SerializableCapabilityProvider(
+      Supplier<T> emptyTag, LazyOptional<C> instance,
+      Set<Capability<? super C>> capabilities,
+      NonNullFunction<C, ICapabilityProvider> instanceMapper) {
+    super(instance, capabilities, instanceMapper);
+    this.emptyTag = emptyTag;
   }
 
   @Override
-  public S serializeNBT() {
-    return this.capability.serializeNBT();
+  public T serializeNBT() {
+    return this.instance.map(C::serializeNBT).orElseGet(this.emptyTag);
   }
 
   @Override
-  public void deserializeNBT(S nbt) {
-    this.capability.deserializeNBT(nbt);
+  public void deserializeNBT(T tag) {
+    this.instance.ifPresent(i -> i.deserializeNBT(tag));
   }
 }

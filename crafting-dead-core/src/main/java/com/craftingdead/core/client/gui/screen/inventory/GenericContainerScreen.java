@@ -1,69 +1,96 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core.client.gui.screen.inventory;
 
-import com.craftingdead.core.inventory.container.GenericContainer;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.craftingdead.core.CraftingDead;
+import com.craftingdead.core.client.gui.widget.button.CompositeButton;
+import com.craftingdead.core.network.NetworkChannel;
+import com.craftingdead.core.network.message.play.OpenEquipmentMenuMessage;
+import com.craftingdead.core.world.inventory.AbstractMenu;
+import com.craftingdead.core.world.inventory.GenericMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.IHasContainer;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.function.Consumer;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.Nullable;
 
-public class GenericContainerScreen extends ContainerScreen<GenericContainer>
-    implements IHasContainer<GenericContainer> {
+public class GenericContainerScreen extends AbstractContainerScreen<GenericMenu> {
 
   private static final ResourceLocation GENERIC_CONTAINER_TEXTURE =
-      new ResourceLocation("textures/gui/container/generic_54.png");
+      new ResourceLocation(CraftingDead.ID, "textures/gui/container/generic_54.png");
 
-  private static final int TITLE_TEXT_COLOUR = 0x404040;
+  private static final int TITLE_TEXT_COLOUR = 0x000000;
+  // Implementations may change this field to another action for the return button
+  @Nullable
+  protected Consumer<Button> returnButtonAction = (button) -> NetworkChannel.PLAY.getSimpleChannel()
+      .sendToServer(new OpenEquipmentMenuMessage());
+  private CompositeButton returnButton;
 
-  public GenericContainerScreen(GenericContainer container, PlayerInventory playerInventory,
-      ITextComponent title) {
-    super(container, playerInventory, title);
+  public GenericContainerScreen(GenericMenu menu, Inventory playerInventory,
+      Component title) {
+    super(menu, playerInventory, title);
     this.passEvents = false;
-    this.ySize = 114 + this.container.getRowCount() * 18;
+    this.imageHeight = 114 + this.menu.getRows() * AbstractMenu.SLOT_SIZE;
   }
 
   @Override
-  public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+  public void init() {
+    super.init();
+    Consumer<Button> action = returnButtonAction == null ? (button) -> {} : returnButtonAction;
+    this.returnButton = CompositeButton.button(this.leftPos + 157, this.topPos - 1, 12, 16,
+            GENERIC_CONTAINER_TEXTURE)
+        .setAtlasPos(244, 0)
+        .setHoverAtlasPos(231, 0)
+        .setInactiveAtlasPos(219, 0)
+        .setAction(action::accept).build();
+    this.returnButton.active = returnButtonAction != null;
+    this.addRenderableWidget(returnButton);
+  }
+
+  @Override
+  public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     super.render(matrixStack, mouseX, mouseY, partialTicks);
-    this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
+    this.renderTooltip(matrixStack, mouseX, mouseY);
   }
 
   @Override
-  protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-    this.font.func_243248_b(matrixStack, this.title, 8.0F, 6.0F, 4210752);
-    this.font.func_243248_b(matrixStack, this.playerInventory.getDisplayName(), 8.0F,
-        this.ySize - 96 + 2, TITLE_TEXT_COLOUR);
+  protected void renderLabels(PoseStack poseStack, int mouseX, int mouseY) {
+    this.font.draw(poseStack, this.title, 8.0F, 6.0F, TITLE_TEXT_COLOUR);
+    this.font.draw(poseStack, this.playerInventoryTitle, 8.0F,
+        this.imageHeight - 96 + 2, TITLE_TEXT_COLOUR);
   }
 
-  @SuppressWarnings("deprecation")
   @Override
-  protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks,
-      int mouseX, int mouseY) {
-    this.renderBackground(matrixStack);
-    RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-    this.minecraft.getTextureManager().bindTexture(GENERIC_CONTAINER_TEXTURE);
-    int x = (this.width - this.xSize) / 2;
-    int y = (this.height - this.ySize) / 2;
-    this.blit(matrixStack, x, y, 0, 0, this.xSize, this.container.getRowCount() * 18 + 17);
-    this.blit(matrixStack, x, y + this.container.getRowCount() * 18 + 17, 0, 126, this.xSize, 96);
+  protected void renderBg(PoseStack poseStack, float partialTicks, int mouseX, int mouseY) {
+    this.renderBackground(poseStack);
+    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+    RenderSystem.setShaderTexture(0, GENERIC_CONTAINER_TEXTURE);
+    int x = (this.width - this.imageWidth) / 2;
+    int y = (this.height - this.imageHeight - 8) / 2;
+    int heightOffset = (6 * AbstractMenu.SLOT_SIZE + AbstractMenu.SLOT_SIZE)
+        - (this.menu.getRows() * AbstractMenu.SLOT_SIZE + AbstractMenu.SLOT_SIZE);
+    this.blit(poseStack, x, y, 0, 0, this.imageWidth, 21);
+    this.blit(poseStack, x, y + 21, 0, 21 + heightOffset, this.imageWidth,
+        96 + (this.menu.getRows() * AbstractMenu.SLOT_SIZE + AbstractMenu.SLOT_SIZE));
   }
 }
