@@ -1,63 +1,46 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core.network.message.play;
 
 import java.util.function.Supplier;
-import com.craftingdead.core.capability.ModCapabilities;
-import com.craftingdead.core.network.util.NetworkUtil;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import com.craftingdead.core.network.NetworkUtil;
+import com.craftingdead.core.world.entity.extension.LivingExtension;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
-public class TriggerPressedMessage {
+public record TriggerPressedMessage(int entityId, boolean triggerPressed) {
 
-  private final int entityId;
-  private final boolean triggerPressed;
-
-  public TriggerPressedMessage(int entityId, boolean triggerPressed) {
-    this.entityId = entityId;
-    this.triggerPressed = triggerPressed;
+  public void encode(FriendlyByteBuf out) {
+    out.writeVarInt(this.entityId);
+    out.writeBoolean(this.triggerPressed);
   }
 
-  public static void encode(TriggerPressedMessage msg, PacketBuffer out) {
-    out.writeVarInt(msg.entityId);
-    out.writeBoolean(msg.triggerPressed);
-  }
-
-  public static TriggerPressedMessage decode(PacketBuffer in) {
+  public static TriggerPressedMessage decode(FriendlyByteBuf in) {
     return new TriggerPressedMessage(in.readVarInt(), in.readBoolean());
   }
 
-  public static boolean handle(TriggerPressedMessage msg, Supplier<NetworkEvent.Context> ctx) {
-    NetworkUtil
-        .getEntity(ctx.get(), msg.entityId)
-        .filter(entity -> entity instanceof LivingEntity)
-        .ifPresent(entity -> {
-          LivingEntity livingEntity = (LivingEntity) entity;
-          ItemStack heldStack = livingEntity.getHeldItemMainhand();
-          livingEntity.getCapability(ModCapabilities.LIVING)
-              .ifPresent(living -> heldStack
-                  .getCapability(ModCapabilities.GUN)
-                  .ifPresent(gun -> gun
-                      .setTriggerPressed(living, heldStack, msg.triggerPressed,
-                          ctx.get().getDirection().getReceptionSide().isServer())));
-        });
+  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
+    ctx.get().enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx.get(), this.entityId)
+        .getCapability(LivingExtension.CAPABILITY)
+        .ifPresent(extension -> extension.getMainHandGun()
+            .ifPresent(gun -> gun.setTriggerPressed(extension, this.triggerPressed,
+                ctx.get().getDirection().getReceptionSide().isServer()))));
     return true;
   }
 }

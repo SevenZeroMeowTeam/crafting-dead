@@ -1,0 +1,86 @@
+{
+    "type": "craftingdead:gun",
+    "model": "craftingdead:gun/sporter22",
+    "muzzle_flash_transform": {
+        "translation": [
+            8.5,
+            0,
+            -40
+        ],
+        "scale": [
+            1.2,
+            1.2,
+            1.2
+        ]
+    },
+    "aiming_transform": {
+        "translation": [
+            -8.5,
+            5.75,
+            0
+        ]
+    },
+    "hand_transforms": {
+        "held_right_handed": {
+            "right_hand": {
+                "translation": [
+                    2.25,
+                    0.75,
+                    0.75
+                ]
+            },
+            "left_hand": {
+                "translation": [
+                    3,
+                    -2,
+                    -5
+                ],
+                "rotation": [
+                    0,
+                    15,
+                    0
+                ],
+                "scale": [
+                    1.25,
+                    1.25,
+                    1.25
+                ]
+            }
+        },
+        "aiming_right_handed": {
+            "left_hand": {
+                "translation": [
+                    -15,
+                    2,
+                    0.25
+                ],
+                "rotation": [
+                    0,
+                    20,
+                    0
+                ]
+            },
+            "right_hand": {
+                "translation": [
+                    -15,
+                    2,
+                    0.25
+                ]
+            }
+        }
+    },
+    "magazine_transforms": {
+        "craftingdead:sporter22_magazine": {
+            "translation": [
+                0,
+                0,
+                0
+            ]
+        }
+    },
+    "back_transform": {
+        "scale": [0.5, 0.5, 0.5],
+        "rotation": [0, 0, 180],
+        "translation": [2, 0, -0.1]
+    }
+}

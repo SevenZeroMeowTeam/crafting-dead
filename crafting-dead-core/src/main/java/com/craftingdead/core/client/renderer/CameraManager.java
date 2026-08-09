@@ -1,90 +1,84 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.core.client.renderer;
 
 import java.util.Random;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3f;
+import com.craftingdead.core.util.MutableVector2f;
+import com.mojang.blaze3d.Blaze3D;
+import net.minecraft.Util;
+import net.minecraft.util.Mth;
+import com.mojang.math.Vector3f;
 
 public class CameraManager {
 
   private static final Random random = new Random();
 
-  private Vector2f lookRotationVelocity;
+  private FloatSmoother lookPitchSmoother = new FloatSmoother(1.0F);
+  private FloatSmoother lookYawSmoother = new FloatSmoother(1.0F);
 
-  private long joltDurationMs;
+  private float lastLookTime = Float.MIN_VALUE;
 
-  private long joltStartTime;
+  private float largeAmpSlowFade;
+  private float smallAmpQuickFade;
 
-  private float pitchMultiplier;
-
-  private float rollMultiplier;
-
-  private float fovMultiplier;
-
-  public void joltCamera(float amountPercent, boolean modifyLookPosition) {
-    if (amountPercent == 0.0F) {
-      return;
-    }
-    float randomAmount = amountPercent * (random.nextFloat() + 1.0F) / 2.0F;
-    float randomNegativeAmount = randomAmount * (random.nextBoolean() ? 1.0F : -1.0F);
-    this.lookRotationVelocity =
-        modifyLookPosition ? new Vector2f(-randomAmount * 3F, randomNegativeAmount * 3.25F) : null;
-    this.joltStartTime = Util.milliTime();
-    this.rollMultiplier = randomNegativeAmount * 0.75F;
-    this.pitchMultiplier = randomAmount / 2.0F;
-    this.fovMultiplier = 0.035F;
-    this.joltDurationMs = (long) (450L * (randomAmount * 2.15F));
+  public void randomRecoil(float pitchOffset, boolean modifyLookPosition) {
+    this.joltCamera(pitchOffset, pitchOffset * (random.nextBoolean() ? 1.0F : -1.0F) / 2.0F,
+        modifyLookPosition);
   }
 
-  public Vector2f getLookRotationVelocity() {
-    if (this.lookRotationVelocity == null) {
-      return new Vector2f(0.0F, 0.0F);
+  public void joltCamera(float pitchOffset, float yawOffset, boolean moveLookPosition) {
+    if (moveLookPosition) {
+      this.lookPitchSmoother.add(-pitchOffset);
+      this.lookYawSmoother.add(yawOffset);
     }
-    float pct = 1.0F - MathHelper
-        .clamp((float) (Util.milliTime() - this.joltStartTime) / (this.joltDurationMs / 2.0F), 0.0F,
-            1.0F);
-    Vector2f newRotationVelocity =
-        new Vector2f(this.lookRotationVelocity.x * pct, this.lookRotationVelocity.y * pct);
-    return newRotationVelocity;
+
+    this.largeAmpSlowFade += pitchOffset;
+    this.smallAmpQuickFade += pitchOffset / 2.0F;
   }
 
-  public Vector3f getCameraRotation() {
-    float pct = MathHelper
-        .clamp((float) (Util.milliTime() - this.joltStartTime) / (this.joltDurationMs * 1.15F),
-            0.0F, 1.0F);
-    if (pct == 1.0F) {
-      return new Vector3f(0.0F, 0.0F, 0.0F);
+  public void tick() {
+    if (this.largeAmpSlowFade > 0) {
+      this.largeAmpSlowFade *= 0.7F;
     }
-    float roll = (float) Math.sin(Math.toRadians(180 * pct)) * this.rollMultiplier;
-    float pitch = (float) Math.sin(Math.toRadians(360 * pct)) * this.pitchMultiplier;
-    return new Vector3f(pitch, 0, roll);
+
+    if (this.smallAmpQuickFade > 0) {
+      this.smallAmpQuickFade *= 0.25;
+    }
   }
 
-  public float getFov() {
-    float pct = MathHelper
-        .clamp((float) (Util.milliTime() - this.joltStartTime) / (this.joltDurationMs / 2.0F),
-            0.0F, 1.0F);
-    if (pct == 1.0F) {
-      return 0.0F;
-    }
-    return (float) Math.sin(Math.toRadians(180 * pct)) * this.fovMultiplier;
+  public void getLookRotationDelta(MutableVector2f result) {
+    float currentTime = (float) Blaze3D.getTime();
+    float timeDelta = currentTime - this.lastLookTime;
+    result.set(this.lookPitchSmoother.getAndDecelerate(timeDelta* 2.0F),
+        this.lookYawSmoother.getAndDecelerate(timeDelta * 2.0F));
+  }
+
+  public void getCameraRotations(float partialTicks, Vector3f result) {
+    final float time = (float) Util.getMillis() / 20.0F;
+    float bounce = Mth.sin(time * 0.35F);
+    float roll = bounce / 2.0F * this.largeAmpSlowFade;
+    result.set(-this.smallAmpQuickFade, 0, roll);
+  }
+
+  public float getFov(float partialTicks) {
+    final float time = (float) Util.getMillis() / 20.0F;
+    float bounce = Mth.sin(time * 0.5F);
+    return bounce / 125.0F * -this.largeAmpSlowFade;
   }
 }

@@ -1,0 +1,107 @@
+{
+    "type": "craftingdead:gun",
+    "model": "craftingdead:gun/p250",
+    "muzzle_flash_transform": {
+        "translation": [
+            7,
+            1,
+            -15
+        ],
+        "scale": [
+            0.75,
+            0.75,
+            0.75
+        ]
+    },
+    "aiming_transform": {
+        "translation": [
+            -9.05,
+            7,
+            2
+        ],
+        "rotation": [
+            0,
+            0,
+            0
+        ]
+    },
+    "hand_transforms": {
+        "held_right_handed": {
+            "right_hand": {
+                "translation": [
+                    -2,
+                    5.75,
+                    2.5
+                ],
+                "rotation": [
+                    0,
+                    -10,
+                    0
+                ],
+                "scale": [
+                    0.75,
+                    0.75,
+                    0.75
+                ]
+            },
+            "left_hand": {
+                "translation": [
+                    -3,
+                    4.75,
+                    6.25
+                ],
+                "rotation": [
+                    -5,
+                    10,
+                    0
+                ],
+                "scale": [
+                    0.75,
+                    0.75,
+                    0.75
+                ]
+            }
+        },
+        "aiming_right_handed": {
+            "right_hand": {
+                "translation": [
+                    -17.5,
+                    11,
+                    7.25
+                ],
+                "rotation": [
+                    0,
+                    15,
+                    0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ]
+            },
+            "left_hand": {
+                "translation": [
+                    -17.75,
+                    11,
+                    10.25
+                ],
+                "rotation": [
+                    0,
+                    32.5,
+                    0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ]
+            }
+        }
+    },
+    "back_transform": {
+        "scale": [0.5, 0.5, 0.5],
+        "rotation": [0, 0, 180],
+        "translation": [-0.2, 0, -0.1]
+    }
+}

@@ -1,36 +1,62 @@
-/**
+/*
  * Crafting Dead
- * Copyright (C) 2020  Nexus Node
+ * Copyright (C) 2022  NexusNode LTD
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
  */
+
 package com.craftingdead.immerse.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.craftingdead.core.CraftingDead;
+import com.craftingdead.immerse.CraftingDeadImmerse;
+import io.sentry.Sentry;
+import net.minecraft.CrashReport;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.SharedConstants;
 
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
 
-  @Inject(method = "getWindowTitle", at = @At("HEAD"), cancellable = true)
-  private void getWindowTitle(CallbackInfoReturnable<String> callbackInfo) {
-    callbackInfo.setReturnValue("Minecraft " + SharedConstants.getVersion().getName() + " - "
-        + CraftingDead.DISPLAY_NAME + " " + CraftingDead.VERSION);
+  @Inject(method = "resizeDisplay", at = @At("RETURN"))
+  public void resizeDisplay(CallbackInfo callbackInfo) {
+    CraftingDeadImmerse.getInstance().getClientDist().getSkia()
+        .init(((Minecraft) (Object) this).getMainRenderTarget());
+  }
+
+  /**
+   * Modifies window title.
+   */
+  @Inject(method = "createTitle", at = @At("HEAD"), cancellable = true)
+  private void createTitle(CallbackInfoReturnable<String> callbackInfo) {
+    callbackInfo.setReturnValue(
+        "Minecraft " + SharedConstants.getCurrentVersion().getName() + " - Crafting Dead");
+  }
+
+  /**
+   * Increases GUI frame rate for a smoother experience.
+   */
+  @Inject(method = "getFramerateLimit", at = @At("HEAD"), cancellable = true)
+  private void getFramerateLimit(CallbackInfoReturnable<Integer> callbackInfo) {
+    callbackInfo.setReturnValue(Minecraft.getInstance().getWindow().getFramerateLimit());
+  }
+
+  @Inject(method = "crash", at = @At("HEAD"))
+  private static void crash(CrashReport crashReport, CallbackInfo callbackInfo) {
+    Sentry.captureException(crashReport.getException());
   }
 }
