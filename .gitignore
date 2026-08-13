@@ -11,4 +11,5 @@
 /crafting-dead-decoration/.vscode
 /crafting-dead-survival/.vscode
 *.md
+!README.md
 *.log
