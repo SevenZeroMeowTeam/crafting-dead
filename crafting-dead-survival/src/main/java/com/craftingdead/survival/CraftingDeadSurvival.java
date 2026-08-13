@@ -19,6 +19,7 @@
 package com.craftingdead.survival;
 
 import com.craftingdead.survival.world.entity.extension.ALFAZombieHandler;
+import com.craftingdead.survival.compat.ThirstWasTakenCompat;
 import com.craftingdead.survival.world.item.ConsumableConfigOverrides;
 import com.craftingdead.survival.world.entity.extension.BountyHunterZombieHandler;
 import com.craftingdead.survival.world.entity.extension.DesertRaiderZombieHandler;
@@ -195,6 +196,8 @@ public class CraftingDeadSurvival {
     event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(ModItems.SYRINGE.get()),
         Ingredient.of(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE),
         new ItemStack(SurvivalItems.CURE_SYRINGE.get())));
+
+    ThirstWasTakenCompat.registerDrinks();
 
     registerEntitySpawnPlacements();
   }

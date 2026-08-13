@@ -23,6 +23,7 @@ import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.immerse.game.survival.SurvivalPlayerHandler;
 import com.craftingdead.immerse.world.item.hydration.Hydration;
 import com.craftingdead.survival.CraftingDeadSurvival;
+import com.craftingdead.survival.compat.ThirstWasTakenCompat;
 import com.craftingdead.survival.compat.ToughAsNailsCompat;
 import java.util.List;
 import java.util.function.Supplier;
@@ -179,6 +180,9 @@ public class ConsumableItem extends Item {
     }
     if (ToughAsNailsCompat.isLoaded()) {
       return ToughAsNailsCompat.isThirsty(player);
+    }
+    if (ThirstWasTakenCompat.isLoaded()) {
+      return ThirstWasTakenCompat.isThirsty(player);
     }
     return true;
   }

@@ -15,6 +15,44 @@
 
 ---
 
+## 更新日志
+
+### v1.8.1 / v1.2.1 / v1.0.2 / v0.0.2（1.20.1 适配版）
+
+**崩溃修复**
+- 修复创造模式物品栏翻页时因口渴模组（Thirst was Taken）导致的崩溃
+  （`Cannot create a fluidstack from a null fluid`）。新增 `BucketItemMixin`
+  防御性修复，确保 `BucketItem.getFluid()` 不返回 null
+- 修复 `forge:separate-perspective` 模型加载器在 1.20.1 中被移除导致的
+  77 个帽子/服装/背包物品显示为紫黑格子的问题（迁移至 `forge:separate_transforms`）
+- 修复 `red_dot_sight_ak` 模型空 particle 引用导致的模型加载崩溃
+
+**口渴模组兼容**
+- 新增 **Thirst was Taken** 兼容：Crafting Dead 的饮品（水瓶、水壶、汽水等）
+  饮用时可恢复该模组的口渴值，并注册为有效饮品
+- 新增 **Tough As Nails** 兼容：饮品可恢复 TAN 口渴值，受
+  `drinkHydrationMultiplier` 配置控制
+- 未安装口渴模组时行为保持不变（可选依赖，安全跳过）
+
+**资源修复**
+- 为 97 个装饰方块补充缺失的 blockstate 文件（电梯、雷达终端、木板、路板等）
+- 为 12 个方块补充缺失的模型（路板、交通标志、睡袋、弹药箱等）
+- 补充缺失的声音文件（`trench_gun_distant_shoot`、`vector_reload`）
+
+**其他**
+- 修复 `EffectiveSide.get()` 弃用警告（迁移至 `FMLEnvironment.dist`）
+- 修复 `ZombieMixin.populateDefaultEquipmentSlots` 方法签名（1.20.1 新增 `RandomSource` 参数）
+- 移除 `ExplosionMixin` / `LivingEntityMixin` 中过时的 Mixin 注入点
+
+### v1.8.0 / v1.2.0 / v1.0.1 / v0.0.1（1.20.1 初始适配）
+
+- 从 Minecraft 1.18.2 完整迁移至 1.20.1（Forge 47.4.22）
+- 适配全部 1.19/1.20 API 变更：`Component`、`CreativeModeTab` 构建器、
+  数据包生成器（`PackOutput` / `HolderLookup.Provider`）、事件包迁移、
+  `org.joml` 数学库、注册表系统变更等
+
+---
+
 ## 模块结构
 
 本项目采用多模块 Gradle 构建，各模块职责分明：
@@ -142,11 +180,11 @@ git checkout 1.20.x
 
 | 模块 | Jar 文件 |
 |------|----------|
-| Core | `crafting-dead-core-1.20.1-1.8.0.homebaked.jar` |
-| Core (含依赖) | `crafting-dead-core-1.20.1-1.8.0.homebaked-all.jar` |
-| Survival | `crafting-dead-survival-1.20.1-1.2.0.homebaked.jar` |
-| Decoration | `crafting-dead-decoration-1.20.1-1.0.1.homebaked.jar` |
-| WorldGuard | `crafting-dead-worldguard-1.20.1-0.0.1.homebaked.jar` |
+| Core | `crafting-dead-core-1.20.1-1.8.1.homebaked.jar` |
+| Core (含依赖) | `crafting-dead-core-1.20.1-1.8.1.homebaked-all.jar` |
+| Survival | `crafting-dead-survival-1.20.1-1.2.1.homebaked.jar` |
+| Decoration | `crafting-dead-decoration-1.20.1-1.0.2.homebaked.jar` |
+| WorldGuard | `crafting-dead-worldguard-1.20.1-0.0.2.homebaked.jar` |
 
 ### 安装到客户端/服务器
 

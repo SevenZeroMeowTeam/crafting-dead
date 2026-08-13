@@ -6,6 +6,7 @@
   "refmap": "craftingdead.refmap.json",
   "mixins": [
     "AbstractContainerMenuMixin",
+    "BucketItemMixin",
     "EntityMixin",
     "ItemEntityMixin",
     "ExplosionMixin",
