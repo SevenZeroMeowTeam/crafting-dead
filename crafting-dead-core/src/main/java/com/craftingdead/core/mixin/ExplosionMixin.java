@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -45,14 +44,5 @@ public class ExplosionMixin {
     var damageMultiplier =
         (this.source instanceof ExplosionSource source) ? source.getDamageMultiplier() : 1.0F;
     return instance.hurt(damageSource, damage * damageMultiplier);
-  }
-
-  @Redirect(at = @At(value = "INVOKE",
-      target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"),
-      method = "explode")
-  public Vec3 vec3AddProxy(Vec3 instance, double x, double y, double z) {
-    var knockbackMultiplier =
-        (this.source instanceof ExplosionSource source) ? source.getKnockbackMultiplier() : 1D;
-    return instance.add(x * knockbackMultiplier, y * knockbackMultiplier, z * knockbackMultiplier);
   }
 }
