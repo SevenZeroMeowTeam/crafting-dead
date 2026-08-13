@@ -1,0 +1,7 @@
+﻿{
+  "variants": {
+    "type=bottom": { "model": "craftingdeaddecoration:block/planks_05" },
+    "type=top": { "model": "craftingdeaddecoration:block/planks_05" },
+    "type=double": { "model": "craftingdeaddecoration:block/planks_05" }
+  }
+}

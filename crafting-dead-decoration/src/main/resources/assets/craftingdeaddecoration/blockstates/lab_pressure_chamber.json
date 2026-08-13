@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/lab_pressure_chamber" },
+    "facing=east": { "model": "craftingdeaddecoration:block/lab_pressure_chamber", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/lab_pressure_chamber", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/lab_pressure_chamber", "y": 270 }
+  }
+}

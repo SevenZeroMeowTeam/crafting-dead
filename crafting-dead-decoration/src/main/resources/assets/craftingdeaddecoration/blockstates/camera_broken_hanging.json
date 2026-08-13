@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/camera_broken_hanging" },
+    "facing=east": { "model": "craftingdeaddecoration:block/camera_broken_hanging", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/camera_broken_hanging", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/camera_broken_hanging", "y": 270 }
+  }
+}

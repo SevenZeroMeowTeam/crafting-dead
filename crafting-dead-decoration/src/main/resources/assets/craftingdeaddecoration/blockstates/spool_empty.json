@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/spool_empty" },
+    "facing=east": { "model": "craftingdeaddecoration:block/spool_empty", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/spool_empty", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/spool_empty", "y": 270 }
+  }
+}

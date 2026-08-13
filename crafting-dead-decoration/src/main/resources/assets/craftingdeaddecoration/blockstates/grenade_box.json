@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/grenade_box" },
+    "facing=east": { "model": "craftingdeaddecoration:block/grenade_box", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/grenade_box", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/grenade_box", "y": 270 }
+  }
+}

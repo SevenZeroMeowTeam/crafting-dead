@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/gun_case_stack" },
+    "facing=east": { "model": "craftingdeaddecoration:block/gun_case_stack", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/gun_case_stack", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/gun_case_stack", "y": 270 }
+  }
+}

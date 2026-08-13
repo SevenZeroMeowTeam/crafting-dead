@@ -1,0 +1,6 @@
+﻿{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "craftingdeaddecoration:block/traffic_signs/traffic_signs_speed45"
+  }
+}

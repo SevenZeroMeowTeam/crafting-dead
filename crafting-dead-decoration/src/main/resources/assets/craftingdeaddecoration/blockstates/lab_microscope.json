@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/lab_microscope" },
+    "facing=east": { "model": "craftingdeaddecoration:block/lab_microscope", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/lab_microscope", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/lab_microscope", "y": 270 }
+  }
+}

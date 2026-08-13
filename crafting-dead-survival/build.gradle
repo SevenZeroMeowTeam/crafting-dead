@@ -73,6 +73,9 @@ minecraft {
 dependencies {
     implementation project(':crafting-dead-core')
 
+    // Tough As Nails (optional runtime dependency for thirst compatibility)
+    compileOnly files('../libs/ToughAsNails-forge-1.20.1-9.2.0.171.jar')
+
     // NOTE: brad.ac maven repository is currently unreachable.
     // Re-enable when https://dl.brad.ac is back online.
     // minecraftLibrary group: 'net.rocketpowered', name: 'rocket-sdk', version: '0.0.10'

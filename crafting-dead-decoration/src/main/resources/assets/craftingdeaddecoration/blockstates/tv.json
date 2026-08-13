@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/tv" },
+    "facing=east": { "model": "craftingdeaddecoration:block/tv", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/tv", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/tv", "y": 270 }
+  }
+}

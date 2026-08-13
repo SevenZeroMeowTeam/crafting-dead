@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/bottle_of_meds" },
+    "facing=east": { "model": "craftingdeaddecoration:block/bottle_of_meds", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/bottle_of_meds", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/bottle_of_meds", "y": 270 }
+  }
+}

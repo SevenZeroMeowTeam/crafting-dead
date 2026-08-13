@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/renamed_boxes_of_bullets" },
+    "facing=east": { "model": "craftingdeaddecoration:block/renamed_boxes_of_bullets", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/renamed_boxes_of_bullets", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/renamed_boxes_of_bullets", "y": 270 }
+  }
+}

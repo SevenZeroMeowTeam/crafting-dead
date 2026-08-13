@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/junk_book" },
+    "facing=east": { "model": "craftingdeaddecoration:block/junk_book", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/junk_book", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/junk_book", "y": 270 }
+  }
+}

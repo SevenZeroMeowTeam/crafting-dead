@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/industrial_button" },
+    "facing=east": { "model": "craftingdeaddecoration:block/industrial_button", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/industrial_button", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/industrial_button", "y": 270 }
+  }
+}

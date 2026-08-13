@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/gas_cans" },
+    "facing=east": { "model": "craftingdeaddecoration:block/gas_cans", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/gas_cans", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/gas_cans", "y": 270 }
+  }
+}

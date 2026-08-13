@@ -1,0 +1,6 @@
+﻿{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "craftingdeaddecoration:block/boxes_of_shotgun_shells_blue"
+  }
+}

@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/flamethrower" },
+    "facing=east": { "model": "craftingdeaddecoration:block/flamethrower", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/flamethrower", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/flamethrower", "y": 270 }
+  }
+}

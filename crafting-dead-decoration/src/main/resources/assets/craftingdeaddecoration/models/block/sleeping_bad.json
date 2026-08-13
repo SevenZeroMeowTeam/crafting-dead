@@ -1,0 +1,6 @@
+﻿{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "craftingdeaddecoration:block/sleeping_bag/sleeping_bag_close_red"
+  }
+}

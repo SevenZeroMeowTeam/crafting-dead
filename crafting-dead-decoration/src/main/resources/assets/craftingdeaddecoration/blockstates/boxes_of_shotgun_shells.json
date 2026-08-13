@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/boxes_of_shotgun_shells" },
+    "facing=east": { "model": "craftingdeaddecoration:block/boxes_of_shotgun_shells", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/boxes_of_shotgun_shells", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/boxes_of_shotgun_shells", "y": 270 }
+  }
+}

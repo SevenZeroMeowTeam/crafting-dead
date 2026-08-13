@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/portable_military_radio" },
+    "facing=east": { "model": "craftingdeaddecoration:block/portable_military_radio", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/portable_military_radio", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/portable_military_radio", "y": 270 }
+  }
+}

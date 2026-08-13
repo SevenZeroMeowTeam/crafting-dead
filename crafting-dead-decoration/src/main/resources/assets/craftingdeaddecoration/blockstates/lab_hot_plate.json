@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/lab_hot_plate" },
+    "facing=east": { "model": "craftingdeaddecoration:block/lab_hot_plate", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/lab_hot_plate", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/lab_hot_plate", "y": 270 }
+  }
+}

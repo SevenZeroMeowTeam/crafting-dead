@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/radar_terminal_b2" },
+    "facing=east": { "model": "craftingdeaddecoration:block/radar_terminal_b2", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/radar_terminal_b2", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/radar_terminal_b2", "y": 270 }
+  }
+}

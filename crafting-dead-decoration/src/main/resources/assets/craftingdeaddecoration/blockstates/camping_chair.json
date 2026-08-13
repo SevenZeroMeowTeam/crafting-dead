@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/camping_chair" },
+    "facing=east": { "model": "craftingdeaddecoration:block/camping_chair", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/camping_chair", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/camping_chair", "y": 270 }
+  }
+}

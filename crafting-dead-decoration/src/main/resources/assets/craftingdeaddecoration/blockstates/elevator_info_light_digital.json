@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "craftingdeaddecoration:block/elevator_info_light_digital" },
+    "facing=east": { "model": "craftingdeaddecoration:block/elevator_info_light_digital", "y": 90 },
+    "facing=south": { "model": "craftingdeaddecoration:block/elevator_info_light_digital", "y": 180 },
+    "facing=west": { "model": "craftingdeaddecoration:block/elevator_info_light_digital", "y": 270 }
+  }
+}

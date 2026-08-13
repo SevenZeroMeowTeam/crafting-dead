@@ -23,6 +23,7 @@ import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.immerse.game.survival.SurvivalPlayerHandler;
 import com.craftingdead.immerse.world.item.hydration.Hydration;
 import com.craftingdead.survival.CraftingDeadSurvival;
+import com.craftingdead.survival.compat.ToughAsNailsCompat;
 import java.util.List;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -81,8 +82,7 @@ public class ConsumableItem extends Item {
   public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level,
       @NotNull Player player, @NotNull InteractionHand hand) {
     boolean canConsume = (this.type == Type.ONLY_FOOD && this.canEat(player)) || (this.type == Type.FOOD_AND_DRINK && (
-        this.canEat(player) || this.canDrink(player))) || (this.type == Type.ONLY_DRINK && this.canDrink(player)
-        && CraftingDeadSurvival.instance().isImmerseLoaded());
+        this.canEat(player) || this.canDrink(player))) || (this.type == Type.ONLY_DRINK && this.canDrink(player));
     return canConsume ? ItemUtils.startUsingInstantly(level, player, hand)
         : InteractionResultHolder.fail(player.getItemInHand(hand));
   }
@@ -97,7 +97,7 @@ public class ConsumableItem extends Item {
       @NotNull ItemStack stack, int remainingUseDuration) {
     if (!(entity instanceof Player player)) return;
     boolean needsFood = this.canEat(player);
-    boolean needsWater = CraftingDeadSurvival.instance().isImmerseLoaded() && this.canDrink(player);
+    boolean needsWater = this.canDrink(player);
     boolean consumption = switch (this.type) {
       case ONLY_FOOD -> needsFood;
       case ONLY_DRINK -> needsWater;
@@ -142,6 +142,12 @@ public class ConsumableItem extends Item {
       player.getFoodData()
           .eat(this.foodProperties.getNutrition(), this.foodProperties.getSaturationModifier());
     }
+    if (this.type != Type.ONLY_FOOD && this.water > 0
+        && !CraftingDeadSurvival.instance().isImmerseLoaded()) {
+      ToughAsNailsCompat.drink(player, this.water,
+          (float) (this.water * 0.25F
+              * CraftingDeadSurvival.serverConfig.drinkHydrationMultiplier.get()));
+    }
   }
 
   private void triggerConsumptionEvent(Level level, LivingEntity entity) {
@@ -164,8 +170,17 @@ public class ConsumableItem extends Item {
   }
 
   private boolean canDrink(Player player) {
-    var handler = PlayerExtension.getOrThrow(player).getHandlerOrThrow(SurvivalPlayerHandler.TYPE);
-    return handler.getWater() < handler.getMaxWater();
+    if (this.type == Type.ONLY_FOOD || this.water <= 0) {
+      return false;
+    }
+    if (CraftingDeadSurvival.instance().isImmerseLoaded()) {
+      var handler = PlayerExtension.getOrThrow(player).getHandlerOrThrow(SurvivalPlayerHandler.TYPE);
+      return handler.getWater() < handler.getMaxWater();
+    }
+    if (ToughAsNailsCompat.isLoaded()) {
+      return ToughAsNailsCompat.isThirsty(player);
+    }
+    return true;
   }
 
   @Override
