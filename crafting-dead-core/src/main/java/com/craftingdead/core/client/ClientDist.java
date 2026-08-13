@@ -138,7 +138,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.util.thread.EffectiveSide;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class ClientDist implements ModDist {
@@ -232,13 +232,12 @@ public class ClientDist implements ModDist {
     this.cameraManager = new CameraManager();
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public RegistryAccess registryAccess() {
     var minecraft = Minecraft.getInstance();
-    if (EffectiveSide.get().isServer() && minecraft.getSingleplayerServer() != null) {
+    if (FMLEnvironment.dist.isDedicatedServer() && minecraft.getSingleplayerServer() != null) {
       return minecraft.getSingleplayerServer().registryAccess();
-    } else if (EffectiveSide.get().isClient() && minecraft.player != null) {
+    } else if (FMLEnvironment.dist.isClient() && minecraft.player != null) {
       return minecraft.player.connection.registryAccess();
     }
 
