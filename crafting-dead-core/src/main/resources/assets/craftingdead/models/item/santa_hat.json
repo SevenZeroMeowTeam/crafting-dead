@@ -1,0 +1,18 @@
+{
+  "parent": "forge:item/default",
+  "loader": "forge:separate-perspective",
+  "base": {
+    "parent": "item/generated",
+    "textures": {
+      "layer0": "craftingdead:item/santa_hat"
+    }
+  },
+  "perspectives": {
+    "head": {
+      "parent": "craftingdead:hats/textured_helmet_multiple_of_9",
+      "textures": {
+        "base": "craftingdead:hats/santa_hat"
+      }
+    }
+  }
+}

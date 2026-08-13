@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "craftingdead:dmr_magazine",
+    "craftingdead:bandage",
+    "craftingdead:binoculars",
+    "craftingdead:combat_knife",
+    "craftingdeadsurvival:mre",
+    "craftingdead:first_aid_kit"
+  ]
+}

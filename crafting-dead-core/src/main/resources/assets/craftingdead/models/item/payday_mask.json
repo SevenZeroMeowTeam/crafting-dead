@@ -1,0 +1,18 @@
+{
+  "parent": "forge:item/default",
+  "loader": "forge:separate-perspective",
+  "base": {
+    "parent": "item/generated",
+    "textures": {
+      "layer0": "craftingdead:item/payday_mask"
+    }
+  },
+  "perspectives": {
+    "head": {
+      "parent": "craftingdead:hats/mask",
+      "textures": {
+        "base": "craftingdead:hats/payday_mask"
+      }
+    }
+  }
+}

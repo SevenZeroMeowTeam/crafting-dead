@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "min": 1,
+        "max": 3
+      },
+      "entries": [
+        {
+          "type": "item",
+          "name": "craftingdead:stanag_30_round_magazine",
+          "weight": 12
+        },
+        {
+          "type": "item",
+          "name": "craftingdead:stanag_drum_magazine",
+          "weight": 4
+        },
+        {
+          "type": "item",
+          "name": "craftingdead:combat_knife",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "craftingdead:binoculars",
+          "weight": 4
+        },
+        {
+          "type": "item",
+          "name": "craftingdead:dirty_rag",
+          "weight": 10
+        }
+      ]
+    }
+  ]
+}

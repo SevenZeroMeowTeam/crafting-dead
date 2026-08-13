@@ -1,0 +1,18 @@
+{
+  "parent": "forge:item/default",
+  "loader": "forge:separate-perspective",
+  "base": {
+    "parent": "item/generated",
+    "textures": {
+      "layer0": "craftingdead:item/trapper_hat"
+    }
+  },
+  "perspectives": {
+    "head": {
+      "parent": "craftingdead:hats/textured_helmet_multiple_of_8",
+      "textures": {
+        "base": "craftingdead:hats/trapper_hat"
+      }
+    }
+  }
+}

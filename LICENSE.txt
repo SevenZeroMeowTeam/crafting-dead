@@ -1,0 +1,158 @@
+This Non-Commercial Software License Agreement (the "Agreement") is made between you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+By installing or otherwise using Crafting Dead (the "Software"), you agree to be bound by the terms and conditions of this Agreement as may be revised from time to time at Licensor's sole discretion. 
+If you do not agree to the terms and conditions of this Agreement do not download, copy, reproduce or otherwise use any of the source code available online at any time. 
+
+1.	NON-COMMERCIAL USE. Licensor hereby grants to Licensee one (1) non-exclusive, non-transferable license (the "License") to install and use the Software for non-commercial use ("Crafting Dead’s") data (the "Intended Purpose"). "Software" includes the executable computer programs, code and any related printed, electronic and online documentation, software, assets, models, user guides, system administration documentation and any other files that may accompany the code.
+"Non-Profit Non-Commercial use" means practicing, making, using, improving upon, importing and exporting (but not selling, leasing or otherwise monetizing) for individual (personal) or academic institutional research purposes, in good faith, and expressly excludes, without limitation, purposes that are intended to (or result in, whether by intent or otherwise): 
+      (i)	  create a commercial advantage for any Person; 
+      (ii)	generate monetary compensation for products or services; 
+      (iii)	generate commercialization rights for any Person; 
+      (iv)	be used in an ongoing business concern; or 
+      (v)	  result in an ongoing business concern obtaining any intellectual property rights in any research, educational or results linked to the Non-profit Non-Commercial               means. 
+
+2.	RESTRICTIONS. Licensee may not: 
+      (i)	  modify, enhance, reverse-engineer, decompile, disassemble or create derived forms of the Software unless the modification is an improvement which is directly                 pushed to our official repository and not otherwise shared or breach any part of this agreement; 
+      (ii)	copy the Software; 
+      (iii)	sell, sub-license, lease, assign, transmit, distribute or otherwise transfer rights in/to the Software; 
+      (iv)	allow third-party use of Licensee's installation of the Software; or 
+      (v)	  pledge, hypothecate, alienate or otherwise encumber the Software to any third party. Use of the Software is restricted to the Intended Purpose only. 
+
+3.	IF GRANTED IN WRITING. If you have obtained the authorisation from Brad Hunter at brad@nexusnode.com the Licensor. You are hereby granted worldwide, royalty-free, non-exclusive, sublicensable license, for the duration of the agreement set out in the contract that shall be made in writing between You “The Licensee” and Brad Hunter “The Licensor” to do part or all of the the following:
+      (i)	  Reproduce the Original Work in copies, either alone or as part of a collective work for NON profit NON commercial use.
+      (ii)	To translate, adapt, alter, transform, modify, or arrange the Original Work, thereby creating derivative works (“Derivative Works”) based upon the Original Work;
+      (iii)	To distribute or communicate copies of the Original Work and Derived Works to the public, with the proviso that the copies of Original Work or Derivative Works               that you distribute or communicate shall be licenced under this whole agreement as Non-Profit Open Software. 
+      (iv)	To perform the Original work Publicly; and
+      (v)	  To display the Original Work publicly
+
+4.	GRANT OF SOURCE CODE LICENCE. The term “Source Code” means the preferred form of the Original Work for making modifications to it and all available documentation describing how to modify the Original Work. Licensor agrees to provide a machine-readable copy of the Source Code of the Original Work along with each copy of the Original Work that licensor distributes. Licensor reserves the right to satisfy this obligation by placing a machine-readable copy of the Source Code in an information repository reasonably calculated to permit inexpensive and convenient access by you for as long as the licensor agrees and continues to distribute the Original Work.
+
+5.	EXCLUSIONS FROM LICENCE GRANT. Neither the names of Licensor, nor the names of any contributors to the Original work, nor any of their trademarks or service marks, may be used to endorse or promote products derived from this Original Work without express prior permission of the Licensor. Except as expressly stated herein, nothing in this Licence grants any licence to Licensor’s Trademarks, copyrights, patents, trade secrets or any other intellectual property. No patent licence is granted to make, use, sell, offer for sale, have made, or import embodiments of any patent claims other than the licensed claims defined in sections 1, 2, 3 & 4. No license is granted to the trademarks of licensor even if such marks are included in the Original Work. Nothing in this licence shall be interpreted to prohibit licensor from licensing under terms different from this Licence any Original Work that licensor otherwise would have a right to license. 
+
+6.	ATTRIBUTION RIGHTS You must retain, in the Source Code of any Derivative Works that you create, all copyright, patent, or trademark notices from the Source Code of the Original Work, as well as any notices of licensing and any descriptive text identified therein as an “Attribution Notice”. You must cause the Source Code for any Derivative Works that you create to carry a prominent Attribution Notice reasonably calculated to inform recipients that you have modified the Original Work.
+
+7.	NO WARRANTY. The Software is provided "as is" without warranty of any kind. Licensor makes no representations, warranties or covenants to Licensee, either express or implied, with respect to the Software or with respect to any Confidential Information (as defined herein) disclosed to Licensee. Licensor specifically disclaims any implied warranty or condition of non-infringement, merchantable quality or fitness for a particular purpose. Licensee acknowledges that the Software is of an experimental nature, that no particular results can be guaranteed, and that it has been advised by Licensor to undertake its own due diligence with respect to all matters arising from the Agreement. 
+
+8.	LIMITATION OF LIABILITY. In no event is Licensor liable for any damages on any basis, in contract, tort or otherwise, of any kind and nature whatsoever, arising in respect of this Agreement, howsoever caused, including damages of any kind and nature caused by Licensor’s negligence or by a fundamental breach of contract or any other breach of duty whatsoever. Licensee is advised to safeguard important data, use caution and not rely in any way on the correct functioning or performance of the Software and/or accompanying materials. 
+
+9.	NO IMPROVEMENTS. Licensor is under no obligation to provide Improvements to the Software. "Improvements" means any improvements, updates, variations, modifications, alterations, additions, error corrections, enhancements, functional changes or other changes to the Software, including, without limitation: 
+      (i)	  improvements or upgrades to improve software efficiency and maintainability; 
+      (ii)	improvements or upgrades to improve operational integrity and efficiency; 
+      (iii)	changes or modifications to correct errors; and 
+      (iv)	additional licensed computer programs to otherwise update the Software. 
+
+10.	NO FUTURE ENTITLEMENT. Nothing in this Agreement shall be construed as creating any obligation on Licensor to continue to develop, commercialize, offer, make available or support 
+      (i)	  the Software; or 
+      (ii)	any feature, functionality or Improvement as may be encompassed in the Software from time to time. 
+
+11.	SUSPENSION. Licensor reserves the right to modify, suspend or discontinue, temporarily or permanently, the Software, with or without notice and without liability to Licensee. 
+
+12.	OWNERSHIP. Licensor retains title to and ownership of the Software and any Improvements. Nothing in this Agreement shall be construed as granting any express or implied ownership rights to Licensee in respect of the Software, associated documentation or Confidential Information, including but not limited to any patent, copyright, trademark or other intellectual property right. 
+
+13.	INTELLECTUAL PROPERTY. All Intellectual Property, Intellectual Property Rights and distribution rights associated with or arising from the Software or Licensor’s Confidential Information remain exclusively with Licensor. “Intellectual Property” includes, without limitation, all technical data, designs, specifications, software, data, drawings, plans, reports, patterns, models, prototypes, demonstration units, practices, inventions, methods and related technology, processes or other information, and all rights therein, including, without limitation, patents, copyrights, industrial designs, trade-marks and any registrations or applications for the same and all other rights of intellectual property therein, including any rights for which arise from the above items being treated by the Parties as trade secrets or confidential information (the rights being “Intellectual Property Rights”). 
+
+14.	CONFIDENTIAL INFORMATION. “Confidential Information” means any and all confidential or proprietary information of Licensor or Licensee which may be exchanged between the Parties at any time prior to and during the term of this Agreement, including, without limitation, business and marketing information, technology, know-how, ideas, reports, techniques, methods, processes, uses, composites, skills, and configurations of any kind. Without limiting the generality of the foregoing, Licensor’s Confidential Information includes: 
+    (i)	  the Software, including its features, functionality, performance, application and use;
+    (ii)	the computer code underlying the Software, including source and compiled code and all associated documentation and files; 
+    (iii)	information relating to the performance or quality of the Software; 
+    (iv)	the details of any technical assistance provided to Licensee during the term of this Agreement; 
+    (v)	  any other products or service made available to Licensee by Licensor during the term of this Agreement; and 
+    (vi)	information regarding Licensor’s business operations or research and development activities. Neither party shall:
+        A.	disclose, either directly or indirectly, any Confidential Information or any part thereof belonging to the other party, to any person except as is specifically               contemplated in this Agreement; or 
+        B.	use any Confidential Information or any part thereof belonging to the other party, for any purpose except as is specifically contemplated in this Agreement.                   The obligations of confidentiality set forth herein shall not apply to the extent that the information: 
+            i.	  was already known to the relevant party without restriction at the time the information was disclosed to such party; 
+            ii.	  was generally available to the public or otherwise was part of the public domain at the time of its disclosure to the relevant party; 
+            iii.	became generally available to the public or otherwise part of the public domain after its disclosure to the relevant party through no act or omission of                       such party; or
+            iv.	  was disclosed to the relevant party without restriction by a third party who, to the best of such party's knowledge and belief, had no obligation not to                       disclose such information. 
+
+15.	FEEDBACK. Licensee may communicate to Licensor, whether or not at Licensor’s request, suggestions and comments regarding the Software, including without limitation, performance, user interface, experiment results, and errors (collectively, “Feedback”). Licensor shall have worldwide, non-exclusive, perpetual, irrevocable, royalty-free, fully-paid up rights to use such Feedback. Without limiting the generality of the foregoing, Licensor shall have the unencumbered right to make, use, copy, modify, sell, distribute, sub-license, and create derivative works of/incorporating the Feedback as part of any product, technology, service, specification or other documentation and to publicly perform or display, import, broadcast, transmit, distribute, license, offer to sell, and sell, rent, lease or lend anonymized copies of the Feedback (and derivative works thereof) as part of any product. 
+
+16.	PERFORMANCE DATA AND ANALYTICS. Licensor may collect usage and performance data relating to Licensee’s installation of the Software. including, without limitation, data relating to: 
+    (i)	  software use, including the number of users, projects and experiments associated with an installation; 
+    (ii)	error information, including error messages and user-submitted feedback; 
+    (iii)	performance data, including experiment run times and failed experiments; 
+    (iv)	hardware utilization, including the number of active nodes and memory usage; and 
+    (v)	  license status information, including confirmation of valid license status. 
+
+17.	TERMINATION. Licensor reserves the right to terminate this Agreement immediately and without notice in the event Licensee fails to comply with any provision of this Agreement. On termination of this Agreement, whether by reason of expiry or otherwise, Licensee shall promptly discontinue use of the Software, destroy its installation of the Software and, at Licensor's request, return the Software to Licensor at no cost to Licensor. Licensor may exercise any or or more of the remedies available to it under the terms of this Agreement, in addition to any remedy available at law. Failure of Licensor to enforce a right under this Agreement shall not act as a waiver of that right. If, at any time, You expressly assented to this License, that assent indicates your clear and irrevocable acceptance of this License and all of its terms and conditions. If you distribute or communicate copies of the Original Work or a Derivative Work, You must make a reasonable effort under the circumstances to obtain the express assent of recipients to the terms of this Licence. This License conditions your rights to undertake the activities in sections 1, 2, 3 & 4, including your right to create Derivative Works based upon the Original Work, and doing so without honouring these terms and conditions is prohibited by copyright law and international treaty. Nothing in this License is intended to affect copyright exceptions and limitations (including “fair use” or “Fair dealing”). This license shall terminate immediately and You may no longer exercise any of the rights granted to You by this Licence upon your failure to honour the conditions set out in this document.
+
+18.	GOVERNING LAW. This Agreement is made in United Kingdom and governed by and construed in accordance with the laws of United Kingdom. The Parties attorn to the exclusive jurisdiction of the Courts of United Kingdom. 
+
+19.	DEFINITION OF “You” in this License. “You” throughout this license, wether in upper or lower case, means an individual or a legal entity exercising rights under, and complying with all of the terms of, this License. For legal entities, “You” includes any entity that controls, is controlled by, or is under common control with you. For purposes of this definition, “control” means;
+      (i)	  the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or 
+      (ii)	ownership of fifty percent (50%) or more of the outstanding shares, or 
+      (iii)	beneficial ownership of such entity. 
+
+20.	SURVIVAL. The provisions of subsections 1-24 shall survive termination of this Agreement. 
+
+21.	SEVERABILITY. If any term, covenant, condition or provision of this Agreement is held by a court of competent jurisdiction to be invalid, void or unenforceable, it is the Parties' intent that such provision be reduced in scope by the court only to the extent deemed necessary by that court to render the provision reasonable and enforceable and the remainder of the provisions of this Agreement will in no way be affected, impaired or invalidated as a result. 
+
+22.	NO AGENCY. No provision of this Agreement or action by the Parties will establish or be deemed to establish any partnership, joint venture, principal-agent or employer-employee relationship in any way, or for any purpose, between Licensor and Licensee. 
+
+23.	ENTIRE AGREEMENT. This Agreement including all schedules hereto, constitutes the entire agreement between the Parties concerning the subject matter hereof and supersedes all prior or collateral agreements, communications, representations, understandings, negotiations and discussions, oral or written.
+
+24.	MODIFICATION OF THIS LICENSE. This licence is Copyright 2022 NEXUSNODE (BRAD HUNTER). Permission is granted to copy, distribute, or communicate this License without modification. Nothing in this Licence permits You to modify this license as applied to the Original Work or to Derivative Works.
+
+Copyright 2022 NEXUSNODE Limited – All Rights Reserved
+
+=========================================================================
+
+Unless noted below, Minecraft Forge, Forge Mod Loader, and all 
+parts herein are licensed under the terms of the LGPL 2.1 found
+here http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt and 
+copied below.
+
+Homepage: http://minecraftforge.net/
+          https://github.com/MinecraftForge/MinecraftForge
+          
+
+A note on authorship:
+All source artifacts are property of their original author, with
+the exclusion of the contents of the patches directory and others
+copied from it from time to time. Authorship of the contents of
+the patches directory is retained by the Minecraft Forge project.
+This is because the patches are partially machine generated
+artifacts, and are changed heavily due to the way forge works.
+Individual attribution within them is impossible.
+
+Consent:
+All contributions to Forge must consent to the release of any
+patch content to the Forge project.
+
+A note on infectivity:
+The LGPL is chosen specifically so that projects may depend on Forge
+features without being infected with its license. That is the 
+purpose of the LGPL. Mods and others using this code via ordinary
+Java mechanics for referencing libraries are specifically not bound
+by Forge's license for the Mod code.
+
+
+=== MCP Data ===
+This software includes data from the Minecraft Coder Pack (MCP), with kind permission
+from them. The license to MCP data is not transitive - distribution of this data by
+third parties requires independent licensing from the MCP team. This data is not
+redistributable without permission from the MCP team.
+
+=== Sharing ===
+I grant permission for some parts of FML to be redistributed outside the terms of the LGPL, for the benefit of
+the minecraft modding community. All contributions to these parts should be licensed under the same additional grant.
+
+-- Runtime patcher --
+License is granted to redistribute the runtime patcher code (src/main/java/net/minecraftforge/fml/common/patcher
+and subdirectories) under any alternative open source license as classified by the OSI (http://opensource.org/licenses)
+
+-- ASM transformers --
+License is granted to redistribute the ASM transformer code (src/main/java/net/minecraftforge/common/asm/ and subdirectories)
+under any alternative open source license as classified by the OSI (http://opensource.org/licenses)
+
+=========================================================================
+This software includes portions from the Apache Maven project at
+http://maven.apache.org/ specifically the ComparableVersion.java code. It is
+included based on guidelines at
+http://www.softwarefreedom.org/resources/2007/gpl-non-gpl-collaboration.html
+with notices intact. The only change is a non-functional change of package name.
+
+This software contains a partial repackaging of javaxdelta, a BSD licensed program for generating
+binary differences and applying them, sourced from the subversion at http://sourceforge.net/projects/javaxdelta/
+authored by genman, heikok, pivot.
+The only changes are to replace some Trove collection types with standard Java collections, and repackaged.
+=========================================================================

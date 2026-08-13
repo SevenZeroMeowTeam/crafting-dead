@@ -1,0 +1,48 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "min": 1,
+        "max": 3
+      },
+      "entries": [
+        {
+          "type": "item",
+          "name": "craftingdead:first_aid_kit",
+          "weight": 3
+        },
+        {
+          "type": "item",
+          "name": "craftingdeadsurvival:water_bottle",
+          "weight": 12
+        },
+        {
+          "type": "item",
+          "name": "craftingdeadsurvival:mre",
+          "weight": 6
+        },
+        {
+          "type": "item",
+          "name": "craftingdead:bandage",
+          "weight": 15
+        },
+        {
+          "type": "item",
+          "name": "craftingdead:binoculars",
+          "weight": 4
+        },
+        {
+          "type": "item",
+          "name": "craftingdead:red_dot_sight",
+          "weight": 2
+        },
+        {
+          "type": "item",
+          "name": "craftingdead:suppressor",
+          "weight": 2
+        }
+      ]
+    }
+  ]
+}

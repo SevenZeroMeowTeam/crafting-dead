@@ -1,0 +1,14 @@
+/.gradle/
+/.settings/
+/bin/
+/build/
+
+/.classpath
+/.project
+
+/.idea
+/crafting-dead-core/.vscode
+/crafting-dead-decoration/.vscode
+/crafting-dead-survival/.vscode
+*.md
+*.log

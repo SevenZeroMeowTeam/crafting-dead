@@ -1,0 +1,23 @@
+{
+  "parent": "forge:item/default",
+  "loader": "forge:separate-perspective",
+  "base": {
+    "parent": "item/generated",
+    "textures": {
+      "layer0": "craftingdead:item/gas_mask"
+    }
+  },
+  "perspectives": {
+    "head": {
+      "parent": "craftingdead:hats/gas_mask",
+      "textures": {
+        "base": "craftingdead:hats/gas_mask"
+      },
+      "transform": {
+        "rotation": [0, 0, 0],
+        "translation": [0.875, -0.45, 0.25],
+        "scale": [1.07, 1.07, 1.07]
+      }
+    }
+  }
+}

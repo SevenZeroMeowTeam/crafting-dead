@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "craftingdead:first_aid_kit",
+    "craftingdeadsurvival:mre",
+    "craftingdeadsurvival:canned_tomato_soup",
+    "craftingdeadsurvival:rice_bag",
+    "craftingdeadsurvival:can_opener",
+    "craftingdead:bandage",
+    "craftingdead:acog_sight",
+    "craftingdead:nv_goggles_hat"
+  ]
+}

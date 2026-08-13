@@ -1,0 +1,231 @@
+/*
+ * Crafting Dead
+ * Copyright (C) 2022  NexusNode LTD
+ *
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
+ *
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
+ *
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
+ */
+
+package com.craftingdead.core.world.action.item;
+
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import org.jetbrains.annotations.Nullable;
+import com.craftingdead.core.world.action.Action;
+import com.craftingdead.core.world.action.ActionType;
+import com.craftingdead.core.world.entity.extension.LivingExtension;
+import com.google.common.base.Predicates;
+import net.minecraft.SharedConstants;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+
+public abstract class ItemActionType<T extends ItemAction>
+    implements ActionType<T> {
+
+  private final boolean triggeredByClient;
+  private final boolean freezeMovement;
+  private final int durationTicks;
+  private final Predicate<ItemStack> heldItemPredicate;
+  private final boolean consumeItem;
+  private final int usageDamage;
+  @Nullable
+  private final Supplier<? extends Item> resultItem;
+  @Nullable
+  private final Supplier<SoundEvent> finishSound;
+  private final float finishSoundVolume;
+  private final float finishSoundPitch;
+  private final boolean consumeItemInCreative;
+  private final boolean useResultItemInCreative;
+
+  protected ItemActionType(Builder<?> builder) {
+    this.triggeredByClient = builder.triggeredByClient;
+    this.freezeMovement = builder.freezeMovement;
+    this.durationTicks = builder.durationTicks;
+    this.heldItemPredicate = builder.heldItemPredicate;
+    this.consumeItem = builder.consumeItem;
+    this.usageDamage = builder.usageDamage;
+    this.resultItem = builder.resultItem;
+    this.finishSound = builder.finishSound;
+    this.finishSoundVolume = builder.finishSoundVolume;
+    this.finishSoundPitch = builder.finishSoundPitch;
+    this.consumeItemInCreative = builder.consumeItemInCreative;
+    this.useResultItemInCreative = builder.useResultItemInCreative;
+  }
+
+  public boolean isFreezeMovement() {
+    return this.freezeMovement;
+  }
+
+  public int getDurationTicks() {
+    return this.durationTicks;
+  }
+
+  public Predicate<ItemStack> getHeldItemPredicate() {
+    return this.heldItemPredicate;
+  }
+
+  public boolean shouldConsumeItem() {
+    return this.consumeItem;
+  }
+
+  public int getUsageDamage() {
+    return this.usageDamage;
+  }
+
+  public Optional<Item> getResultItem() {
+    return Optional.ofNullable(this.resultItem).map(Supplier::get);
+  }
+
+  public Optional<SoundEvent> getFinishSound() {
+    return Optional.ofNullable(this.finishSound).map(Supplier::get);
+  }
+
+  public float getFinishSoundVolume() {
+    return finishSoundVolume;
+  }
+
+  public float getFinishSoundPitch() {
+    return finishSoundPitch;
+  }
+
+  public boolean shouldConsumeItemInCreative() {
+    return this.consumeItemInCreative;
+  }
+
+  public boolean useResultItemInCreative() {
+    return this.useResultItemInCreative;
+  }
+
+  @Override
+  public boolean isTriggeredByClient() {
+    return this.triggeredByClient;
+  }
+
+  public Optional<Action> createBlockAction(LivingExtension<?, ?> performer,
+      UseOnContext context) {
+    return Optional.empty();
+  }
+
+  public Optional<Action> createEntityAction(LivingExtension<?, ?> performer,
+      LivingExtension<?, ?> target, InteractionHand hand) {
+    return Optional.empty();
+  }
+
+  public Optional<Action> createAction(LivingExtension<?, ?> performer, InteractionHand hand) {
+    return Optional.empty();
+  }
+
+  public static abstract class Builder<SELF extends Builder<SELF>> {
+
+    private boolean triggeredByClient;
+    private boolean freezeMovement;
+    private int durationTicks = 32;
+    private Predicate<ItemStack> heldItemPredicate = Predicates.alwaysTrue();
+
+    private boolean consumeItem = true;
+    private int usageDamage = 0;
+    @Nullable
+    private Supplier<? extends Item> resultItem;
+    @Nullable
+    private Supplier<SoundEvent> finishSound;
+    private float finishSoundVolume = 1.0F;
+    private float finishSoundPitch = 1.0F;
+
+    private boolean consumeItemInCreative;
+
+    private boolean useResultItemInCreative = true;
+
+    public SELF setTriggeredByClient(boolean triggeredByClient) {
+      this.triggeredByClient = triggeredByClient;
+      return this.self();
+    }
+
+    public SELF setFreezeMovement(boolean freezeMovement) {
+      this.freezeMovement = freezeMovement;
+      return this.self();
+    }
+
+    public SELF duration(int durationTicks) {
+      this.durationTicks = durationTicks;
+      return this.self();
+    }
+
+    public SELF durationSeconds(float durationSeconds) {
+      return this.duration(Mth.floor(SharedConstants.TICKS_PER_SECOND * durationSeconds));
+    }
+
+    public SELF forItem(Supplier<? extends Item> item) {
+      return this.forItem(itemStack -> itemStack.is(item.get()));
+    }
+
+    public SELF forItem(Predicate<ItemStack> heldItemPredicate) {
+      this.heldItemPredicate = heldItemPredicate;
+      return this.self();
+    }
+
+    public SELF consumeItem(boolean consumeItem) {
+      this.consumeItem = consumeItem;
+      return this.self();
+    }
+
+    public SELF usageDamage(int usageDamage) {
+      this.usageDamage = usageDamage;
+      return this.self();
+    }
+
+    public SELF resultItem(Supplier<? extends Item> resultItem) {
+      this.resultItem = resultItem;
+      return this.self();
+    }
+
+    public SELF finishSound(SoundEvent finishSound) {
+      return this.finishSound(finishSound, this.finishSoundVolume, this.finishSoundPitch);
+    }
+
+    public SELF finishSound(SoundEvent finishSound, float volume, float pitch) {
+      this.finishSound = () -> finishSound;
+      this.finishSoundVolume = volume;
+      this.finishSoundPitch = pitch;
+      return this.self();
+    }
+
+    public SELF finishSound(Supplier<SoundEvent> finishSound, float volume, float pitch) {
+      this.finishSound = finishSound;
+      this.finishSoundVolume = volume;
+      this.finishSoundPitch = pitch;
+      return this.self();
+    }
+
+    public SELF consumeItemInCreative(boolean consumeItemInCreative) {
+      this.consumeItemInCreative = consumeItemInCreative;
+      return this.self();
+    }
+
+    public SELF useResultItemInCreative(boolean useResultItemInCreative) {
+      this.useResultItemInCreative = useResultItemInCreative;
+      return this.self();
+    }
+
+    public abstract ItemActionType<?> build();
+
+    @SuppressWarnings("unchecked")
+    protected SELF self() {
+      return (SELF) this;
+    }
+  }
+}
