@@ -26,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.survival.world.entity.extension.ZombieHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Monster;
@@ -64,7 +65,7 @@ public abstract class ZombieMixin extends Monster {
   }
 
   @Inject(at = @At("RETURN"), method = "populateDefaultEquipmentSlots")
-  public void populateDefaultEquipmentSlots(DifficultyInstance difficulty,
+  public void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty,
       CallbackInfo callbackInfo) {
     var zombie = (Zombie) (Object) this;
     zombie.getCapability(LivingExtension.CAPABILITY).resolve()
