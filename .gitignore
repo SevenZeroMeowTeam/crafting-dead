@@ -13,3 +13,5 @@
 *.md
 !README.md
 *.log
+
+日志.txt
