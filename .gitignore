@@ -15,3 +15,7 @@
 *.log
 
 日志.txt
+
+# 参考源码目录（不纳入构建）
+/crafting-dead-1.18.x-guns/
+/crafting-dead-Medical/
