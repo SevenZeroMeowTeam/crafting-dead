@@ -64,7 +64,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: build-${{ github.run_number }}
-        name: Build #${{ github.run_number }} (Minecraft 1.20.1)
+        name: "Build #${{ github.run_number }} (Minecraft 1.20.1)"
         make_latest: true
         body: |
           自动构建（推送至 `1.20.x` 分支触发）。
