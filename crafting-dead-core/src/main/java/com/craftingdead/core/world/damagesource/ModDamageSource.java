@@ -24,6 +24,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.ItemStack;
 
 public class ModDamageSource {
 
@@ -32,8 +33,12 @@ public class ModDamageSource {
   public static final String BLEEDING = "bleeding";
 
   public static DamageSource gun(LivingEntity source, boolean headshot) {
-    // TODO: Register custom damage types (bullet, bullet.headshot) as data-driven DamageType entries
-    return source.damageSources().mobAttack(source);
+    return gun(source, ItemStack.EMPTY, headshot);
+  }
+
+  public static DamageSource gun(LivingEntity source, ItemStack gunStack, boolean headshot) {
+    return new KillFeedDamageSource(source, gunStack,
+        headshot ? KillFeedEntry.Type.HEADSHOT : KillFeedEntry.Type.NONE);
   }
 
   public static DamageSource grenade(Grenade grenade, @Nullable Entity thrower) {

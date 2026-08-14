@@ -720,7 +720,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     hitEntity.invulnerableTime = 0;
 
     ModDamageSource.hurtWithoutKnockback(hitEntity,
-        ModDamageSource.gun(entity, headshot), damage);
+        ModDamageSource.gun(entity, this.itemStack, headshot), damage);
 
     checkCreateExplosion(this.itemStack, entity, hitPos);
 
@@ -807,7 +807,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     hitEntity.invulnerableTime = 0;
 
     ModDamageSource.hurtWithoutKnockback(hitEntity,
-        ModDamageSource.gun(entity, headshot), damage);
+        ModDamageSource.gun(entity, this.itemStack, headshot), damage);
 
     checkCreateExplosion(this.itemStack, entity, hitPos);
 

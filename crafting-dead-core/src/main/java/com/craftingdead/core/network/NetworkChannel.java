@@ -19,6 +19,7 @@
 package com.craftingdead.core.network;
 
 import com.craftingdead.core.CraftingDead;
+import com.craftingdead.core.network.message.play.AddKillFeedEntryMessage;
 import com.craftingdead.core.network.message.play.BlockDestroyParticleMessage;
 import com.craftingdead.core.network.message.play.BlockDestroyActionMessage;
 import com.craftingdead.core.network.message.play.CancelActionMessage;
@@ -211,6 +212,13 @@ public enum NetworkChannel {
           .encoder(BlockDestroyActionMessage::encode)
           .decoder(BlockDestroyActionMessage::decode)
           .consumerMainThread(BlockDestroyActionMessage::handle)
+          .add();
+
+      simpleChannel
+          .messageBuilder(AddKillFeedEntryMessage.class, 0x18, NetworkDirection.PLAY_TO_CLIENT)
+          .encoder(AddKillFeedEntryMessage::encode)
+          .decoder(AddKillFeedEntryMessage::decode)
+          .consumerMainThread(AddKillFeedEntryMessage::handle)
           .add();
     }
   };

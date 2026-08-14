@@ -22,8 +22,10 @@ import com.craftingdead.core.event.OpenCraftingMenuEvent;
 import com.craftingdead.core.event.OpenEquipmentMenuEvent;
 import com.craftingdead.core.network.NetworkChannel;
 import com.craftingdead.core.network.SynchedData;
+import com.craftingdead.core.network.message.play.AddKillFeedEntryMessage;
 import com.craftingdead.core.network.message.play.EnableCombatModeMessage;
 import com.craftingdead.core.world.action.Action;
+import com.craftingdead.core.world.damagesource.KillFeedProvider;
 import com.craftingdead.core.world.inventory.CraftingMenu;
 import com.craftingdead.core.world.inventory.EquipmentMenu;
 import com.craftingdead.core.world.item.equipment.Equipment;
@@ -234,6 +236,18 @@ final class PlayerExtensionImpl<E extends Player>
         .map(MenuConstructor.class::cast)
         .ifPresent(constructor -> this.entity().openMenu(
             new SimpleMenuProvider(constructor, itemStack.getHoverName())));
+  }
+
+  @Override
+  public boolean handleDeath(DamageSource source) {
+    if (super.handleDeath(source)) {
+      return true;
+    } else if (source instanceof KillFeedProvider provider) {
+      NetworkChannel.PLAY.getSimpleChannel()
+          .send(net.minecraftforge.network.PacketDistributor.ALL.noArg(),
+              new AddKillFeedEntryMessage(provider.createKillFeedEntry(this.entity())));
+    }
+    return false;
   }
 
   @Override
