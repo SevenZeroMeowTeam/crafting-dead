@@ -40,8 +40,7 @@ public class GunConfigurations {
 
   public static final Supplier<IForgeRegistry<GunConfiguration>> registry =
       deferredRegister.makeRegistry(
-          () -> new RegistryBuilder<GunConfiguration>()
-              .disableSaving());
+          () -> new RegistryBuilder<GunConfiguration>());
 
   // ================================================================================
   // Assault Rifles
