@@ -17,6 +17,23 @@
 
 ## 更新日志
 
+### v1.9.0 / v1.2.2 / v1.0.3 / v0.0.3（KillFeed 击杀信息 + CI 自动发布）
+
+**新功能：KillFeed 击杀信息系统**
+- 新增击杀信息 HUD：玩家被击杀时，屏幕左上角显示击杀者、被杀者、
+  武器图标及击杀类型（爆头/穿墙），带淡入淡出动画
+- 新增 `KillFeedEntry` / `KillFeedProvider` / `KillFeedDamageSource`
+  伤害源追踪体系，枪械伤害自动记录击杀信息
+- 新增 `AddKillFeedEntryMessage` 网络消息，服务端广播击杀事件至所有客户端
+- `ModDamageSource.gun()` 升级为 KillFeed 感知的伤害源
+
+**CI/CD 自动化**
+- GitHub Actions 工作流修复：原工作流仅监听 `1.18.x` 分支导致
+  `1.20.x` 推送不触发构建，现已修正为监听 `1.20.x` / `1.18.x` 双分支
+- 推送至 `1.20.x` 后自动构建全部模块并上传 Artifact
+- 构建成功后自动发布至 GitHub Releases（含版本号、提交信息）
+- 支持 `workflow_dispatch` 手动触发构建
+
 ### v1.8.1 / v1.2.1 / v1.0.2 / v0.0.2（1.20.1 适配版）
 
 **崩溃修复**
@@ -178,13 +195,26 @@ git checkout 1.20.x
 
 构建成功后，jar 文件位于各模块的 `build/libs/` 目录：
 
-| 模块 | Jar 文件 |
+| 模块 | Jar 文件（本地构建） |
 |------|----------|
-| Core | `crafting-dead-core-1.20.1-1.8.1.homebaked.jar` |
-| Core (含依赖) | `crafting-dead-core-1.20.1-1.8.1.homebaked-all.jar` |
-| Survival | `crafting-dead-survival-1.20.1-1.2.1.homebaked.jar` |
-| Decoration | `crafting-dead-decoration-1.20.1-1.0.2.homebaked.jar` |
-| WorldGuard | `crafting-dead-worldguard-1.20.1-0.0.2.homebaked.jar` |
+| Core | `crafting-dead-core-1.20.1-1.9.0.homebaked.jar` |
+| Core (含依赖) | `crafting-dead-core-1.20.1-1.9.0.homebaked-all.jar` |
+| Survival | `crafting-dead-survival-1.20.1-1.2.2.homebaked.jar` |
+| Decoration | `crafting-dead-decoration-1.20.1-1.0.3.homebaked.jar` |
+| WorldGuard | `crafting-dead-worldguard-1.20.1-0.0.3.homebaked.jar` |
+
+> CI 构建（GitHub Actions）使用运行编号替代 `homebaked` 后缀，
+> 例如 `crafting-dead-core-1.20.1-1.9.0.42.jar`。
+
+### 持续集成与自动发布
+
+推送到 `1.20.x` 分支后，GitHub Actions 自动执行：
+
+1. **构建** — `./gradlew build` 编译全部四个模块
+2. **Artifact** — 构建产物上传至 Actions 工件（保留 90 天）
+3. **Release** — 自动创建 GitHub Release 并附带全部 jar 文件
+
+下载地址：[Releases](https://github.com/SevenZeroMeowTeam/crafting-dead/releases)
 
 ### 安装到客户端/服务器
 
