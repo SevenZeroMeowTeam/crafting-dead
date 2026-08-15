@@ -40,7 +40,7 @@ public class BleedingMobEffect extends MobEffect {
   @Override
   public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
     if (livingEntity.getHealth() > 1.0F) {
-      livingEntity.hurt(ModDamageSource.bleeding(), 1.0F);
+      livingEntity.hurt(ModDamageSource.bleeding(livingEntity), 1.0F);
     }
   }
 

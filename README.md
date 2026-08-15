@@ -17,6 +17,37 @@
 
 ## 更新日志
 
+### v1.9.2（服务器崩溃修复）
+
+**关键修复：`Missing registry: craftingdead:gun_configuration`**
+- 修复 `GunConfigurations` 注册表未启用 wrapper，导致 Forge 不会将其
+  注入根注册表（`BuiltInRegistries.REGISTRY`），玩家进入服务器时
+  `RegistryAccess.registryOrThrow()` 抛出 "Missing registry" 异常的问题
+- 注册表构建器现通过 `.hasTags()` 启用 wrapper，注册表可被
+  `RegistryAccess` 正常解析，服务器可正常启动且玩家可正常进入
+
+**伤害源修复**
+- 修复 `KillFeedDamageSource` / `ModDamageSource` 使用
+  `RegistryAccess.EMPTY`（不含任何注册表）解析伤害类型导致的潜在崩溃，
+  改为通过实体的 `DamageSources` 从运行时注册表解析
+
+### v1.9.1 / v1.2.3 / v1.0.4 / v0.0.4（CI 稳定性 + 构建维护）
+
+**CI/CD 改进**
+- GitHub Actions 全部升级至 Node 24 运行时（`checkout@v7`、
+  `setup-java@v5`、`upload-artifact@v7`），规避 Node 20 弃用问题
+- 启用 `setup-java` 内置 Gradle 缓存，加速后续构建
+- 修复 Release 名称中 `#` 被 YAML 注释截断的问题
+- Release 说明现包含各模块版本表与提交信息
+
+**代码修复**
+- 移除 `GunConfiguration` 注册表构建器中的 `disableSaving` 调用，
+  确保枪械配置正常保存
+
+**仓库维护**
+- 参考源码目录（`crafting-dead-1.18.x-guns`、`crafting-dead-Medical`）
+  已加入 `.gitignore`，不纳入版本控制
+
 ### v1.9.0 / v1.2.2 / v1.0.3 / v0.0.3（KillFeed 击杀信息 + CI 自动发布）
 
 **新功能：KillFeed 击杀信息系统**
@@ -197,11 +228,11 @@ git checkout 1.20.x
 
 | 模块 | Jar 文件（本地构建） |
 |------|----------|
-| Core | `crafting-dead-core-1.20.1-1.9.0.homebaked.jar` |
-| Core (含依赖) | `crafting-dead-core-1.20.1-1.9.0.homebaked-all.jar` |
-| Survival | `crafting-dead-survival-1.20.1-1.2.2.homebaked.jar` |
-| Decoration | `crafting-dead-decoration-1.20.1-1.0.3.homebaked.jar` |
-| WorldGuard | `crafting-dead-worldguard-1.20.1-0.0.3.homebaked.jar` |
+| Core | `crafting-dead-core-1.20.1-1.9.2.homebaked.jar` |
+| Core (含依赖) | `crafting-dead-core-1.20.1-1.9.2.homebaked-all.jar` |
+| Survival | `crafting-dead-survival-1.20.1-1.2.3.homebaked.jar` |
+| Decoration | `crafting-dead-decoration-1.20.1-1.0.4.homebaked.jar` |
+| WorldGuard | `crafting-dead-worldguard-1.20.1-0.0.4.homebaked.jar` |
 
 > CI 构建（GitHub Actions）使用运行编号替代 `homebaked` 后缀，
 > 例如 `crafting-dead-core-1.20.1-1.9.0.42.jar`。

@@ -18,11 +18,7 @@
 
 package com.craftingdead.core.world.damagesource;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -39,8 +35,10 @@ public class KillFeedDamageSource extends DamageSource implements KillFeedProvid
 
   public KillFeedDamageSource(LivingEntity killer, ItemStack itemStack,
       KillFeedEntry.Type killFeedType) {
-    super(RegistryAccess.EMPTY.registryOrThrow(Registries.DAMAGE_TYPE)
-        .getHolderOrThrow(DamageTypes.MOB_ATTACK));
+    // Use the killer's damage sources to resolve the damage type holder from the
+    // live registry access. RegistryAccess.EMPTY must NOT be used here as it
+    // contains no registries and would throw "Missing registry: minecraft:damage_type".
+    super(killer.damageSources().mobAttack(killer).typeHolder());
     this.killer = killer;
     this.itemStack = itemStack;
     this.killFeedType = killFeedType;

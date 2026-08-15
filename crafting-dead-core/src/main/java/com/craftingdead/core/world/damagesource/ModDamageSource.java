@@ -49,12 +49,10 @@ public class ModDamageSource {
     return grenade.damageSources().generic();
   }
 
-  public static DamageSource bleeding() {
-    return new DamageSource(
-        net.minecraft.core.RegistryAccess.EMPTY.registryOrThrow(
-            net.minecraft.core.registries.Registries.DAMAGE_TYPE)
-            .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.GENERIC))
-        ;
+  public static DamageSource bleeding(LivingEntity entity) {
+    // Resolve the GENERIC damage type holder from the entity's live registry access.
+    // RegistryAccess.EMPTY must NOT be used as it contains no registries.
+    return entity.damageSources().generic();
   }
 
   /**
@@ -64,10 +62,7 @@ public class ModDamageSource {
     if (source != null) {
       return source.damageSources().mobAttack(source);
     }
-    return new DamageSource(
-        net.minecraft.core.RegistryAccess.EMPTY.registryOrThrow(
-            net.minecraft.core.registries.Registries.DAMAGE_TYPE)
-            .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.GENERIC));
+    return null;
   }
 
   /**
