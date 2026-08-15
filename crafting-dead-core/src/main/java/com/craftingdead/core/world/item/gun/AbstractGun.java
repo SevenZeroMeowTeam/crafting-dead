@@ -1025,14 +1025,14 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
   public void deserializeNBT(CompoundTag tag) {
     if (tag.contains("ammoProviderType", Tag.TAG_STRING)) {
       this.setAmmoProvider(AmmoProviderTypes.registry.get().getValue(
-          new ResourceLocation(tag.getString("ammoProviderType"))).create());
+          ResourceLocation.parse(tag.getString("ammoProviderType"))).create());
       this.ammoProvider.deserializeNBT(tag.getCompound("ammoProvider"));
       this.ammoProviderChanged = true;
     }
     this.setAttachments(tag.getList("attachments", Tag.TAG_STRING)
         .stream()
         .map(Tag::getAsString)
-        .map(ResourceLocation::new)
+        .map(ResourceLocation::parse)
         .map(Attachments.registry.get()::getValue)
         .collect(Collectors.toMap(Attachment::getInventorySlot, v -> v)));
     this.setPaintStack(ItemStack.of(tag.getCompound("paintStack")));

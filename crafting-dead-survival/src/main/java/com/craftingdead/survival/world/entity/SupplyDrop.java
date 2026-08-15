@@ -153,7 +153,7 @@ public class SupplyDrop extends Entity implements MenuProvider {
   @Override
   protected void readAdditionalSaveData(CompoundTag compound) {
     if (compound.contains("lootTable", Tag.TAG_STRING)) {
-      this.lootTable = new ResourceLocation(compound.getString("lootTable"));
+      this.lootTable = ResourceLocation.parse(compound.getString("lootTable"));
       this.lootTableSeed = compound.getLong("lootTableSeed");
     } else {
       var items = NonNullList.withSize(this.container.getContainerSize(), ItemStack.EMPTY);

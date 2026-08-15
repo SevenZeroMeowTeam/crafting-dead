@@ -57,6 +57,6 @@ public class SupplyDropRenderer extends EntityRenderer<SupplyDrop> {
 
   @Override
   public ResourceLocation getTextureLocation(SupplyDrop entity) {
-    return new ResourceLocation(CraftingDeadSurvival.ID, "textures/entity/supply_drop.png");
+    return ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "textures/entity/supply_drop.png");
   }
 }

@@ -468,10 +468,10 @@ public class RenderUtil {
 
     if (itemStack.is(Items.TRIDENT)) {
       bakedModel = minecraft.getItemRenderer().getItemModelShaper().getModelManager()
-          .getModel(new ModelResourceLocation(new ResourceLocation("minecraft:trident"), "inventory"));
+          .getModel(new ModelResourceLocation(ResourceLocation.parse("minecraft:trident"), "inventory"));
     } else if (itemStack.is(Items.SPYGLASS)) {
       bakedModel = minecraft.getItemRenderer().getItemModelShaper().getModelManager()
-          .getModel(new ModelResourceLocation(new ResourceLocation("minecraft:spyglass"), "inventory"));
+          .getModel(new ModelResourceLocation(ResourceLocation.parse("minecraft:spyglass"), "inventory"));
     }
 
     poseStack.pushPose();

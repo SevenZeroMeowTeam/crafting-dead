@@ -359,7 +359,7 @@ public final class ProtectionConfig {
 
   private static Optional<ResourceLocation> parseLocation(String value) {
     try {
-      return Optional.of(new ResourceLocation(Objects.requireNonNull(value, "value")));
+      return Optional.of(ResourceLocation.parse(Objects.requireNonNull(value, "value")));
     } catch (IllegalArgumentException e) {
       LOGGER.warn("Invalid resource location '{}' in trauma config", value);
       return Optional.empty();

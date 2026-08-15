@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class ClothingProtectionHandler implements PlayerHandler {
 
   public static final LivingHandlerType<ClothingProtectionHandler> TYPE =
-      new LivingHandlerType<>(new ResourceLocation(CraftingDead.ID, "clothing_protection"));
+      new LivingHandlerType<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "clothing_protection"));
 
   private static final Logger logger = LoggerFactory.getLogger(ClothingProtectionHandler.class);
 

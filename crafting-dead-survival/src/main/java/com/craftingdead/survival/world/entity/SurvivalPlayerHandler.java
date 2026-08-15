@@ -42,7 +42,7 @@ import net.minecraft.world.entity.monster.Zombie;
 public class SurvivalPlayerHandler implements PlayerHandler {
 
   public static final LivingHandlerType<SurvivalPlayerHandler> TYPE = new LivingHandlerType<>(
-      new ResourceLocation(CraftingDeadSurvival.ID, "survival_player"));
+      ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "survival_player"));
 
   /**
    * The % chance of getting infected by a zombie.

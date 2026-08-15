@@ -50,7 +50,6 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -67,21 +66,21 @@ public class ClientDist implements ModDist {
   }
 
   private static final ResourceLocation BLOOD =
-      new ResourceLocation(CraftingDeadSurvival.ID, "textures/gui/blood.png");
+      ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "textures/gui/blood.png");
   private static final ResourceLocation BLOOD_2 =
-      new ResourceLocation(CraftingDeadSurvival.ID, "textures/gui/blood_2.png");
+      ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "textures/gui/blood_2.png");
 
   private final Minecraft minecraft;
 
-  public ClientDist() {
+  public ClientDist(FMLJavaModLoadingContext context) {
     this.minecraft = Minecraft.getInstance();
-    final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    final IEventBus modEventBus = context.getModEventBus();
     modEventBus.addListener(this::handleEntityRenderers);
     modEventBus.addListener(this::handleEntityRenderersAddLayers);
     modEventBus.addListener(this::handleParticleFactoryRegisterEvent);
     modEventBus.addListener(this::handleEntityRenderersLayerDefinitions);
 
-    ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
+    context.registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
 
     // Register event handlers to Forge event bus
     MinecraftForge.EVENT_BUS.register(this);

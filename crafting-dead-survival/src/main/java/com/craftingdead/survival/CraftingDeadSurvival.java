@@ -110,13 +110,12 @@ import net.minecraftforge.event.entity.living.MobSpawnEvent;
 // needs to be reimplemented via data-driven BiomeModifier JSON files.
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.JarVersionLookupHandler;
 import net.minecraftforge.data.event.GatherDataEvent;
 
@@ -147,17 +146,22 @@ public class CraftingDeadSurvival {
 
   private final boolean immerseLoaded = ModList.get().isLoaded("craftingdeadimmerse");
 
-  public CraftingDeadSurvival() {
+  public CraftingDeadSurvival(FMLJavaModLoadingContext context) {
     instance = this;
 
-    this.modDist = DistExecutor.unsafeRunForDist(() -> ClientDist::new, () -> ServerDist::new);
+    final var modEventBus = context.getModEventBus();
 
-    final var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    if (FMLEnvironment.dist.isClient()) {
+      this.modDist = new ClientDist(context);
+    } else {
+      this.modDist = new ServerDist();
+    }
+
     modEventBus.addListener(this::handleCommonSetup);
     modEventBus.addListener(this::handleEntityAttributeCreation);
     modEventBus.addListener(this::handleGatherData);
 
-    ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverConfigSpec);
+    context.registerConfig(ModConfig.Type.SERVER, serverConfigSpec);
 
     MinecraftForge.EVENT_BUS.register(this);
 

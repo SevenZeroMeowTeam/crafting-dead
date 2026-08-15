@@ -40,7 +40,7 @@ public class ItemRendererTypes {
       new ItemRendererType<>(GunItem.class, GunRendererProperties.CODEC, GunRenderer::new));
 
   public static <T extends ItemRendererType<?, ?>> T register(String id, T itemRendererType) {
-    return register(new ResourceLocation(CraftingDead.ID, id), itemRendererType);
+    return register(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, id), itemRendererType);
   }
 
   public static <T extends ItemRendererType<?, ?>> T register(ResourceLocation id,

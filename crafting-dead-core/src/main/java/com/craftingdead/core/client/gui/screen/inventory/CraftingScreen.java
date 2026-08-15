@@ -38,9 +38,9 @@ import org.jetbrains.annotations.NotNull;
 public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu> {
 
   private static final ResourceLocation CRAFTING =
-      new ResourceLocation(CraftingDead.ID, "textures/gui/container/crafting.png");
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/container/crafting.png");
   private static final ResourceLocation EQUIPMENT =
-      new ResourceLocation(CraftingDead.ID, "textures/gui/container/equipment.png");
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/container/equipment.png");
 
   private int oldMouseX;
   private int oldMouseY;

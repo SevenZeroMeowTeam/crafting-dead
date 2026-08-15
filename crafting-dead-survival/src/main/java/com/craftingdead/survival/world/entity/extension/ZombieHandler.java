@@ -59,7 +59,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 public class ZombieHandler implements LivingHandler {
 
   public static final LivingHandlerType<ZombieHandler> TYPE =
-      new LivingHandlerType<>(new ResourceLocation(CraftingDeadSurvival.ID, "zombie"));
+      new LivingHandlerType<>(ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "zombie"));
 
   private static final UUID HEALTH_MODIFIER_BABY_UUID =
       UUID.fromString("69d754ea-1ae3-4684-bb69-51a29de92b9a");
@@ -233,11 +233,11 @@ public class ZombieHandler implements LivingHandler {
   }
 
   protected ResourceLocation createVestLootId(String id) {
-    return new ResourceLocation(CraftingDeadSurvival.ID, "vests/" + id);
+    return ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "vests/" + id);
   }
 
   protected ResourceLocation createBackpackLootId(String id) {
-    return new ResourceLocation(CraftingDeadSurvival.ID, "backpacks/" + id);
+    return ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "backpacks/" + id);
   }
 
   @Override

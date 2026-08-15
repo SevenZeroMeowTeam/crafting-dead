@@ -39,7 +39,7 @@ public final class ProtectionLookup {
   public static final ProtectionLookup INSTANCE = new ProtectionLookup();
 
   private static final ResourceLocation JUGGERNAUT_CLOTHING_ID =
-      new ResourceLocation("craftingdead", "juggernaut_clothing");
+      ResourceLocation.fromNamespaceAndPath("craftingdead", "juggernaut_clothing");
 
   private ProtectionLookup() {
   }

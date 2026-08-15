@@ -35,6 +35,6 @@ public class ModItemTags {
   public static final TagKey<Item> MAGAZINES = bind("magazines");
 
   private static TagKey<Item> bind(String name) {
-    return ItemTags.create(new ResourceLocation(CraftingDead.ID, name));
+    return ItemTags.create(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, name));
   }
 }

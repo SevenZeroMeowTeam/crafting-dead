@@ -133,7 +133,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -167,7 +166,7 @@ public class ClientDist implements ModDist {
   }
 
   private static final ResourceLocation ADRENALINE_SHADER =
-      new ResourceLocation(CraftingDead.ID, "shaders/post/adrenaline.json");
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "shaders/post/adrenaline.json");
 
   private static final Vector3f mutableCameraRotations = new Vector3f();
   private static final MutableVector2f FOV = new MutableVector2f();
@@ -206,8 +205,8 @@ public class ClientDist implements ModDist {
   private float traumaAimStrength;
   private TraumaSeverity lastTraumaSeverity = TraumaSeverity.NONE;
 
-  public ClientDist() {
-    final var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+  public ClientDist(FMLJavaModLoadingContext context) {
+    final var modBus = context.getModEventBus();
     modBus.addListener(this::handleClientSetup);
     modBus.addListener(this::handleParticleFactoryRegisterEvent);
     modBus.addListener(this::handleItemColor);
@@ -221,14 +220,14 @@ public class ClientDist implements ModDist {
     MinecraftForge.EVENT_BUS.register(this);
     // Auto-updater moved to crafting-dead-updater mod (separate optional mod)
     // MinecraftForge.EVENT_BUS.register(new com.craftingdead.core.client.updater.ClientUpdateEventHandler());
-    ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
+    context.registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
 
     this.minecraft = Minecraft.getInstance();
     this.crosshairManager = new CrosshairManager();
     this.itemRenderDispatcher = new ItemRenderDispatcher();
 
     this.ingameGui =
-        new IngameGui(this.minecraft, this, new ResourceLocation(clientConfig.crosshair.get()));
+        new IngameGui(this.minecraft, this, ResourceLocation.parse(clientConfig.crosshair.get()));
     this.cameraManager = new CameraManager();
   }
 
@@ -299,7 +298,7 @@ public class ClientDist implements ModDist {
     if (dead && ServerConfig.instance.killSoundEnabled.get()) {
       // Plays a sound that follows the player
       SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(
-          new ResourceLocation(ClientDist.clientConfig.killSound.get()));
+          ResourceLocation.parse(ClientDist.clientConfig.killSound.get()));
       if (soundEvent != null) {
         this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEvent, 5.0F, 0.3F));
       }
@@ -336,7 +335,7 @@ public class ClientDist implements ModDist {
 
   private void handleConfigReloading(ModConfigEvent.Reloading event) {
     if (event.getConfig().getSpec() == clientConfigSpec) {
-      this.ingameGui.setCrosshairLocation(new ResourceLocation(clientConfig.crosshair.get()));
+      this.ingameGui.setCrosshairLocation(ResourceLocation.parse(clientConfig.crosshair.get()));
     }
   }
 
@@ -879,7 +878,7 @@ public class ClientDist implements ModDist {
     var vertexConsumer = ItemRenderer.getArmorFoilBuffer(
         bufferSource,
         RenderType.armorCutoutNoCull(
-            new ResourceLocation(CraftingDead.ID, "textures/entity/parachute.png")
+            ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/entity/parachute.png")
         ),
         false,
         false

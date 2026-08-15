@@ -39,7 +39,7 @@ public class Attachments {
       DeferredRegister.create(REGISTRY_KEY, CraftingDead.ID);
 
   public static final Supplier<IForgeRegistry<Attachment>> registry =
-      deferredRegister.makeRegistry(RegistryBuilder::new);
+      deferredRegister.makeRegistry(() -> new RegistryBuilder<Attachment>().hasTags());
 
   public static final RegistryObject<Attachment> RED_DOT_SIGHT =
       deferredRegister.register("red_dot_sight",

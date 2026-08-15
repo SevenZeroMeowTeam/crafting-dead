@@ -65,7 +65,7 @@ public class GrenadeRenderer extends EntityRenderer<Grenade> {
 
   @Override
   public ResourceLocation getTextureLocation(Grenade entity) {
-    return new ResourceLocation(net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getNamespace(),
+    return ResourceLocation.fromNamespaceAndPath(net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getNamespace(),
         "textures/entity/grenade/" + net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath() + ".png");
   }
 

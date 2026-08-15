@@ -276,7 +276,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
       } else if (blockState.is(BlockTags.NEEDS_IRON_TOOL)) {
         hitSound = Math.random() > 0.5D ? ModSoundEvents.BULLET_IMPACT_METAL.get()
             : ModSoundEvents.BULLET_IMPACT_METAL2.get();
-      } else if (blockState.is(BlockTags.create(new ResourceLocation("minecraft:impermeable")))) {
+      } else if (blockState.is(BlockTags.create(ResourceLocation.parse("minecraft:impermeable")))) {
         hitSound = ModSoundEvents.BULLET_IMPACT_GLASS.get();
       }
 

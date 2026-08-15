@@ -39,7 +39,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 public class BinocularsItem extends Item {
 
   private static final ResourceLocation SCOPE_OVERLAY_TEXTURE =
-      new ResourceLocation(CraftingDead.ID, "textures/scope/binoculars.png");
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/scope/binoculars.png");
 
   public BinocularsItem(Properties properties) {
     super(properties);

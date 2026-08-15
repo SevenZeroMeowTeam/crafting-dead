@@ -43,7 +43,7 @@ public class ParachuteLayer<T extends LivingEntity, M extends EntityModel<T>>
     extends RenderLayer<T, M> {
 
   private static final ResourceLocation TEXTURE =
-      new ResourceLocation(CraftingDead.ID, "textures/entity/parachute.png");
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/entity/parachute.png");
 
   private final ModelPart model;
 

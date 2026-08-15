@@ -92,7 +92,7 @@ public class AimableGun extends TypedGun implements Scope {
     for (var attachment : this.getAttachments().values()) {
       if (attachment.isScope()) {
         ResourceLocation key = Attachments.registry.get().getKey(attachment);
-        return Optional.of(new ResourceLocation(key.getNamespace(),
+        return Optional.of(ResourceLocation.fromNamespaceAndPath(key.getNamespace(),
             "textures/scope/" + key.getPath() + ".png"));
       }
     }

@@ -45,7 +45,7 @@ import net.minecraft.world.item.ItemStack;
 public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMenu> {
 
   private static final ResourceLocation BACKGROUND =
-      new ResourceLocation(CraftingDead.ID, "textures/gui/container/equipment.png");
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/container/equipment.png");
 
   private int oldMouseX;
   private int oldMouseY;

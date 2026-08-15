@@ -154,7 +154,7 @@ public final class EntityItemAction<T extends LivingExtension<?, ?>> extends Ite
       
       // Infection reduction (remove infection effect with chance)
       // Use ResourceLocation to check for infection effect across modules
-      var infectionEffectLocation = new net.minecraft.resources.ResourceLocation("craftingdead", "infection");
+      var infectionEffectLocation = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("craftingdead", "infection");
       var infectionEffect = net.minecraftforge.registries.ForgeRegistries.MOB_EFFECTS.getValue(infectionEffectLocation);
       if (infectionEffect != null && targetEntity.hasEffect(infectionEffect) && 
           random.nextFloat() < ServerConfig.instance.firstAidKitInfectionReductionChance.get().floatValue()) {

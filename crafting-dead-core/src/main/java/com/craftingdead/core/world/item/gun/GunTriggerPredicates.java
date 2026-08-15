@@ -41,7 +41,7 @@ public class GunTriggerPredicates {
 
   @SuppressWarnings("unchecked")
   public static final Supplier<IForgeRegistry<PredicateRegistryEntry<Gun>>> registry =
-      deferredRegister.makeRegistry(RegistryBuilder::new);
+      deferredRegister.makeRegistry(() -> new RegistryBuilder<PredicateRegistryEntry<Gun>>().hasTags());
 
   public static final Codec<PredicateRegistryEntry<Gun>> CODEC =
       ExtraCodecs.lazyInitializedCodec(() -> registry.get().getCodec());

@@ -67,9 +67,9 @@ public class IngameGui {
   }
 
   private static final ResourceLocation HEALTH =
-      new ResourceLocation(CraftingDead.ID, "textures/gui/health.png");
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/health.png");
   private static final ResourceLocation SHIELD =
-      new ResourceLocation(CraftingDead.ID, "textures/gui/shield.png");
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/shield.png");
 
   private final Minecraft minecraft;
 
@@ -120,7 +120,7 @@ public class IngameGui {
         final var scale = this.lastFlashScale =
             Mth.lerp(partialTicks, this.lastFlashScale, flashIntensity);
         RenderSystem.setShaderTexture(0,
-            new ResourceLocation(CraftingDead.ID, "textures/flash/white_flash.png"));
+            ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/flash/white_flash.png"));
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, flashIntensity - 0.15F);
@@ -282,7 +282,7 @@ public class IngameGui {
         RenderSystem.enableBlend();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
         RenderSystem.setShaderTexture(0,
-            new ResourceLocation(CraftingDead.ID, "textures/gui/headshot.png"));
+            ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/headshot.png"));
         RenderUtil.blit(x + killerNameWidth + 17, y - 1, 12, 12);
         RenderSystem.disableBlend();
         break;
@@ -290,7 +290,7 @@ public class IngameGui {
         RenderSystem.enableBlend();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
         RenderSystem.setShaderTexture(0,
-            new ResourceLocation(CraftingDead.ID, "textures/gui/wallbang.png"));
+            ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/wallbang.png"));
         RenderUtil.blit(x + killerNameWidth + 35, y - 1, 12, 12);
         RenderSystem.disableBlend();
         break;
@@ -298,10 +298,10 @@ public class IngameGui {
         RenderSystem.enableBlend();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
         RenderSystem.setShaderTexture(0,
-            new ResourceLocation(CraftingDead.ID, "textures/gui/wallbang.png"));
+            ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/wallbang.png"));
         RenderUtil.blit(x + killerNameWidth + 35, y - 1, 12, 12);
         RenderSystem.setShaderTexture(0,
-            new ResourceLocation(CraftingDead.ID, "textures/gui/headshot.png"));
+            ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/headshot.png"));
         RenderUtil.blit(x + killerNameWidth + 35 + 14, y - 1, 12, 12);
         RenderSystem.disableBlend();
         break;

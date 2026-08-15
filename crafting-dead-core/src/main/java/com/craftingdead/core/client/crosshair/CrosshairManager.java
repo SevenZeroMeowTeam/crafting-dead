@@ -38,7 +38,7 @@ import net.minecraft.resources.ResourceLocation;
 public class CrosshairManager extends SimplePreparableReloadListener<Map<ResourceLocation, Crosshair>> {
 
   public static final ResourceLocation DEFAULT_CROSSHAIR =
-      new ResourceLocation(CraftingDead.ID, "standard");
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "standard");
 
   private static final Gson gson = new Gson();
 
@@ -56,7 +56,7 @@ public class CrosshairManager extends SimplePreparableReloadListener<Map<Resourc
       ProfilerFiller profiler) {
     ImmutableMap.Builder<ResourceLocation, Crosshair> crosshairs = ImmutableMap.builder();
     for (String domain : resourceManager.getNamespaces()) {
-      ResourceLocation fileLocation = new ResourceLocation(domain, "crosshairs.json");
+      ResourceLocation fileLocation = ResourceLocation.fromNamespaceAndPath(domain, "crosshairs.json");
       resourceManager.getResourceStack(fileLocation)
           .forEach((resource) -> {
             try (InputStreamReader reader = new InputStreamReader(resource.open())) {

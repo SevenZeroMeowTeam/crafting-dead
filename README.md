@@ -17,6 +17,54 @@
 
 ## 更新日志
 
+### v1.9.4 / v1.2.5 / v1.0.6 / v0.0.6（CI 自动构建与 Release 发布稳定版）
+
+**过时 API 清理**
+- 移除全部 `ResourceLocation(String)` / `ResourceLocation(String, String)` 待删除构造函数，
+  迁移至 `ResourceLocation.parse()` / `ResourceLocation.fromNamespaceAndPath()`
+- `@Mod` 主类与客户端分发类改用 `FMLJavaModLoadingContext` 构造器注入，
+  移除 `FMLJavaModLoadingContext.get()` / `ModLoadingContext.get()` 待删除调用
+- `DistExecutor` 客户端分发改为基于 `FMLEnvironment.dist` 的条件判断
+- 各模块配置注册改为通过注入的上下文调用 `registerConfig`
+
+**GitHub Actions 稳定性增强**
+- 修复工作流在 Markdown 变更时被 `paths-ignore` 忽略，导致 README 更新后不触发构建的问题
+- 确保推送至 `1.20.x` / `1.18.x` 时都会执行 `clean build` 与自动发布
+- 发布流程增加 `generate_release_notes` 与构建产物校验，确保 Release 中包含实际 jar 文件
+- 上传产物名称按分支和构建编号区分，避免不同运行记录混淆
+
+**构建与打包修复**
+- 强制执行 `./gradlew clean build --no-daemon`，避免旧缓存导致的构建状态不干净
+- 增加 `if-no-files-found: error`，防止在构建失败时仍然上传空产物
+- 自动打包四个模块的 `.jar`，并发布到 GitHub Releases
+
+**版本更新**
+- `crafting-dead-core` -> `1.9.4`
+- `crafting-dead-survival` -> `1.2.5`
+- `crafting-dead-decoration` -> `1.0.6`
+- `crafting-dead-worldguard` -> `0.0.6`
+
+### v1.9.3 / v1.2.4 / v1.0.5 / v0.0.5（GitHub Actions 自动构建 + Release 发布修复）
+
+**关键修复：GitHub Actions 自动构建与 Release 发布**
+- 修复 GitHub Actions 发布流程仅在 `1.20.x` 分支触发，导致当前
+  `1.18.x` 推送无法自动生成 Release 的问题
+- 构建与发布条件已扩展为同时支持 `1.20.x` / `1.18.x` 分支
+- 标签格式已按分支和运行编号区分，避免多个分支共用同一 Release tag
+- Release 正文已包含分支名、提交信息和各模块版本信息
+
+**注册表修复**
+- 修复自定义 Forge 注册表未启用 wrapper，导致根注册表缺失时出现
+  `Missing registry: craftingdead:...` 异常
+- 相关注册表统一使用 `.hasTags()` 包装，确保 `RegistryAccess` 能正确解析
+- 修复 `GunConfigurations`、`ActionTypes`、`Attachments`、`AmmoProviderTypes`
+  及 `GunTriggerPredicates` 的根注册表注入问题
+
+**伤害源修复**
+- 修复 `KillFeedDamageSource` / `ModDamageSource` 使用
+  `RegistryAccess.EMPTY`（不含任何注册表）解析伤害类型导致的潜在崩溃，
+  改为通过实体的 `DamageSources` 从运行时注册表解析
+
 ### v1.9.2（服务器崩溃修复）
 
 **关键修复：`Missing registry: craftingdead:gun_configuration`**

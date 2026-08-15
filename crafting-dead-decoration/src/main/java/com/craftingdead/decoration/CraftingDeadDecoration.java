@@ -33,11 +33,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.MissingMappingsEvent;
@@ -50,10 +49,12 @@ public class CraftingDeadDecoration {
 
   private static final Logger logger = LogUtils.getLogger();
 
-  public CraftingDeadDecoration() {
-    DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientDist::new);
+  public CraftingDeadDecoration(FMLJavaModLoadingContext context) {
+    if (FMLEnvironment.dist.isClient()) {
+      new ClientDist(context);
+    }
 
-    var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    var modEventBus = context.getModEventBus();
     modEventBus.addListener(this::handleGatherData);
 
     DecorationBlocks.deferredRegister.register(modEventBus);
@@ -82,7 +83,7 @@ public class CraftingDeadDecoration {
     if (event.getKey().equals(ForgeRegistries.ITEMS.getRegistryKey())) {
       var missingMappings = event.getMappings(ForgeRegistries.ITEMS.getRegistryKey(), OLD_ID);
       for (var mapping : missingMappings) {
-        var newKey = new ResourceLocation(ID, mapping.getKey().getPath());
+        var newKey = ResourceLocation.fromNamespaceAndPath(ID, mapping.getKey().getPath());
         var newValue = ForgeRegistries.ITEMS.getValue(newKey);
         if (newValue == null || newValue == Items.AIR) {
           throw new IllegalStateException("Failed to re-map: " + mapping.getKey().toString());
@@ -93,7 +94,7 @@ public class CraftingDeadDecoration {
     } else if (event.getKey().equals(ForgeRegistries.BLOCKS.getRegistryKey())) {
       var missingMappings = event.getMappings(ForgeRegistries.BLOCKS.getRegistryKey(), OLD_ID);
       for (var mapping : missingMappings) {
-        var newKey = new ResourceLocation(ID, mapping.getKey().getPath());
+        var newKey = ResourceLocation.fromNamespaceAndPath(ID, mapping.getKey().getPath());
         var newValue = ForgeRegistries.BLOCKS.getValue(newKey);
         if (newValue == null || newValue == Blocks.AIR) {
           throw new IllegalStateException("Failed to re-map: " + mapping.getKey().toString());

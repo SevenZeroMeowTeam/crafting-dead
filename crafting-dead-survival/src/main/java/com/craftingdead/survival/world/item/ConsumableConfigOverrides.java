@@ -79,7 +79,7 @@ public class ConsumableConfigOverrides {
         if (foodSection instanceof com.electronwill.nightconfig.core.UnmodifiableConfig foodConfig) {
           foodConfig.valueMap().forEach((key, value) -> {
             try {
-              ResourceLocation id = new ResourceLocation(key);
+              ResourceLocation id = ResourceLocation.parse(key);
               if (value instanceof com.electronwill.nightconfig.core.UnmodifiableConfig itemConfig) {
                 Integer nutrition = itemConfig.contains("nutrition") 
                     ? itemConfig.<Number>get("nutrition").intValue() : null;
@@ -102,7 +102,7 @@ public class ConsumableConfigOverrides {
         if (drinkSection instanceof com.electronwill.nightconfig.core.UnmodifiableConfig drinkConfig) {
           drinkConfig.valueMap().forEach((key, value) -> {
             try {
-              ResourceLocation id = new ResourceLocation(key);
+              ResourceLocation id = ResourceLocation.parse(key);
               if (value instanceof Number number) {
                 drinkOverrides.put(id, new DrinkOverride(number.intValue()));
                 logger.debug("Loaded drink override: {} -> hydration={}", id, number.intValue());

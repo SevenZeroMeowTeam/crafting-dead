@@ -3,8 +3,6 @@ name: Crafting Dead
 on:
   push:
     branches: [ 1.20.x, 1.18.x ]
-    paths-ignore:
-      - '**.md'
   pull_request:
     branches: [ 1.20.x, 1.18.x ]
   workflow_dispatch:
@@ -30,20 +28,22 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew clean build --no-daemon
 
     - name: Upload build artifacts
+      if: always()
       uses: actions/upload-artifact@v7
       with:
-        name: crafting-dead
+        name: crafting-dead-${{ github.ref_name }}-${{ github.run_number }}
         path: |
           ./crafting-dead-core/build/libs/*.jar
           ./crafting-dead-survival/build/libs/*.jar
           ./crafting-dead-decoration/build/libs/*.jar
           ./crafting-dead-worldguard/build/libs/*.jar
+        if-no-files-found: error
 
     - name: Read mod versions
-      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/1.20.x'
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/1.20.x' || github.ref == 'refs/heads/1.18.x')
       id: versions
       run: |
         echo "core=$(grep '^mod_version=' crafting-dead-core/gradle.properties | cut -d'=' -f2)" >> "$GITHUB_OUTPUT"
@@ -52,14 +52,15 @@ jobs:
         echo "worldguard=$(grep '^mod_version=' crafting-dead-worldguard/gradle.properties | cut -d'=' -f2)" >> "$GITHUB_OUTPUT"
 
     - name: Publish to GitHub Releases
-      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/1.20.x'
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/1.20.x' || github.ref == 'refs/heads/1.18.x')
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: build-${{ github.run_number }}
-        name: "Build #${{ github.run_number }} (Minecraft 1.20.1)"
+        tag_name: build-${{ github.ref_name }}-${{ github.run_number }}
+        name: "Build #${{ github.run_number }} (${{ github.ref_name }})"
         make_latest: true
+        generate_release_notes: true
         body: |
-          自动构建（推送至 `1.20.x` 分支触发）。
+          自动构建（推送至 `${{ github.ref_name }}` 分支触发）。
 
           | 模块 | 版本 |
           |------|------|
@@ -68,9 +69,10 @@ jobs:
           | crafting-dead-decoration | 1.20.1-${{ steps.versions.outputs.decoration }}.${{ github.run_number }} |
           | crafting-dead-worldguard | 1.20.1-${{ steps.versions.outputs.worldguard }}.${{ github.run_number }} |
 
-          **提交信息**: ${{ github.event.head_commit.message }}
+          **提交信息**: ${{ github.event.head_commit.message || 'N/A' }}
 
           **Commit**: `${{ github.sha }}`
+          **Branch**: `${{ github.ref_name }}`
         files: |
           crafting-dead-core/build/libs/*.jar
           crafting-dead-survival/build/libs/*.jar

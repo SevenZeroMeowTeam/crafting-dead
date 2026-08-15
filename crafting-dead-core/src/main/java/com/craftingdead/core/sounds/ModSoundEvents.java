@@ -174,7 +174,7 @@ public class ModSoundEvents {
   public static final RegistryObject<SoundEvent> GUN_EQUIP = register("gun_equip");
 
   private static RegistryObject<SoundEvent> register(String name) {
-    ResourceLocation registryName = new ResourceLocation(CraftingDead.ID, name);
+    ResourceLocation registryName = ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, name);
     return deferredRegister.register(name, () -> SoundEvent.createVariableRangeEvent(registryName));
   }
 }

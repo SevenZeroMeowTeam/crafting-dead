@@ -45,7 +45,7 @@ public class HandcuffsLayer<T extends Player, M extends EntityModel<T> & ArmedMo
     extends RenderLayer<T, M> {
 
   private static final ResourceLocation TEXTURE_LOCATION =
-      new ResourceLocation(CraftingDead.ID, "textures/entity/handcuffs.png");
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/entity/handcuffs.png");
 
   private final ModelPart left;
   private final ModelPart right;

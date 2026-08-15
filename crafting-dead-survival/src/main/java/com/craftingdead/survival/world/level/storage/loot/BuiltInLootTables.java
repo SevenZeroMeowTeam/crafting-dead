@@ -36,7 +36,7 @@ public class BuiltInLootTables {
       register("supply_drops/military");
 
   private static ResourceLocation register(String location) {
-    return register(new ResourceLocation(CraftingDeadSurvival.ID, location));
+    return register(ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, location));
   }
 
   private static ResourceLocation register(ResourceLocation location) {

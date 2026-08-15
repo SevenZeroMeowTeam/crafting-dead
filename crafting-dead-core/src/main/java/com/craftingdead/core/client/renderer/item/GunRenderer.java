@@ -332,7 +332,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
           z - randomScale * z / 2);
 
       var flashBuffer = bufferSource.getBuffer(RenderType.beaconBeam(
-          new ResourceLocation(CraftingDead.ID, "textures/flash/flash" + texture + ".png"),
+          ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/flash/flash" + texture + ".png"),
           true));
       this.muzzleFlashModel.render(matrixStack, flashBuffer, RenderUtil.FULL_LIGHT,
           packedOverlay, 1.0F, 1.0F, 1.0F, randomScale + 0.5F);
@@ -624,12 +624,12 @@ public class GunRenderer implements CombatSlotItemRenderer {
   }
 
   private static ResourceLocation getAttachmentModelLocation(ResourceLocation attachmentName) {
-    return new ResourceLocation(attachmentName.getNamespace(),
+    return ResourceLocation.fromNamespaceAndPath(attachmentName.getNamespace(),
         "attachment/" + attachmentName.getPath());
   }
 
   private static ResourceLocation getMagazineModelLocation(ResourceLocation magazineName) {
-    return new ResourceLocation(magazineName.getNamespace(), "magazine/" + magazineName.getPath());
+    return ResourceLocation.fromNamespaceAndPath(magazineName.getNamespace(), "magazine/" + magazineName.getPath());
   }
 
   public static LayerDefinition createMuzzleFlashBodyLayer() {

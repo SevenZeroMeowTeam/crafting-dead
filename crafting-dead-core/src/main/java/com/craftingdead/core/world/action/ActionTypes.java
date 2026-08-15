@@ -52,13 +52,13 @@ import net.minecraftforge.registries.RegistryObject;
 public class ActionTypes {
 
   public static final ResourceKey<Registry<ActionType<?>>> REGISTRY_KEY =
-      ResourceKey.createRegistryKey(new ResourceLocation(CraftingDead.ID, "action_type"));
+      ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "action_type"));
 
   public static final DeferredRegister<ActionType<?>> deferredRegister =
       DeferredRegister.create(REGISTRY_KEY, CraftingDead.ID);
 
   public static final Supplier<IForgeRegistry<ActionType<?>>> REGISTRY =
-      deferredRegister.makeRegistry(() -> new RegistryBuilder<>());
+      deferredRegister.makeRegistry(() -> new RegistryBuilder<ActionType<?>>().hasTags());
 
   public static final RegistryObject<ActionType<?>> MAGAZINE_RELOAD =
       deferredRegister.register("magazine_reload",

@@ -61,7 +61,7 @@ public class C4ExplosiveRenderer extends EntityRenderer<Grenade> {
 
   @Override
   public ResourceLocation getTextureLocation(Grenade entity) {
-    return new ResourceLocation(CraftingDead.ID,
+    return ResourceLocation.fromNamespaceAndPath(CraftingDead.ID,
         "textures/entity/grenade/" + net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath() + ".png");
   }
 }

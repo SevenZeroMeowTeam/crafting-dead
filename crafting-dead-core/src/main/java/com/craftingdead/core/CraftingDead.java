@@ -91,13 +91,12 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.JarVersionLookupHandler;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.minecraftforge.data.event.GatherDataEvent;
@@ -126,20 +125,25 @@ public class CraftingDead {
    */
   private final ModDist modDist;
 
-  public CraftingDead() {
+  public CraftingDead(FMLJavaModLoadingContext context) {
     instance = this;
 
-    this.modDist = DistExecutor.unsafeRunForDist(() -> ClientDist::new, () -> ServerDist::new);
+    final var modEventBus = context.getModEventBus();
 
-    final var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    if (FMLEnvironment.dist.isClient()) {
+      this.modDist = new ClientDist(context);
+    } else {
+      this.modDist = new ServerDist();
+    }
+
     modEventBus.addListener(this::handleCommonSetup);
     modEventBus.addListener(this::handleGatherData);
     modEventBus.addListener(this::handleRegisterCapabilities);
-  modEventBus.addListener(this::handleConfigLoading);
-  modEventBus.addListener(this::handleConfigReloading);
+    modEventBus.addListener(this::handleConfigLoading);
+    modEventBus.addListener(this::handleConfigReloading);
 
-    ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.configSpec);
-    ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.configSpec);
+    context.registerConfig(ModConfig.Type.COMMON, CommonConfig.configSpec);
+    context.registerConfig(ModConfig.Type.SERVER, ServerConfig.configSpec);
 
     ModEntityTypes.deferredRegister.register(modEventBus);
     ModItems.deferredRegister.register(modEventBus);

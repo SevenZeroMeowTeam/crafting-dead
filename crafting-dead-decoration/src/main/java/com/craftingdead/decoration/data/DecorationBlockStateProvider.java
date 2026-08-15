@@ -212,6 +212,6 @@ public class DecorationBlockStateProvider extends BlockStateProvider {
   }
 
   private ModelFile model(String path) {
-    return this.models().getExistingFile(new ResourceLocation(CraftingDeadDecoration.ID, path));
+    return this.models().getExistingFile(ResourceLocation.fromNamespaceAndPath(CraftingDeadDecoration.ID, path));
   }
 }

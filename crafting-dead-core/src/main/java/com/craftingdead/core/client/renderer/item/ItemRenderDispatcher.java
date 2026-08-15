@@ -104,7 +104,7 @@ public class ItemRenderDispatcher implements ResourceManagerReloadListener {
 
       var location = entry.getKey();
       var path = location.getPath();
-      var pathNoFileExtension = new ResourceLocation(location.getNamespace(),
+      var pathNoFileExtension = ResourceLocation.fromNamespaceAndPath(location.getNamespace(),
           path.substring(i, path.length() - PATH_SUFFIX_LENGTH));
 
       var item = ForgeRegistries.ITEMS.getValue(pathNoFileExtension);

@@ -241,6 +241,6 @@ public class SurvivalEntityTypes {
 
   private static <T extends Entity> EntityType<T> create(String registryName,
       EntityType.Builder<T> builder) {
-    return builder.build(new ResourceLocation(CraftingDeadSurvival.ID, registryName).toString());
+    return builder.build(ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, registryName).toString());
   }
 }

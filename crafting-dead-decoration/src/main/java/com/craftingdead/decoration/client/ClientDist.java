@@ -23,8 +23,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class ClientDist {
 
-  public ClientDist() {
-    var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+  public ClientDist(FMLJavaModLoadingContext context) {
+    var modEventBus = context.getModEventBus();
     modEventBus.addListener(this::handleClientSetup);
   }
 

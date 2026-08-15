@@ -1,5 +1,6 @@
 /.gradle/
 /.settings/
+/.vscode/
 /bin/
 /build/
 
@@ -13,6 +14,11 @@
 *.md
 !README.md
 *.log
+
+# Java 语言服务器临时文件
+.LCK*
+*.java~
+*~
 
 日志.txt
 

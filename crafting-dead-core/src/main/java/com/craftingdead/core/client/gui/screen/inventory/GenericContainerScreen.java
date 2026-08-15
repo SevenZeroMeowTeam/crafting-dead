@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
 public class GenericContainerScreen extends AbstractContainerScreen<GenericMenu> {
 
   private static final ResourceLocation GENERIC_CONTAINER_TEXTURE =
-      new ResourceLocation(CraftingDead.ID, "textures/gui/container/generic_54.png");
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/container/generic_54.png");
 
   private static final int TITLE_TEXT_COLOUR = 0x000000;
   // Implementations may change this field to another action for the return button
