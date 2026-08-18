@@ -34,7 +34,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class GunTriggerPredicates {
 
   public static final ResourceKey<Registry<PredicateRegistryEntry<Gun>>> REGISTRY_KEY =
-      ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "gun_trigger_predicate"));
+      ResourceKey.createRegistryKey(new ResourceLocation(CraftingDead.ID, "gun_trigger_predicate"));
 
   public static final DeferredRegister<PredicateRegistryEntry<Gun>> deferredRegister =
       DeferredRegister.create(REGISTRY_KEY, CraftingDead.ID);

@@ -43,7 +43,7 @@ public class FollowAttractiveGrenadeGoal extends Goal {
     if (this.goalOwner.hasEffect(ModMobEffects.FLASH_BLINDNESS.get())) {
       return false;
     }
-    List<Grenade> list = this.goalOwner.level().getEntitiesOfClass(Grenade.class,
+    List<Grenade> list = this.goalOwner.getLevel().getEntitiesOfClass(Grenade.class,
         this.goalOwner.getBoundingBox().inflate(20.0D, 5.0D, 20.0D));
 
     Grenade nearestGrenade = null;
@@ -77,7 +77,7 @@ public class FollowAttractiveGrenadeGoal extends Goal {
       return false;
     }
 
-    if (this.grenade.level() != this.goalOwner.level()) {
+    if (this.grenade.getLevel() != this.goalOwner.getLevel()) {
       return false;
     }
 

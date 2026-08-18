@@ -33,7 +33,7 @@ import java.util.function.Supplier;
 public class GunConfigurations {
 
   public static final ResourceKey<Registry<GunConfiguration>> REGISTRY_KEY =
-      ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "gun_configuration"));
+      ResourceKey.createRegistryKey(new ResourceLocation(CraftingDead.ID, "gun_configuration"));
 
   public static final DeferredRegister<GunConfiguration> deferredRegister =
       DeferredRegister.create(REGISTRY_KEY, CraftingDead.ID);

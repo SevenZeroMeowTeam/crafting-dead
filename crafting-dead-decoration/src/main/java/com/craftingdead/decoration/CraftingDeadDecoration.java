@@ -59,23 +59,20 @@ public class CraftingDeadDecoration {
 
     DecorationBlocks.deferredRegister.register(modEventBus);
     DecorationItems.deferredRegister.register(modEventBus);
-    DecorationItems.CREATIVE_MODE_TABS.register(modEventBus);
 
     MinecraftForge.EVENT_BUS.addListener(this::onMissingMappings);
   }
 
   private void handleGatherData(GatherDataEvent event) {
     var generator = event.getGenerator();
-    var packOutput = generator.getPackOutput();
     var existingFileHelper = event.getExistingFileHelper();
-    var lookupProvider = event.getLookupProvider();
     if (event.includeClient()) {
-      generator.addProvider(true, new DecorationBlockModelProvider(packOutput, existingFileHelper));
-      generator.addProvider(true, new DecorationBlockStateProvider(packOutput, existingFileHelper));
-      generator.addProvider(true, new DecorationItemModelProvider(packOutput, existingFileHelper));
+      generator.addProvider(true, new DecorationBlockModelProvider(generator, existingFileHelper));
+      generator.addProvider(true, new DecorationBlockStateProvider(generator, existingFileHelper));
+      generator.addProvider(true, new DecorationItemModelProvider(generator, existingFileHelper));
     } else if (event.includeServer()) {
-      generator.addProvider(true, new DecorationLootTableProvider(packOutput));
-      generator.addProvider(true, new DecorationRecipeProvider(packOutput));
+      generator.addProvider(true, new DecorationLootTableProvider(generator));
+      generator.addProvider(true, new DecorationRecipeProvider(generator));
     }
   }
 
@@ -83,7 +80,7 @@ public class CraftingDeadDecoration {
     if (event.getKey().equals(ForgeRegistries.ITEMS.getRegistryKey())) {
       var missingMappings = event.getMappings(ForgeRegistries.ITEMS.getRegistryKey(), OLD_ID);
       for (var mapping : missingMappings) {
-        var newKey = ResourceLocation.fromNamespaceAndPath(ID, mapping.getKey().getPath());
+        var newKey = new ResourceLocation(ID, mapping.getKey().getPath());
         var newValue = ForgeRegistries.ITEMS.getValue(newKey);
         if (newValue == null || newValue == Items.AIR) {
           throw new IllegalStateException("Failed to re-map: " + mapping.getKey().toString());
@@ -94,7 +91,7 @@ public class CraftingDeadDecoration {
     } else if (event.getKey().equals(ForgeRegistries.BLOCKS.getRegistryKey())) {
       var missingMappings = event.getMappings(ForgeRegistries.BLOCKS.getRegistryKey(), OLD_ID);
       for (var mapping : missingMappings) {
-        var newKey = ResourceLocation.fromNamespaceAndPath(ID, mapping.getKey().getPath());
+        var newKey = new ResourceLocation(ID, mapping.getKey().getPath());
         var newValue = ForgeRegistries.BLOCKS.getValue(newKey);
         if (newValue == null || newValue == Blocks.AIR) {
           throw new IllegalStateException("Failed to re-map: " + mapping.getKey().toString());

@@ -202,7 +202,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
 
     if (!entity.isSilent() && shootSound != null) {
       // Sounds have to be played on the main thread (unfortunately)
-      this.minecraft.execute(() -> entity.level().playLocalSound(
+      this.minecraft.execute(() -> entity.getLevel().playLocalSound(
           entity.getX(), entity.getY(), entity.getZ(), shootSound,
           entity.getSoundSource(), farAway && amplifyDistantSound ? 8.0F : 1.0F, 1.0F, true));
     }
@@ -230,7 +230,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
       return;
     }
 
-    final Level level = hitEntity.level();
+    final Level level = hitEntity.getLevel();
 
     if (headshot) {
       final int particleCount = 12;
@@ -262,7 +262,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
   public void handleHitBlock(LivingExtension<?, ?> living,
       BlockHitResult result, BlockState blockState, boolean playSound) {
     Entity entity = living.entity();
-    Level level = entity.level();
+    Level level = entity.getLevel();
     Vec3 location = result.getLocation();
 
     if (playSound) {
@@ -276,7 +276,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
       } else if (blockState.is(BlockTags.NEEDS_IRON_TOOL)) {
         hitSound = Math.random() > 0.5D ? ModSoundEvents.BULLET_IMPACT_METAL.get()
             : ModSoundEvents.BULLET_IMPACT_METAL2.get();
-      } else if (blockState.is(BlockTags.create(ResourceLocation.parse("minecraft:impermeable")))) {
+      } else if (blockState.is(BlockTags.create(new ResourceLocation("minecraft:impermeable")))) {
         hitSound = ModSoundEvents.BULLET_IMPACT_GLASS.get();
       }
 

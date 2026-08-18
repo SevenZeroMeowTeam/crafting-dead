@@ -66,23 +66,23 @@ public class UpgradeMagazineRecipeBuilder {
 
   public void save(Consumer<FinishedRecipe> consumer, String id) {
     ResourceLocation resourcelocation = ForgeRegistries.ITEMS.getKey(this.nextTier);
-    if ((ResourceLocation.parse(id)).equals(resourcelocation)) {
+    if ((new ResourceLocation(id)).equals(resourcelocation)) {
       throw new IllegalStateException(
           "Shapeless Recipe " + id + " should remove its 'save' argument");
     } else {
-      this.save(consumer, ResourceLocation.parse(id));
+      this.save(consumer, new ResourceLocation(id));
     }
   }
 
   public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
     this.ensureValid(id);
-    this.advancement.parent(ResourceLocation.parse("recipes/root"))
+    this.advancement.parent(new ResourceLocation("recipes/root"))
         .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
         .rewards(AdvancementRewards.Builder.recipe(id))
         .requirements(RequirementsStrategy.OR);
     consumer.accept(new UpgradeMagazineRecipeBuilder.Result(id, this.nextTier,
         this.group == null ? "" : this.group, this.magazine, this.advancement,
-        ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "recipes/"
+        new ResourceLocation(id.getNamespace(), "recipes/"
             + "misc" + "/" + id.getPath())));
   }
 

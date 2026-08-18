@@ -20,7 +20,8 @@ package com.craftingdead.core.client.gui.widget.button;
 
 import java.util.function.Function;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -36,7 +37,7 @@ public class CompositeButton extends Button {
   private final int atlasYInactive;
 
   private CompositeButton(Builder builder) {
-    super(builder.x, builder.y, builder.width, builder.height, builder.text, builder.action, Button.DEFAULT_NARRATION);
+    super(builder.x, builder.y, builder.width, builder.height, builder.text, builder.action);
     this.textureLocation = builder.textureLocation;
     this.atlasX = builder.atlasX;
     this.atlasY = builder.atlasY;
@@ -52,7 +53,7 @@ public class CompositeButton extends Button {
   }
 
   @Override
-  public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY,
+  public void renderButton(PoseStack poseStack, int mouseX, int mouseY,
       float partialTicks) {
     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
     RenderSystem.setShaderTexture(0, this.textureLocation);
@@ -61,14 +62,15 @@ public class CompositeButton extends Button {
     RenderSystem.enableDepthTest();
     if (this.isActive()) {
       if (this.isHoveredOrFocused()) {
-        guiGraphics.blit(this.textureLocation, this.getX(), this.getY(), this.atlasXHover, this.atlasYHover, this.width,
-            this.height);
+        this.blit(poseStack, this.x, this.y, this.atlasXHover, this.atlasYHover,
+            this.width, this.height);
       } else {
-        guiGraphics.blit(this.textureLocation, this.getX(), this.getY(), this.atlasX, this.atlasY, this.width, this.height);
+        this.blit(poseStack, this.x, this.y, this.atlasX, this.atlasY, this.width,
+            this.height);
       }
     } else {
-      guiGraphics.blit(this.textureLocation, this.getX(), this.getY(), this.atlasXInactive, this.atlasYInactive, this.width,
-          this.height);
+      this.blit(poseStack, this.x, this.y, this.atlasXInactive, this.atlasYInactive,
+          this.width, this.height);
     }
   }
 

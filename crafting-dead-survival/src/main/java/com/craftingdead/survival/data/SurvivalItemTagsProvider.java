@@ -18,31 +18,27 @@
 
 package com.craftingdead.survival.data;
 
-import java.util.concurrent.CompletableFuture;
 import com.craftingdead.core.tags.ModItemTags;
 import com.craftingdead.core.world.item.ModItems;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.tags.SurvivalItemTags;
 import com.craftingdead.survival.world.item.SurvivalItems;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class SurvivalItemTagsProvider extends ItemTagsProvider {
 
-  public SurvivalItemTagsProvider(PackOutput output,
-      CompletableFuture<HolderLookup.Provider> lookupProvider,
-      CompletableFuture<TagsProvider.TagLookup<net.minecraft.world.level.block.Block>> blockTags,
+  public SurvivalItemTagsProvider(DataGenerator generator,
+      BlockTagsProvider blockTagsProvider,
       ExistingFileHelper existingFileHelper) {
-    super(output, lookupProvider, blockTags, CraftingDeadSurvival.ID, existingFileHelper);
+    super(generator, blockTagsProvider, CraftingDeadSurvival.ID, existingFileHelper);
   }
 
   @Override
-  public void addTags(HolderLookup.Provider provider) {
+  public void addTags() {
     this.tag(ModItemTags.SYRINGES).add(SurvivalItems.RBI_SYRINGE.get(),
         SurvivalItems.CURE_SYRINGE.get());
 

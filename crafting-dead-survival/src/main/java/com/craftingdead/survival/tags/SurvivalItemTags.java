@@ -47,6 +47,6 @@ public class SurvivalItemTags {
   public static final TagKey<Item> SWAT_ZOMBIE_BACKPACK_LOOT = bind("swat_zombie_backpack_loot");
 
   private static TagKey<Item> bind(String name) {
-    return ItemTags.create(ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, name));
+    return ItemTags.create(new ResourceLocation(CraftingDeadSurvival.ID, name));
   }
 }

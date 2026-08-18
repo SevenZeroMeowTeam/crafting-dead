@@ -32,7 +32,7 @@ import net.minecraft.resources.ResourceLocation;
 public class SurvivalPlayerHandler implements PlayerHandler {
   
   public static final LivingHandlerType<SurvivalPlayerHandler> TYPE = 
-      new LivingHandlerType<>(ResourceLocation.fromNamespaceAndPath("craftingdeadimmerse", "survival_player"));
+      new LivingHandlerType<>(new ResourceLocation("craftingdeadimmerse", "survival_player"));
 
   public SurvivalPlayerHandler(PlayerExtension<?> player) {
     // Stub constructor

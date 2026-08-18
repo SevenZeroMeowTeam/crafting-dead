@@ -26,7 +26,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.TransientCraftingContainer;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +44,7 @@ public class CraftingMenu extends AbstractContainerMenu {
   public CraftingMenu(int id, PlayerExtension<?> player) {
     super(ModMenuTypes.CRAFTING.get(), id);
     this.player = player;
-    this.craftingGrid = new TransientCraftingContainer(this, 2, 2);
+    this.craftingGrid = new CraftingContainer(this, 2, 2);
     this.resultSlot = new ResultContainer();
 
     this.setupCraftingSlots();
@@ -121,11 +121,11 @@ public class CraftingMenu extends AbstractContainerMenu {
       var stack = slot.getItem();
       itemstack = stack.copy();
       if (index == 4) { // RESULT_SLOT
-        var level = player.level();
+        var level = player.getLevel();
         var recipeOpt = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, craftingGrid, level);
         if (recipeOpt.isPresent()) {
           var recipe = recipeOpt.get();
-          var result = recipe.assemble(craftingGrid, level.registryAccess()).copy();
+          var result = recipe.assemble(craftingGrid).copy();
           while (true) {
             if (!this.moveItemStackTo(result.copy(), 5, 41, true)) {
               break;
@@ -149,7 +149,7 @@ public class CraftingMenu extends AbstractContainerMenu {
             if (!recipe.matches(craftingGrid, level)) {
               break;
             }
-            result = recipe.assemble(craftingGrid, level.registryAccess()).copy();
+            result = recipe.assemble(craftingGrid).copy();
           }
           this.updateResult();
         }
@@ -208,17 +208,17 @@ public class CraftingMenu extends AbstractContainerMenu {
    * Updates the result slot with the current crafting recipe's output.
    */
   public void updateResult() {
-    if (player.entity().level().isClientSide()) {
+    if (player.entity().getLevel().isClientSide()) {
       return;
     }
 
-    var level = player.entity().level();
+    var level = player.entity().getLevel();
     var recipeManager = level.getRecipeManager();
     var recipeOpt = recipeManager.getRecipeFor(RecipeType.CRAFTING, craftingGrid, level);
 
     if (recipeOpt.isPresent()) {
       var recipe = recipeOpt.get();
-      var result = recipe.assemble(craftingGrid, level.registryAccess());
+      var result = recipe.assemble(craftingGrid);
       this.resultSlot.setItem(0, result);
     } else {
       this.resultSlot.setItem(0, ItemStack.EMPTY);
@@ -232,7 +232,7 @@ public class CraftingMenu extends AbstractContainerMenu {
    * Handles updating the crafting grid when the result is taken.
    */
   private void handleCraftingResultTaken() {
-    var level = player.entity().level();
+    var level = player.entity().getLevel();
     var recipeManager = level.getRecipeManager();
     var recipeOpt = recipeManager.getRecipeFor(RecipeType.CRAFTING, craftingGrid, level);
 

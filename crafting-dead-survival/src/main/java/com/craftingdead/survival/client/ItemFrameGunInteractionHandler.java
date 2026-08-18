@@ -45,7 +45,7 @@ public class ItemFrameGunInteractionHandler {
   @SubscribeEvent
   public void onEntityInteract(PlayerInteractEvent.EntityInteractSpecific event) {
     // Only process on client side
-    if (event.getEntity().level().isClientSide()) {
+    if (event.getEntity().getLevel().isClientSide()) {
       // Check if the interacted entity is an ItemFrame
       if (event.getTarget() instanceof ItemFrame itemFrame) {
         ItemStack frameItem = itemFrame.getItem();

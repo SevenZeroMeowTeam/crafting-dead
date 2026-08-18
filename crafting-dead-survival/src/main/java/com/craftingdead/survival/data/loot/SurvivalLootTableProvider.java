@@ -20,28 +20,32 @@ package com.craftingdead.survival.data.loot;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import com.craftingdead.survival.world.level.storage.loot.BuiltInLootTables;
 import com.google.common.collect.Sets;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.PackOutput;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 public class SurvivalLootTableProvider extends LootTableProvider {
 
-  public SurvivalLootTableProvider(PackOutput output) {
-    super(output, Set.of(), List.of(
-        new LootTableProvider.SubProviderEntry(SupplyDropLoot::new,
-            LootContextParamSets.CHEST),
-        new LootTableProvider.SubProviderEntry(SurvivalBlockLoot::new,
-            LootContextParamSets.BLOCK),
-        new LootTableProvider.SubProviderEntry(SurvivalEntityLoot::new,
-            LootContextParamSets.ENTITY)));
+  public SurvivalLootTableProvider(DataGenerator generator) {
+    super(generator);
+  }
+
+  @Override
+  protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
+    return List.of(
+        Pair.of(SupplyDropLoot::new, LootContextParamSets.CHEST),
+        Pair.of(SurvivalBlockLoot::new, LootContextParamSets.BLOCK),
+        Pair.of(SurvivalEntityLoot::new, LootContextParamSets.ENTITY));
   }
 
   @Override

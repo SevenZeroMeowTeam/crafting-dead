@@ -28,7 +28,6 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
@@ -42,7 +41,7 @@ public class UpgradeMagazineRecipe extends CustomRecipe {
   private final ItemStack nextTier;
 
   public UpgradeMagazineRecipe(ResourceLocation id, Ingredient magazine, ItemStack nextTier) {
-    super(id, CraftingBookCategory.MISC);
+    super(id);
     this.magazine = magazine;
     this.nextTier = nextTier;
   }
@@ -67,7 +66,7 @@ public class UpgradeMagazineRecipe extends CustomRecipe {
   }
 
   @Override
-  public ItemStack assemble(CraftingContainer inventory, RegistryAccess registryAccess) {
+  public ItemStack assemble(CraftingContainer inventory) {
     Magazine magazine = CapabilityUtil.getOrThrow(
         Magazine.CAPABILITY, inventory.getItem(MIDDLE_SLOT_INDEX), Magazine.class);
 

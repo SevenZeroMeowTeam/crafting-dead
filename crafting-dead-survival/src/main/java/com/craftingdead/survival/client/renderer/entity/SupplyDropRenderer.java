@@ -23,8 +23,7 @@ import com.craftingdead.survival.client.model.SupplyDropModel;
 import com.craftingdead.survival.client.model.geom.SurvivalModelLayers;
 import com.craftingdead.survival.world.entity.SupplyDrop;
 import com.mojang.blaze3d.vertex.PoseStack;
-import org.joml.Vector3f;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -45,9 +44,9 @@ public class SupplyDropRenderer extends EntityRenderer<SupplyDrop> {
       PoseStack poseStack, MultiBufferSource bufferSource, int p_225623_6_) {
 
     poseStack.translate(0, 1.51D, 0);
-    poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
+    poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
 
-    this.model.parachute.visible = entity.fallDistance > 0 && !entity.onGround();
+    this.model.parachute.visible = entity.fallDistance > 0 && !entity.isOnGround();
 
     var vertexConsumer =
         bufferSource.getBuffer(this.model.renderType(this.getTextureLocation(entity)));
@@ -57,6 +56,6 @@ public class SupplyDropRenderer extends EntityRenderer<SupplyDrop> {
 
   @Override
   public ResourceLocation getTextureLocation(SupplyDrop entity) {
-    return ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "textures/entity/supply_drop.png");
+    return new ResourceLocation(CraftingDeadSurvival.ID, "textures/entity/supply_drop.png");
   }
 }

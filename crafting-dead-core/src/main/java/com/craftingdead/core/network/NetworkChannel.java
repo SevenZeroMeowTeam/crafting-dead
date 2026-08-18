@@ -50,7 +50,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public enum NetworkChannel {
 
-  PLAY(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "play")) {
+  PLAY(new ResourceLocation(CraftingDead.ID, "play")) {
     @Override
     public void registerMessages(SimpleChannel simpleChannel) {
       simpleChannel

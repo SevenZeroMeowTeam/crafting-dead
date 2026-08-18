@@ -18,33 +18,17 @@
 
 package com.craftingdead.survival.data.loot;
 
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import com.craftingdead.core.world.item.ModItems;
-import com.craftingdead.survival.world.item.SurvivalItems;
 import com.craftingdead.survival.world.level.block.SurvivalBlocks;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.loot.BlockLootSubProvider;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.flag.FeatureFlags;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
-public class SurvivalBlockLoot extends BlockLootSubProvider {
-
-  protected SurvivalBlockLoot() {
-    super(Set.of(), FeatureFlags.REGISTRY.allFlags());
-  }
+public class SurvivalBlockLoot extends BlockLoot {
 
   @Override
-  protected void generate() {
+  protected void addTables() {
     this.dropSelf(SurvivalBlocks.CIVILIAN_LOOT_GENERATOR.get());
     this.dropSelf(SurvivalBlocks.RARE_CIVILIAN_LOOT_GENERATOR.get());
     this.dropSelf(SurvivalBlocks.MEDICAL_LOOT_GENERATOR.get());

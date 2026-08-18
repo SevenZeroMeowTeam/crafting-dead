@@ -147,7 +147,7 @@ public class EquipmentMenu extends AbstractContainerMenu {
   @Override
   public void removed(Player player) {
     super.removed(player);
-    if (!player.level().isClientSide()) {
+    if (!player.getLevel().isClientSide()) {
       this.clearContainer(player, this.craftingContainer);
       this.clearContainer(player, this.outputContainer);
     }

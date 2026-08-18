@@ -121,7 +121,7 @@ public class ClothingItem extends EquipmentItem {
   public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag nbt) {
     return CapabilityUtil.provider(
         () -> new SimpleClothing(this.attributeModifiers, this.fireImmunity, this.enhancesSwimming,
-            ResourceLocation.fromNamespaceAndPath(
+            new ResourceLocation(
                 Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this)).getNamespace(),
                 "textures/clothing/"
                     + Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this)).getPath() + "_" + "default" + ".png")),
@@ -144,7 +144,7 @@ public class ClothingItem extends EquipmentItem {
   @Override
   public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack itemStack,
       Player player, @NotNull LivingEntity targetEntity, @NotNull InteractionHand hand) {
-    if (!player.level().isClientSide()) {
+    if (!player.getLevel().isClientSide()) {
       var performer = PlayerExtension.getOrThrow(player);
       var target = LivingExtension.getOrThrow(targetEntity);
       if (this.getActionType().createEntityAction(performer, target, hand)
@@ -159,7 +159,7 @@ public class ClothingItem extends EquipmentItem {
   @Override
   public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player,
       @NotNull InteractionHand hand) {
-    if (!player.level().isClientSide()) {
+    if (!player.getLevel().isClientSide()) {
       var performer = PlayerExtension.getOrThrow(player);
       var hitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
       if (hitResult.getType() == HitResult.Type.BLOCK

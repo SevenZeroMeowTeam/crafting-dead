@@ -59,7 +59,7 @@ public class Skin {
   }
 
   public ResourceLocation getTextureLocation(ResourceLocation gunName) {
-    return ResourceLocation.fromNamespaceAndPath(this.getName().getNamespace(),
+    return new ResourceLocation(this.getName().getNamespace(),
         "gun/" + gunName.getPath() + "_" + this.getName().getPath());
   }
 }

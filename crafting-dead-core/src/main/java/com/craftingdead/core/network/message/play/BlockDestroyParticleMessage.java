@@ -41,8 +41,8 @@ public record BlockDestroyParticleMessage(BlockPos pos, BlockState state) {
     ctx.get().enqueueWork(() -> {
       var player = Minecraft.getInstance().player;
       if (player != null) {
-        var state = player.level().getBlockState(msg.pos);
-        player.level().addDestroyBlockEffect(msg.pos, state);
+        var state = player.getLevel().getBlockState(msg.pos);
+        player.getLevel().addDestroyBlockEffect(msg.pos, state);
       }
     });
     ctx.get().setPacketHandled(true);

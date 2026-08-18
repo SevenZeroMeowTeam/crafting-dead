@@ -39,7 +39,7 @@ public final class ProtectionLookup {
   public static final ProtectionLookup INSTANCE = new ProtectionLookup();
 
   private static final ResourceLocation JUGGERNAUT_CLOTHING_ID =
-      ResourceLocation.fromNamespaceAndPath("craftingdead", "juggernaut_clothing");
+      new ResourceLocation("craftingdead", "juggernaut_clothing");
 
   private ProtectionLookup() {
   }
@@ -71,7 +71,7 @@ public final class ProtectionLookup {
       if (helmetProfile.stunThreshold() > 0.0F && incomingEnergy > helmetProfile.stunThreshold()) {
         forcedSevere = true;
       }
-      if (!entity.level().isClientSide()) {
+      if (!entity.getLevel().isClientSide()) {
         helmetDurabilityLoss = applyDurabilityLoss(helmetStack, helmetProfile, helmetAbsorbed,
             entity, EquipmentSlot.HEAD);
       }
@@ -87,7 +87,7 @@ public final class ProtectionLookup {
       float share = Math.min(energy * 0.15F, vestProfile.stoppingPower() * 0.5F);
       vestAbsorbed = Math.min(energy, share);
       energy = Math.max(0.0F, energy - vestAbsorbed);
-      if (!entity.level().isClientSide()) {
+      if (!entity.getLevel().isClientSide()) {
         vestDurabilityLoss = applyDurabilityLoss(vestStack, vestProfile, vestAbsorbed, entity,
             EquipmentSlot.CHEST);
       }

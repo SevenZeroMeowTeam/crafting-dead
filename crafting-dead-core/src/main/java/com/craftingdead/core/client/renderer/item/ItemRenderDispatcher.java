@@ -41,7 +41,7 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -77,7 +77,7 @@ public class ItemRenderDispatcher implements ResourceManagerReloadListener {
     return this.renderers.get(item);
   }
 
-  public boolean renderItem(ItemStack itemStack, ItemDisplayContext transformType,
+  public boolean renderItem(ItemStack itemStack, ItemTransforms.TransformType transformType,
       @Nullable LivingExtension<?, ?> living, PoseStack poseStack, MultiBufferSource bufferSource,
       int packedLight, int packedOverlay) {
     var renderer = this.renderers.get(itemStack.getItem());
@@ -104,7 +104,7 @@ public class ItemRenderDispatcher implements ResourceManagerReloadListener {
 
       var location = entry.getKey();
       var path = location.getPath();
-      var pathNoFileExtension = ResourceLocation.fromNamespaceAndPath(location.getNamespace(),
+      var pathNoFileExtension = new ResourceLocation(location.getNamespace(),
           path.substring(i, path.length() - PATH_SUFFIX_LENGTH));
 
       var item = ForgeRegistries.ITEMS.getValue(pathNoFileExtension);

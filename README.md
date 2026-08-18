@@ -11,11 +11,45 @@
 | 分支 | Minecraft 版本 | Forge 版本 | 状态 |
 |------|----------------|------------|------|
 | `1.20.x` | **1.20.1** | **47.4.22** | ✅ 活跃维护 |
+| `1.19.x` | **1.19.2** | **43.5.2** | ✅ 活跃维护 |
 | `1.18.x` | 1.18.2 | 40.2.0 | ⏸ 归档 |
 
 ---
 
 ## 更新日志
+
+### v1.9.4-1.19.2 / v1.2.5-1.19.2 / v1.0.6-1.19.2（1.19.2 移植版）
+
+**1.19.2 适配（Forge 43.5.2）**
+
+基于 `1.20.x` 代码库反向移植至 Minecraft **1.19.2** / Forge **43.5.2**，
+创建独立 `1.19.x` 分支，涵盖以下主要 API 差异适配：
+
+- `ResourceLocation` 构造函数：`parse()` / `fromNamespaceAndPath()` 在 1.19.2 不存在，
+  全部恢复为 `new ResourceLocation(ns, path)` / `new ResourceLocation(str)`
+- 注册表系统：`BuiltInRegistries` 恢复为 `net.minecraft.core.Registry`；
+  `Skins` 自定义注册表适配 1.19.2 的 `MappedRegistry` 三参构造
+- 伤害系统：恢复 `DamageSource` / `EntityDamageSource` 直接构造，
+  `Level.explode` 恢复七参签名（无 `DamageSource` 参数），
+  移除 `isIndirect()` 改用 `getDirectEntity() != getEntity()`
+- 创造模式物品栏：`CreativeModeTab` 恢复匿名类 + `makeIcon()` / `fillItemList()` 写法
+- 渲染与数学库：恢复 `com.mojang.math.Vector3f` / `Quaternion`（1.19.2 无 `org.joml` 依赖）
+- GUI 渲染：`GuiGraphics` 恢复为 `PoseStack` + `GuiComponent` 静态方法，
+  `renderEntityInInventory` 恢复浮点角度签名，`blit` 恢复 7 参实例方法
+- 物品展示：`ItemDisplayContext` 恢复为 `ItemTransforms.TransformType`
+- 数据生成：`LootParams` 恢复为 `LootContext`，`BlockTagsProvider` 恢复为
+  `net.minecraft.data.tags` 包，`LootContextParamSet` 显式导入
+- 事件系统：`MobSpawnEvent.FinalizeSpawn` 恢复为 `LivingSpawnEvent.SpecialSpawn`
+- 方块属性：`Properties.of()` 恢复为带 `Material` 参数的版本，
+  `MapColor` / `mapColor()` 恢复为 `MaterialColor` / `color()`，
+  `ButtonBlock` 恢复 `StoneButtonBlock`（1.19.2 无 `BlockSetType`）
+- 移除 `crafting-dead-worldguard` 模块（其反射代码依赖 1.18.2 CraftBukkit 类，无法移植）
+- GitHub Actions 工作流与 README 分支表已加入 `1.19.x` 分支支持
+
+**模块版本**
+- `crafting-dead-core` -> `1.9.4`
+- `crafting-dead-survival` -> `1.2.5`
+- `crafting-dead-decoration` -> `1.0.6`
 
 ### v1.9.4 / v1.2.5 / v1.0.6 / v0.0.6（CI 自动构建与 Release 发布稳定版）
 

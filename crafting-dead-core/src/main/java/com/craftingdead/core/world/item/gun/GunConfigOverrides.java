@@ -86,7 +86,7 @@ public class GunConfigOverrides {
         try {
           String fileName = file.getName();
           String gunId = fileName.substring(0, fileName.length() - 5); // Remove .json
-          ResourceLocation id = ResourceLocation.fromNamespaceAndPath("craftingdead", gunId);
+          ResourceLocation id = new ResourceLocation("craftingdead", gunId);
           
           JsonElement json = JsonParser.parseReader(new FileReader(file));
           var result = GunConfiguration.DIRECT_CODEC.parse(JsonOps.INSTANCE, json);

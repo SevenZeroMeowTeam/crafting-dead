@@ -68,7 +68,7 @@ public class MultiActionItem extends Item {
   @Override
   public InteractionResult interactLivingEntity(ItemStack itemStack, Player player,
       LivingEntity targetEntity, InteractionHand hand) {
-    if (!player.level().isClientSide()) {
+    if (!player.getLevel().isClientSide()) {
       var performer = PlayerExtension.getOrThrow(player);
       var target = LivingExtension.getOrThrow(targetEntity);
       // Try each action type until one succeeds
@@ -86,7 +86,7 @@ public class MultiActionItem extends Item {
 
   @Override
   public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-    if (!player.level().isClientSide()) {
+    if (!player.getLevel().isClientSide()) {
       var performer = PlayerExtension.getOrThrow(player);
       var hitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
       

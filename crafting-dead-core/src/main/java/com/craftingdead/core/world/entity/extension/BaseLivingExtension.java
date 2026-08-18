@@ -480,7 +480,7 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
 
   @Override
   public void setCrouching(boolean crouching, boolean sendUpdate) {
-    if (!this.entity.onGround()) {
+    if (!this.entity.isOnGround()) {
       return;
     }
     this.crouching = crouching;

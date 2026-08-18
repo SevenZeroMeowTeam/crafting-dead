@@ -29,6 +29,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
@@ -61,21 +62,21 @@ public class FireGrenadeEntity extends Grenade implements ExplosionSource {
   @Override
   public void activatedChanged(boolean activated) {
     if (activated) {
-      if (!this.level().isClientSide()) {
+      if (!this.getLevel().isClientSide()) {
         this.kill();
         var fireRadius = ServerConfig.instance.explosivesFireGrenadeRadius.get().floatValue();
         // Option added to disable this feature to prevent potential abuse for movement boosts
         if (ServerConfig.instance.enableFireGrenadeSecondaryExplosion.get()) {
-          this.level().explode(this, this.createDamageSource(), null,
+          this.getLevel().explode(this,
               this.getX(), this.getY() + this.getBbHeight(), this.getZ(), fireRadius, true,
-              Level.ExplosionInteraction.valueOf(ServerConfig.instance.explosivesFireGrenadeExplosionMode.get().name()));
+              Explosion.BlockInteraction.valueOf(ServerConfig.instance.explosivesFireGrenadeExplosionMode.get().name()));
         }
 
         BlockPos.betweenClosedStream(this.blockPosition().offset(-(int)Math.ceil(fireRadius), 0, -(int)Math.ceil(fireRadius)),
             this.blockPosition().offset((int)Math.ceil(fireRadius), 0, (int)Math.ceil(fireRadius))).forEach(blockPos -> {
-              if (this.level().getBlockState(blockPos).isAir()) {
+              if (this.getLevel().getBlockState(blockPos).isAir()) {
                 if (Math.random() <= 0.8D) {
-                  this.level().setBlockAndUpdate(blockPos, Blocks.FIRE.defaultBlockState());
+                  this.getLevel().setBlockAndUpdate(blockPos, Blocks.FIRE.defaultBlockState());
                 }
               }
             });

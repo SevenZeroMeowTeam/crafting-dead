@@ -18,6 +18,7 @@
 
 package com.craftingdead.survival;
 
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeConfigSpec;
 
@@ -244,7 +245,7 @@ public class ServerConfig {
   // ================================================================================
 
   public final ForgeConfigSpec.BooleanValue pipeBombEnabled;
-  public final ForgeConfigSpec.EnumValue<Level.ExplosionInteraction> pipeBombBlockInteraction;
+  public final ForgeConfigSpec.EnumValue<Explosion.BlockInteraction> pipeBombBlockInteraction;
   public final ForgeConfigSpec.DoubleValue pipeBombRadius;
   public final ForgeConfigSpec.DoubleValue pipeBombKnockbackMultiplier;
   public final ForgeConfigSpec.DoubleValue pipeBombDamageMultiplier;
@@ -1076,7 +1077,7 @@ public class ServerConfig {
               "NONE: No block interaction, blocks will remain unchanged",
               "BREAK: Blocks are broken, they will be dropped when exploded",
               "DESTROY: Blocks are destroyed, nothing will be dropped and only a crater will be left")
-          .defineEnum("pipeBombBlockInteraction", Level.ExplosionInteraction.NONE);
+          .defineEnum("pipeBombBlockInteraction", Explosion.BlockInteraction.NONE);
       this.pipeBombRadius = builder
           .translation("options.craftingdeadsurvival.server.explosives.pipe_bomb.radius")
           .comment("The explosion radius (in blocks), it tells how big the explosion should be")

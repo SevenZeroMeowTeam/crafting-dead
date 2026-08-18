@@ -29,6 +29,6 @@ public class ModBlockTags {
   public static final TagKey<Block> BULLETS_PASS_THROUGH = bind("bullets_pass_through");
 
   private static TagKey<Block> bind(String name) {
-    return BlockTags.create(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, name));
+    return BlockTags.create(new ResourceLocation(CraftingDead.ID, name));
   }
 }

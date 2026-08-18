@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class ClothingProtectionHandler implements PlayerHandler {
 
   public static final LivingHandlerType<ClothingProtectionHandler> TYPE =
-      new LivingHandlerType<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "clothing_protection"));
+      new LivingHandlerType<>(new ResourceLocation(CraftingDead.ID, "clothing_protection"));
 
   private static final Logger logger = LoggerFactory.getLogger(ClothingProtectionHandler.class);
 
@@ -184,13 +184,13 @@ public class ClothingProtectionHandler implements PlayerHandler {
     }
 
     // Check for projectiles
-    if (source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE) || sourceMsg.contains("arrow") 
+    if (source.isProjectile() || sourceMsg.contains("arrow")
         || sourceMsg.contains("bullet")) {
       return DamageType.PROJECTILE;
     }
 
     // Environmental damage (fire, fall, drown, etc.)
-    if (source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE) || source.is(net.minecraft.tags.DamageTypeTags.IS_FALL) || sourceMsg.contains("fall")
+    if (source.isFire() || sourceMsg.contains("fall")
         || sourceMsg.contains("drown") || sourceMsg.contains("lava")) {
       return DamageType.ENVIRONMENTAL;
     }

@@ -87,8 +87,7 @@ import com.craftingdead.core.world.item.gun.skin.Paint;
 import com.craftingdead.core.world.item.gun.skin.Skins;
 import com.craftingdead.core.world.item.scope.Scope;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import org.joml.Vector3f;
+import com.mojang.math.Vector3f;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -166,7 +165,7 @@ public class ClientDist implements ModDist {
   }
 
   private static final ResourceLocation ADRENALINE_SHADER =
-      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "shaders/post/adrenaline.json");
+      new ResourceLocation(CraftingDead.ID, "shaders/post/adrenaline.json");
 
   private static final Vector3f mutableCameraRotations = new Vector3f();
   private static final MutableVector2f FOV = new MutableVector2f();
@@ -227,19 +226,16 @@ public class ClientDist implements ModDist {
     this.itemRenderDispatcher = new ItemRenderDispatcher();
 
     this.ingameGui =
-        new IngameGui(this.minecraft, this, ResourceLocation.parse(clientConfig.crosshair.get()));
+        new IngameGui(this.minecraft, this, new ResourceLocation(clientConfig.crosshair.get()));
     this.cameraManager = new CameraManager();
   }
 
   @Override
   public RegistryAccess registryAccess() {
     var minecraft = Minecraft.getInstance();
-    if (FMLEnvironment.dist.isDedicatedServer() && minecraft.getSingleplayerServer() != null) {
-      return minecraft.getSingleplayerServer().registryAccess();
-    } else if (FMLEnvironment.dist.isClient() && minecraft.player != null) {
-      return minecraft.player.connection.registryAccess();
+    if (minecraft.level != null) {
+      return minecraft.level.registryAccess();
     }
-
     return ModDist.super.registryAccess();
   }
 
@@ -298,7 +294,7 @@ public class ClientDist implements ModDist {
     if (dead && ServerConfig.instance.killSoundEnabled.get()) {
       // Plays a sound that follows the player
       SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(
-          ResourceLocation.parse(ClientDist.clientConfig.killSound.get()));
+          new ResourceLocation(ClientDist.clientConfig.killSound.get()));
       if (soundEvent != null) {
         this.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(soundEvent, 5.0F, 0.3F));
       }
@@ -335,7 +331,7 @@ public class ClientDist implements ModDist {
 
   private void handleConfigReloading(ModConfigEvent.Reloading event) {
     if (event.getConfig().getSpec() == clientConfigSpec) {
-      this.ingameGui.setCrosshairLocation(ResourceLocation.parse(clientConfig.crosshair.get()));
+      this.ingameGui.setCrosshairLocation(new ResourceLocation(clientConfig.crosshair.get()));
     }
   }
 
@@ -657,8 +653,9 @@ public class ClientDist implements ModDist {
 
     var heldStack = player.mainHandItem();
     var gun = heldStack.getCapability(Gun.CAPABILITY).orElse(null);
-    this.ingameGui.renderOverlay(player, heldStack, gun, event.getGuiGraphics(),
-        event.getGuiGraphics().guiWidth(), event.getGuiGraphics().guiHeight(),
+    var window = event.getWindow();
+    this.ingameGui.renderOverlay(player, heldStack, gun, event.getPoseStack(),
+        window.getGuiScaledWidth(), window.getGuiScaledHeight(),
         event.getPartialTick());
   }
 
@@ -675,9 +672,9 @@ public class ClientDist implements ModDist {
       }
     }
 
-    this.lastPitch = Mth.lerp(0.1F, this.lastPitch, mutableCameraRotations.x);
-    this.lastYaw = Mth.lerp(0.1F, this.lastYaw, mutableCameraRotations.y);
-    this.lastRoll = Mth.lerp(0.1F, this.lastRoll, mutableCameraRotations.z);
+    this.lastPitch = Mth.lerp(0.1F, this.lastPitch, mutableCameraRotations.x());
+    this.lastYaw = Mth.lerp(0.1F, this.lastYaw, mutableCameraRotations.y());
+    this.lastRoll = Mth.lerp(0.1F, this.lastRoll, mutableCameraRotations.z());
     mutableCameraRotations.set(0.0F, 0.0F, 0.0F);
     event.setPitch(event.getPitch() + this.lastPitch);
     event.setYaw(event.getYaw() + this.lastYaw);
@@ -873,12 +870,12 @@ public class ClientDist implements ModDist {
       int packedLight) {
     poseStack.pushPose();
     poseStack.translate(0.0D, -1.08D, -1.0D);
-    poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
+    poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
 
     var vertexConsumer = ItemRenderer.getArmorFoilBuffer(
         bufferSource,
         RenderType.armorCutoutNoCull(
-            ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/entity/parachute.png")
+            new ResourceLocation(CraftingDead.ID, "textures/entity/parachute.png")
         ),
         false,
         false

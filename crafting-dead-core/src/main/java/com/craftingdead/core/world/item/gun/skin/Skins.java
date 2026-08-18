@@ -35,64 +35,64 @@ public class Skins {
   public static final ResourceKey<Registry<Skin>> SKINS = createRegistryKey("skins");
 
   public static final WritableRegistry<Skin> REGISTRY =
-      new MappedRegistry<>(SKINS, Lifecycle.stable());
+      new MappedRegistry<Skin>(SKINS, Lifecycle.stable(), null);
 
   public static final ResourceKey<Skin> VULCAN =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "vulcan"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "vulcan"));
 
   public static final ResourceKey<Skin> ASMO =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "asmo"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "asmo"));
 
   public static final ResourceKey<Skin> CANDY_APPLE =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "candy_apple"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "candy_apple"));
 
   public static final ResourceKey<Skin> CYREX =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "cyrex"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "cyrex"));
 
   public static final ResourceKey<Skin> DIAMOND =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "diamond"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "diamond"));
 
   public static final ResourceKey<Skin> DRAGON =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "dragon"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "dragon"));
 
   public static final ResourceKey<Skin> FADE =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "fade"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "fade"));
 
   public static final ResourceKey<Skin> FURY =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "fury"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "fury"));
 
   public static final ResourceKey<Skin> GEM =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "gem"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "gem"));
 
   public static final ResourceKey<Skin> INFERNO =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "inferno"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "inferno"));
 
   public static final ResourceKey<Skin> RUBY =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "ruby"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "ruby"));
 
   public static final ResourceKey<Skin> SCORCHED =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "scorched"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "scorched"));
 
   public static final ResourceKey<Skin> SLAUGHTER =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "slaughter"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "slaughter"));
 
   public static final ResourceKey<Skin> UV =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "uv"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "uv"));
 
   public static final ResourceKey<Skin> HYPER_BEAST =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "hyper_beast"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "hyper_beast"));
 
   public static final ResourceKey<Skin> EMPEROR_DRAGON =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "emperor_dragon"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "emperor_dragon"));
 
   public static final ResourceKey<Skin> NUCLEAR_WINTER =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "nuclear_winter"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "nuclear_winter"));
 
   public static final ResourceKey<Skin> MONARCH =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "monarch"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "monarch"));
 
   public static final ResourceKey<Skin> LOVELACE =
-      ResourceKey.create(SKINS, ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "lovelace"));
+      ResourceKey.create(SKINS, new ResourceLocation(CraftingDead.ID, "lovelace"));
 
   static {
     register(VULCAN, ModItems.AK47);
@@ -117,7 +117,7 @@ public class Skins {
   }
 
   private static <T> ResourceKey<Registry<T>> createRegistryKey(String name) {
-    return ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, name));
+    return ResourceKey.createRegistryKey(new ResourceLocation(CraftingDead.ID, name));
   }
 
   private static void register(ResourceKey<Skin> location, RegistryObject<?>... guns) {

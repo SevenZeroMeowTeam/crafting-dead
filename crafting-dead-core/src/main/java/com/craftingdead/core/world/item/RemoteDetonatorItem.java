@@ -49,7 +49,7 @@ public class RemoteDetonatorItem extends Item {
     player.startUsingItem(hand);
 
     if (level instanceof ServerLevel serverLevel) {
-      serverLevel.playSound(null, player.blockPosition(), SoundEvents.UI_BUTTON_CLICK.value(),
+      serverLevel.playSound(null, player.blockPosition(), SoundEvents.UI_BUTTON_CLICK,
           SoundSource.PLAYERS, 0.8F, 1.2F);
 
       serverLevel.getEntities(player,

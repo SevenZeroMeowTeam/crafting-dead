@@ -61,7 +61,7 @@ public class FlashGrenadeEntity extends Grenade {
     if (activated) {
       this.flash();
     } else {
-      if (!this.level().isClientSide()) {
+      if (!this.getLevel().isClientSide()) {
         this.kill();
       }
     }
@@ -86,15 +86,15 @@ public class FlashGrenadeEntity extends Grenade {
   public void onMotionStop(int stopsCount) {}
 
   private void flash() {
-    if (this.level().isClientSide()) {
-      this.level().addParticle(new FlashParticleOptions(1F, 1F, 1F, 2F), this.getX(),
+    if (this.getLevel().isClientSide()) {
+      this.getLevel().addParticle(new FlashParticleOptions(1F, 1F, 1F, 2F), this.getX(),
           this.getY(), this.getZ(), 0D, 0D, 0D);
       CraftingDead.getInstance().getClientDist().checkApplyFlashEffects(this);
     } else {
       this.playSound(SoundEvents.GENERIC_EXPLODE, 3F, 1.2F);
 
       var flashRange = ServerConfig.instance.explosivesFlashRadius.get();
-      this.level().getEntities(this, this.getBoundingBox().inflate(flashRange),
+      this.getLevel().getEntities(this, this.getBoundingBox().inflate(flashRange),
           (entity) -> entity instanceof LivingEntity && !(entity instanceof Player))
           .stream()
           .map(entity -> (LivingEntity) entity)

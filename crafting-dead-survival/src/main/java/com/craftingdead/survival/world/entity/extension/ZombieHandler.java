@@ -33,7 +33,7 @@ import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.tags.SurvivalItemTags;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -50,7 +50,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -59,7 +59,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 public class ZombieHandler implements LivingHandler {
 
   public static final LivingHandlerType<ZombieHandler> TYPE =
-      new LivingHandlerType<>(ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "zombie"));
+      new LivingHandlerType<>(new ResourceLocation(CraftingDeadSurvival.ID, "zombie"));
 
   private static final UUID HEALTH_MODIFIER_BABY_UUID =
       UUID.fromString("69d754ea-1ae3-4684-bb69-51a29de92b9a");
@@ -149,7 +149,7 @@ public class ZombieHandler implements LivingHandler {
   protected Optional<Item> getRandomItem(TagKey<Item> tagKey, float probability) {
     var random = this.extension.random();
     return random.nextFloat() < probability
-        ? BuiltInRegistries.ITEM.getTag(tagKey)
+        ? Registry.ITEM.getTag(tagKey)
             .flatMap(tag -> tag.getRandomElement(random))
             .map(Holder::value)
         : Optional.empty();
@@ -167,11 +167,11 @@ public class ZombieHandler implements LivingHandler {
       return ItemStack.EMPTY;
     }
     var level = (ServerLevel) this.extension.level();
-    var lootTable = level.getServer().getLootData().getLootTable(location);
+    var lootTable = level.getServer().getLootTables().get(location);
     if (lootTable == LootTable.EMPTY) {
       return vestStack;
     }
-    var lootParams = new LootParams.Builder(level)
+    var lootParams = new LootContext.Builder(level)
         .withParameter(LootContextParams.ORIGIN,
             this.extension.entity().position())
         .create(LootContextParamSets.CHEST);
@@ -194,11 +194,11 @@ public class ZombieHandler implements LivingHandler {
       return ItemStack.EMPTY;
     }
     var level = (ServerLevel) this.extension.level();
-    var lootTable = level.getServer().getLootData().getLootTable(location);
+    var lootTable = level.getServer().getLootTables().get(location);
     if (lootTable == LootTable.EMPTY) {
       return backpackStack;
     }
-    var lootParams = new LootParams.Builder(level)
+    var lootParams = new LootContext.Builder(level)
         .withParameter(LootContextParams.ORIGIN,
             this.extension.entity().position())
         .create(LootContextParamSets.CHEST);
@@ -233,11 +233,11 @@ public class ZombieHandler implements LivingHandler {
   }
 
   protected ResourceLocation createVestLootId(String id) {
-    return ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "vests/" + id);
+    return new ResourceLocation(CraftingDeadSurvival.ID, "vests/" + id);
   }
 
   protected ResourceLocation createBackpackLootId(String id) {
-    return ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "backpacks/" + id);
+    return new ResourceLocation(CraftingDeadSurvival.ID, "backpacks/" + id);
   }
 
   @Override
