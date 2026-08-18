@@ -18,14 +18,30 @@
 
 package com.craftingdead.survival.world.damagesource;
 
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.LivingEntity;
 
 public class SurvivalDamageSource {
 
-  public static final DamageSource INFECTION = new DamageSource(
-      RegistryAccess.EMPTY.registryOrThrow(Registries.DAMAGE_TYPE)
-          .getHolderOrThrow(DamageTypes.GENERIC));
+  public static final ResourceKey<DamageType> INFECTION_TYPE =
+      ResourceKey.create(Registries.DAMAGE_TYPE,
+          ResourceLocation.fromNamespaceAndPath("craftingdeadsurvival", "infection"));
+
+  /**
+   * Creates the infection damage source at runtime, resolving the damage type holder
+   * from the entity's live registry access. The damage_type registry is data-driven
+   * (loaded from datapacks), so it must NOT be looked up via a static/frozen
+   * RegistryAccess — that only contains static registries and would throw
+   * "Missing registry: minecraft:damage_type".
+   */
+  public static DamageSource infection(LivingEntity entity) {
+    var holder = entity.level().registryAccess()
+        .registryOrThrow(Registries.DAMAGE_TYPE)
+        .getHolderOrThrow(INFECTION_TYPE);
+    return new DamageSource(holder);
+  }
 }

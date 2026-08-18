@@ -35,7 +35,7 @@ public class InfectionMobEffect extends MobEffect {
   @Override
   public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
     if (livingEntity.getHealth() > 1.0F) {
-      livingEntity.hurt(SurvivalDamageSource.INFECTION, 1.0F);
+      livingEntity.hurt(SurvivalDamageSource.infection(livingEntity), 1.0F);
     }
     return true;
   }

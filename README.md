@@ -276,14 +276,13 @@ git checkout 1.20.x
 
 | 模块 | Jar 文件（本地构建） |
 |------|----------|
-| Core | `crafting-dead-core-1.20.1-1.9.2.homebaked.jar` |
-| Core (含依赖) | `crafting-dead-core-1.20.1-1.9.2.homebaked-all.jar` |
-| Survival | `crafting-dead-survival-1.20.1-1.2.3.homebaked.jar` |
-| Decoration | `crafting-dead-decoration-1.20.1-1.0.4.homebaked.jar` |
-| WorldGuard | `crafting-dead-worldguard-1.20.1-0.0.4.homebaked.jar` |
+| Core | `crafting-dead-core-1.21.1-1.9.4.homebaked.jar` |
+| Survival | `crafting-dead-survival-1.21.1-1.2.6.homebaked.jar` |
+| Decoration | `crafting-dead-decoration-1.21.1-1.0.6.homebaked.jar` |
+| WorldGuard | `crafting-dead-worldguard-1.21.1-0.0.6.homebaked.jar` |
 
 > CI 构建（GitHub Actions）使用运行编号替代 `homebaked` 后缀，
-> 例如 `crafting-dead-core-1.20.1-1.9.0.42.jar`。
+> 例如 `crafting-dead-core-1.21.1-1.9.4.42.jar`。
 
 ### 持续集成与自动发布
 
