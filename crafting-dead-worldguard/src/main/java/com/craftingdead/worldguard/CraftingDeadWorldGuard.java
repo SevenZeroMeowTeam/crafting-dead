@@ -44,6 +44,7 @@ import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -59,9 +60,6 @@ public class CraftingDeadWorldGuard extends JavaPlugin {
   private static final MethodHandle getWorld;
   private static final MethodHandle getBukkitEntity;
   private static final MethodHandle getHandle;
-  private static final MethodHandle getEffect;
-  private static final MethodHandle hasEffect;
-  private static final MethodHandle removeEffect;
 
   public static final StateFlag INFECTION = new StateFlag("infection", true);
   public static final StateFlag BROKEN_LEGS = new StateFlag("broken-legs", true);
@@ -74,14 +72,17 @@ public class CraftingDeadWorldGuard extends JavaPlugin {
 
   static {
     try {
-      var craftWorld = Class.forName("org.bukkit.craftbukkit.v1_18_R2.CraftWorld");
+      // 1.20.1 CraftBukkit package (v1_20_R1). These bridge methods only exist at
+      // runtime on hybrid servers (Arclight/Mohist) that inject them into the
+      // vanilla classes, so they must be resolved reflectively.
+      var craftWorld = Class.forName("org.bukkit.craftbukkit.v1_20_R1.CraftWorld");
       var lookup = MethodHandles.publicLookup();
       getWorld = lookup.findVirtual(
           Level.class,
           "getWorld",
           MethodType.methodType(craftWorld));
 
-      var craftEntity = Class.forName("org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity");
+      var craftEntity = Class.forName("org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity");
       getBukkitEntity = lookup.findVirtual(
           Entity.class,
           "getBukkitEntity",
@@ -90,16 +91,6 @@ public class CraftingDeadWorldGuard extends JavaPlugin {
           craftEntity,
           "getHandle",
           MethodType.methodType(Entity.class));
-
-      hasEffect = lookup.findVirtual(LivingEntity.class, "m_21023_",
-          MethodType.methodType(boolean.class,
-              Class.forName("net.minecraft.world.effect.MobEffectList")));
-      removeEffect = lookup.findVirtual(LivingEntity.class, "m_21195_",
-          MethodType.methodType(boolean.class,
-              Class.forName("net.minecraft.world.effect.MobEffectList")));
-
-      getEffect = lookup.findVirtual(MobEffectInstance.class, "m_19544_",
-          MethodType.methodType(Class.forName("net.minecraft.world.effect.MobEffectList")));
 
     } catch (Throwable t) {
       throw new ExceptionInInitializerError(t);
@@ -268,28 +259,16 @@ public class CraftingDeadWorldGuard extends JavaPlugin {
     }
   }
 
-  private static Object getEffect(MobEffectInstance effectInstance) {
-    try {
-      return getEffect.invoke(effectInstance);
-    } catch (Throwable e) {
-      throw new RuntimeException(e);
-    }
+  private static MobEffect getEffect(MobEffectInstance effectInstance) {
+    return effectInstance.getEffect();
   }
 
-  private static boolean hasEffect(LivingEntity entity, Object effect) {
-    try {
-      return (boolean) hasEffect.invoke(entity, effect);
-    } catch (Throwable e) {
-      throw new RuntimeException(e);
-    }
+  private static boolean hasEffect(LivingEntity entity, MobEffect effect) {
+    return entity.hasEffect(effect);
   }
 
-  private static boolean removeEffect(LivingEntity entity, Object effect) {
-    try {
-      return (boolean) removeEffect.invoke(entity, effect);
-    } catch (Throwable e) {
-      throw new RuntimeException(e);
-    }
+  private static boolean removeEffect(LivingEntity entity, MobEffect effect) {
+    return entity.removeEffect(effect);
   }
 
   public static Player toEntity(LocalPlayer player) {
