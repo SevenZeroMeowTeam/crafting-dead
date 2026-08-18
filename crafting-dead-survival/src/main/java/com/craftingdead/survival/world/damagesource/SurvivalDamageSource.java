@@ -18,14 +18,9 @@
 
 package com.craftingdead.survival.world.damagesource;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 
 public class SurvivalDamageSource {
 
-  public static final DamageSource INFECTION = new DamageSource(
-      RegistryAccess.EMPTY.registryOrThrow(Registries.DAMAGE_TYPE)
-          .getHolderOrThrow(DamageTypes.GENERIC));
+  public static final DamageSource INFECTION = new DamageSource("generic");
 }

@@ -30,6 +30,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 
 public class DecoyGrenadeEntity extends Grenade {
@@ -53,7 +54,7 @@ public class DecoyGrenadeEntity extends Grenade {
   }
 
   private Holder<GunConfiguration> getRandomProperties() {
-    return this.level().registryAccess()
+    return this.getLevel().registryAccess()
         .registryOrThrow(GunConfigurations.REGISTRY_KEY)
         .getRandom(this.random)
         .get();
@@ -69,11 +70,11 @@ public class DecoyGrenadeEntity extends Grenade {
   @Override
   public void activatedChanged(boolean activated) {
     if (!activated) {
-      if (!this.level().isClientSide()) {
+      if (!this.getLevel().isClientSide()) {
         this.kill();
-        this.level().explode(this, this.createDamageSource(), null,
+        this.getLevel().explode(this,
             this.getX(), this.getY() + this.getBbHeight(), this.getZ(), 1.3F, false,
-            Level.ExplosionInteraction.NONE);
+            Explosion.BlockInteraction.NONE);
       }
     } else {
       this.playFakeShoot();
@@ -92,12 +93,12 @@ public class DecoyGrenadeEntity extends Grenade {
       return;
     }
 
-    if (!this.level().isClientSide()) {
+    if (!this.getLevel().isClientSide()) {
       if (this.random.nextInt(20) == 0 && this.canShoot()) {
         this.playFakeShoot();
       }
     } else {
-      this.level().addParticle(ParticleTypes.SMOKE, true, this.getX(),
+      this.getLevel().addParticle(ParticleTypes.SMOKE, true, this.getX(),
           this.getY() + 0.4D, this.getZ(), 0, 0, 0);
     }
   }

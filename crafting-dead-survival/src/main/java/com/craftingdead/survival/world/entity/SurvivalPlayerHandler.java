@@ -42,7 +42,7 @@ import net.minecraft.world.entity.monster.Zombie;
 public class SurvivalPlayerHandler implements PlayerHandler {
 
   public static final LivingHandlerType<SurvivalPlayerHandler> TYPE = new LivingHandlerType<>(
-      ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "survival_player"));
+      new ResourceLocation(CraftingDeadSurvival.ID, "survival_player"));
 
   /**
    * The % chance of getting infected by a zombie.
@@ -124,7 +124,7 @@ public class SurvivalPlayerHandler implements PlayerHandler {
   public void infect(float chance) {
     var entity = this.player.entity();
     if (!entity.isCreative()
-        && entity.level().getDifficulty() != Difficulty.PEACEFUL
+        && entity.getLevel().getDifficulty() != Difficulty.PEACEFUL
         && entity.getRandom().nextFloat() < chance
         && !entity.hasEffect(SurvivalMobEffects.INFECTION.get())
         && CraftingDeadSurvival.serverConfig.infectionEnabled.get()
@@ -142,7 +142,7 @@ public class SurvivalPlayerHandler implements PlayerHandler {
     if (!invulnerable
         && CraftingDeadSurvival.serverConfig.bleedingEnabled.get()
         && !this.player.entity().hasEffect(ModMobEffects.BLEEDING.get())
-        && (source.getDirectEntity() != null || source.is(net.minecraft.world.damagesource.DamageTypes.EXPLOSION))) {
+        && (source.getDirectEntity() != null || source.isExplosion())) {
       float bleedChance;
       if (!this.player.getItemInSlot(Slot.CLOTHING).isEmpty()) {
         bleedChance = Objects.requireNonNull(ClothingItem.getClothingItem(this.player.entity()))
@@ -161,7 +161,7 @@ public class SurvivalPlayerHandler implements PlayerHandler {
     if (!invulnerable
         && CraftingDeadSurvival.serverConfig.brokenLegsEnabled.get()
         && !this.player.entity().hasEffect(SurvivalMobEffects.BROKEN_LEG.get())
-        && source == this.player.entity().damageSources().fall()) {
+        && source == DamageSource.FALL) {
       var legBreakChance =
           CraftingDeadSurvival.serverConfig.brokenLegChance.get() * this.player.entity().fallDistance / this.player.entity().getMaxFallDistance();
       if (random.nextFloat() < legBreakChance

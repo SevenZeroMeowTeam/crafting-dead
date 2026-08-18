@@ -46,7 +46,7 @@ import com.craftingdead.core.world.item.gun.minigun.MinigunItem;
 import com.craftingdead.core.world.item.gun.skin.Skins;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -62,9 +62,6 @@ public class ModItems {
 
   public static final DeferredRegister<Item> deferredRegister =
       DeferredRegister.create(ForgeRegistries.ITEMS, CraftingDead.ID);
-
-  public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
-      DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CraftingDead.ID);
 
   // ================================================================================
   // Paints
@@ -2143,29 +2140,41 @@ public class ModItems {
   // Creative Mode Tabs
   // ================================================================================
 
-  public static final RegistryObject<CreativeModeTab> COSMETICS_TAB =
-      CREATIVE_MODE_TABS.register("cosmetics",
-          () -> CreativeModeTab.builder()
-              .title(Component.translatable("craftingdead.cosmetics"))
-              .icon(() -> new ItemStack(ModItems.getCosmeticsTabIcon()))
-              .displayItems((params, output) -> ModItems.addCosmeticsTabItems(output))
-              .build());
+  public static final CreativeModeTab COSMETICS_TAB = new CreativeModeTab("craftingdead.cosmetics") {
+    @Override
+    public ItemStack makeIcon() {
+      return new ItemStack(ModItems.getCosmeticsTabIcon());
+    }
 
-  public static final RegistryObject<CreativeModeTab> COMBAT_TAB =
-      CREATIVE_MODE_TABS.register("combat",
-          () -> CreativeModeTab.builder()
-              .title(Component.translatable("craftingdead.combat"))
-              .icon(() -> new ItemStack(ModItems.getCombatTabIcon()))
-              .displayItems((params, output) -> ModItems.addCombatTabItems(output))
-              .build());
+    @Override
+    public void fillItemList(NonNullList<ItemStack> items) {
+      ModItems.addCosmeticsTabItems(items);
+    }
+  };
 
-  public static final RegistryObject<CreativeModeTab> MEDICAL_TAB =
-      CREATIVE_MODE_TABS.register("medical",
-          () -> CreativeModeTab.builder()
-              .title(Component.translatable("craftingdead.medical"))
-              .icon(() -> new ItemStack(ModItems.getMedicalTabIcon()))
-              .displayItems((params, output) -> ModItems.addMedicalTabItems(output))
-              .build());
+  public static final CreativeModeTab COMBAT_TAB = new CreativeModeTab("craftingdead.combat") {
+    @Override
+    public ItemStack makeIcon() {
+      return new ItemStack(ModItems.getCombatTabIcon());
+    }
+
+    @Override
+    public void fillItemList(NonNullList<ItemStack> items) {
+      ModItems.addCombatTabItems(items);
+    }
+  };
+
+  public static final CreativeModeTab MEDICAL_TAB = new CreativeModeTab("craftingdead.medical") {
+    @Override
+    public ItemStack makeIcon() {
+      return new ItemStack(ModItems.getMedicalTabIcon());
+    }
+
+    @Override
+    public void fillItemList(NonNullList<ItemStack> items) {
+      ModItems.addMedicalTabItems(items);
+    }
+  };
 
   private static Item getCosmeticsTabIcon() {
     return BUILDER_CLOTHING.get();
@@ -2179,253 +2188,253 @@ public class ModItems {
     return FIRST_AID_KIT.get();
   }
 
-  private static void addCombatTabItems(CreativeModeTab.Output output) {
+  private static void addCombatTabItems(NonNullList<ItemStack> items) {
     // Paints
-    output.accept(new ItemStack(VULCAN_PAINT.get()));
-    output.accept(new ItemStack(ASMO_PAINT.get()));
-    output.accept(new ItemStack(CANDY_APPLE_PAINT.get()));
-    output.accept(new ItemStack(CYREX_PAINT.get()));
-    output.accept(new ItemStack(DIAMOND_PAINT.get()));
-    output.accept(new ItemStack(DRAGON_PAINT.get()));
-    output.accept(new ItemStack(FADE_PAINT.get()));
-    output.accept(new ItemStack(FURY_PAINT.get()));
-    output.accept(new ItemStack(GEM_PAINT.get()));
-    output.accept(new ItemStack(INFERNO_PAINT.get()));
-    output.accept(new ItemStack(RUBY_PAINT.get()));
-    output.accept(new ItemStack(SCORCHED_PAINT.get()));
-    output.accept(new ItemStack(SLAUGHTER_PAINT.get()));
-    output.accept(new ItemStack(UV_PAINT.get()));
-    output.accept(new ItemStack(HYPER_BEAST_PAINT.get()));
-    output.accept(new ItemStack(EMPEROR_DRAGON_PAINT.get()));
-    output.accept(new ItemStack(NUCLEAR_WINTER_PAINT.get()));
-    output.accept(new ItemStack(MONARCH_PAINT.get()));
-    output.accept(new ItemStack(LOVELACE_PAINT.get()));
+    items.add(new ItemStack(VULCAN_PAINT.get()));
+    items.add(new ItemStack(ASMO_PAINT.get()));
+    items.add(new ItemStack(CANDY_APPLE_PAINT.get()));
+    items.add(new ItemStack(CYREX_PAINT.get()));
+    items.add(new ItemStack(DIAMOND_PAINT.get()));
+    items.add(new ItemStack(DRAGON_PAINT.get()));
+    items.add(new ItemStack(FADE_PAINT.get()));
+    items.add(new ItemStack(FURY_PAINT.get()));
+    items.add(new ItemStack(GEM_PAINT.get()));
+    items.add(new ItemStack(INFERNO_PAINT.get()));
+    items.add(new ItemStack(RUBY_PAINT.get()));
+    items.add(new ItemStack(SCORCHED_PAINT.get()));
+    items.add(new ItemStack(SLAUGHTER_PAINT.get()));
+    items.add(new ItemStack(UV_PAINT.get()));
+    items.add(new ItemStack(HYPER_BEAST_PAINT.get()));
+    items.add(new ItemStack(EMPEROR_DRAGON_PAINT.get()));
+    items.add(new ItemStack(NUCLEAR_WINTER_PAINT.get()));
+    items.add(new ItemStack(MONARCH_PAINT.get()));
+    items.add(new ItemStack(LOVELACE_PAINT.get()));
 
     // Magazines
-    output.accept(new ItemStack(STANAG_BOX_MAGAZINE.get()));
-    output.accept(new ItemStack(STANAG_DRUM_MAGAZINE.get()));
-    output.accept(new ItemStack(STANAG_30_ROUND_MAGAZINE.get()));
-    output.accept(new ItemStack(STANAG_20_ROUND_MAGAZINE.get()));
-    output.accept(new ItemStack(MPT55_MAGAZINE.get()));
-    output.accept(new ItemStack(AK47_30_ROUND_MAGAZINE.get()));
-    output.accept(new ItemStack(FNFAL_MAGAZINE.get()));
-    output.accept(new ItemStack(ACR_MAGAZINE.get()));
-    output.accept(new ItemStack(G36C_MAGAZINE.get()));
-    output.accept(new ItemStack(HK417_MAGAZINE.get()));
-    output.accept(new ItemStack(M1911_MAGAZINE.get()));
-    output.accept(new ItemStack(G18_MAGAZINE.get()));
-    output.accept(new ItemStack(M9_MAGAZINE.get()));
-    output.accept(new ItemStack(DESERT_EAGLE_MAGAZINE.get()));
-    output.accept(new ItemStack(P250_MAGAZINE.get()));
-    output.accept(new ItemStack(MAGNUM_AMMUNITION.get()));
-    output.accept(new ItemStack(FN57_MAGAZINE.get()));
-    output.accept(new ItemStack(P90_MAGAZINE.get()));
-    output.accept(new ItemStack(VECTOR_MAGAZINE.get()));
-    output.accept(new ItemStack(MP5A5_35_ROUND_MAGAZINE.get()));
-    output.accept(new ItemStack(MP5A5_21_ROUND_MAGAZINE.get()));
-    output.accept(new ItemStack(MAC10_EXTENDED_MAGAZINE.get()));
-    output.accept(new ItemStack(MAC10_MAGAZINE.get()));
-    output.accept(new ItemStack(SPORTER22_MAGAZINE.get()));
-    output.accept(new ItemStack(M107_MAGAZINE.get()));
-    output.accept(new ItemStack(AS50_MAGAZINE.get()));
-    output.accept(new ItemStack(M1GARAND_AMMUNITION.get()));
-    output.accept(new ItemStack(AWP_MAGAZINE.get()));
-    output.accept(new ItemStack(TRENCH_GUN_SHELLS.get()));
-    output.accept(new ItemStack(MOSSBERG_SHELLS.get()));
-    output.accept(new ItemStack(DMR_MAGAZINE.get()));
-    output.accept(new ItemStack(TASER_CARTRIDGE.get()));
-    output.accept(new ItemStack(M240B_MAGAZINE.get()));
-    output.accept(new ItemStack(RPK_DRUM_MAGAZINE.get()));
-    output.accept(new ItemStack(RPK_MAGAZINE.get()));
-    output.accept(new ItemStack(MINIGUN_MAGAZINE.get()));
-    output.accept(new ItemStack(MK48MOD_MAGAZINE.get()));
+    items.add(new ItemStack(STANAG_BOX_MAGAZINE.get()));
+    items.add(new ItemStack(STANAG_DRUM_MAGAZINE.get()));
+    items.add(new ItemStack(STANAG_30_ROUND_MAGAZINE.get()));
+    items.add(new ItemStack(STANAG_20_ROUND_MAGAZINE.get()));
+    items.add(new ItemStack(MPT55_MAGAZINE.get()));
+    items.add(new ItemStack(AK47_30_ROUND_MAGAZINE.get()));
+    items.add(new ItemStack(FNFAL_MAGAZINE.get()));
+    items.add(new ItemStack(ACR_MAGAZINE.get()));
+    items.add(new ItemStack(G36C_MAGAZINE.get()));
+    items.add(new ItemStack(HK417_MAGAZINE.get()));
+    items.add(new ItemStack(M1911_MAGAZINE.get()));
+    items.add(new ItemStack(G18_MAGAZINE.get()));
+    items.add(new ItemStack(M9_MAGAZINE.get()));
+    items.add(new ItemStack(DESERT_EAGLE_MAGAZINE.get()));
+    items.add(new ItemStack(P250_MAGAZINE.get()));
+    items.add(new ItemStack(MAGNUM_AMMUNITION.get()));
+    items.add(new ItemStack(FN57_MAGAZINE.get()));
+    items.add(new ItemStack(P90_MAGAZINE.get()));
+    items.add(new ItemStack(VECTOR_MAGAZINE.get()));
+    items.add(new ItemStack(MP5A5_35_ROUND_MAGAZINE.get()));
+    items.add(new ItemStack(MP5A5_21_ROUND_MAGAZINE.get()));
+    items.add(new ItemStack(MAC10_EXTENDED_MAGAZINE.get()));
+    items.add(new ItemStack(MAC10_MAGAZINE.get()));
+    items.add(new ItemStack(SPORTER22_MAGAZINE.get()));
+    items.add(new ItemStack(M107_MAGAZINE.get()));
+    items.add(new ItemStack(AS50_MAGAZINE.get()));
+    items.add(new ItemStack(M1GARAND_AMMUNITION.get()));
+    items.add(new ItemStack(AWP_MAGAZINE.get()));
+    items.add(new ItemStack(TRENCH_GUN_SHELLS.get()));
+    items.add(new ItemStack(MOSSBERG_SHELLS.get()));
+    items.add(new ItemStack(DMR_MAGAZINE.get()));
+    items.add(new ItemStack(TASER_CARTRIDGE.get()));
+    items.add(new ItemStack(M240B_MAGAZINE.get()));
+    items.add(new ItemStack(RPK_DRUM_MAGAZINE.get()));
+    items.add(new ItemStack(RPK_MAGAZINE.get()));
+    items.add(new ItemStack(MINIGUN_MAGAZINE.get()));
+    items.add(new ItemStack(MK48MOD_MAGAZINE.get()));
 
     // Attachments
-    output.accept(new ItemStack(RED_DOT_SIGHT.get()));
-    output.accept(new ItemStack(ACOG_SIGHT.get()));
-    output.accept(new ItemStack(LP_SCOPE.get()));
-    output.accept(new ItemStack(HP_SCOPE.get()));
-    output.accept(new ItemStack(SUPPRESSOR.get()));
-    output.accept(new ItemStack(TACTICAL_GRIP.get()));
-    output.accept(new ItemStack(BIPOD.get()));
-    output.accept(new ItemStack(EOTECH_SIGHT.get()));
+    items.add(new ItemStack(RED_DOT_SIGHT.get()));
+    items.add(new ItemStack(ACOG_SIGHT.get()));
+    items.add(new ItemStack(LP_SCOPE.get()));
+    items.add(new ItemStack(HP_SCOPE.get()));
+    items.add(new ItemStack(SUPPRESSOR.get()));
+    items.add(new ItemStack(TACTICAL_GRIP.get()));
+    items.add(new ItemStack(BIPOD.get()));
+    items.add(new ItemStack(EOTECH_SIGHT.get()));
 
     // Grenades
-    output.accept(new ItemStack(FIRE_GRENADE.get()));
-    output.accept(new ItemStack(SMOKE_GRENADE.get()));
-    output.accept(new ItemStack(FLASH_GRENADE.get()));
-    output.accept(new ItemStack(DECOY_GRENADE.get()));
-    output.accept(new ItemStack(FRAG_GRENADE.get()));
-    output.accept(new ItemStack(C4_EXPLOSIVE.get()));
-    output.accept(new ItemStack(STICKY_C4_EXPLOSIVE.get()));
-    output.accept(new ItemStack(REMOTE_DETONATOR.get()));
+    items.add(new ItemStack(FIRE_GRENADE.get()));
+    items.add(new ItemStack(SMOKE_GRENADE.get()));
+    items.add(new ItemStack(FLASH_GRENADE.get()));
+    items.add(new ItemStack(DECOY_GRENADE.get()));
+    items.add(new ItemStack(FRAG_GRENADE.get()));
+    items.add(new ItemStack(C4_EXPLOSIVE.get()));
+    items.add(new ItemStack(STICKY_C4_EXPLOSIVE.get()));
+    items.add(new ItemStack(REMOTE_DETONATOR.get()));
 
     // Melee Weapons
-    output.accept(new ItemStack(CROWBAR.get()));
-    output.accept(new ItemStack(BAT.get()));
-    output.accept(new ItemStack(KATANA.get()));
-    output.accept(new ItemStack(PIPE.get()));
-    output.accept(new ItemStack(RUSTY_PIPE.get()));
-    output.accept(new ItemStack(FIRE_AXE.get()));
-    output.accept(new ItemStack(CHAINSAW.get()));
-    output.accept(new ItemStack(BOWIE_KNIFE.get()));
-    output.accept(new ItemStack(GOLF_CLUB.get()));
-    output.accept(new ItemStack(NIGHT_STICK.get()));
-    output.accept(new ItemStack(SLEDGEHAMMER.get()));
-    output.accept(new ItemStack(NAIL_BAT.get()));
-    output.accept(new ItemStack(SHOVEL.get()));
-    output.accept(new ItemStack(HATCHET.get()));
-    output.accept(new ItemStack(BROADSWORD.get()));
-    output.accept(new ItemStack(MACHETE.get()));
-    output.accept(new ItemStack(WEAPONIZED_SCYTHE.get()));
-    output.accept(new ItemStack(SCYTHE.get()));
-    output.accept(new ItemStack(PICKAXE.get()));
-    output.accept(new ItemStack(BO_STAFF.get()));
-    output.accept(new ItemStack(WRENCH.get()));
-    output.accept(new ItemStack(FRYING_PAN.get()));
-    output.accept(new ItemStack(BOLT_CUTTERS.get()));
-    output.accept(new ItemStack(COMBAT_KNIFE.get()));
-    output.accept(new ItemStack(STEEL_BAT.get()));
-    output.accept(new ItemStack(CLEAVER.get()));
-    output.accept(new ItemStack(BROKEN_BOTTLE.get()));
+    items.add(new ItemStack(CROWBAR.get()));
+    items.add(new ItemStack(BAT.get()));
+    items.add(new ItemStack(KATANA.get()));
+    items.add(new ItemStack(PIPE.get()));
+    items.add(new ItemStack(RUSTY_PIPE.get()));
+    items.add(new ItemStack(FIRE_AXE.get()));
+    items.add(new ItemStack(CHAINSAW.get()));
+    items.add(new ItemStack(BOWIE_KNIFE.get()));
+    items.add(new ItemStack(GOLF_CLUB.get()));
+    items.add(new ItemStack(NIGHT_STICK.get()));
+    items.add(new ItemStack(SLEDGEHAMMER.get()));
+    items.add(new ItemStack(NAIL_BAT.get()));
+    items.add(new ItemStack(SHOVEL.get()));
+    items.add(new ItemStack(HATCHET.get()));
+    items.add(new ItemStack(BROADSWORD.get()));
+    items.add(new ItemStack(MACHETE.get()));
+    items.add(new ItemStack(WEAPONIZED_SCYTHE.get()));
+    items.add(new ItemStack(SCYTHE.get()));
+    items.add(new ItemStack(PICKAXE.get()));
+    items.add(new ItemStack(BO_STAFF.get()));
+    items.add(new ItemStack(WRENCH.get()));
+    items.add(new ItemStack(FRYING_PAN.get()));
+    items.add(new ItemStack(BOLT_CUTTERS.get()));
+    items.add(new ItemStack(COMBAT_KNIFE.get()));
+    items.add(new ItemStack(STEEL_BAT.get()));
+    items.add(new ItemStack(CLEAVER.get()));
+    items.add(new ItemStack(BROKEN_BOTTLE.get()));
   }
 
-  private static void addCosmeticsTabItems(CreativeModeTab.Output output) {
+  private static void addCosmeticsTabItems(NonNullList<ItemStack> items) {
     // Hats, Helmets and Masks
-    output.accept(new ItemStack(ARMY_HELMET.get()));
-    output.accept(new ItemStack(BEANIE_HAT.get()));
-    output.accept(new ItemStack(BLACK_BALLISTIC_HAT.get()));
-    output.accept(new ItemStack(FIREMAN_CHIEF_HAT.get()));
-    output.accept(new ItemStack(BLUE_HARD_HAT.get()));
-    output.accept(new ItemStack(BUNNY_HAT.get()));
-    output.accept(new ItemStack(CAMO_HELMET.get()));
-    output.accept(new ItemStack(CLONE_HAT.get()));
-    output.accept(new ItemStack(COMBAT_BDU_HELMET.get()));
-    output.accept(new ItemStack(COOKIE_MASK.get()));
-    output.accept(new ItemStack(COW_MASK.get()));
-    output.accept(new ItemStack(CREEPER_MASK.get()));
-    output.accept(new ItemStack(DEADPOOL_MASK.get()));
-    output.accept(new ItemStack(DOCTOR_MASK.get()));
-    output.accept(new ItemStack(FIREMAN_HAT.get()));
-    output.accept(new ItemStack(GAS_MASK.get()));
-    output.accept(new ItemStack(GHILLIE_HAT.get()));
-    output.accept(new ItemStack(GREEN_ARMY_HELMET.get()));
-    output.accept(new ItemStack(GREEN_BALLISTIC_HELMET.get()));
-    output.accept(new ItemStack(GREEN_HARD_HAT.get()));
-    output.accept(new ItemStack(GREY_ARMY_HELMET.get()));
-    output.accept(new ItemStack(HACKER_MASK.get()));
-    output.accept(new ItemStack(HAZMAT_HAT.get()));
-    output.accept(new ItemStack(JUGGERNAUT_HELMET.get()));
-    output.accept(new ItemStack(KNIGHT_HAT.get()));
-    output.accept(new ItemStack(MILITARY_HAZMAT_HAT.get()));
-    output.accept(new ItemStack(NINJA_HAT.get()));
-    output.accept(new ItemStack(NV_GOGGLES_HAT.get()));
-    output.accept(new ItemStack(ORANGE_HARD_HAT.get()));
-    output.accept(new ItemStack(PAYDAY_MASK.get()));
-    output.accept(new ItemStack(PAYDAY2_MASK.get()));
-    output.accept(new ItemStack(PILOT_HELMET.get()));
-    output.accept(new ItemStack(PUMPKIN_MASK.get()));
-    output.accept(new ItemStack(RADAR_CAP.get()));
-    output.accept(new ItemStack(RIOT_HAT.get()));
-    output.accept(new ItemStack(SANTA_HAT.get()));
-    output.accept(new ItemStack(SCUBA_MASK.get()));
-    output.accept(new ItemStack(SHEEP_MASK.get()));
-    output.accept(new ItemStack(SKI_MASK.get()));
-    output.accept(new ItemStack(SPETSNAZ_HELMET.get()));
-    output.accept(new ItemStack(TOP_HAT.get()));
-    output.accept(new ItemStack(TRAPPER_HAT.get()));
-    output.accept(new ItemStack(USHANKA_HAT.get()));
-    output.accept(new ItemStack(WINTER_MILITARY_HELMET.get()));
-    output.accept(new ItemStack(YELLOW_HARD_HAT.get()));
-    output.accept(new ItemStack(ZOMBIE_MASK.get()));
+    items.add(new ItemStack(ARMY_HELMET.get()));
+    items.add(new ItemStack(BEANIE_HAT.get()));
+    items.add(new ItemStack(BLACK_BALLISTIC_HAT.get()));
+    items.add(new ItemStack(FIREMAN_CHIEF_HAT.get()));
+    items.add(new ItemStack(BLUE_HARD_HAT.get()));
+    items.add(new ItemStack(BUNNY_HAT.get()));
+    items.add(new ItemStack(CAMO_HELMET.get()));
+    items.add(new ItemStack(CLONE_HAT.get()));
+    items.add(new ItemStack(COMBAT_BDU_HELMET.get()));
+    items.add(new ItemStack(COOKIE_MASK.get()));
+    items.add(new ItemStack(COW_MASK.get()));
+    items.add(new ItemStack(CREEPER_MASK.get()));
+    items.add(new ItemStack(DEADPOOL_MASK.get()));
+    items.add(new ItemStack(DOCTOR_MASK.get()));
+    items.add(new ItemStack(FIREMAN_HAT.get()));
+    items.add(new ItemStack(GAS_MASK.get()));
+    items.add(new ItemStack(GHILLIE_HAT.get()));
+    items.add(new ItemStack(GREEN_ARMY_HELMET.get()));
+    items.add(new ItemStack(GREEN_BALLISTIC_HELMET.get()));
+    items.add(new ItemStack(GREEN_HARD_HAT.get()));
+    items.add(new ItemStack(GREY_ARMY_HELMET.get()));
+    items.add(new ItemStack(HACKER_MASK.get()));
+    items.add(new ItemStack(HAZMAT_HAT.get()));
+    items.add(new ItemStack(JUGGERNAUT_HELMET.get()));
+    items.add(new ItemStack(KNIGHT_HAT.get()));
+    items.add(new ItemStack(MILITARY_HAZMAT_HAT.get()));
+    items.add(new ItemStack(NINJA_HAT.get()));
+    items.add(new ItemStack(NV_GOGGLES_HAT.get()));
+    items.add(new ItemStack(ORANGE_HARD_HAT.get()));
+    items.add(new ItemStack(PAYDAY_MASK.get()));
+    items.add(new ItemStack(PAYDAY2_MASK.get()));
+    items.add(new ItemStack(PILOT_HELMET.get()));
+    items.add(new ItemStack(PUMPKIN_MASK.get()));
+    items.add(new ItemStack(RADAR_CAP.get()));
+    items.add(new ItemStack(RIOT_HAT.get()));
+    items.add(new ItemStack(SANTA_HAT.get()));
+    items.add(new ItemStack(SCUBA_MASK.get()));
+    items.add(new ItemStack(SHEEP_MASK.get()));
+    items.add(new ItemStack(SKI_MASK.get()));
+    items.add(new ItemStack(SPETSNAZ_HELMET.get()));
+    items.add(new ItemStack(TOP_HAT.get()));
+    items.add(new ItemStack(TRAPPER_HAT.get()));
+    items.add(new ItemStack(USHANKA_HAT.get()));
+    items.add(new ItemStack(WINTER_MILITARY_HELMET.get()));
+    items.add(new ItemStack(YELLOW_HARD_HAT.get()));
+    items.add(new ItemStack(ZOMBIE_MASK.get()));
 
     // Clothing
-    output.accept(new ItemStack(ARMY_CLOTHING.get()));
-    output.accept(new ItemStack(SAS_CLOTHING.get()));
-    output.accept(new ItemStack(SPETSNAZ_CLOTHING.get()));
-    output.accept(new ItemStack(POLICE_CLOTHING.get()));
-    output.accept(new ItemStack(CAMO_CLOTHING.get()));
-    output.accept(new ItemStack(COMBAT_BDU_CLOTHING.get()));
-    output.accept(new ItemStack(WINTER_ARMY_CLOTHING.get()));
-    output.accept(new ItemStack(ARMY_DESERT_CLOTHING.get()));
-    output.accept(new ItemStack(PILOT_CLOTHING.get()));
-    output.accept(new ItemStack(HAZMAT_CLOTHING.get()));
-    output.accept(new ItemStack(TAC_GHILLIE_CLOTHING.get()));
-    output.accept(new ItemStack(SWAT_CLOTHING.get()));
-    output.accept(new ItemStack(SPACE_SUIT_CLOTHING.get()));
-    output.accept(new ItemStack(SHERIFF_CLOTHING.get()));
-    output.accept(new ItemStack(JUGGERNAUT_CLOTHING.get()));
-    output.accept(new ItemStack(FIREMAN_CLOTHING.get()));
-    output.accept(new ItemStack(DOCTOR_CLOTHING.get()));
-    output.accept(new ItemStack(SMART_CLOTHING.get()));
-    output.accept(new ItemStack(CASUAL_GREEN_CLOTHING.get()));
-    output.accept(new ItemStack(BUILDER_CLOTHING.get()));
-    output.accept(new ItemStack(BUSINESS_CLOTHING.get()));
-    output.accept(new ItemStack(SEC_GUARD_CLOTHING.get()));
-    output.accept(new ItemStack(MIL_HAZMAT_CLOTHING.get()));
-    output.accept(new ItemStack(FULL_GHILLIE_CLOTHING.get()));
-    output.accept(new ItemStack(RED_DUSK_CLOTHING.get()));
-    output.accept(new ItemStack(CLONE_CLOTHING.get()));
-    output.accept(new ItemStack(COOKIE_CLOTHING.get()));
-    output.accept(new ItemStack(DEADPOOL_CLOTHING.get()));
-    output.accept(new ItemStack(NINJA_CLOTHING.get()));
-    output.accept(new ItemStack(ARMY_MEDIC_CLOTHING.get()));
-    output.accept(new ItemStack(BLUE_DUSK_CLOTHING.get()));
-    output.accept(new ItemStack(PRESIDENT_CLOTHING.get()));
-    output.accept(new ItemStack(YELLOW_DUSK_CLOTHING.get()));
-    output.accept(new ItemStack(ORANGE_DUSK_CLOTHING.get()));
-    output.accept(new ItemStack(GREEN_DUSK_CLOTHING.get()));
-    output.accept(new ItemStack(WHITE_DUSK_CLOTHING.get()));
-    output.accept(new ItemStack(PURPLE_DUSK_CLOTHING.get()));
-    output.accept(new ItemStack(SCUBA_CLOTHING.get()));
-    output.accept(new ItemStack(DDPAT_CLOTHING.get()));
-    output.accept(new ItemStack(CONTRACTOR_CLOTHING.get()));
-    output.accept(new ItemStack(PARACHUTE.get()));
-    output.accept(new ItemStack(HANDCUFFS.get()));
+    items.add(new ItemStack(ARMY_CLOTHING.get()));
+    items.add(new ItemStack(SAS_CLOTHING.get()));
+    items.add(new ItemStack(SPETSNAZ_CLOTHING.get()));
+    items.add(new ItemStack(POLICE_CLOTHING.get()));
+    items.add(new ItemStack(CAMO_CLOTHING.get()));
+    items.add(new ItemStack(COMBAT_BDU_CLOTHING.get()));
+    items.add(new ItemStack(WINTER_ARMY_CLOTHING.get()));
+    items.add(new ItemStack(ARMY_DESERT_CLOTHING.get()));
+    items.add(new ItemStack(PILOT_CLOTHING.get()));
+    items.add(new ItemStack(HAZMAT_CLOTHING.get()));
+    items.add(new ItemStack(TAC_GHILLIE_CLOTHING.get()));
+    items.add(new ItemStack(SWAT_CLOTHING.get()));
+    items.add(new ItemStack(SPACE_SUIT_CLOTHING.get()));
+    items.add(new ItemStack(SHERIFF_CLOTHING.get()));
+    items.add(new ItemStack(JUGGERNAUT_CLOTHING.get()));
+    items.add(new ItemStack(FIREMAN_CLOTHING.get()));
+    items.add(new ItemStack(DOCTOR_CLOTHING.get()));
+    items.add(new ItemStack(SMART_CLOTHING.get()));
+    items.add(new ItemStack(CASUAL_GREEN_CLOTHING.get()));
+    items.add(new ItemStack(BUILDER_CLOTHING.get()));
+    items.add(new ItemStack(BUSINESS_CLOTHING.get()));
+    items.add(new ItemStack(SEC_GUARD_CLOTHING.get()));
+    items.add(new ItemStack(MIL_HAZMAT_CLOTHING.get()));
+    items.add(new ItemStack(FULL_GHILLIE_CLOTHING.get()));
+    items.add(new ItemStack(RED_DUSK_CLOTHING.get()));
+    items.add(new ItemStack(CLONE_CLOTHING.get()));
+    items.add(new ItemStack(COOKIE_CLOTHING.get()));
+    items.add(new ItemStack(DEADPOOL_CLOTHING.get()));
+    items.add(new ItemStack(NINJA_CLOTHING.get()));
+    items.add(new ItemStack(ARMY_MEDIC_CLOTHING.get()));
+    items.add(new ItemStack(BLUE_DUSK_CLOTHING.get()));
+    items.add(new ItemStack(PRESIDENT_CLOTHING.get()));
+    items.add(new ItemStack(YELLOW_DUSK_CLOTHING.get()));
+    items.add(new ItemStack(ORANGE_DUSK_CLOTHING.get()));
+    items.add(new ItemStack(GREEN_DUSK_CLOTHING.get()));
+    items.add(new ItemStack(WHITE_DUSK_CLOTHING.get()));
+    items.add(new ItemStack(PURPLE_DUSK_CLOTHING.get()));
+    items.add(new ItemStack(SCUBA_CLOTHING.get()));
+    items.add(new ItemStack(DDPAT_CLOTHING.get()));
+    items.add(new ItemStack(CONTRACTOR_CLOTHING.get()));
+    items.add(new ItemStack(PARACHUTE.get()));
+    items.add(new ItemStack(HANDCUFFS.get()));
 
     // Vests
-    output.accept(new ItemStack(BLACK_TACTICAL_VEST.get()));
-    output.accept(new ItemStack(GHILLIE_TACTICAL_VEST.get()));
-    output.accept(new ItemStack(GREEN_TACTICAL_VEST.get()));
-    output.accept(new ItemStack(GREY_TACTICAL_VEST.get()));
-    output.accept(new ItemStack(RIOT_VEST.get()));
-    output.accept(new ItemStack(TAN_TACTICAL_VEST.get()));
+    items.add(new ItemStack(BLACK_TACTICAL_VEST.get()));
+    items.add(new ItemStack(GHILLIE_TACTICAL_VEST.get()));
+    items.add(new ItemStack(GREEN_TACTICAL_VEST.get()));
+    items.add(new ItemStack(GREY_TACTICAL_VEST.get()));
+    items.add(new ItemStack(RIOT_VEST.get()));
+    items.add(new ItemStack(TAN_TACTICAL_VEST.get()));
 
     // Backpacks
-    output.accept(new ItemStack(SMALL_RED_BACKPACK.get()));
-    output.accept(new ItemStack(SMALL_ORANGE_BACKPACK.get()));
-    output.accept(new ItemStack(SMALL_YELLOW_BACKPACK.get()));
-    output.accept(new ItemStack(SMALL_GREEN_BACKPACK.get()));
-    output.accept(new ItemStack(SMALL_BLUE_BACKPACK.get()));
-    output.accept(new ItemStack(SMALL_PURPLE_BACKPACK.get()));
-    output.accept(new ItemStack(MEDIUM_RED_BACKPACK.get()));
-    output.accept(new ItemStack(MEDIUM_ORANGE_BACKPACK.get()));
-    output.accept(new ItemStack(MEDIUM_YELLOW_BACKPACK.get()));
-    output.accept(new ItemStack(MEDIUM_GREEN_BACKPACK.get()));
-    output.accept(new ItemStack(MEDIUM_BLUE_BACKPACK.get()));
-    output.accept(new ItemStack(MEDIUM_PURPLE_BACKPACK.get()));
-    output.accept(new ItemStack(MEDIUM_GREY_BACKPACK.get()));
-    output.accept(new ItemStack(MEDIUM_BLACK_BACKPACK.get()));
-    output.accept(new ItemStack(MEDIUM_GHILLIE_BACKPACK.get()));
-    output.accept(new ItemStack(MEDIUM_WHITE_BACKPACK.get()));
-    output.accept(new ItemStack(LARGE_GREY_BACKPACK.get()));
-    output.accept(new ItemStack(LARGE_GREEN_BACKPACK.get()));
-    output.accept(new ItemStack(LARGE_TAN_BACKPACK.get()));
-    output.accept(new ItemStack(LARGE_BLACK_BACKPACK.get()));
-    output.accept(new ItemStack(LARGE_GHILLIE_BACKPACK.get()));
-    output.accept(new ItemStack(TAN_GUN_BAG.get()));
-    output.accept(new ItemStack(GREY_GUN_BAG.get()));
+    items.add(new ItemStack(SMALL_RED_BACKPACK.get()));
+    items.add(new ItemStack(SMALL_ORANGE_BACKPACK.get()));
+    items.add(new ItemStack(SMALL_YELLOW_BACKPACK.get()));
+    items.add(new ItemStack(SMALL_GREEN_BACKPACK.get()));
+    items.add(new ItemStack(SMALL_BLUE_BACKPACK.get()));
+    items.add(new ItemStack(SMALL_PURPLE_BACKPACK.get()));
+    items.add(new ItemStack(MEDIUM_RED_BACKPACK.get()));
+    items.add(new ItemStack(MEDIUM_ORANGE_BACKPACK.get()));
+    items.add(new ItemStack(MEDIUM_YELLOW_BACKPACK.get()));
+    items.add(new ItemStack(MEDIUM_GREEN_BACKPACK.get()));
+    items.add(new ItemStack(MEDIUM_BLUE_BACKPACK.get()));
+    items.add(new ItemStack(MEDIUM_PURPLE_BACKPACK.get()));
+    items.add(new ItemStack(MEDIUM_GREY_BACKPACK.get()));
+    items.add(new ItemStack(MEDIUM_BLACK_BACKPACK.get()));
+    items.add(new ItemStack(MEDIUM_GHILLIE_BACKPACK.get()));
+    items.add(new ItemStack(MEDIUM_WHITE_BACKPACK.get()));
+    items.add(new ItemStack(LARGE_GREY_BACKPACK.get()));
+    items.add(new ItemStack(LARGE_GREEN_BACKPACK.get()));
+    items.add(new ItemStack(LARGE_TAN_BACKPACK.get()));
+    items.add(new ItemStack(LARGE_BLACK_BACKPACK.get()));
+    items.add(new ItemStack(LARGE_GHILLIE_BACKPACK.get()));
+    items.add(new ItemStack(TAN_GUN_BAG.get()));
+    items.add(new ItemStack(GREY_GUN_BAG.get()));
   }
 
-  private static void addMedicalTabItems(CreativeModeTab.Output output) {
-    output.accept(new ItemStack(FIRST_AID_KIT.get()));
-    output.accept(new ItemStack(DIRTY_RAG.get()));
-    output.accept(new ItemStack(BLOODY_RAG.get()));
-    output.accept(new ItemStack(CLEAN_RAG.get()));
-    output.accept(new ItemStack(ADRENALINE_SYRINGE.get()));
-    output.accept(new ItemStack(SYRINGE.get()));
-    output.accept(new ItemStack(BLOOD_SYRINGE.get()));
-    output.accept(new ItemStack(BANDAGE.get()));
+  private static void addMedicalTabItems(NonNullList<ItemStack> items) {
+    items.add(new ItemStack(FIRST_AID_KIT.get()));
+    items.add(new ItemStack(DIRTY_RAG.get()));
+    items.add(new ItemStack(BLOODY_RAG.get()));
+    items.add(new ItemStack(CLEAN_RAG.get()));
+    items.add(new ItemStack(ADRENALINE_SYRINGE.get()));
+    items.add(new ItemStack(SYRINGE.get()));
+    items.add(new ItemStack(BLOOD_SYRINGE.get()));
+    items.add(new ItemStack(BANDAGE.get()));
   }
 
   static {

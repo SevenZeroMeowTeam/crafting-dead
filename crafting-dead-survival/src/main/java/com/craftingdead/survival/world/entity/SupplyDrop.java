@@ -49,7 +49,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
@@ -99,8 +99,8 @@ public class SupplyDrop extends Entity implements MenuProvider {
   public void tick() {
     super.baseTick();
 
-    if (!this.level().isClientSide() && !this.chunkLoaded) {
-      if (this.level() instanceof ServerLevel serverLevel) {
+    if (!this.getLevel().isClientSide() && !this.chunkLoaded) {
+      if (this.getLevel() instanceof ServerLevel serverLevel) {
         var chunkPos = new ChunkPos(this.blockPosition());
         serverLevel.getChunkSource()
             .addRegionTicket(SUPPLY_DROP_TICKET, chunkPos, 1, chunkPos);
@@ -117,7 +117,7 @@ public class SupplyDrop extends Entity implements MenuProvider {
       this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.0025D, 0.0D));
     }
 
-    if (this.onGround()) {
+    if (this.isOnGround()) {
       this.setDeltaMovement(this.getDeltaMovement().scale(0.5D));
       this.dropActive = true;
 
@@ -135,12 +135,12 @@ public class SupplyDrop extends Entity implements MenuProvider {
 
   @Override
   public void remove(RemovalReason reason) {
-    if (!this.level().isClientSide() && reason.shouldDestroy()) {
-      Containers.dropContents(this.level(), this, this.container);
+    if (!this.getLevel().isClientSide() && reason.shouldDestroy()) {
+      Containers.dropContents(this.getLevel(), this, this.container);
     }
 
-    if (!this.level().isClientSide() && this.chunkLoaded) {
-      if (this.level() instanceof ServerLevel serverLevel) {
+    if (!this.getLevel().isClientSide() && this.chunkLoaded) {
+      if (this.getLevel() instanceof ServerLevel serverLevel) {
         var chunkPos = new ChunkPos(this.blockPosition());
         serverLevel.getChunkSource()
             .removeRegionTicket(SUPPLY_DROP_TICKET, chunkPos, 1, chunkPos);
@@ -153,7 +153,7 @@ public class SupplyDrop extends Entity implements MenuProvider {
   @Override
   protected void readAdditionalSaveData(CompoundTag compound) {
     if (compound.contains("lootTable", Tag.TAG_STRING)) {
-      this.lootTable = ResourceLocation.parse(compound.getString("lootTable"));
+      this.lootTable = new ResourceLocation(compound.getString("lootTable"));
       this.lootTableSeed = compound.getLong("lootTableSeed");
     } else {
       var items = NonNullList.withSize(this.container.getContainerSize(), ItemStack.EMPTY);
@@ -200,7 +200,7 @@ public class SupplyDrop extends Entity implements MenuProvider {
       return false;
     }
 
-    if (this.level().isClientSide() || this.isRemoved()) {
+    if (this.getLevel().isClientSide() || this.isRemoved()) {
       return true;
     }
 
@@ -216,17 +216,17 @@ public class SupplyDrop extends Entity implements MenuProvider {
     if (this.lootTable == null) {
       return;
     }
-    var lootTable = this.level().getServer().getLootData().getLootTable(this.lootTable);
+    var lootTable = this.getLevel().getServer().getLootTables().get(this.lootTable);
     CriteriaTriggers.GENERATE_LOOT.trigger(player, this.lootTable);
     this.lootTable = null;
-    var builder = new LootParams.Builder((ServerLevel) this.level())
+    var builder = new LootContext.Builder((ServerLevel) this.getLevel())
         .withParameter(LootContextParams.ORIGIN, this.position())
         .withParameter(LootContextParams.KILLER_ENTITY, this);
     if (player != null) {
       builder.withLuck(player.getLuck())
           .withParameter(LootContextParams.THIS_ENTITY, player);
     }
-    lootTable.fill(this.container, builder.create(LootContextParamSets.CHEST), 0L);
+    lootTable.fill(this.container, builder.create(LootContextParamSets.CHEST));
 
   }
 

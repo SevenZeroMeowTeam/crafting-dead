@@ -83,7 +83,7 @@ public class GunZombie extends ModZombie implements RangedAttackMob {
   @Override
   public void tick() {
     super.tick();
-    if (!this.level().isClientSide()) {
+    if (!this.getLevel().isClientSide()) {
       this.getCapability(LivingExtension.CAPABILITY)
           .ifPresent(living -> living.mainHandGun().ifPresent(gun -> {
             if (gun.isTriggerPressed()
@@ -97,7 +97,7 @@ public class GunZombie extends ModZombie implements RangedAttackMob {
 
   @Override
   public void performRangedAttack(@NotNull LivingEntity livingEntity, float distance) {
-    if (!this.level().isClientSide()) {
+    if (!this.getLevel().isClientSide()) {
       this.getCapability(LivingExtension.CAPABILITY)
           .ifPresent(living -> living.mainHandGun().ifPresent(gun -> {
             this.triggerPressedStartTime = Util.getMillis();

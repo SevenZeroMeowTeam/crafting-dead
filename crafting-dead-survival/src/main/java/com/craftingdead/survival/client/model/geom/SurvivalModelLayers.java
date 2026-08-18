@@ -47,6 +47,6 @@ public class SurvivalModelLayers {
   }
 
   private static ModelLayerLocation createLocation(String model, String layer) {
-    return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, model), layer);
+    return new ModelLayerLocation(new ResourceLocation(CraftingDeadSurvival.ID, model), layer);
   }
 }

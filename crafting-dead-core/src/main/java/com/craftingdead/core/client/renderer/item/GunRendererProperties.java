@@ -26,9 +26,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import com.craftingdead.core.client.util.RenderUtil;
 import com.mojang.datafixers.util.Pair;
-import org.joml.Quaternionf;
+import com.mojang.math.Quaternion;
 import com.mojang.math.Transformation;
-import org.joml.Vector3f;
+import com.mojang.math.Vector3f;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -49,7 +49,7 @@ public record GunRendererProperties(
   private static final Transformation DEFAULT_SPRINTING_TRANSFORM =
       new Transformation(
           new Vector3f(-0.3F, 0.0F, 0.15F),
-          new Quaternionf().rotationYXZ((float) Math.toRadians(40), (float) Math.toRadians(-20), 0.0F),
+          Quaternion.fromYXZ((float) Math.toRadians(40), (float) Math.toRadians(-20), 0.0F),
           new Vector3f(1.0F, 1.0F, 1.0F),
           null);
 

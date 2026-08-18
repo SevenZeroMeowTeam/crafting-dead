@@ -53,7 +53,7 @@ public interface LivingExtension<E extends LivingEntity, H extends LivingHandler
   /**
    * @see {@link net.minecraftforge.event.AttachCapabilitiesEvent}
    */
-  ResourceLocation CAPABILITY_KEY = ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "living_extension");
+  ResourceLocation CAPABILITY_KEY = new ResourceLocation(CraftingDead.ID, "living_extension");
 
   @SuppressWarnings("unchecked")
   static <E extends LivingEntity> LivingExtension<E, ?> getOrThrow(E entity) {
@@ -238,7 +238,7 @@ public interface LivingExtension<E extends LivingEntity, H extends LivingHandler
    * @return the {@link Level}
    */
   default Level level() {
-    return this.entity().level();
+    return this.entity().getLevel();
   }
 
   /**

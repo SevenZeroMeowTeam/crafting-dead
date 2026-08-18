@@ -19,6 +19,7 @@
 package com.craftingdead.core;
 
 import com.craftingdead.core.client.gui.HitMarker;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeConfigSpec;
 
@@ -206,9 +207,9 @@ public class ServerConfig {
   public final ForgeConfigSpec.BooleanValue explosivesFlashGrenadeEnabled;
   public final ForgeConfigSpec.BooleanValue explosivesFragGrenadeEnabled;
   public final ForgeConfigSpec.BooleanValue explosivesSmokeGrenadeEnabled;
-  public final ForgeConfigSpec.EnumValue<Level.ExplosionInteraction> explosivesC4ExplosionMode;
-  public final ForgeConfigSpec.EnumValue<Level.ExplosionInteraction> explosivesFireGrenadeExplosionMode;
-  public final ForgeConfigSpec.EnumValue<Level.ExplosionInteraction> explosivesFragGrenadeExplosionMode;
+  public final ForgeConfigSpec.EnumValue<Explosion.BlockInteraction> explosivesC4ExplosionMode;
+  public final ForgeConfigSpec.EnumValue<Explosion.BlockInteraction> explosivesFireGrenadeExplosionMode;
+  public final ForgeConfigSpec.EnumValue<Explosion.BlockInteraction> explosivesFragGrenadeExplosionMode;
   public final ForgeConfigSpec.DoubleValue explosivesRemoteDetonatorRange;
   public final ForgeConfigSpec.DoubleValue explosivesC4Radius;
   public final ForgeConfigSpec.DoubleValue explosivesFireGrenadeRadius;
@@ -738,21 +739,21 @@ public class ServerConfig {
               "NONE: No block interaction, blocks will remain unchanged",
               "BREAK: Blocks are broken, they will be dropped when exploded",
               "DESTROY: Blocks are destroyed, nothing will be dropped and only a crater will be left")
-          .defineEnum("c4ExplosionMode", Level.ExplosionInteraction.NONE);
+          .defineEnum("c4ExplosionMode", Explosion.BlockInteraction.NONE);
       this.explosivesFireGrenadeExplosionMode = builder
           .translation("options.craftingdead.server.explosives.fire_grenade.mode")
           .comment("Defines how the explosion should interact with blocks",
               "NONE: No block interaction, blocks will remain unchanged",
               "BREAK: Blocks are broken, they will be dropped when exploded",
               "DESTROY: Blocks are destroyed, nothing will be dropped and only a crater will be left")
-          .defineEnum("fireGrenadeExplosionMode", Level.ExplosionInteraction.NONE);
+          .defineEnum("fireGrenadeExplosionMode", Explosion.BlockInteraction.NONE);
       this.explosivesFragGrenadeExplosionMode = builder
           .translation("options.craftingdead.server.explosives.frag_grenade.mode")
           .comment("Defines how the explosion should interact with blocks",
               "NONE: No block interaction, blocks will remain unchanged",
               "BREAK: Blocks are broken, they will be dropped when exploded",
               "DESTROY: Blocks are destroyed, nothing will be dropped and only a crater will be left")
-          .defineEnum("fragGrenadeExplosionMode", Level.ExplosionInteraction.NONE);
+          .defineEnum("fragGrenadeExplosionMode", Explosion.BlockInteraction.NONE);
       this.explosivesRemoteDetonatorRange = builder
           .translation("options.craftingdead.server.explosives.remote_detonator.range")
           .comment("Activation range (in blocks) of the Remote Detonator")

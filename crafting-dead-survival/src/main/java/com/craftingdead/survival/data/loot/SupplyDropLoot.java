@@ -20,11 +20,9 @@ package com.craftingdead.survival.data.loot;
 
 import com.craftingdead.survival.world.item.SurvivalItems;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import com.craftingdead.core.tags.ModItemTags;
 import com.craftingdead.core.world.item.ModItems;
 import com.craftingdead.survival.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -34,10 +32,10 @@ import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
-public class SupplyDropLoot implements LootTableSubProvider {
+public class SupplyDropLoot implements java.util.function.Consumer<BiConsumer<ResourceLocation, LootTable.Builder>> {
 
   @Override
-  public void generate(BiConsumer<ResourceLocation, LootTable.Builder> t) {
+  public void accept(BiConsumer<ResourceLocation, LootTable.Builder> t) {
     t.accept(BuiltInLootTables.MEDICAL_SUPPLY_DROP, new LootTable.Builder()
         .withPool(LootPool.lootPool()
             .setRolls(ConstantValue.exactly(10))

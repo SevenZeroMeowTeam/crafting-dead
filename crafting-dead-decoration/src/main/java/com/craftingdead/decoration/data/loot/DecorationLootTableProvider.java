@@ -20,18 +20,27 @@ package com.craftingdead.decoration.data.loot;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import net.minecraft.data.PackOutput;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 public class DecorationLootTableProvider extends LootTableProvider {
 
-  public DecorationLootTableProvider(PackOutput output) {
-    super(output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(DecorationBlockLoot::new, LootContextParamSets.BLOCK)));
+  public DecorationLootTableProvider(DataGenerator generator) {
+    super(generator);
+  }
+
+  @Override
+  protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
+    return List.of(Pair.of(DecorationBlockLoot::new, LootContextParamSets.BLOCK));
   }
 
   @Override

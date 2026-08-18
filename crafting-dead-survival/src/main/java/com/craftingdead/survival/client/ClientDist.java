@@ -66,9 +66,9 @@ public class ClientDist implements ModDist {
   }
 
   private static final ResourceLocation BLOOD =
-      ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "textures/gui/blood.png");
+      new ResourceLocation(CraftingDeadSurvival.ID, "textures/gui/blood.png");
   private static final ResourceLocation BLOOD_2 =
-      ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "textures/gui/blood_2.png");
+      new ResourceLocation(CraftingDeadSurvival.ID, "textures/gui/blood_2.png");
 
   private final Minecraft minecraft;
 

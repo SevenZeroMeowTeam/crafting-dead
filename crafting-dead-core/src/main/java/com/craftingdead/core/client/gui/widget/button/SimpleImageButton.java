@@ -19,7 +19,8 @@
 package com.craftingdead.core.client.gui.widget.button;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,17 +31,18 @@ public class SimpleImageButton extends Button {
 
   public SimpleImageButton(int x, int y, int width, int height,
       ResourceLocation textureLocation, Component text, Button.OnPress actionListener) {
-    super(x, y, width, height, text, actionListener, Button.DEFAULT_NARRATION);
+    super(x, y, width, height, text, actionListener);
     this.textureLocation = textureLocation;
   }
 
   @Override
-  public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+  public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-    guiGraphics.blit(this.textureLocation, this.getX(), this.getY(), 0.0F, 0.0F, this.width, this.height, this.width, this.height);
+    RenderSystem.setShaderTexture(0, this.textureLocation);
+    GuiComponent.blit(poseStack, this.x, this.y, 0.0F, 0.0F, this.width, this.height, this.width, this.height);
     if (this.isHoveredOrFocused()) {
       final int opacity = Math.min((int) (this.alpha * 0.5F * 255.0F), 255);
-      guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height,
+      GuiComponent.fill(poseStack, this.x, this.y, this.x + this.width, this.y + this.height,
           0xFFFFFF + (opacity << 24));
     }
   }

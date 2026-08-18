@@ -21,9 +21,8 @@ package com.craftingdead.survival.data;
 import java.util.function.Consumer;
 import com.craftingdead.core.world.item.ModItems;
 import com.craftingdead.survival.world.item.SurvivalItems;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
@@ -33,18 +32,18 @@ import net.minecraftforge.common.Tags;
 
 public class SurvivalRecipeProvider extends RecipeProvider {
 
-  public SurvivalRecipeProvider(PackOutput output) {
-    super(output);
+  public SurvivalRecipeProvider(DataGenerator generator) {
+    super(generator);
   }
 
   @Override
-  protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.DECORATIONS, Items.STRING, 3)
+  protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+    ShapelessRecipeBuilder.shapeless( Items.STRING, 3)
         .requires(Ingredient.of(ModItems.CLEAN_RAG.get(), ModItems.DIRTY_RAG.get()))
         .unlockedBy("has_clean_rag", has(ModItems.CLEAN_RAG.get()))
         .unlockedBy("has_dirty_rag", has(ModItems.DIRTY_RAG.get()))
         .save(consumer);
-    ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, SurvivalItems.PIPE_BOMB.get())
+    ShapedRecipeBuilder.shaped( SurvivalItems.PIPE_BOMB.get())
         .pattern("bib")
         .pattern("igi")
         .pattern("bib")
@@ -53,14 +52,14 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .define('g', Tags.Items.GUNPOWDER)
         .unlockedBy("has_bloody_rag", has(ModItems.BLOODY_RAG.get()))
         .save(consumer);
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CLEAN_RAG.get())
+    ShapedRecipeBuilder.shaped( ModItems.CLEAN_RAG.get())
         .pattern("sss")
         .pattern("sss")
         .pattern("sss")
         .define('s', Items.STRING)
         .unlockedBy("has_string", has(Items.STRING))
         .save(consumer);
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SurvivalItems.SPLINT.get())
+    ShapedRecipeBuilder.shaped( SurvivalItems.SPLINT.get())
         .pattern("rs ")
         .pattern("srs")
         .pattern(" sr")
@@ -73,7 +72,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
     // Supply Drop Radios
     // ================================================================================
 
-    ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SurvivalItems.MILITARY_DROP_RADIO.get())
+    ShapedRecipeBuilder.shaped( SurvivalItems.MILITARY_DROP_RADIO.get())
         .pattern("iti")
         .pattern("igi")
         .pattern("iii")
@@ -82,7 +81,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .define('g', Items.DIAMOND)
         .unlockedBy("has_redstone_torch", has(Items.REDSTONE_TORCH))
         .save(consumer);
-    ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, SurvivalItems.MEDICAL_DROP_RADIO.get())
+    ShapedRecipeBuilder.shaped( SurvivalItems.MEDICAL_DROP_RADIO.get())
         .pattern("iti")
         .pattern("ifi")
         .pattern("iii")
@@ -92,7 +91,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .unlockedBy("has_redstone_torch", has(Items.REDSTONE_TORCH))
         .save(consumer);
 
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, SurvivalItems.OPEN_CANNED_SWEETCORN.get())
+    ShapelessRecipeBuilder.shapeless( SurvivalItems.OPEN_CANNED_SWEETCORN.get())
         .requires(SurvivalItems.CANNED_SWEETCORN.get())
         .requires(Ingredient.of(
             SurvivalItems.CAN_OPENER.get(),
@@ -101,7 +100,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .unlockedBy("has_canned_corn", has(SurvivalItems.CANNED_SWEETCORN.get()))
         .save(consumer);
 
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, SurvivalItems.OPEN_CANNED_BEANS.get())
+    ShapelessRecipeBuilder.shapeless( SurvivalItems.OPEN_CANNED_BEANS.get())
         .requires(SurvivalItems.CANNED_BEANS.get())
         .requires(Ingredient.of(
             SurvivalItems.CAN_OPENER.get(),
@@ -110,7 +109,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .unlockedBy("has_canned_beans", has(SurvivalItems.CANNED_BEANS.get()))
         .save(consumer);
 
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.DECORATIONS, SurvivalItems.OPEN_CANNED_TUNA.get())
+    ShapelessRecipeBuilder.shapeless( SurvivalItems.OPEN_CANNED_TUNA.get())
         .requires(SurvivalItems.CANNED_TUNA.get())
         .requires(Ingredient.of(
             SurvivalItems.CAN_OPENER.get(),
@@ -119,7 +118,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .unlockedBy("has_canned_tuna", has(SurvivalItems.CANNED_TUNA.get()))
         .save(consumer);
 
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, SurvivalItems.OPEN_CANNED_PEACHES.get())
+    ShapelessRecipeBuilder.shapeless( SurvivalItems.OPEN_CANNED_PEACHES.get())
         .requires(SurvivalItems.CANNED_PEACHES.get())
         .requires(Ingredient.of(
             SurvivalItems.CAN_OPENER.get(),
@@ -128,7 +127,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .unlockedBy("has_canned_peaches", has(SurvivalItems.CANNED_PEACHES.get()))
         .save(consumer);
 
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, SurvivalItems.OPEN_CANNED_PASTA.get())
+    ShapelessRecipeBuilder.shapeless( SurvivalItems.OPEN_CANNED_PASTA.get())
         .requires(SurvivalItems.CANNED_PASTA.get())
         .requires(Ingredient.of(
             SurvivalItems.CAN_OPENER.get(),
@@ -137,7 +136,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .unlockedBy("has_canned_pasta", has(SurvivalItems.CANNED_PASTA.get()))
         .save(consumer);
 
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.DECORATIONS, SurvivalItems.OPEN_CANNED_CORNED_BEEF.get())
+    ShapelessRecipeBuilder.shapeless( SurvivalItems.OPEN_CANNED_CORNED_BEEF.get())
         .requires(SurvivalItems.CANNED_CORNED_BEEF.get())
         .requires(Ingredient.of(
             SurvivalItems.CAN_OPENER.get(),
@@ -146,7 +145,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .unlockedBy("has_canned_corned_beef", has(SurvivalItems.CANNED_CORNED_BEEF.get()))
         .save(consumer);
 
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, SurvivalItems.OPEN_CANNED_CUSTARD.get())
+    ShapelessRecipeBuilder.shapeless( SurvivalItems.OPEN_CANNED_CUSTARD.get())
         .requires(SurvivalItems.CANNED_CUSTARD.get())
         .requires(Ingredient.of(
             SurvivalItems.CAN_OPENER.get(),
@@ -155,7 +154,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .unlockedBy("has_canned_custard", has(SurvivalItems.CANNED_CUSTARD.get()))
         .save(consumer);
 
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.DECORATIONS, SurvivalItems.OPEN_CANNED_PICKLES.get())
+    ShapelessRecipeBuilder.shapeless( SurvivalItems.OPEN_CANNED_PICKLES.get())
         .requires(SurvivalItems.CANNED_PICKLES.get())
         .requires(Ingredient.of(
             SurvivalItems.CAN_OPENER.get(),
@@ -164,7 +163,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .unlockedBy("has_canned_pickles", has(SurvivalItems.CANNED_PICKLES.get()))
         .save(consumer);
 
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, SurvivalItems.OPEN_CANNED_DOG_FOOD.get())
+    ShapelessRecipeBuilder.shapeless( SurvivalItems.OPEN_CANNED_DOG_FOOD.get())
         .requires(SurvivalItems.CANNED_DOG_FOOD.get())
         .requires(Ingredient.of(
             SurvivalItems.CAN_OPENER.get(),
@@ -173,7 +172,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .unlockedBy("has_canned_dog_food", has(SurvivalItems.CANNED_DOG_FOOD.get()))
         .save(consumer);
 
-    ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, SurvivalItems.OPEN_CANNED_TOMATO_SOUP.get())
+    ShapelessRecipeBuilder.shapeless( SurvivalItems.OPEN_CANNED_TOMATO_SOUP.get())
         .requires(SurvivalItems.CANNED_TOMATO_SOUP.get())
         .requires(Ingredient.of(
             SurvivalItems.CAN_OPENER.get(),

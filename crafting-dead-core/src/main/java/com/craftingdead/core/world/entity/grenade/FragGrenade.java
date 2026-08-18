@@ -54,9 +54,9 @@ public class FragGrenade extends Grenade implements ExplosionSource {
   @Override
   public void activatedChanged(boolean activated) {
     if (activated) {
-      if (!this.level().isClientSide()) {
+      if (!this.getLevel().isClientSide()) {
         this.kill();
-        this.level().explode(this, this.createDamageSource(), null,
+        this.getLevel().explode(this,
             this.getX(), this.getY() + this.getBbHeight(), this.getZ(),
             ServerConfig.instance.explosivesFragGrenadeRadius.get().floatValue(), false,
             ServerConfig.instance.explosivesFragGrenadeExplosionMode.get());

@@ -60,9 +60,7 @@ import com.craftingdead.core.world.entity.extension.ClothingProtectionHandler;
 import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -147,7 +145,6 @@ public class CraftingDead {
 
     ModEntityTypes.deferredRegister.register(modEventBus);
     ModItems.deferredRegister.register(modEventBus);
-    ModItems.CREATIVE_MODE_TABS.register(modEventBus);
     ModSoundEvents.deferredRegister.register(modEventBus);
     ModMenuTypes.deferredRegister.register(modEventBus);
     ModMobEffects.deferredRegister.register(modEventBus);
@@ -200,16 +197,14 @@ public class CraftingDead {
 
   private void handleGatherData(GatherDataEvent event) {
     DataGenerator dataGenerator = event.getGenerator();
-    PackOutput packOutput = dataGenerator.getPackOutput();
-    CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
     if (event.includeServer()) {
-      var blockTagsProvider = new ModBlockTagsProvider(packOutput, lookupProvider,
+      var blockTagsProvider = new ModBlockTagsProvider(dataGenerator,
           event.getExistingFileHelper());
       dataGenerator.addProvider(true, blockTagsProvider);
-      dataGenerator.addProvider(true, new ModItemTagsProvider(packOutput, lookupProvider,
-          blockTagsProvider.contentsGetter(), event.getExistingFileHelper()));
-      dataGenerator.addProvider(true, new ModRecipeProvider(packOutput));
-      dataGenerator.addProvider(true, new GunDataProvider(packOutput));
+      dataGenerator.addProvider(true, new ModItemTagsProvider(dataGenerator,
+          blockTagsProvider, event.getExistingFileHelper()));
+      dataGenerator.addProvider(true, new ModRecipeProvider(dataGenerator));
+      dataGenerator.addProvider(true, new GunDataProvider(dataGenerator.getOutputFolder()));
     }
   }
 

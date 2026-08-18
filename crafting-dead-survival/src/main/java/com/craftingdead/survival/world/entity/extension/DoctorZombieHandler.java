@@ -24,7 +24,7 @@ import com.craftingdead.core.world.item.ModItems;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.Item;
@@ -39,7 +39,7 @@ public class DoctorZombieHandler extends ZombieHandler {
   @SuppressWarnings("deprecation")
   @Override
   protected ItemStack createHeldItem() {
-    return BuiltInRegistries.ITEM.getTag(ModItemTags.SYRINGES)
+    return Registry.ITEM.getTag(ModItemTags.SYRINGES)
         .flatMap(set -> set.getRandomElement(this.extension.random()))
         .map(Holder::value)
         .map(Item::getDefaultInstance)

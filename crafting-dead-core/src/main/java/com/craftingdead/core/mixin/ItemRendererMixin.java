@@ -29,7 +29,7 @@ import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,9 +43,9 @@ public abstract class ItemRendererMixin {
    * Adds hook for {@link CustomItemRenderer}.
    */
   @Inject(at = @At("HEAD"),
-      method = "render(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IILnet/minecraft/client/resources/model/BakedModel;)V",
+      method = "render(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IILnet/minecraft/client/resources/model/BakedModel;)V",
       cancellable = true)
-  private void render(ItemStack itemStack, ItemDisplayContext transformType,
+  private void render(ItemStack itemStack, ItemTransforms.TransformType transformType,
       boolean leftHanded, PoseStack matrixStack, MultiBufferSource renderTypeBuffer,
       int packedLight, int packedOverlay, BakedModel bakedModel, CallbackInfo callbackInfo) {
     if (CraftingDead.getInstance().getClientDist().getItemRendererManager().renderItem(itemStack,
@@ -58,10 +58,10 @@ public abstract class ItemRendererMixin {
    * Adds hook for {@link CustomItemRenderer}.
    */
   @Inject(at = @At("HEAD"),
-      method = "renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V",
+      method = "renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V",
       cancellable = true)
   private void renderStatic(@Nullable LivingEntity livingEntity, ItemStack itemStack,
-      ItemDisplayContext transformType, boolean leftHanded, PoseStack matrixStack,
+      ItemTransforms.TransformType transformType, boolean leftHanded, PoseStack matrixStack,
       MultiBufferSource renderTypeBuffer, @Nullable Level world, int packedLight, int packedOverlay,
       int value,
       CallbackInfo callbackInfo) {

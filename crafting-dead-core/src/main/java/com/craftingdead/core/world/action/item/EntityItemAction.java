@@ -28,6 +28,7 @@ import com.craftingdead.core.world.effect.ModMobEffects;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.core.world.item.ModItems;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
@@ -154,7 +155,7 @@ public final class EntityItemAction<T extends LivingExtension<?, ?>> extends Ite
       
       // Infection reduction (remove infection effect with chance)
       // Use ResourceLocation to check for infection effect across modules
-      var infectionEffectLocation = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("craftingdead", "infection");
+      var infectionEffectLocation = new ResourceLocation("craftingdead", "infection");
       var infectionEffect = net.minecraftforge.registries.ForgeRegistries.MOB_EFFECTS.getValue(infectionEffectLocation);
       if (infectionEffect != null && targetEntity.hasEffect(infectionEffect) && 
           random.nextFloat() < ServerConfig.instance.firstAidKitInfectionReductionChance.get().floatValue()) {

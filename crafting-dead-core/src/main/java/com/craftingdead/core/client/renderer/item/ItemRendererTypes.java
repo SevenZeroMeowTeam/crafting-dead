@@ -40,7 +40,7 @@ public class ItemRendererTypes {
       new ItemRendererType<>(GunItem.class, GunRendererProperties.CODEC, GunRenderer::new));
 
   public static <T extends ItemRendererType<?, ?>> T register(String id, T itemRendererType) {
-    return register(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, id), itemRendererType);
+    return register(new ResourceLocation(CraftingDead.ID, id), itemRendererType);
   }
 
   public static <T extends ItemRendererType<?, ?>> T register(ResourceLocation id,
@@ -59,7 +59,7 @@ public class ItemRendererTypes {
       ResourceLocation key) {
     return getValue(key)
         .map(DataResult::success)
-        .orElseGet(() -> DataResult.error(() -> "Key not found: " + key.toString()));
+        .orElseGet(() -> DataResult.error("Key not found: " + key.toString()));
   }
 
   public static Optional<ResourceLocation> getKey(ItemRendererType<?, ?> value) {
@@ -70,6 +70,6 @@ public class ItemRendererTypes {
       ItemRendererType<?, ?> value) {
     return getKey(value)
         .map(DataResult::success)
-        .orElseGet(() -> DataResult.error(() -> "Value not found: " + value.getClass().getName()));
+        .orElseGet(() -> DataResult.error("Value not found: " + value.getClass().getName()));
   }
 }

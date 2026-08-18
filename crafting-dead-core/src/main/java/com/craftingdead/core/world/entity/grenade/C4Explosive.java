@@ -28,10 +28,10 @@ import com.craftingdead.core.world.item.ModItems;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -55,7 +55,7 @@ public class C4Explosive extends Grenade implements ExplosionSource {
 
   @Override
   public boolean hurt(DamageSource source, float amount) {
-    if (source.is(DamageTypes.EXPLOSION) || source.is(DamageTypes.PLAYER_EXPLOSION) || source.is(DamageTypes.ON_FIRE) || source.is(DamageTypes.IN_FIRE)) {
+    if (source.isExplosion() || source.isFire()) {
       if (source.getEntity() != null) {
         this.setSource(source.getEntity());
       }
@@ -70,12 +70,12 @@ public class C4Explosive extends Grenade implements ExplosionSource {
   @Override
   public void activatedChanged(boolean activated) {
     if (activated) {
-      if (!this.level().isClientSide()) {
+      if (!this.getLevel().isClientSide()) {
         this.kill();
         if (knockbackPenalty == 0) {
           // Getting entity by type crashes the server for some reason, this method works fine with
           // no big performance impact
-          var others = this.level().getEntities(this, this.getBoundingBox().inflate(2)).stream()
+          var others = this.getLevel().getEntities(this, this.getBoundingBox().inflate(2)).stream()
               .filter(e -> e instanceof C4Explosive)
               .map(e -> (C4Explosive) e).toList();
           for (C4Explosive other : others) {
@@ -84,7 +84,7 @@ public class C4Explosive extends Grenade implements ExplosionSource {
           this.setKnockbackPenalty(others.size());
         }
 
-        this.level().explode(this, this.createDamageSource(), null,
+        this.getLevel().explode(this,
             this.getX(), this.getY() + this.getBbHeight(), this.getZ(),
             ServerConfig.instance.explosivesC4Radius.get().floatValue(), false,
             ServerConfig.instance.explosivesC4ExplosionMode.get());

@@ -25,15 +25,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
 
 public class DuplicateMagazineRecipe extends CustomRecipe {
 
-  public DuplicateMagazineRecipe(ResourceLocation id, CraftingBookCategory category) {
-    super(id, category);
+  public DuplicateMagazineRecipe(ResourceLocation id) {
+    super(id);
   }
 
   @Override
@@ -72,7 +71,7 @@ public class DuplicateMagazineRecipe extends CustomRecipe {
       ItemStack item = inventory.getItem(i);
       if (item.getCapability(Magazine.CAPABILITY).isPresent()) {
         remainingItems.set(i, item.copy());
-      } else if (item.getItem().hasCraftingRemainingItem()) {
+      } else if (item.getItem().getCraftingRemainingItem() != null) {
         remainingItems.set(i, new ItemStack(item.getItem().getCraftingRemainingItem()));
       }
     }
@@ -81,7 +80,7 @@ public class DuplicateMagazineRecipe extends CustomRecipe {
   }
 
   @Override
-  public ItemStack assemble(CraftingContainer inventory, RegistryAccess registryAccess) {
+  public ItemStack assemble(CraftingContainer inventory) {
     ItemStack result = inventory.getItem(4).copy();
     // Sometimes this isn't present for some reason...
     result.getCapability(Magazine.CAPABILITY).ifPresent(magazine -> magazine.setSize(0));

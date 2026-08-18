@@ -33,7 +33,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class Attachments {
 
   public static final ResourceKey<Registry<Attachment>> REGISTRY_KEY =
-      ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "attachment"));
+      ResourceKey.createRegistryKey(new ResourceLocation(CraftingDead.ID, "attachment"));
 
   public static final DeferredRegister<Attachment> deferredRegister =
       DeferredRegister.create(REGISTRY_KEY, CraftingDead.ID);

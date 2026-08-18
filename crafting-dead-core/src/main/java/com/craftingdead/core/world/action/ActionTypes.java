@@ -39,6 +39,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.monster.Skeleton;
@@ -52,7 +53,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class ActionTypes {
 
   public static final ResourceKey<Registry<ActionType<?>>> REGISTRY_KEY =
-      ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "action_type"));
+      ResourceKey.createRegistryKey(new ResourceLocation(CraftingDead.ID, "action_type"));
 
   public static final DeferredRegister<ActionType<?>> deferredRegister =
       DeferredRegister.create(REGISTRY_KEY, CraftingDead.ID);
@@ -119,7 +120,7 @@ public class ActionTypes {
               .forItem(ModItems.SYRINGE)
               .duration(16)
               .customAction((performer, target) -> target.entity().hurt(
-                  target.entity().damageSources().mobAttack(target.entity()), 2.0F), 1.0F)
+                  new EntityDamageSource("mob", target.entity()), 2.0F), 1.0F)
               .resultItem(ModItems.BLOOD_SYRINGE)
               .build());
 

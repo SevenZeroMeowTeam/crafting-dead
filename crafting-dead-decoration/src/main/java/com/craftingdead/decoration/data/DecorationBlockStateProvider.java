@@ -21,7 +21,7 @@ package com.craftingdead.decoration.data;
 import com.craftingdead.decoration.CraftingDeadDecoration;
 import com.craftingdead.decoration.world.level.block.DecorationBlocks;
 import com.craftingdead.decoration.world.level.block.DoubleBlock;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
@@ -31,7 +31,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class DecorationBlockStateProvider extends BlockStateProvider {
 
-  public DecorationBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
+  public DecorationBlockStateProvider(DataGenerator output, ExistingFileHelper exFileHelper) {
     super(output, CraftingDeadDecoration.ID, exFileHelper);
   }
 
@@ -212,6 +212,6 @@ public class DecorationBlockStateProvider extends BlockStateProvider {
   }
 
   private ModelFile model(String path) {
-    return this.models().getExistingFile(ResourceLocation.fromNamespaceAndPath(CraftingDeadDecoration.ID, path));
+    return this.models().getExistingFile(new ResourceLocation(CraftingDeadDecoration.ID, path));
   }
 }

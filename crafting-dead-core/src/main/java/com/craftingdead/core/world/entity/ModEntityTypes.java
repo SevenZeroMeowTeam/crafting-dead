@@ -94,6 +94,6 @@ public class ModEntityTypes {
 
   private static <T extends Entity> EntityType<T> create(String registryName,
       EntityType.Builder<T> builder) {
-    return builder.build(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, registryName).toString());
+    return builder.build(new ResourceLocation(CraftingDead.ID, registryName).toString());
   }
 }

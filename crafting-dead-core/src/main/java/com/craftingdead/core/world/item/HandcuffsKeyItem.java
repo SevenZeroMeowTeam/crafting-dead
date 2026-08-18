@@ -59,7 +59,7 @@ public class HandcuffsKeyItem extends Item {
     }
 
 
-    return InteractionResult.sidedSuccess(player.level().isClientSide());
+    return InteractionResult.sidedSuccess(player.getLevel().isClientSide());
   }
 
   @Override

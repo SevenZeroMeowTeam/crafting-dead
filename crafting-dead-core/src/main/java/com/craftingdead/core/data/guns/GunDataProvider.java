@@ -31,7 +31,6 @@ import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.resources.RegistryOps;
@@ -43,24 +42,23 @@ public class GunDataProvider implements DataProvider {
   private static final Logger logger = LogUtils.getLogger();
 
   private final RegistryOps<JsonElement> ops =
-      RegistryOps.create(JsonOps.INSTANCE, RegistryAccess.fromRegistryOfRegistries(net.minecraft.core.registries.BuiltInRegistries.REGISTRY));
+      RegistryOps.create(JsonOps.INSTANCE, RegistryAccess.fromRegistryOfRegistries(net.minecraft.core.Registry.REGISTRY));
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-  private final PackOutput output;
+  private final java.nio.file.Path outputFolder;
 
-  public GunDataProvider(PackOutput output) {
-    this.output = output;
+  public GunDataProvider(java.nio.file.Path outputFolder) {
+    this.outputFolder = outputFolder;
   }
 
   @Override
-  public CompletableFuture<?> run(CachedOutput cache) {
+  public void run(CachedOutput cache) throws java.io.IOException {
     for (GunConfiguration gunType : GunConfigurations.registry.get()) {
       encodeGun(gunType, GunConfigurations.REGISTRY_KEY.location(), cache);
     }
-    return CompletableFuture.allOf();
   }
 
-  private void encodeGun(GunConfiguration gun, ResourceLocation registryLocation, CachedOutput cache) {
-    Path outputFolder = output.getOutputFolder();
+  private void encodeGun(GunConfiguration gun, ResourceLocation registryLocation, CachedOutput cache) throws java.io.IOException {
+    Path outputFolder = this.outputFolder;
     var gunId = Objects.requireNonNull(GunConfigurations.registry.get().getKey(gun));
     final String pathString = String.join("/", PackType.SERVER_DATA.getDirectory(),
         gunId.getNamespace(), gunId.getNamespace(), registryLocation.getPath(),
@@ -69,7 +67,11 @@ public class GunDataProvider implements DataProvider {
     GunConfiguration.DIRECT_CODEC.encodeStart(ops, gun)
         .resultOrPartial(msg -> logger.error("Failed to encode {}: {}", path, msg))
         .ifPresent(json -> {
-          DataProvider.saveStable(cache, json, path);
+          try {
+            DataProvider.saveStable(cache, json, path);
+          } catch (java.io.IOException e) {
+            logger.error("Failed to save {}", path, e);
+          }
         });
   }
 
