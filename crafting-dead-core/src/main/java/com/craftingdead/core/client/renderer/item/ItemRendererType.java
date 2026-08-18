@@ -19,16 +19,16 @@
 package com.craftingdead.core.client.renderer.item;
 
 import java.util.function.BiFunction;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.Item;
 
 public class ItemRendererType<I extends Item, P extends ItemRendererProperties> {
 
   private final BiFunction<I, P, CustomItemRenderer> factory;
   private final Class<I> itemType;
-  private final Codec<P> propertiesCodec;
+  private final MapCodec<P> propertiesCodec;
 
-  public ItemRendererType(Class<I> itemType, Codec<P> propertiesCodec,
+  public ItemRendererType(Class<I> itemType, MapCodec<P> propertiesCodec,
       BiFunction<I, P, CustomItemRenderer> factory) {
     this.itemType = itemType;
     this.propertiesCodec = propertiesCodec;
@@ -43,7 +43,7 @@ public class ItemRendererType<I extends Item, P extends ItemRendererProperties> 
     return this.itemType;
   }
 
-  public Codec<? extends ItemRendererProperties> getPropertiesCodec() {
+  public MapCodec<? extends ItemRendererProperties> getPropertiesCodec() {
     return this.propertiesCodec;
   }
 }

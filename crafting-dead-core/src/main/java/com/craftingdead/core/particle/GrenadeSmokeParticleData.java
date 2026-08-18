@@ -18,50 +18,36 @@
 
 package com.craftingdead.core.particle;
 
-import java.util.Locale;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 public class GrenadeSmokeParticleData implements ParticleOptions {
 
-  public static final Codec<GrenadeSmokeParticleData> CODEC =
-      RecordCodecBuilder.create(instance -> instance
-          .group(Codec.FLOAT.fieldOf("red").forGetter(GrenadeSmokeParticleData::getRed),
-              Codec.FLOAT.fieldOf("green").forGetter(GrenadeSmokeParticleData::getGreen),
-              Codec.FLOAT.fieldOf("blue").forGetter(GrenadeSmokeParticleData::getBlue),
-              Codec.FLOAT.fieldOf("scale").forGetter(GrenadeSmokeParticleData::getScale))
+  public static final MapCodec<GrenadeSmokeParticleData> CODEC =
+      RecordCodecBuilder.mapCodec(instance -> instance
+          .group(
+              com.mojang.serialization.Codec.FLOAT.fieldOf("red")
+                  .forGetter(GrenadeSmokeParticleData::getRed),
+              com.mojang.serialization.Codec.FLOAT.fieldOf("green")
+                  .forGetter(GrenadeSmokeParticleData::getGreen),
+              com.mojang.serialization.Codec.FLOAT.fieldOf("blue")
+                  .forGetter(GrenadeSmokeParticleData::getBlue),
+              com.mojang.serialization.Codec.FLOAT.fieldOf("scale")
+                  .forGetter(GrenadeSmokeParticleData::getScale))
           .apply(instance, GrenadeSmokeParticleData::new));
 
-  @SuppressWarnings("deprecation")
-  public static final ParticleOptions.Deserializer<GrenadeSmokeParticleData> DESERIALIZER =
-      new ParticleOptions.Deserializer<GrenadeSmokeParticleData>() {
-        @Override
-        public GrenadeSmokeParticleData fromCommand(
-            ParticleType<GrenadeSmokeParticleData> particleType, StringReader stringReader)
-            throws CommandSyntaxException {
-          stringReader.expect(' ');
-          float red = stringReader.readFloat();
-          stringReader.expect(' ');
-          float green = stringReader.readFloat();
-          stringReader.expect(' ');
-          float blue = stringReader.readFloat();
-          stringReader.expect(' ');
-          float scale = stringReader.readFloat();
-          return new GrenadeSmokeParticleData(red, green, blue, scale);
-        }
-
-        @Override
-        public GrenadeSmokeParticleData fromNetwork(ParticleType<GrenadeSmokeParticleData> particleType,
-            FriendlyByteBuf packetBuffer) {
-          return new GrenadeSmokeParticleData(packetBuffer.readFloat(), packetBuffer.readFloat(),
-              packetBuffer.readFloat(), packetBuffer.readFloat());
-        }
-      };
+  public static final StreamCodec<RegistryFriendlyByteBuf, GrenadeSmokeParticleData>
+      STREAM_CODEC =
+      StreamCodec.composite(
+          StreamCodecHelper.FLOAT, GrenadeSmokeParticleData::getRed,
+          StreamCodecHelper.FLOAT, GrenadeSmokeParticleData::getGreen,
+          StreamCodecHelper.FLOAT, GrenadeSmokeParticleData::getBlue,
+          StreamCodecHelper.FLOAT, GrenadeSmokeParticleData::getScale,
+          GrenadeSmokeParticleData::new);
 
   private final float red;
   private final float green;
@@ -73,20 +59,6 @@ public class GrenadeSmokeParticleData implements ParticleOptions {
     this.green = green;
     this.blue = blue;
     this.scale = scale;
-  }
-
-  @Override
-  public void writeToNetwork(FriendlyByteBuf packetBuffer) {
-    packetBuffer.writeFloat(this.red);
-    packetBuffer.writeFloat(this.green);
-    packetBuffer.writeFloat(this.blue);
-    packetBuffer.writeFloat(this.scale);
-  }
-
-  @Override
-  public String writeToString() {
-    return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f",
-        net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.red, this.green, this.blue, this.scale);
   }
 
   @Override

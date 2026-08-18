@@ -51,7 +51,8 @@ public class MedicalItem extends ActionItem {
   }
 
   @Override
-  public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level level, @Nonnull List<Component> lines,
+  public void appendHoverText(@Nonnull ItemStack stack,
+      net.minecraft.world.item.Item.TooltipContext level, @Nonnull List<Component> lines,
       @Nonnull TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, level, lines, tooltipFlag);
 

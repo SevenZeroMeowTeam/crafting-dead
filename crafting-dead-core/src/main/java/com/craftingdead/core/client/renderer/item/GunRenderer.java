@@ -69,6 +69,7 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -162,7 +163,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
       return;
     }
 
-    var partialTick = this.minecraft.isPaused() ? 1.0F : this.minecraft.getFrameTime();
+    var partialTick = this.minecraft.isPaused() ? 1.0F : this.minecraft.getTimer().getGameTimeDeltaPartialTick(false);
 
     var gun = CapabilityUtil.getOrThrow(Gun.CAPABILITY, itemStack, Gun.class);
 
@@ -184,7 +185,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
               packedOverlay);
           break;
         case HEAD:
-          poseStack.mulPoseMatrix(this.properties.backTransform().getMatrix());
+          poseStack.mulPose(this.properties.backTransform().getMatrix());
           this.renderGun(gun, true, false, itemStack.hasFoil(), 0.0F,
               transformType, partialTick, poseStack, bufferSource, packedLight,
               packedOverlay);
@@ -254,7 +255,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
           partialTicks, poseStack);
       poseStack.translate(0.75F, -0.75F, -0.6F);
 
-      poseStack.mulPoseMatrix(rightHandTransforms.getMatrix());
+      poseStack.mulPose(rightHandTransforms.getMatrix());
       {
         poseStack.mulPose(Axis.YP.rotationDegrees(95.0F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(100.0F));
@@ -279,7 +280,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
 
       poseStack.translate(0.75F, -0.75F, -0.75F);
 
-      poseStack.mulPoseMatrix(leftHandTransforms.getMatrix());
+      poseStack.mulPose(leftHandTransforms.getMatrix());
       {
         poseStack.mulPose(Axis.YP.rotationDegrees(95.0F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(95.0F));
@@ -335,7 +336,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
           ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/flash/flash" + texture + ".png"),
           true));
       this.muzzleFlashModel.render(matrixStack, flashBuffer, RenderUtil.FULL_LIGHT,
-          packedOverlay, 1.0F, 1.0F, 1.0F, randomScale + 0.5F);
+          packedOverlay, 0xFFFFFFFF);
     }
     matrixStack.popPose();
   }
@@ -390,7 +391,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
     // ============== Animations End ==============
 
     if (sprintingPct > 0) {
-      poseStack.mulPoseMatrix(TransformationHelper
+      poseStack.mulPose(TransformationHelper
           .slerp(Transformation.identity(), this.properties.sprintingTransform(), sprintingPct)
           .getMatrix());
     } else {
@@ -454,7 +455,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
             aimingPct)
         : normalTransform;
 
-    poseStack.mulPoseMatrix(perspectiveTransform.getMatrix());
+    poseStack.mulPose(perspectiveTransform.getMatrix());
     {
       this.renderBakedModel(bakedModel, foil, color, transformType,
           poseStack, bufferSource, packedLight, packedOverlay);
@@ -501,15 +502,15 @@ public class GunRenderer implements CombatSlotItemRenderer {
     return this.cachedModels.computeIfAbsent(
         modelLocation.hashCode() + (textures == null ? 0 : textures.hashCode()), key -> {
           if (textures != null) {
-            var model = this.minecraft.getModelManager().getModel(modelLocation);
+            var model = this.minecraft.getModelManager().getModel(ModelResourceLocation.inventory(modelLocation));
             if (model instanceof BlockModel blockModel) {
               BlockModel overriddenModel = new BlockModel(null, List.of(), textures, false,
                   null, ItemTransforms.NO_TRANSFORMS, List.of());
               overriddenModel.parent = blockModel;
-              return this.minecraft.getModelManager().getModel(modelLocation);
+              return this.minecraft.getModelManager().getModel(ModelResourceLocation.inventory(modelLocation));
             }
           }
-          return this.minecraft.getModelManager().getModel(modelLocation);
+          return this.minecraft.getModelManager().getModel(ModelResourceLocation.inventory(modelLocation));
         });
   }
 
@@ -527,7 +528,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
 
     if (gun.hasIronSight()) {
       for (var ironSight : this.properties.ironSights()) {
-        matrixStack.mulPoseMatrix(ironSight.getSecond().getMatrix());
+        matrixStack.mulPose(ironSight.getSecond().getMatrix());
         {
           var bakedModel = this.getBakedModel(ironSight.getFirst(),
               Map.of(GUN_TEXTURE_REFERENCE, Either.left(skinTextureLocation == null
@@ -543,7 +544,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
     for (var attachment : gun.getAttachments().values()) {
       var transform = this.properties.attachmentTransforms()
           .getOrDefault(Attachments.registry.get().getKey(attachment), Transformation.identity());
-      matrixStack.mulPoseMatrix(transform.getMatrix());
+      matrixStack.mulPose(transform.getMatrix());
       {
         var bakedModel =
             this.getBakedModel(getAttachmentModelLocation(Attachments.registry.get().getKey(attachment)), null);
@@ -566,7 +567,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
       int packedOverlay) {
     var transform = this.properties.magazineTransforms()
         .getOrDefault(ForgeRegistries.ITEMS.getKey(magazineStack.getItem()), Transformation.identity());
-    poseStack.mulPoseMatrix(transform.getMatrix());
+    poseStack.mulPose(transform.getMatrix());
     {
       var modelLocation = getMagazineModelLocation(ForgeRegistries.ITEMS.getKey(magazineStack.getItem()));
 
@@ -583,7 +584,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
 
   private Material getGunRenderMaterial() {
     var unbakedModel =
-        this.minecraft.getModelManager().getModel(this.properties.modelLocation());
+        this.minecraft.getModelManager().getModel(ModelResourceLocation.inventory(this.properties.modelLocation()));
     return unbakedModel instanceof BlockModel model
         ? model.getMaterial(GUN_TEXTURE_REFERENCE)
         : new Material(InventoryMenu.BLOCK_ATLAS, MissingTextureAtlasSprite.getLocation());

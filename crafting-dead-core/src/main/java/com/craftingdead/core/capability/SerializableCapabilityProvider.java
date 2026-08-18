@@ -41,12 +41,12 @@ class SerializableCapabilityProvider<C extends INBTSerializable<T>, T extends Ta
   }
 
   @Override
-  public T serializeNBT() {
-    return this.instance.map(C::serializeNBT).orElseGet(this.emptyTag);
+  public T serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
+    return this.instance.map(i -> i.serializeNBT(provider)).orElseGet(this.emptyTag);
   }
 
   @Override
-  public void deserializeNBT(T tag) {
-    this.instance.ifPresent(i -> i.deserializeNBT(tag));
+  public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, T tag) {
+    this.instance.ifPresent(i -> i.deserializeNBT(provider, tag));
   }
 }

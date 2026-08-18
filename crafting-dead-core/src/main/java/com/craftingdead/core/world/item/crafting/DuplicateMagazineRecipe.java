@@ -32,13 +32,13 @@ import net.minecraftforge.common.Tags;
 
 public class DuplicateMagazineRecipe extends CustomRecipe {
 
-  public DuplicateMagazineRecipe(ResourceLocation id, CraftingBookCategory category) {
-    super(id, category);
+  public DuplicateMagazineRecipe(CraftingBookCategory category) {
+    super(category);
   }
 
   @Override
-  public boolean matches(CraftingContainer inventory, Level world) {
-    for (int i = 0; i < inventory.getContainerSize(); i++) {
+  public boolean matches(net.minecraft.world.item.crafting.CraftingInput inventory, Level world) {
+    for (int i = 0; i < inventory.size(); i++) {
       switch (i) {
         case 0:
         case 2:
@@ -64,15 +64,15 @@ public class DuplicateMagazineRecipe extends CustomRecipe {
   }
 
   @Override
-  public NonNullList<ItemStack> getRemainingItems(CraftingContainer inventory) {
+  public NonNullList<ItemStack> getRemainingItems(net.minecraft.world.item.crafting.CraftingInput inventory) {
     NonNullList<ItemStack> remainingItems =
-        NonNullList.withSize(inventory.getContainerSize(), ItemStack.EMPTY);
+        NonNullList.withSize(inventory.size(), ItemStack.EMPTY);
 
     for (int i = 0; i < remainingItems.size(); ++i) {
       ItemStack item = inventory.getItem(i);
       if (item.getCapability(Magazine.CAPABILITY).isPresent()) {
         remainingItems.set(i, item.copy());
-      } else if (item.getItem().hasCraftingRemainingItem()) {
+      } else if (item.getItem().getCraftingRemainingItem() != null) {
         remainingItems.set(i, new ItemStack(item.getItem().getCraftingRemainingItem()));
       }
     }
@@ -81,7 +81,8 @@ public class DuplicateMagazineRecipe extends CustomRecipe {
   }
 
   @Override
-  public ItemStack assemble(CraftingContainer inventory, RegistryAccess registryAccess) {
+  public ItemStack assemble(net.minecraft.world.item.crafting.CraftingInput inventory,
+      net.minecraft.core.HolderLookup.Provider registryAccess) {
     ItemStack result = inventory.getItem(4).copy();
     // Sometimes this isn't present for some reason...
     result.getCapability(Magazine.CAPABILITY).ifPresent(magazine -> magazine.setSize(0));

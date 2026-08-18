@@ -35,11 +35,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
@@ -331,7 +331,7 @@ public interface LivingExtension<E extends LivingEntity, H extends LivingHandler
 
   default Vec3 getVelocity() {
     // 0.98 is a magic number used in Minecraft's movement calculations.
-    var gravity = this.entity().getAttributeValue(ForgeMod.ENTITY_GRAVITY.get()) * 0.98F;
+    var gravity = this.entity().getAttributeValue(Attributes.GRAVITY) * 0.98F;
     return this.entity().getDeltaMovement().add(0, gravity, 0);
   }
 

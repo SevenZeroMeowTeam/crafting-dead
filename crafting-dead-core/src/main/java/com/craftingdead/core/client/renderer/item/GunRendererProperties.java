@@ -30,6 +30,7 @@ import org.joml.Quaternionf;
 import com.mojang.math.Transformation;
 import org.joml.Vector3f;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
@@ -53,8 +54,8 @@ public record GunRendererProperties(
           new Vector3f(1.0F, 1.0F, 1.0F),
           null);
 
-  public static final Codec<GunRendererProperties> CODEC =
-      RecordCodecBuilder.create(instance -> instance
+  public static final MapCodec<GunRendererProperties> CODEC =
+      RecordCodecBuilder.mapCodec(instance -> instance
           .group(
               ResourceLocation.CODEC
                   .fieldOf("model")

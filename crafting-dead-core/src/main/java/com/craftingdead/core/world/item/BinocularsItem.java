@@ -46,7 +46,7 @@ public class BinocularsItem extends Item {
   }
 
   @Override
-  public int getUseDuration(ItemStack itemStack) {
+  public int getUseDuration(ItemStack itemStack, net.minecraft.world.entity.LivingEntity livingEntity) {
     return 72000;
   }
 
@@ -64,7 +64,7 @@ public class BinocularsItem extends Item {
   }
 
   @Override
-  public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag nbt) {
+  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
     return CapabilityUtil.provider(
         () -> new SimpleScope(14, SCOPE_OVERLAY_TEXTURE, 2048, 512, itemStack),
         Scope.CAPABILITY);

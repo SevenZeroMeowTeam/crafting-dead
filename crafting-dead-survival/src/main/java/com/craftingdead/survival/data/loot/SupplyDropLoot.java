@@ -20,12 +20,13 @@ package com.craftingdead.survival.data.loot;
 
 import com.craftingdead.survival.world.item.SurvivalItems;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import com.craftingdead.core.tags.ModItemTags;
 import com.craftingdead.core.world.item.ModItems;
 import com.craftingdead.survival.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.data.loot.LootTableSubProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -36,9 +37,12 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 public class SupplyDropLoot implements LootTableSubProvider {
 
+  @SuppressWarnings("unused")
+  public SupplyDropLoot(HolderLookup.Provider provider) {}
+
   @Override
-  public void generate(BiConsumer<ResourceLocation, LootTable.Builder> t) {
-    t.accept(BuiltInLootTables.MEDICAL_SUPPLY_DROP, new LootTable.Builder()
+  public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> t) {
+    t.accept(ResourceKey.create(Registries.LOOT_TABLE, BuiltInLootTables.MEDICAL_SUPPLY_DROP), new LootTable.Builder()
         .withPool(LootPool.lootPool()
             .setRolls(ConstantValue.exactly(10))
             .add(LootItem.lootTableItem(ModItems.BANDAGE.get())
@@ -87,7 +91,7 @@ public class SupplyDropLoot implements LootTableSubProvider {
                 .apply(SetItemCountFunction
                     .setCount(BinomialDistributionGenerator.binomial(2, 0.45F))))));
 
-    t.accept(BuiltInLootTables.MILITARY_SUPPLY_DROP, new LootTable.Builder()
+    t.accept(ResourceKey.create(Registries.LOOT_TABLE, BuiltInLootTables.MILITARY_SUPPLY_DROP), new LootTable.Builder()
         .withPool(LootPool.lootPool()
             .setRolls(ConstantValue.exactly(10))
             .add(LootItem.lootTableItem(ModItems.BANDAGE.get())

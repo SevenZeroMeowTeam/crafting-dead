@@ -90,19 +90,19 @@ public class SurvivalPlayerHandler implements PlayerHandler {
     var invulnerable = this.player.entity().getAbilities().invulnerable
         || this.player.level().getDifficulty() == Difficulty.PEACEFUL;
 
-    if (this.player.entity().hasEffect(ModMobEffects.BLEEDING.get())
+    if (this.player.entity().hasEffect(ModMobEffects.BLEEDING.getHolder().orElseThrow())
         && (invulnerable || !CraftingDeadSurvival.serverConfig.bleedingEnabled.get())) {
-      this.player.entity().removeEffect(ModMobEffects.BLEEDING.get());
+      this.player.entity().removeEffect(ModMobEffects.BLEEDING.getHolder().orElseThrow());
     }
 
-    if (this.player.entity().hasEffect(SurvivalMobEffects.BROKEN_LEG.get()) &&
+    if (this.player.entity().hasEffect(SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow()) &&
         (invulnerable || !CraftingDeadSurvival.serverConfig.brokenLegsEnabled.get())) {
-      this.player.entity().removeEffect(SurvivalMobEffects.BROKEN_LEG.get());
+      this.player.entity().removeEffect(SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow());
     }
 
-    if (this.player.entity().hasEffect(SurvivalMobEffects.INFECTION.get()) &&
+    if (this.player.entity().hasEffect(SurvivalMobEffects.INFECTION.getHolder().orElseThrow()) &&
         (invulnerable || !CraftingDeadSurvival.serverConfig.infectionEnabled.get())) {
-      this.player.entity().removeEffect(SurvivalMobEffects.INFECTION.get());
+      this.player.entity().removeEffect(SurvivalMobEffects.INFECTION.getHolder().orElseThrow());
     }
   }
 
@@ -126,9 +126,9 @@ public class SurvivalPlayerHandler implements PlayerHandler {
     if (!entity.isCreative()
         && entity.level().getDifficulty() != Difficulty.PEACEFUL
         && entity.getRandom().nextFloat() < chance
-        && !entity.hasEffect(SurvivalMobEffects.INFECTION.get())
+        && !entity.hasEffect(SurvivalMobEffects.INFECTION.getHolder().orElseThrow())
         && CraftingDeadSurvival.serverConfig.infectionEnabled.get()
-        && entity.addEffect(new MobEffectInstance(SurvivalMobEffects.INFECTION.get(), 9999999))) {
+        && entity.addEffect(new MobEffectInstance(SurvivalMobEffects.INFECTION.getHolder().orElseThrow(), 9999999))) {
       entity.displayClientMessage(Component.translatable("message.infected")
           .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
     }
@@ -141,7 +141,7 @@ public class SurvivalPlayerHandler implements PlayerHandler {
 
     if (!invulnerable
         && CraftingDeadSurvival.serverConfig.bleedingEnabled.get()
-        && !this.player.entity().hasEffect(ModMobEffects.BLEEDING.get())
+        && !this.player.entity().hasEffect(ModMobEffects.BLEEDING.getHolder().orElseThrow())
         && (source.getDirectEntity() != null || source.is(net.minecraft.world.damagesource.DamageTypes.EXPLOSION))) {
       float bleedChance;
       if (!this.player.getItemInSlot(Slot.CLOTHING).isEmpty()) {
@@ -152,7 +152,7 @@ public class SurvivalPlayerHandler implements PlayerHandler {
       }
       if (random.nextFloat() < bleedChance
           && this.player.entity().addEffect(
-              new MobEffectInstance(ModMobEffects.BLEEDING.get(), 9999999))) {
+              new MobEffectInstance(ModMobEffects.BLEEDING.getHolder().orElseThrow(), 9999999))) {
         this.player.entity().displayClientMessage(Component.translatable("message.bleeding")
             .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
       }
@@ -160,13 +160,13 @@ public class SurvivalPlayerHandler implements PlayerHandler {
 
     if (!invulnerable
         && CraftingDeadSurvival.serverConfig.brokenLegsEnabled.get()
-        && !this.player.entity().hasEffect(SurvivalMobEffects.BROKEN_LEG.get())
+        && !this.player.entity().hasEffect(SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow())
         && source == this.player.entity().damageSources().fall()) {
       var legBreakChance =
           CraftingDeadSurvival.serverConfig.brokenLegChance.get() * this.player.entity().fallDistance / this.player.entity().getMaxFallDistance();
       if (random.nextFloat() < legBreakChance
           && this.player.entity().addEffect(
-              new MobEffectInstance(SurvivalMobEffects.BROKEN_LEG.get(), 9999999, 4))) {
+              new MobEffectInstance(SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow(), 9999999, 4))) {
         this.player.entity()
             .displayClientMessage(Component.translatable("message.broken_leg")
                 .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);

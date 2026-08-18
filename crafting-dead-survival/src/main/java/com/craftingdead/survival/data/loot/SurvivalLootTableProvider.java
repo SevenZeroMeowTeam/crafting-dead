@@ -27,29 +27,34 @@ import com.google.common.collect.Sets;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 public class SurvivalLootTableProvider extends LootTableProvider {
 
-  public SurvivalLootTableProvider(PackOutput output) {
+  public SurvivalLootTableProvider(PackOutput output,
+      CompletableFuture<HolderLookup.Provider> registries) {
     super(output, Set.of(), List.of(
         new LootTableProvider.SubProviderEntry(SupplyDropLoot::new,
             LootContextParamSets.CHEST),
         new LootTableProvider.SubProviderEntry(SurvivalBlockLoot::new,
             LootContextParamSets.BLOCK),
         new LootTableProvider.SubProviderEntry(SurvivalEntityLoot::new,
-            LootContextParamSets.ENTITY)));
+            LootContextParamSets.ENTITY)),
+        registries);
   }
 
   @Override
-  protected void validate(Map<ResourceLocation, LootTable> map,
-      ValidationContext validationTracker) {
+  protected void validate(Registry<LootTable> map, ValidationContext validationTracker,
+      ProblemReporter reporter) {
     for (var location : Sets.difference(BuiltInLootTables.getLootTables(), map.keySet())) {
-      validationTracker.reportProblem("Missing built-in table: " + location);
+      reporter.report("Missing built-in table: " + location);
     }
-    super.validate(map, validationTracker);
+    super.validate(map, validationTracker, reporter);
   }
 }

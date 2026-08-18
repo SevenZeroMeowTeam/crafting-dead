@@ -45,7 +45,7 @@ public class AttachmentItem extends Item implements AttachmentLike {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, Level world,
+  public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext world,
       List<Component> lines, TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, world, lines, tooltipFlag);
 

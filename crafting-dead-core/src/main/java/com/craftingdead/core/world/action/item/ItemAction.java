@@ -23,6 +23,7 @@ import java.util.Optional;
 import com.craftingdead.core.world.action.Action;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -85,7 +86,7 @@ public abstract class ItemAction implements Action {
         && this.type().getUsageDamage() >= 1) {
       if (!heldStack.isEmpty() && heldStack.isDamageableItem()) {
         heldStack.hurtAndBreak(this.type().getUsageDamage(), this.performer().entity(),
-            (p) -> p.broadcastBreakEvent(this.hand));
+            this.hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
       }
     }
 

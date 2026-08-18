@@ -69,7 +69,7 @@ public class RemoteDetonatorItem extends Item {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, Level level,
+  public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext level,
       List<Component> lines, TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, level, lines, tooltipFlag);
     lines.add(Component.translatable("remote_detonator.information", ServerConfig.instance.explosivesRemoteDetonatorRange.get())

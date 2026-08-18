@@ -45,8 +45,8 @@ import com.craftingdead.core.world.item.gun.ammoprovider.MagazineAmmoProvider;
 import com.craftingdead.core.world.item.gun.attachment.Attachment;
 import com.craftingdead.core.world.item.gun.magazine.Magazine;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -108,8 +108,7 @@ public abstract class GunItem extends ProjectileWeaponItem {
   }
 
   @Override
-  public abstract ICapabilityProvider initCapabilities(ItemStack itemStack,
-      @Nullable CompoundTag nbt);
+  public abstract ICapabilityProvider getCapabilityProvider(ItemStack itemStack);
 
   public Map<GunAnimationEvent, Function<Gun, Animation>> getAnimations() {
     return this.animations;
@@ -139,8 +138,9 @@ public abstract class GunItem extends ProjectileWeaponItem {
     return this.combatSlot;
   }
 
-  public GunConfiguration getConfiguration(RegistryAccess registryAccess) {
-    return this.getConfiguration(registryAccess.registryOrThrow(GunConfigurations.REGISTRY_KEY));
+  public GunConfiguration getConfiguration(HolderLookup.Provider registryAccess) {
+    return registryAccess.lookupOrThrow(GunConfigurations.REGISTRY_KEY)
+        .get(this.configurationKey).orElseThrow().value();
   }
 
   public GunConfiguration getConfiguration(Registry<GunConfiguration> registry) {
@@ -159,12 +159,12 @@ public abstract class GunItem extends ProjectileWeaponItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack itemStack, @Nullable Level level,
+  public void appendHoverText(ItemStack itemStack, net.minecraft.world.item.Item.TooltipContext level,
       List<Component> lines, TooltipFlag tooltipFlag) {
     super.appendHoverText(itemStack, level, lines, tooltipFlag);
 
     if (level != null) {
-      var configuration = this.getConfiguration(level.registryAccess());
+      var configuration = this.getConfiguration(level.registries());
       var damageText =
           Component.literal(String.valueOf(configuration.getDamage()))
               .withStyle(ChatFormatting.RED);
@@ -236,10 +236,7 @@ public abstract class GunItem extends ProjectileWeaponItem {
 
   @Override
   public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-    return enchantment == Enchantments.FLAMING_ARROWS
-        || enchantment == Enchantments.POWER_ARROWS
-        || enchantment == Enchantments.UNBREAKING
-        || super.canApplyAtEnchantingTable(stack, enchantment);
+    return super.canApplyAtEnchantingTable(stack, enchantment);
   }
 
   @Override

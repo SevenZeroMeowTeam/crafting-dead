@@ -56,7 +56,7 @@ public class C4ExplosiveRenderer extends EntityRenderer<Grenade> {
     var vertexConsumer =
         renderTypeBuffer.getBuffer(RenderType.entityCutoutNoCull(this.getTextureLocation(entity)));
     this.model.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY,
-        1.0F, 1.0F, 1.0F, 0.15F);
+        0x26FFFFFF);
   }
 
   @Override

@@ -33,13 +33,13 @@ public class ItemUtils {
    * @param name the name of the tag list in the compound
    * @param inventory the inventory
    */
-  public static void saveInventory(CompoundTag compound, String name, Container inventory) {
+  public static void saveInventory(CompoundTag compound, String name, Container inventory, net.minecraft.core.HolderLookup.Provider provider) {
     ListTag tagList = new ListTag();
     for (int i = 0; i < inventory.getContainerSize(); i++) {
       if (!inventory.getItem(i).isEmpty()) {
         CompoundTag slot = new CompoundTag();
         slot.putInt("slot", i);
-        inventory.getItem(i).save(slot);
+        inventory.getItem(i).save(provider, slot);
         tagList.add(slot);
       }
     }
@@ -54,13 +54,13 @@ public class ItemUtils {
    * @param inventory the item list
    */
   public static void saveInventory(CompoundTag compound, String name,
-      NonNullList<ItemStack> inventory) {
+      NonNullList<ItemStack> inventory, net.minecraft.core.HolderLookup.Provider provider) {
     ListTag tagList = new ListTag();
     for (int i = 0; i < inventory.size(); i++) {
       if (!inventory.get(i).isEmpty()) {
         CompoundTag slot = new CompoundTag();
         slot.putInt("slot", i);
-        inventory.get(i).save(slot);
+        inventory.get(i).save(provider, slot);
         tagList.add(slot);
       }
     }
@@ -74,8 +74,9 @@ public class ItemUtils {
    * @param name the name of the tag list in the compound
    * @param list the item list
    */
-  public static void saveItemList(CompoundTag compound, String name, NonNullList<ItemStack> list) {
-    saveItemList(compound, name, list, true);
+  public static void saveItemList(CompoundTag compound, String name, NonNullList<ItemStack> list,
+      net.minecraft.core.HolderLookup.Provider provider) {
+    saveItemList(compound, name, list, true, provider);
   }
 
   /**
@@ -87,13 +88,13 @@ public class ItemUtils {
    * @param includeEmpty if empty item stacks should be included
    */
   public static void saveItemList(CompoundTag compound, String name, NonNullList<ItemStack> list,
-      boolean includeEmpty) {
+      boolean includeEmpty, net.minecraft.core.HolderLookup.Provider provider) {
     ListTag itemList = new ListTag();
     for (ItemStack stack : list) {
       if (!includeEmpty && stack.isEmpty()) {
         continue;
       }
-      itemList.add(stack.save(new CompoundTag()));
+      itemList.add(stack.save(provider, new CompoundTag()));
     }
     compound.put(name, itemList);
   }
@@ -106,7 +107,8 @@ public class ItemUtils {
    * @param name the name of the tag list in the compound
    * @param inv the inventory
    */
-  public static void readInventory(CompoundTag compound, String name, Container inv) {
+  public static void readInventory(CompoundTag compound, String name, Container inv,
+      net.minecraft.core.HolderLookup.Provider provider) {
     if (!compound.contains(name)) {
       return;
     }
@@ -116,7 +118,7 @@ public class ItemUtils {
       int j = slot.getInt("slot");
 
       if (j >= 0 && j < inv.getContainerSize()) {
-        inv.setItem(j, ItemStack.of(slot));
+        inv.setItem(j, ItemStack.parse(provider, slot).orElse(ItemStack.EMPTY));
       }
     }
   }
@@ -130,7 +132,7 @@ public class ItemUtils {
    * @param inventory the item list
    */
   public static void readInventory(CompoundTag compound, String name,
-      NonNullList<ItemStack> inventory) {
+      NonNullList<ItemStack> inventory, net.minecraft.core.HolderLookup.Provider provider) {
     if (!compound.contains(name)) {
       return;
     }
@@ -142,7 +144,7 @@ public class ItemUtils {
       int j = slot.getInt("slot");
 
       if (j >= 0 && j < inventory.size()) {
-        inventory.set(j, ItemStack.of(slot));
+        inventory.set(j, ItemStack.parse(provider, slot).orElse(ItemStack.EMPTY));
       }
     }
   }
@@ -156,7 +158,7 @@ public class ItemUtils {
    * @return the item list
    */
   public static NonNullList<ItemStack> readItemList(CompoundTag compound, String name,
-      boolean includeEmpty) {
+      boolean includeEmpty, net.minecraft.core.HolderLookup.Provider provider) {
     NonNullList<ItemStack> items = NonNullList.create();
     if (!compound.contains(name)) {
       return items;
@@ -164,7 +166,7 @@ public class ItemUtils {
 
     ListTag itemList = compound.getList(name, 10);
     for (int i = 0; i < itemList.size(); i++) {
-      ItemStack item = ItemStack.of(itemList.getCompound(i));
+      ItemStack item = ItemStack.parse(provider, itemList.getCompound(i)).orElse(ItemStack.EMPTY);
       if (!includeEmpty) {
         if (!item.isEmpty()) {
           items.add(item);
@@ -183,8 +185,9 @@ public class ItemUtils {
    * @param name the name of the tag list in the compound
    * @return the item list
    */
-  public static NonNullList<ItemStack> readItemList(CompoundTag compound, String name) {
-    return readItemList(compound, name, true);
+  public static NonNullList<ItemStack> readItemList(CompoundTag compound, String name,
+      net.minecraft.core.HolderLookup.Provider provider) {
+    return readItemList(compound, name, true, provider);
   }
 
   /**
@@ -194,7 +197,8 @@ public class ItemUtils {
    * @param name the name of the tag list in the compound
    * @param list the item list
    */
-  public static void readItemList(CompoundTag compound, String name, NonNullList<ItemStack> list) {
+  public static void readItemList(CompoundTag compound, String name, NonNullList<ItemStack> list,
+      net.minecraft.core.HolderLookup.Provider provider) {
     if (!compound.contains(name)) {
       return;
     }
@@ -204,7 +208,7 @@ public class ItemUtils {
       if (i >= list.size()) {
         break;
       }
-      list.set(i, ItemStack.of(itemList.getCompound(i)));
+      list.set(i, ItemStack.parse(provider, itemList.getCompound(i)).orElse(ItemStack.EMPTY));
     }
   }
 }

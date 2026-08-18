@@ -94,16 +94,14 @@ public final class EntityItemAction<T extends LivingExtension<?, ?>> extends Ite
         this.type.getCustomAction().consumer().accept(this.performer, this.selectedTarget);
       }
 
-      this.selectedTarget.entity().curePotionEffects(this.getItemStack());
-
       // Apply medical effects based on item type and config
       this.applyMedicalEffects();
 
       for (var action : this.type.getEffects()) {
         if (performer.entity().getRandom().nextFloat() < action.chance()) {
           var effectInstance = action.effect().get();
-          if (effectInstance.getEffect().isInstantenous()) {
-            effectInstance.getEffect().applyInstantenousEffect(this.selectedTarget.entity(),
+          if (effectInstance.getEffect().value().isInstantenous()) {
+            effectInstance.getEffect().value().applyInstantenousEffect(this.selectedTarget.entity(),
                 this.selectedTarget.entity(),
                 this.selectedTarget.entity(), effectInstance.getAmplifier(), 1.0D);
           } else {
@@ -144,21 +142,23 @@ public final class EntityItemAction<T extends LivingExtension<?, ?>> extends Ite
       float effectiveChance = this.calculateBleedingChance(targetEntity, baseChance);
       
       if (ServerConfig.instance.bandageRemovesBleeding.get() && random.nextFloat() < effectiveChance) {
-        targetEntity.removeEffect(ModMobEffects.BLEEDING.get());
+        targetEntity.removeEffect(ModMobEffects.BLEEDING.getHolder().orElseThrow());
       }
     } else if (itemStack.is(ModItems.FIRST_AID_KIT.get())) {
       // First Aid Kit effects
       if (ServerConfig.instance.firstAidKitRemovesBleeding.get()) {
-        targetEntity.removeEffect(ModMobEffects.BLEEDING.get());
+        targetEntity.removeEffect(ModMobEffects.BLEEDING.getHolder().orElseThrow());
       }
       
       // Infection reduction (remove infection effect with chance)
       // Use ResourceLocation to check for infection effect across modules
-      var infectionEffectLocation = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("craftingdead", "infection");
-      var infectionEffect = net.minecraftforge.registries.ForgeRegistries.MOB_EFFECTS.getValue(infectionEffectLocation);
-      if (infectionEffect != null && targetEntity.hasEffect(infectionEffect) && 
-          random.nextFloat() < ServerConfig.instance.firstAidKitInfectionReductionChance.get().floatValue()) {
-        targetEntity.removeEffect(infectionEffect);
+      var infectionEffectHolder = net.minecraftforge.registries.ForgeRegistries.MOB_EFFECTS
+          .getHolder(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("craftingdead",
+              "infection"));
+      if (infectionEffectHolder.isPresent()
+          && targetEntity.hasEffect(infectionEffectHolder.get())
+          && random.nextFloat() < ServerConfig.instance.firstAidKitInfectionReductionChance.get().floatValue()) {
+        targetEntity.removeEffect(infectionEffectHolder.get());
       }
 
       // Trauma severity reduction - reduce trauma effects
@@ -169,14 +169,14 @@ public final class EntityItemAction<T extends LivingExtension<?, ?>> extends Ite
     } else if (itemStack.is(ModItems.CLEAN_RAG.get())) {
       // Clean Rag effects
       if (ServerConfig.instance.cleanRagRemovesBleeding.get()) {
-        targetEntity.removeEffect(ModMobEffects.BLEEDING.get());
+        targetEntity.removeEffect(ModMobEffects.BLEEDING.getHolder().orElseThrow());
       }
     }
   }
 
   private float calculateBleedingChance(net.minecraft.world.entity.LivingEntity entity, float baseChance) {
     // Apply adrenaline bleeding chance multiplier if adrenaline effect is active
-    if (entity.hasEffect(ModMobEffects.ADRENALINE.get())) {
+    if (entity.hasEffect(ModMobEffects.ADRENALINE.getHolder().orElseThrow())) {
       float multiplier = ServerConfig.instance.adrenalineBleedChanceMultiplier.get().floatValue();
       return Math.min(1.0f, baseChance * multiplier);
     }

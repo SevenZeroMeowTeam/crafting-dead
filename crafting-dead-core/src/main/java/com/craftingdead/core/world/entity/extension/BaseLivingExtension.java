@@ -52,6 +52,7 @@ import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -197,11 +198,11 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     if (sendUpdate) {
       var target = this.level().isClientSide()
           ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY_AND_SELF.with(this::entity);
+          : PacketDistributor.TRACKING_ENTITY_AND_SELF.with(this.entity());
       var buf = new FriendlyByteBuf(Unpooled.buffer());
       ((ActionType<T>) action.type()).encode(action, buf);
-      NetworkChannel.PLAY.getSimpleChannel().send(target,
-          new PerformActionMessage(action.type(), this.entity().getId(), buf));
+      NetworkChannel.PLAY.getSimpleChannel().send(
+          new PerformActionMessage(action.type(), this.entity().getId(), buf), target);
     }
     return true;
   }
@@ -215,9 +216,9 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     if (sendUpdate) {
       var target = this.level().isClientSide()
           ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY_AND_SELF.with(this::entity);
-      NetworkChannel.PLAY.getSimpleChannel().send(target,
-          new CancelActionMessage(this.entity().getId()));
+          : PacketDistributor.TRACKING_ENTITY_AND_SELF.with(this.entity());
+      NetworkChannel.PLAY.getSimpleChannel().send(
+          new CancelActionMessage(this.entity().getId()), target);
     }
   }
 
@@ -487,9 +488,9 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     if (sendUpdate) {
       var target = this.level().isClientSide()
           ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY_AND_SELF.with(this::entity);
-      NetworkChannel.PLAY.getSimpleChannel().send(target,
-          new CrouchMessage(this.entity().getId(), crouching));
+          : PacketDistributor.TRACKING_ENTITY_AND_SELF.with(this.entity());
+      NetworkChannel.PLAY.getSimpleChannel().send(
+          new CrouchMessage(this.entity().getId(), crouching), target);
     }
   }
 
@@ -536,11 +537,11 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
   }
 
   @Override
-  public CompoundTag serializeNBT() {
+  public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
     var tag = new CompoundTag();
-    tag.put("inventory", this.itemHandler.serializeNBT());
+    tag.put("inventory", this.itemHandler.serializeNBT(provider));
     for (var entry : this.handlers.entrySet()) {
-      var extensionTag = entry.getValue().serializeNBT();
+      var extensionTag = entry.getValue().serializeNBT(provider);
       if (!extensionTag.isEmpty()) {
         tag.put(entry.getKey().toString(), extensionTag);
       }
@@ -555,12 +556,12 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
   }
 
   @Override
-  public void deserializeNBT(CompoundTag tag) {
-    this.itemHandler.deserializeNBT(tag.getCompound("inventory"));
+  public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag tag) {
+    this.itemHandler.deserializeNBT(provider, tag.getCompound("inventory"));
     for (var entry : this.handlers.entrySet()) {
       var extensionTag = tag.getCompound(entry.getKey().toString());
       if (!extensionTag.isEmpty()) {
-        entry.getValue().deserializeNBT(extensionTag);
+        entry.getValue().deserializeNBT(provider, extensionTag);
       }
     }
 
@@ -591,12 +592,12 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     if (writeAll) {
       for (int i = 0; i < this.itemHandler.getSlots(); i++) {
         out.writeShort(i);
-        out.writeItem(this.itemHandler.getStackInSlot(i));
+        ItemStack.OPTIONAL_STREAM_CODEC.encode((RegistryFriendlyByteBuf) out, this.itemHandler.getStackInSlot(i));
       }
     } else {
       this.dirtySlots.forEach(slot -> {
         out.writeShort(slot);
-        out.writeItem(this.itemHandler.getStackInSlot(slot));
+        ItemStack.OPTIONAL_STREAM_CODEC.encode((RegistryFriendlyByteBuf) out, this.itemHandler.getStackInSlot(slot));
       });
       this.dirtySlots.clear();
     }
@@ -620,7 +621,7 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     // Item Handler
     int slot;
     while ((slot = in.readShort()) != 255) {
-      this.itemHandler.setStackInSlot(slot, in.readItem());
+      this.itemHandler.setStackInSlot(slot, ItemStack.OPTIONAL_STREAM_CODEC.decode((RegistryFriendlyByteBuf) in));
     }
 
     // Handlers

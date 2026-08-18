@@ -62,8 +62,8 @@ public class CrosshairManager extends SimplePreparableReloadListener<Map<Resourc
             try (InputStreamReader reader = new InputStreamReader(resource.open())) {
               Codec.list(Crosshair.CODEC)
                   .parse(JsonOps.INSTANCE, gson.fromJson(reader, JsonElement.class))
-                  .getOrThrow(false, message -> logger.warn("Failed to parse {} Reason: ",
-                      fileLocation.toString(), message))
+                  .getOrThrow(error -> new RuntimeException(
+                      "Failed to parse " + fileLocation + ": " + error))
                   .forEach(crosshair -> crosshairs.put(crosshair.getName(), crosshair));
             } catch (IOException e) {
               logger.warn("Failed to read {}", fileLocation.toString(), e);

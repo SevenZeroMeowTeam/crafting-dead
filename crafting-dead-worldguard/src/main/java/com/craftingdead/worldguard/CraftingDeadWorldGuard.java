@@ -44,6 +44,7 @@ import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -142,12 +143,14 @@ public class CraftingDeadWorldGuard extends JavaPlugin {
       }
     }
 
-    if (stopBleeding && hasEffect(extension.entity(), ModMobEffects.BLEEDING.get())) {
-      removeEffect(extension.entity(), ModMobEffects.BLEEDING.get());
+    if (stopBleeding
+        && hasEffect(extension.entity(), ModMobEffects.BLEEDING.getHolder().orElseThrow())) {
+      removeEffect(extension.entity(), ModMobEffects.BLEEDING.getHolder().orElseThrow());
     }
 
-    if (stopBrokenLegs && hasEffect(extension.entity(), SurvivalMobEffects.BROKEN_LEG.get())) {
-      removeEffect(extension.entity(), SurvivalMobEffects.BROKEN_LEG.get());
+    if (stopBrokenLegs
+        && hasEffect(extension.entity(), SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow())) {
+      removeEffect(extension.entity(), SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow());
     }
   }
 
@@ -173,11 +176,11 @@ public class CraftingDeadWorldGuard extends JavaPlugin {
 
 
       StateFlag flag = null;
-      if (effect == SurvivalMobEffects.INFECTION.get()) {
+      if (effect == SurvivalMobEffects.INFECTION.getHolder().orElseThrow()) {
         flag = INFECTION;
-      } else if (effect == SurvivalMobEffects.BROKEN_LEG.get()) {
+      } else if (effect == SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow()) {
         flag = BROKEN_LEGS;
-      } else if (effect == ModMobEffects.BLEEDING.get()) {
+      } else if (effect == ModMobEffects.BLEEDING.getHolder().orElseThrow()) {
         flag = BLEEDING;
       }
 
@@ -259,15 +262,15 @@ public class CraftingDeadWorldGuard extends JavaPlugin {
     }
   }
 
-  private static MobEffect getEffect(MobEffectInstance effectInstance) {
+  private static Holder<MobEffect> getEffect(MobEffectInstance effectInstance) {
     return effectInstance.getEffect();
   }
 
-  private static boolean hasEffect(LivingEntity entity, MobEffect effect) {
+  private static boolean hasEffect(LivingEntity entity, Holder<MobEffect> effect) {
     return entity.hasEffect(effect);
   }
 
-  private static boolean removeEffect(LivingEntity entity, MobEffect effect) {
+  private static boolean removeEffect(LivingEntity entity, Holder<MobEffect> effect) {
     return entity.removeEffect(effect);
   }
 

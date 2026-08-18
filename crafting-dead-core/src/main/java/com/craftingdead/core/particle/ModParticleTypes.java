@@ -19,9 +19,11 @@
 package com.craftingdead.core.particle;
 
 import com.craftingdead.core.CraftingDead;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -33,20 +35,24 @@ public class ModParticleTypes {
 
   public static final RegistryObject<ParticleType<GrenadeSmokeParticleData>> GRENADE_SMOKE =
       deferredRegister.register("grenade_smoke",
-          () -> create(true, GrenadeSmokeParticleData.DESERIALIZER,
-              GrenadeSmokeParticleData.CODEC));
+          () -> create(true, GrenadeSmokeParticleData.CODEC,
+              GrenadeSmokeParticleData.STREAM_CODEC));
 
   public static final RegistryObject<ParticleType<FlashParticleOptions>> RGB_FLASH =
       deferredRegister.register("rgb_flash",
-          () -> create(true, FlashParticleOptions.DESERIALIZER, FlashParticleOptions.CODEC));
+          () -> create(true, FlashParticleOptions.CODEC, FlashParticleOptions.STREAM_CODEC));
 
   private static <T extends ParticleOptions> ParticleType<T> create(boolean alwaysShow,
-      @SuppressWarnings("deprecation") ParticleOptions.Deserializer<T> deserializer,
-      Codec<T> codec) {
-    return new ParticleType<T>(alwaysShow, deserializer) {
+      MapCodec<T> codec, StreamCodec<RegistryFriendlyByteBuf, T> streamCodec) {
+    return new ParticleType<T>(alwaysShow) {
       @Override
-      public Codec<T> codec() {
+      public MapCodec<T> codec() {
         return codec;
+      }
+
+      @Override
+      public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+        return streamCodec;
       }
     };
   }

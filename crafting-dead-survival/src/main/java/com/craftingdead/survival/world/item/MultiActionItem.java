@@ -118,7 +118,7 @@ public class MultiActionItem extends Item {
   }
 
   @Override
-  public int getUseDuration(ItemStack itemStack) {
+  public int getUseDuration(ItemStack itemStack, net.minecraft.world.entity.LivingEntity livingEntity) {
     // Return the max duration of all action types
     return this.actionTypes.stream()
         .map(Supplier::get)

@@ -22,7 +22,7 @@ import com.craftingdead.core.trauma.ProtectionConfig;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record SyncProtectionConfigMessage(String serializedConfig) {
 
@@ -36,8 +36,7 @@ public record SyncProtectionConfigMessage(String serializedConfig) {
     return new SyncProtectionConfigMessage(in.readUtf(MAX_LENGTH));
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> ProtectionConfig.applySerializedConfig(this.serializedConfig));
-    return true;
+  public static void handle(SyncProtectionConfigMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> ProtectionConfig.applySerializedConfig(msg.serializedConfig));
   }
 }

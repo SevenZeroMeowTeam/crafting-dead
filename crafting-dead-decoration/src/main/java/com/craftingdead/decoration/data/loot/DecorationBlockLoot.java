@@ -20,6 +20,7 @@ package com.craftingdead.decoration.data.loot;
 
 import java.util.Set;
 import com.craftingdead.decoration.world.level.block.DecorationBlocks;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
@@ -27,8 +28,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class DecorationBlockLoot extends BlockLootSubProvider {
 
-  public DecorationBlockLoot() {
-    super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+  public DecorationBlockLoot(HolderLookup.Provider provider) {
+    super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
   }
 
   @Override

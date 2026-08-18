@@ -26,6 +26,7 @@ import com.craftingdead.core.client.renderer.item.CombatSlotItemRenderer;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -62,7 +63,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.client.model.data.ModelData;
 
@@ -262,13 +262,12 @@ public class RenderUtil {
 
     var pose = poseStack.last().pose();
     var tessellator = Tesselator.getInstance();
-    var builder = tessellator.getBuilder();
-    builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-    builder.vertex(pose, x, y, 0.0F).color(red, green, blue, alpha).endVertex();
-    builder.vertex(pose, x, y2, 0.0F).color(red, green, blue, alpha).endVertex();
-    builder.vertex(pose, x2, y2, 0.0F).color(red, green, blue, alpha).endVertex();
-    builder.vertex(pose, x2, y, 0.0F).color(red, green, blue, alpha).endVertex();
-    tessellator.end();
+    var builder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+    builder.addVertex(pose, x, y, 0.0F).setColor(red, green, blue, alpha);
+    builder.addVertex(pose, x, y2, 0.0F).setColor(red, green, blue, alpha);
+    builder.addVertex(pose, x2, y2, 0.0F).setColor(red, green, blue, alpha);
+    builder.addVertex(pose, x2, y, 0.0F).setColor(red, green, blue, alpha);
+    BufferUploader.drawWithShader(builder.buildOrThrow());
 
     RenderSystem.disableBlend();
   }
@@ -292,25 +291,20 @@ public class RenderUtil {
     var pose = poseStack.last().pose();
 
     var tessellator = Tesselator.getInstance();
-    var builder = tessellator.getBuilder();
-    builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+    var builder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
     builder
-        .vertex(pose, x, y2, 0.0F)
-        .color(startRed, startGreen, startBlue, startAlpha)
-        .endVertex();
+        .addVertex(pose, x, y2, 0.0F)
+        .setColor(startRed, startGreen, startBlue, startAlpha);
     builder
-        .vertex(pose, x2, y2, 0.0F)
-        .color(endRed, endGreen, endBlue, endAlpha)
-        .endVertex();
+        .addVertex(pose, x2, y2, 0.0F)
+        .setColor(endRed, endGreen, endBlue, endAlpha);
     builder
-        .vertex(pose, x2, y, 0.0F)
-        .color(endRed, endGreen, endBlue, endAlpha)
-        .endVertex();
+        .addVertex(pose, x2, y, 0.0F)
+        .setColor(endRed, endGreen, endBlue, endAlpha);
     builder
-        .vertex(pose, x, y, 0.0F)
-        .color(startRed, startGreen, startBlue, startAlpha)
-        .endVertex();
-    tessellator.end();
+        .addVertex(pose, x, y, 0.0F)
+        .setColor(startRed, startGreen, startBlue, startAlpha);
+    BufferUploader.drawWithShader(builder.buildOrThrow());
 
     RenderSystem.disableBlend();
   }
@@ -349,13 +343,12 @@ public class RenderUtil {
       float v, float u2, float v2) {
     RenderSystem.setShader(GameRenderer::getPositionTexShader);
     final var tessellator = Tesselator.getInstance();
-    final var builder = tessellator.getBuilder();
-    builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-    builder.vertex(x, y2, 0.0D).uv(u, v).endVertex();
-    builder.vertex(x2, y2, 0.0D).uv(u2, v).endVertex();
-    builder.vertex(x2, y, 0.0D).uv(u2, v2).endVertex();
-    builder.vertex(x, y, 0.0D).uv(u, v2).endVertex();
-    tessellator.end();
+    final var builder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+    builder.addVertex(x, y2, 0.0F).setUv(u, v);
+    builder.addVertex(x2, y2, 0.0F).setUv(u2, v);
+    builder.addVertex(x2, y, 0.0F).setUv(u2, v2);
+    builder.addVertex(x, y, 0.0F).setUv(u, v2);
+    BufferUploader.drawWithShader(builder.buildOrThrow());
   }
 
   public static float getFitScale(final float imageWidth, final float imageHeight) {
@@ -476,8 +469,7 @@ public class RenderUtil {
 
     poseStack.pushPose();
     {
-      bakedModel =
-          ForgeHooksClient.handleCameraTransforms(poseStack, bakedModel, transformType, leftHanded);
+      bakedModel.getTransforms().getTransform(transformType).apply(leftHanded, poseStack);
       poseStack.translate(-0.5D, -0.5D, -0.5D);
       if (!bakedModel.isCustomRenderer()) {
           var renderType = ItemBlockRenderTypes.getRenderType(itemStack, true);
@@ -488,7 +480,7 @@ public class RenderUtil {
               var pose = poseStack.last();
               MatrixUtil.mulComponentWise(pose.pose(), 0.5F);
               vertexConsumer =
-                  ItemRenderer.getCompassFoilBufferDirect(bufferSource, renderType, pose);
+                  ItemRenderer.getCompassFoilBuffer(bufferSource, renderType, pose);
             }
             poseStack.popPose();
           } else {

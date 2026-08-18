@@ -30,20 +30,20 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.functions.LootingEnchantFunction;
+import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.functions.SmeltItemFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithLootingCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithEnchantedBonusCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.registries.RegistryObject;
 
 public class SurvivalEntityLoot extends EntityLootSubProvider {
 
-  protected SurvivalEntityLoot() {
-    super(FeatureFlagSet.of());
+  protected SurvivalEntityLoot(HolderLookup.Provider provider) {
+    super(FeatureFlagSet.of(), provider);
   }
 
   @Override
@@ -53,19 +53,23 @@ public class SurvivalEntityLoot extends EntityLootSubProvider {
             .setRolls(ConstantValue.exactly(1.0F))
             .add(LootItem.lootTableItem(Items.ROTTEN_FLESH)
                 .apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 2.0F)))
-                .apply(LootingEnchantFunction
-                    .lootingMultiplier(UniformGenerator.between(0.0F, 1.0F)))))
+                .apply(EnchantedCountIncreaseFunction
+                    .lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)))))
         .withPool(LootPool.lootPool()
             .setRolls(ConstantValue.exactly(1.0F))
             .add(LootItem.lootTableItem(Items.IRON_INGOT))
             .add(LootItem.lootTableItem(Items.CARROT))
             .add(LootItem.lootTableItem(Items.POTATO)
                 .apply(SmeltItemFunction.smelted()
-                    .when(LootItemEntityPropertyCondition
-                        .hasProperties(LootContext.EntityTarget.THIS, ENTITY_ON_FIRE))))
+                    .when(LootItemEntityPropertyCondition.hasProperties(
+                        LootContext.EntityTarget.THIS,
+                        net.minecraft.advancements.critereon.EntityPredicate.Builder.entity()
+                            .flags(net.minecraft.advancements.critereon.EntityFlagsPredicate.Builder
+                                .flags().setOnFire(true))
+                            .build()))))
             .when(LootItemKilledByPlayerCondition.killedByPlayer())
-            .when(LootItemRandomChanceWithLootingCondition
-                .randomChanceAndLootingBoost(0.025F, 0.01F)));
+            .when(LootItemRandomChanceWithEnchantedBonusCondition
+                .randomChanceAndLootingBoost(this.registries, 0.025F, 0.01F)));
     this.add(SurvivalEntityTypes.FAST_ZOMBIE.get(), zombieLoot);
     this.add(SurvivalEntityTypes.TANK_ZOMBIE.get(), zombieLoot);
     this.add(SurvivalEntityTypes.WEAK_ZOMBIE.get(), zombieLoot);

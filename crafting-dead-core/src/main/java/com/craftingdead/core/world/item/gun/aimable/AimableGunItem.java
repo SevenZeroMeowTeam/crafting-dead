@@ -36,10 +36,16 @@ public class AimableGunItem extends GunItem {
   }
 
   @Override
-  public ICapabilityProvider initCapabilities(ItemStack itemStack, CompoundTag nbt) {
+  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
     return CapabilityUtil.serializableProvider(() -> new AimableGun(itemStack, this),
         Gun.CAPABILITY, CombatSlotProvider.CAPABILITY, Scope.CAPABILITY);
   }
+
+  @Override
+  protected void shootProjectile(net.minecraft.world.entity.LivingEntity shooter,
+      net.minecraft.world.entity.projectile.Projectile projectile, int index, float velocity,
+      float inaccuracy, float angle, net.minecraft.world.entity.LivingEntity target) {}
+
 
   public static Builder<?> builder(ResourceKey<GunConfiguration> configurationKey) {
     return new Builder<>(AimableGunItem::new, configurationKey);

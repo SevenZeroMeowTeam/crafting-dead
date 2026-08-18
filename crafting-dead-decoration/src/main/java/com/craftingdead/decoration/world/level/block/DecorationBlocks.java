@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.ChainBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
-import net.minecraft.world.level.block.GlassBlock;
+import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.LanternBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -3353,12 +3353,11 @@ public static final RegistryObject<Block> CONCRETE_ROAD_BLOCK_WITH_RIPPED_STRIPE
   // Items from HL2Pack
   public static final RegistryObject<Block> HEALTH_CHARGER =
       deferredRegister.register("acacia_button",
-          () -> new ButtonBlock(
+          () -> new ButtonBlock(BlockSetType.IRON, 20,
               BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
                   .strength(1.0F)
                   .sound(SoundType.METAL)
-                  .noOcclusion(),
-              BlockSetType.IRON, 20, true));
+                  .noOcclusion()));
   
   public static final RegistryObject<Block> FENCE =
       deferredRegister.register("acacia_fence_gate",
@@ -3475,7 +3474,7 @@ public static final RegistryObject<Block> CONCRETE_ROAD_BLOCK_WITH_RIPPED_STRIPE
   // AE12 Glass Blocks
   public static final RegistryObject<Block> QUARTZ_GLASS =
       deferredRegister.register("quartz_glass",
-          () -> new GlassBlock(
+          () -> new TransparentBlock(
               Block.Properties.of().mapColor(MapColor.NONE)
                   .strength(1.0F)
                   .sound(SoundType.GLASS)
@@ -3483,7 +3482,7 @@ public static final RegistryObject<Block> CONCRETE_ROAD_BLOCK_WITH_RIPPED_STRIPE
   
   public static final RegistryObject<Block> VIBRANT_QUARTZ_GLASS =
       deferredRegister.register("quartz_vibrant_glass",
-          () -> new GlassBlock(
+          () -> new TransparentBlock(
               Block.Properties.of().mapColor(MapColor.NONE)
                   .strength(1.0F)
                   .sound(SoundType.GLASS)

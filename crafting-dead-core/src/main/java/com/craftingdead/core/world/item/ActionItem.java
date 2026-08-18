@@ -99,7 +99,7 @@ public class ActionItem extends Item {
   }
 
   @Override
-  public int getUseDuration(ItemStack itemStack) {
+  public int getUseDuration(ItemStack itemStack, net.minecraft.world.entity.LivingEntity livingEntity) {
     return this.getActionType().getDurationTicks();
   }
 }

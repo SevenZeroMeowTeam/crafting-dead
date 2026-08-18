@@ -52,7 +52,7 @@ public class SupplyDropRenderer extends EntityRenderer<SupplyDrop> {
     var vertexConsumer =
         bufferSource.getBuffer(this.model.renderType(this.getTextureLocation(entity)));
     this.model.renderToBuffer(poseStack, vertexConsumer, p_225623_6_, OverlayTexture.NO_OVERLAY,
-        1.0F, 1.0F, 1.0F, 0.15F);
+        (int) (0.15F * 255) << 24 | 0xFFFFFF);
   }
 
   @Override

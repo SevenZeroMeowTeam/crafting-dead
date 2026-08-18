@@ -21,6 +21,7 @@ package com.craftingdead.core.world.entity.extension;
 import java.util.Collection;
 import java.util.List;
 import com.craftingdead.core.network.Synched;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -137,10 +138,10 @@ public interface LivingHandler extends INBTSerializable<CompoundTag>, Synched {
   }
 
   @Override
-  default CompoundTag serializeNBT() {
+  default CompoundTag serializeNBT(HolderLookup.Provider provider) {
     return new CompoundTag();
   }
 
   @Override
-  default void deserializeNBT(CompoundTag tag) {}
+  default void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {}
 }

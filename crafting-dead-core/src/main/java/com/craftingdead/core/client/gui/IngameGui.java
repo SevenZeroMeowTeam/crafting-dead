@@ -158,7 +158,7 @@ public class IngameGui {
   public void renderFlashBangOverlay(Player player, PoseStack poseStack, int width, int height,
       float partialTick) {
     // Draws Flashbang effect
-    var flashEffect = player.getEffect(ModMobEffects.FLASH_BLINDNESS.get());
+    var flashEffect = player.getEffect(ModMobEffects.FLASH_BLINDNESS.getHolder().orElseThrow());
     if (flashEffect != null) {
       int alpha =
           (int) (255.0F * (Mth.clamp(flashEffect.getDuration() - partialTick, 0, 20) / 20.0F));
@@ -343,14 +343,14 @@ public class IngameGui {
           0xFFFFFFFF);
 
       final var modelViewStack = RenderSystem.getModelViewStack();
-      modelViewStack.pushPose();
+      modelViewStack.pushMatrix();
       {
         modelViewStack.translate(mWidth - 20.0F, mHeight - 30.0F, 0.0F);
         final var scale = 2.5F;
         modelViewStack.scale(scale, scale, scale);
         guiGraphics.renderItem(handcuffs, 0, 0);
       }
-      modelViewStack.popPose();
+      modelViewStack.popMatrix();
       RenderSystem.applyModelViewMatrix();
     }
   }

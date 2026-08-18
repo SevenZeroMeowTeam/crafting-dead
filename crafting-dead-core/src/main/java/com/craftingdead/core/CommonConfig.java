@@ -78,13 +78,13 @@ public class CommonConfig {
   builder.pop();
 
   this.weakVestArmor =
-    builder.defineInRange("weakVestArmor", 8.0F, 0.0F, Float.MAX_VALUE);
+    builder.defineInRange("weakVestArmor", 8.0D, 0.0D, Double.MAX_VALUE);
   this.weakVestArmorToughness =
-    builder.defineInRange("weakVestArmorToughness", 1.0F, 0.0F, Float.MAX_VALUE);
+    builder.defineInRange("weakVestArmorToughness", 1.0D, 0.0D, Double.MAX_VALUE);
 
   this.strongVestArmor =
-    builder.defineInRange("strongVestArmor", 12.0F, 0.0F, Float.MAX_VALUE);
+    builder.defineInRange("strongVestArmor", 12.0D, 0.0D, Double.MAX_VALUE);
   this.strongVestArmorToughness =
-    builder.defineInRange("strongVestArmorToughness", 2.0F, 0.0F, Float.MAX_VALUE);
+    builder.defineInRange("strongVestArmorToughness", 2.0D, 0.0D, Double.MAX_VALUE);
   }
 }

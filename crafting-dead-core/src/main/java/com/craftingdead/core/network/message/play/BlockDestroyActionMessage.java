@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 public record BlockDestroyActionMessage(BlockPos pos) {
@@ -36,20 +36,20 @@ public record BlockDestroyActionMessage(BlockPos pos) {
     return new BlockDestroyActionMessage(buf.readBlockPos());
   }
 
-  public static void handle(BlockDestroyActionMessage msg, Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
-      var player = ctx.get().getSender();
+  public static void handle(BlockDestroyActionMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> {
+      var player = ctx.getSender();
       if (player != null) {
         var level = player.level();
         var state = level.getBlockState(msg.pos);
         if (!state.isAir()) {
-          NetworkChannel.PLAY.getSimpleChannel().send(PacketDistributor.TRACKING_CHUNK.with(() ->
-              level.getChunkAt(msg.pos())), new BlockDestroyParticleMessage(msg.pos(), state));
+          NetworkChannel.PLAY.getSimpleChannel().send(new BlockDestroyParticleMessage(msg.pos(), state),
+              PacketDistributor.TRACKING_CHUNK.with(level.getChunkAt(msg.pos())));
           player.level().setBlock(msg.pos, Blocks.AIR.defaultBlockState(), 3);
         }
       }
     });
-    ctx.get().setPacketHandled(true);
+    ctx.setPacketHandled(true);
   }
 }
 

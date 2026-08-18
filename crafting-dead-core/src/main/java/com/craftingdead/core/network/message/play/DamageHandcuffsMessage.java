@@ -21,7 +21,7 @@ package com.craftingdead.core.network.message.play;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import java.util.function.Supplier;
 
@@ -34,8 +34,7 @@ public record DamageHandcuffsMessage() {
     return new DamageHandcuffsMessage();
   }
 
-  public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-    NetworkEvent.Context context = contextSupplier.get();
+  public static void handle(DamageHandcuffsMessage msg, CustomPayloadEvent.Context context) {
     context.enqueueWork(() -> {
       ServerPlayer player = context.getSender();
       if (player != null) {
@@ -45,7 +44,6 @@ public record DamageHandcuffsMessage() {
         }
       }
     });
-    context.setPacketHandled(true);
   }
 }
 

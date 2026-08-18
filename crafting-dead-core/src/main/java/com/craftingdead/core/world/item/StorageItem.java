@@ -30,6 +30,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -52,10 +53,10 @@ public class StorageItem extends EquipmentItem {
 
   public static final int MAX_ROWS_TO_SHOW = 6;
 
-  public static final UUID ARMOR_MODIFIER_ID =
-      UUID.fromString("5900b64d-0e0b-4872-804b-0522bb87c33f");
+  public static final net.minecraft.resources.ResourceLocation ARMOR_MODIFIER_ID =
+      net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("craftingdead", "storage_armor_modifier");
 
-  private final Multimap<Attribute, AttributeModifier> attributeModifiers;
+  private final Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers;
   private final Equipment.Slot slot;
   private final int itemRows;
   private final ItemHandlerMenuConstructor menuConstructor;
@@ -71,7 +72,7 @@ public class StorageItem extends EquipmentItem {
   }
 
   @Override
-  public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag nbt) {
+  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
     return new ICapabilitySerializable<CompoundTag>() {
 
       private final LazyOptional<Storage> storage = LazyOptional.of(Storage::new);
@@ -90,24 +91,24 @@ public class StorageItem extends EquipmentItem {
       }
 
       @Override
-      public CompoundTag serializeNBT() {
+      public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         return this.storage
             .lazyMap(Storage::itemHandler)
-            .lazyMap(ItemStackHandler::serializeNBT)
+            .map(itemHandler -> itemHandler.serializeNBT(provider))
             .orElseGet(CompoundTag::new);
       }
 
       @Override
-      public void deserializeNBT(CompoundTag tag) {
+      public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag tag) {
         this.storage
             .lazyMap(Storage::itemHandler)
-            .ifPresent(itemHandler -> itemHandler.deserializeNBT(tag));
+            .ifPresent(itemHandler -> itemHandler.deserializeNBT(provider, tag));
       }
     };
   }
 
   @Override
-  public void appendHoverText(ItemStack itemStack, Level world, List<Component> lines,
+  public void appendHoverText(ItemStack itemStack, net.minecraft.world.item.Item.TooltipContext world, List<Component> lines,
       TooltipFlag tooltipFlag) {
     super.appendHoverText(itemStack, world, lines, tooltipFlag);
 
@@ -147,38 +148,16 @@ public class StorageItem extends EquipmentItem {
         });
   }
 
-  @Override
-  public CompoundTag getShareTag(ItemStack stack) {
-    var shareTag = stack.getTag() == null ? new CompoundTag() : stack.getTag();
-    stack.getCapability(Equipment.CAPABILITY)
-        .<Storage>cast()
-        .lazyMap(Storage::itemHandler)
-        .map(ItemStackHandler::serializeNBT)
-        .filter(tag -> !tag.isEmpty())
-        .ifPresent(tag -> shareTag.put("storage", tag));
-    return shareTag;
-  }
-
-  @Override
-  public void readShareTag(ItemStack stack, @Nullable CompoundTag tag) {
-    if (tag != null && tag.contains("storage", Tag.TAG_COMPOUND)) {
-      stack.getCapability(Equipment.CAPABILITY)
-          .<Storage>cast()
-          .ifPresent(storage -> storage.itemHandler().deserializeNBT(tag.getCompound("storage")));
-    }
-    super.readShareTag(stack, tag);
-  }
-
   public static class Properties extends Item.Properties {
 
-    private final ImmutableMultimap.Builder<Attribute, AttributeModifier> attributeModifiers =
+    private final ImmutableMultimap.Builder<Holder<Attribute>, AttributeModifier> attributeModifiers =
         ImmutableMultimap.builder();
     private Equipment.Slot slot;
     private int itemRows;
     private ItemHandlerMenuConstructor menuConstructor;
     private Component component;
 
-    public Properties attributeModifier(Attribute attribute, AttributeModifier modifier) {
+    public Properties attributeModifier(Holder<Attribute> attribute, AttributeModifier modifier) {
       this.attributeModifiers.put(attribute, modifier);
       return this;
     }
@@ -237,7 +216,7 @@ public class StorageItem extends EquipmentItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> attributeModifiers() {
+    public Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers() {
       return StorageItem.this.attributeModifiers;
     }
 

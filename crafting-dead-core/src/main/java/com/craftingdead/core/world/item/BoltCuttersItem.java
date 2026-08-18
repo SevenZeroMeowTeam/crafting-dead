@@ -57,7 +57,7 @@ public class BoltCuttersItem extends MeleeWeaponItem {
               playerHit.getSoundSource(), 0.2F, 0.5F, false);
         }
 
-        itemStack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+        itemStack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
       }
     }
     return InteractionResult.sidedSuccess(player.level().isClientSide());

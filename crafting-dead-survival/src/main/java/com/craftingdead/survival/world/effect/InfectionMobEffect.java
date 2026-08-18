@@ -18,13 +18,9 @@
 
 package com.craftingdead.survival.world.effect;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import com.craftingdead.survival.world.damagesource.SurvivalDamageSource;
-import com.craftingdead.survival.world.item.SurvivalItems;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 
@@ -37,21 +33,15 @@ public class InfectionMobEffect extends MobEffect {
   }
 
   @Override
-  public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
+  public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
     if (livingEntity.getHealth() > 1.0F) {
       livingEntity.hurt(SurvivalDamageSource.INFECTION, 1.0F);
     }
+    return true;
   }
 
   @Override
-  public boolean isDurationEffectTick(int duration, int amplifier) {
+  public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
     return duration % ((20 * 10) + random.nextInt(120)) == 0;
-  }
-
-  @Override
-  public List<ItemStack> getCurativeItems() {
-    List<ItemStack> items = new ArrayList<ItemStack>();
-    items.add(new ItemStack(SurvivalItems.CURE_SYRINGE::get));
-    return items;
   }
 }

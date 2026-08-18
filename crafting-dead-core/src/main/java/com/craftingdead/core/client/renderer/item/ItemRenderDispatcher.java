@@ -157,7 +157,8 @@ public class ItemRenderDispatcher implements ResourceManagerReloadListener {
       Item item, Dynamic<?> dynamic) {
     @SuppressWarnings("unchecked")
     var properties =
-        (P) ItemRendererProperties.CODEC.parse(dynamic).getOrThrow(false, logger::error);
+        (P) ItemRendererProperties.CODEC.parse(dynamic)
+            .getOrThrow(error -> new RuntimeException("Failed to parse item renderer: " + error));
 
     @SuppressWarnings("unchecked")
     var type = (ItemRendererType<I, P>) properties.getItemRendererType();

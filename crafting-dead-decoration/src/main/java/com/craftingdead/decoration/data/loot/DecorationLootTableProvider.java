@@ -19,24 +19,30 @@
 package com.craftingdead.decoration.data.loot;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 public class DecorationLootTableProvider extends LootTableProvider {
 
-  public DecorationLootTableProvider(PackOutput output) {
-    super(output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(DecorationBlockLoot::new, LootContextParamSets.BLOCK)));
+  public DecorationLootTableProvider(PackOutput output,
+      CompletableFuture<HolderLookup.Provider> registries) {
+    super(output, Set.of(),
+        List.of(new LootTableProvider.SubProviderEntry(DecorationBlockLoot::new,
+            LootContextParamSets.BLOCK)),
+        registries);
   }
 
   @Override
-  protected void validate(Map<ResourceLocation, LootTable> map,
-      ValidationContext validationTracker) {
+  protected void validate(Registry<LootTable> map, ValidationContext validationTracker,
+      ProblemReporter reporter) {
     // TODO: Validate?
   }
 }

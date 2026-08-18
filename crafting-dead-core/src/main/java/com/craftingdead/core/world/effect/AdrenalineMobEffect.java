@@ -32,12 +32,13 @@ public class AdrenalineMobEffect extends MobEffect {
 
   protected AdrenalineMobEffect() {
     super(MobEffectCategory.BENEFICIAL, 0xFFD000);
-    this.addAttributeModifier(Attributes.MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635",
-        0.2D, AttributeModifier.Operation.MULTIPLY_TOTAL);
+    this.addAttributeModifier(Attributes.MOVEMENT_SPEED,
+        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("craftingdead", "adrenaline_movement_speed"),
+        0.2D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
   }
 
   @Override
-  public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
+  public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
     // Reduce slowness effects based on configuration
     var slownessEffect = livingEntity.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
     if (slownessEffect != null) {
@@ -52,27 +53,12 @@ public class AdrenalineMobEffect extends MobEffect {
         }
       }
     }
+    return true;
   }
 
   @Override
-  public boolean isDurationEffectTick(int duration, int amplifier) {
+  public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
     // Apply slowness reduction every 20 ticks (1 second)
     return duration % 20 == 0;
-  }
-
-  @Override
-  public void removeAttributeModifiers(LivingEntity livingEntity,
-      AttributeMap attributes, int amplifier) {
-    super.removeAttributeModifiers(livingEntity, attributes, amplifier);
-    livingEntity
-        .setAbsorptionAmount(livingEntity.getAbsorptionAmount() - (float) (4 * (amplifier + 1)));
-  }
-
-  @Override
-  public void addAttributeModifiers(LivingEntity livingEntity,
-      AttributeMap attributes, int amplifier) {
-    super.addAttributeModifiers(livingEntity, attributes, amplifier);
-    livingEntity
-        .setAbsorptionAmount(livingEntity.getAbsorptionAmount() + (float) (4 * (amplifier + 1)));
   }
 }

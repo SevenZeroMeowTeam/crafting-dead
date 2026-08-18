@@ -122,16 +122,16 @@ public class CraftingMenu extends AbstractContainerMenu {
       itemstack = stack.copy();
       if (index == 4) { // RESULT_SLOT
         var level = player.level();
-        var recipeOpt = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, craftingGrid, level);
+        var recipeOpt = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, craftingGrid.asCraftInput(), level);
         if (recipeOpt.isPresent()) {
           var recipe = recipeOpt.get();
-          var result = recipe.assemble(craftingGrid, level.registryAccess()).copy();
+          var result = recipe.value().assemble(craftingGrid.asCraftInput(), level.registryAccess()).copy();
           while (true) {
             if (!this.moveItemStackTo(result.copy(), 5, 41, true)) {
               break;
             }
             // Consume ingredients
-            var remaining = recipe.getRemainingItems(craftingGrid);
+            var remaining = recipe.value().getRemainingItems(craftingGrid.asCraftInput());
             for (int i = 0; i < remaining.size(); ++i) {
               var input = craftingGrid.getItem(i);
               var remainingItem = remaining.get(i);
@@ -146,10 +146,10 @@ public class CraftingMenu extends AbstractContainerMenu {
                 }
               }
             }
-            if (!recipe.matches(craftingGrid, level)) {
+            if (!recipe.value().matches(craftingGrid.asCraftInput(), level)) {
               break;
             }
-            result = recipe.assemble(craftingGrid, level.registryAccess()).copy();
+            result = recipe.value().assemble(craftingGrid.asCraftInput(), level.registryAccess()).copy();
           }
           this.updateResult();
         }
@@ -214,11 +214,11 @@ public class CraftingMenu extends AbstractContainerMenu {
 
     var level = player.entity().level();
     var recipeManager = level.getRecipeManager();
-    var recipeOpt = recipeManager.getRecipeFor(RecipeType.CRAFTING, craftingGrid, level);
+    var recipeOpt = recipeManager.getRecipeFor(RecipeType.CRAFTING, craftingGrid.asCraftInput(), level);
 
     if (recipeOpt.isPresent()) {
       var recipe = recipeOpt.get();
-      var result = recipe.assemble(craftingGrid, level.registryAccess());
+      var result = recipe.value().assemble(craftingGrid.asCraftInput(), level.registryAccess());
       this.resultSlot.setItem(0, result);
     } else {
       this.resultSlot.setItem(0, ItemStack.EMPTY);
@@ -234,11 +234,11 @@ public class CraftingMenu extends AbstractContainerMenu {
   private void handleCraftingResultTaken() {
     var level = player.entity().level();
     var recipeManager = level.getRecipeManager();
-    var recipeOpt = recipeManager.getRecipeFor(RecipeType.CRAFTING, craftingGrid, level);
+    var recipeOpt = recipeManager.getRecipeFor(RecipeType.CRAFTING, craftingGrid.asCraftInput(), level);
 
     if (recipeOpt.isPresent()) {
       var recipe = recipeOpt.get();
-      var remainingItems = recipe.getRemainingItems(craftingGrid);
+      var remainingItems = recipe.value().getRemainingItems(craftingGrid.asCraftInput());
 
       for (int i = 0; i < remainingItems.size(); i++) {
         var current = craftingGrid.getItem(i);

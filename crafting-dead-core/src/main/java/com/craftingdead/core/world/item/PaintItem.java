@@ -57,7 +57,7 @@ public class PaintItem extends Item {
   }
 
   @Override
-  public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag nbt) {
+  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
     return CapabilityUtil.provider(() -> Paint.of(this.skin, this.multipaint
             ? OptionalInt.of(
             DyeColor.values()[ThreadLocalRandom.current().nextInt(DyeColor.values().length)]
@@ -67,7 +67,7 @@ public class PaintItem extends Item {
   }
 
   @Override
-  public void appendHoverText(ItemStack itemStack, @Nullable Level level,
+  public void appendHoverText(ItemStack itemStack, net.minecraft.world.item.Item.TooltipContext level,
       List<Component> lines, TooltipFlag flag) {
     var skins = Skins.REGISTRY.get(this.skin).getAcceptedGuns();
     if (skins == null || skins.isEmpty()) {

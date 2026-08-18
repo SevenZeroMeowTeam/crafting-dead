@@ -74,8 +74,8 @@ public class CraftingDeadDecoration {
       generator.addProvider(true, new DecorationBlockStateProvider(packOutput, existingFileHelper));
       generator.addProvider(true, new DecorationItemModelProvider(packOutput, existingFileHelper));
     } else if (event.includeServer()) {
-      generator.addProvider(true, new DecorationLootTableProvider(packOutput));
-      generator.addProvider(true, new DecorationRecipeProvider(packOutput));
+      generator.addProvider(true, new DecorationLootTableProvider(packOutput, lookupProvider));
+      generator.addProvider(true, new DecorationRecipeProvider(packOutput, lookupProvider));
     }
   }
 

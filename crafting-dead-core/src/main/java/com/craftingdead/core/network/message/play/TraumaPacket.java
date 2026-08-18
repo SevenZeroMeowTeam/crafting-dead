@@ -22,7 +22,7 @@ import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.trauma.TraumaSeverity;
 import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record TraumaPacket(TraumaSeverity severity, int aimSwayTicks, float aimSwayStrength) {
 
@@ -39,8 +39,7 @@ public record TraumaPacket(TraumaSeverity severity, int aimSwayTicks, float aimS
     return new TraumaPacket(severity, aimSwayTicks, aimSwayStrength);
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> CraftingDead.getInstance().getClientDist().handleTrauma(this));
-    return true;
+  public static void handle(TraumaPacket msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> CraftingDead.getInstance().getClientDist().handleTrauma(msg));
   }
 }

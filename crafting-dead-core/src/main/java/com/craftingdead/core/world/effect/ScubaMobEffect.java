@@ -30,15 +30,16 @@ public class ScubaMobEffect extends MobEffect {
   }
 
   @Override
-  public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
+  public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
     if (livingEntity.isInWater()) {
       livingEntity.setAirSupply(livingEntity.getMaxAirSupply());
       livingEntity.moveRelative(0.1F, new Vec3(0.0D, 0.0D, 0.2D));
     }
+    return true;
   }
 
   @Override
-  public boolean isDurationEffectTick(int duration, int amplifier) {
+  public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
     return true;
   }
 }

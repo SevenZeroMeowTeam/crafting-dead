@@ -63,7 +63,7 @@ public class HandcuffsKeyItem extends Item {
   }
 
   @Override
-  public void appendHoverText(ItemStack item, @Nullable Level level,
+  public void appendHoverText(ItemStack item, net.minecraft.world.item.Item.TooltipContext level,
       List<Component> lines, TooltipFlag tooltipFlag) {
     lines.add(
         Component.translatable("handcuffs_key.information").withStyle(ChatFormatting.GRAY));

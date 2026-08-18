@@ -53,7 +53,6 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PlayMessages;
 
 public class SupplyDrop extends Entity implements MenuProvider {
 
@@ -88,12 +87,8 @@ public class SupplyDrop extends Entity implements MenuProvider {
     this.zo = z;
   }
 
-  public SupplyDrop(PlayMessages.SpawnEntity packet, Level world) {
-    this(SurvivalEntityTypes.SUPPLY_DROP.get(), world);
-  }
-
   @Override
-  protected void defineSynchedData() {}
+  protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {}
 
   @Override
   public void tick() {
@@ -157,7 +152,7 @@ public class SupplyDrop extends Entity implements MenuProvider {
       this.lootTableSeed = compound.getLong("lootTableSeed");
     } else {
       var items = NonNullList.withSize(this.container.getContainerSize(), ItemStack.EMPTY);
-      ContainerHelper.loadAllItems(compound, items);
+      ContainerHelper.loadAllItems(compound, items, this.level().registryAccess());
       this.container = new SimpleContainer(items.toArray(new ItemStack[0]));
     }
   }
@@ -174,7 +169,7 @@ public class SupplyDrop extends Entity implements MenuProvider {
       for (int i = 0; i < this.container.getContainerSize(); i++) {
         items.set(i, this.container.getItem(i));
       }
-      ContainerHelper.saveAllItems(compound, items);
+      ContainerHelper.saveAllItems(compound, items, this.level().registryAccess());
     }
   }
 
@@ -184,8 +179,8 @@ public class SupplyDrop extends Entity implements MenuProvider {
   }
 
   @Override
-  public Packet<ClientGamePacketListener> getAddEntityPacket() {
-    return new ClientboundAddEntityPacket(this);
+  public Packet<ClientGamePacketListener> getAddEntityPacket(net.minecraft.server.level.ServerEntity serverEntity) {
+    return new ClientboundAddEntityPacket(this, serverEntity);
   }
 
   @Override
@@ -216,12 +211,16 @@ public class SupplyDrop extends Entity implements MenuProvider {
     if (this.lootTable == null) {
       return;
     }
-    var lootTable = this.level().getServer().getLootData().getLootTable(this.lootTable);
-    CriteriaTriggers.GENERATE_LOOT.trigger(player, this.lootTable);
+    var lootTable = this.level().getServer().reloadableRegistries().getLootTable(
+        net.minecraft.resources.ResourceKey.create(
+            net.minecraft.core.registries.Registries.LOOT_TABLE, this.lootTable));
+    CriteriaTriggers.GENERATE_LOOT.trigger(player,
+        net.minecraft.resources.ResourceKey.create(
+            net.minecraft.core.registries.Registries.LOOT_TABLE, this.lootTable));
     this.lootTable = null;
     var builder = new LootParams.Builder((ServerLevel) this.level())
         .withParameter(LootContextParams.ORIGIN, this.position())
-        .withParameter(LootContextParams.KILLER_ENTITY, this);
+        .withParameter(LootContextParams.ATTACKING_ENTITY, this);
     if (player != null) {
       builder.withLuck(player.getLuck())
           .withParameter(LootContextParams.THIS_ENTITY, player);

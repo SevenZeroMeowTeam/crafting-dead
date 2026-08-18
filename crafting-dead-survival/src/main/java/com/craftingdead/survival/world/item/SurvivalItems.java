@@ -606,13 +606,10 @@ public class SurvivalItems {
       deferredRegister.register("can_opener", () -> new ToolItem(
           new Item.Properties().durability(8)) {
 
-        @Override
-        public boolean isRepairable(ItemStack stack) {
-          return false;
-        }
 
         @Override
-        public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip,
+        public void appendHoverText(ItemStack stack,
+            net.minecraft.world.item.Item.TooltipContext level, List<Component> tooltip,
             @NotNull TooltipFlag flag) {
           tooltip.add(Component.translatable("item.craftingdead.durability").append(" ").append(
                   Component.translatable(String.valueOf(stack.getMaxDamage() - stack.getDamageValue()))
@@ -625,13 +622,10 @@ public class SurvivalItems {
       deferredRegister.register("screwdriver", () -> new ToolItem(
           new Item.Properties().durability(6)) {
 
-        @Override
-        public boolean isRepairable(ItemStack stack) {
-          return false;
-        }
 
         @Override
-        public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip,
+        public void appendHoverText(ItemStack stack,
+            net.minecraft.world.item.Item.TooltipContext level, List<Component> tooltip,
             @NotNull TooltipFlag flag) {
           tooltip.add(Component.translatable("item.craftingdead.durability").append(" ").append(
                   Component.translatable(String.valueOf(stack.getMaxDamage() - stack.getDamageValue()))
@@ -644,10 +638,6 @@ public class SurvivalItems {
       deferredRegister.register("multi_tool", () -> new MeleeWeaponItem(8, -2.4F,
           new Item.Properties().durability(20)) {
 
-        @Override
-        public boolean isRepairable(ItemStack stack) {
-          return false;
-        }
       });
 
   // ================================================================================

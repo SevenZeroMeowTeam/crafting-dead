@@ -46,6 +46,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
@@ -67,7 +68,7 @@ public class ClothingItem extends EquipmentItem {
   public static final UUID ARMOR_MODIFIER_ID =
       UUID.fromString("4117e432-16f5-4eea-a4fe-127b54d39af1");
 
-  private final Multimap<Attribute, AttributeModifier> attributeModifiers;
+  private final Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers;
   private final boolean fireImmunity;
   private final boolean enhancesSwimming;
   private final Supplier<? extends ItemActionType<?>> itemActionType;
@@ -92,7 +93,7 @@ public class ClothingItem extends EquipmentItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, Level world, List<Component> lines, TooltipFlag tooltipFlag) {
+  public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext world, List<Component> lines, TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, world, lines, tooltipFlag);
     switch (this.clothingType) {
       case CASUAL -> lines.add(Component.translatable("clothing.protection.level")
@@ -118,7 +119,7 @@ public class ClothingItem extends EquipmentItem {
   }
 
   @Override
-  public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag nbt) {
+  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
     return CapabilityUtil.provider(
         () -> new SimpleClothing(this.attributeModifiers, this.fireImmunity, this.enhancesSwimming,
             ResourceLocation.fromNamespaceAndPath(
@@ -181,18 +182,18 @@ public class ClothingItem extends EquipmentItem {
   }
 
   @Override
-  public int getUseDuration(@NotNull ItemStack itemStack) {
+  public int getUseDuration(@NotNull ItemStack itemStack, net.minecraft.world.entity.LivingEntity livingEntity) {
     return this.getActionType().getDurationTicks();
   }
 
   public static class Properties extends Item.Properties {
 
-    private final ImmutableMultimap.Builder<Attribute, AttributeModifier> attributeModifiers =
+    private final ImmutableMultimap.Builder<Holder<Attribute>, AttributeModifier> attributeModifiers =
         ImmutableMultimap.builder();
     private boolean fireImmunity;
     private boolean enhancesSwimming;
 
-    public Properties attributeModifier(Attribute attribute, AttributeModifier modifier) {
+    public Properties attributeModifier(Holder<Attribute> attribute, AttributeModifier modifier) {
       this.attributeModifiers.put(attribute, modifier);
       return this;
     }

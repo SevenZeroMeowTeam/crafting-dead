@@ -72,7 +72,7 @@ public class AbstractContainerMenuMixin {
       }
 
       if (parent instanceof ServerPlayer player) {
-        if (!currentStack.equals(lastStack, true)) {
+        if (!ItemStack.isSameItemSameComponents(currentStack, lastStack)) {
           return false;
         }
 
@@ -92,9 +92,9 @@ public class AbstractContainerMenuMixin {
                 }
               }
               NetworkChannel.PLAY.getSimpleChannel().send(
-                  PacketDistributor.PLAYER.with(() -> player),
                   new SyncGunContainerSlotMessage(
-                      player.getId(), slotIndex, gun, false));
+                      player.getId(), slotIndex, gun, false),
+                  PacketDistributor.PLAYER.with(player));
             });
         return true;
       }

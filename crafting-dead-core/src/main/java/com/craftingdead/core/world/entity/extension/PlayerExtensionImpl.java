@@ -54,6 +54,7 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 final class PlayerExtensionImpl<E extends Player>
@@ -201,8 +202,8 @@ final class PlayerExtensionImpl<E extends Player>
   @Override
   public void setCombatModeEnabled(boolean combatModeEnabled) {
     if (this.level().isClientSide() && combatModeEnabled != this.isCombatModeEnabled()) {
-      NetworkChannel.PLAY.getSimpleChannel().sendToServer(
-          new EnableCombatModeMessage(combatModeEnabled));
+      NetworkChannel.PLAY.getSimpleChannel().send(
+          new EnableCombatModeMessage(combatModeEnabled), PacketDistributor.SERVER.noArg());
     } else {
       this.data.set(COMBAT_MODE_ENABLED, combatModeEnabled);
     }
@@ -244,8 +245,8 @@ final class PlayerExtensionImpl<E extends Player>
       return true;
     } else if (source instanceof KillFeedProvider provider) {
       NetworkChannel.PLAY.getSimpleChannel()
-          .send(net.minecraftforge.network.PacketDistributor.ALL.noArg(),
-              new AddKillFeedEntryMessage(provider.createKillFeedEntry(this.entity())));
+          .send(new AddKillFeedEntryMessage(provider.createKillFeedEntry(this.entity())),
+              net.minecraftforge.network.PacketDistributor.ALL.noArg());
     }
     return false;
   }
@@ -298,17 +299,18 @@ final class PlayerExtensionImpl<E extends Player>
   }
 
   @Override
-  public CompoundTag serializeNBT() {
-    var tag = super.serializeNBT();
-    tag.put("handcuffs", this.getHandcuffs().serializeNBT());
+  public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
+    var tag = super.serializeNBT(provider);
+    tag.put("handcuffs", this.getHandcuffs().save(provider));
     return tag;
   }
 
   @Override
-  public void deserializeNBT(CompoundTag tag) {
-    super.deserializeNBT(tag);
+  public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag tag) {
+    super.deserializeNBT(provider, tag);
     if (tag.contains("handcuffs", Tag.TAG_COMPOUND)) {
-      this.setHandcuffs(ItemStack.of(tag.getCompound("handcuffs")));
+      this.setHandcuffs(ItemStack.parse(provider, tag.getCompound("handcuffs"))
+          .orElse(ItemStack.EMPTY));
     }
   }
 

@@ -18,6 +18,8 @@
 
 package com.craftingdead.core.client.gui.screen.inventory;
 
+
+import net.minecraftforge.network.PacketDistributor;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.client.ClientDist;
 import com.craftingdead.core.client.gui.widget.button.CompositeButton;
@@ -69,7 +71,7 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
         .setInactiveAtlasPos(183, 240)
         .setAction((button) -> {
           NetworkChannel.PLAY.getSimpleChannel()
-              .sendToServer(new OpenStorageMessage(Equipment.Slot.VEST));
+              .send(new OpenStorageMessage(Equipment.Slot.VEST), PacketDistributor.SERVER.noArg());
           this.transitioning = true;
         }).build();
     this.addRenderableWidget(this.vestButton);
@@ -80,7 +82,7 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
         .setInactiveAtlasPos(183, 240)
         .setAction((button) -> {
           NetworkChannel.PLAY.getSimpleChannel()
-              .sendToServer(new OpenStorageMessage(Equipment.Slot.BACKPACK));
+              .send(new OpenStorageMessage(Equipment.Slot.BACKPACK), PacketDistributor.SERVER.noArg());
           this.transitioning = true;
         }).build();
     this.addRenderableWidget(this.backpackButton);
@@ -126,7 +128,7 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
 
   @Override
   protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-    this.renderBackground(guiGraphics);
+    this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
     RenderSystem.setShaderTexture(0, BACKGROUND);
 
     guiGraphics.blit(BACKGROUND, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
@@ -172,7 +174,8 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
       if (this.minecraft != null && this.minecraft.player != null) {
         this.minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.2F, 1.0F);
       }
-      NetworkChannel.PLAY.getSimpleChannel().sendToServer(new OpenCraftingMenuMessage());
+      NetworkChannel.PLAY.getSimpleChannel().send(new OpenCraftingMenuMessage(),
+          PacketDistributor.SERVER.noArg());
       return true;
     }
     return super.mouseClicked(mouseX, mouseY, button);
@@ -217,8 +220,11 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
   private void renderPlayerEntity(GuiGraphics guiGraphics) {
     if (this.minecraft != null && this.minecraft.player != null) {
       InventoryScreen.renderEntityInInventory(guiGraphics, this.leftPos + 51, this.topPos + 72, 30,
-          Axis.YP.rotationDegrees((float) ((this.leftPos + 51) - this.oldMouseX)),
-          Axis.XP.rotationDegrees((float) ((this.topPos + 75 - 50) - this.oldMouseY)),
+          new org.joml.Vector3f(0.0F, 1.0F, 0.0F),
+          new org.joml.Quaternionf().rotationY(
+              (float) ((this.leftPos + 51) - this.oldMouseX) * 0.1F),
+          new org.joml.Quaternionf().rotationX(
+              (float) ((this.topPos + 75 - 50) - this.oldMouseY) * 0.1F),
           this.minecraft.player
       );
     }

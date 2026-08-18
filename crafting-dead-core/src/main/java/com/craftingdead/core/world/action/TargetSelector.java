@@ -64,7 +64,8 @@ public interface TargetSelector<T extends LivingExtension<?, ?>> {
   }
 
   default TargetSelector<?> hasEffect(Supplier<MobEffect> effect) {
-    return this.filter(living -> living.entity().hasEffect(effect.get()));
+    return this.filter(living -> living.entity().getActiveEffects().stream()
+        .anyMatch(instance -> instance.getEffect().value() == effect.get()));
   }
 
   default TargetSelector<T> filter(Predicate<T> predicate) {

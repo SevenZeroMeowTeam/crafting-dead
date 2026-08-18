@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record CancelActionMessage(int entityId) {
 
@@ -34,11 +34,10 @@ public record CancelActionMessage(int entityId) {
     return new CancelActionMessage(in.readVarInt());
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx.get(), this.entityId)
+  public static void handle(CancelActionMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx, msg.entityId)
         .getCapability(LivingExtension.CAPABILITY)
         .ifPresent(living -> living.cancelAction(
-            ctx.get().getDirection().getReceptionSide().isServer())));
-    return true;
+            ctx.isServerSide())));
   }
 }

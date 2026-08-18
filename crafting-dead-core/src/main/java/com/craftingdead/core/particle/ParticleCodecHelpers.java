@@ -16,15 +16,18 @@
  * https://craftingdead.net/terms.php
  */
 
-package com.craftingdead.survival.world.item.enchantment;
+package com.craftingdead.core.particle;
 
-import com.craftingdead.core.world.item.enchantment.ModEnchantmentTypes;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.enchantment.Enchantment;
+import com.mojang.serialization.Codec;
+import java.util.function.Function;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public class InfectionEnchantment extends Enchantment {
+final class StreamCodecHelper {
 
-  protected InfectionEnchantment(Rarity rarity, EquipmentSlot... slotType) {
-    super(rarity, ModEnchantmentTypes.GUN, slotType);
-  }
+  static final StreamCodec<RegistryFriendlyByteBuf, Float> FLOAT =
+      StreamCodec.of(FriendlyByteBuf::writeFloat, FriendlyByteBuf::readFloat);
+
+  private StreamCodecHelper() {}
 }

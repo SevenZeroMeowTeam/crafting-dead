@@ -18,6 +18,8 @@
 
 package com.craftingdead.core.client.gui.screen.inventory;
 
+
+import net.minecraftforge.network.PacketDistributor;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.client.gui.widget.button.CompositeButton;
 import com.craftingdead.core.network.NetworkChannel;
@@ -43,7 +45,7 @@ public class GenericContainerScreen extends AbstractContainerScreen<GenericMenu>
   // Implementations may change this field to another action for the return button
   @Nullable
   protected Consumer<Button> returnButtonAction = (button) -> NetworkChannel.PLAY.getSimpleChannel()
-      .sendToServer(new OpenEquipmentMenuMessage());
+      .send(new OpenEquipmentMenuMessage(), PacketDistributor.SERVER.noArg());
   private CompositeButton returnButton;
 
   public GenericContainerScreen(GenericMenu menu, Inventory playerInventory,
@@ -81,7 +83,7 @@ public class GenericContainerScreen extends AbstractContainerScreen<GenericMenu>
 
   @Override
   protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-    this.renderBackground(guiGraphics);
+    this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     RenderSystem.setShaderTexture(0, GENERIC_CONTAINER_TEXTURE);
     int x = (this.width - this.imageWidth) / 2;

@@ -21,7 +21,7 @@ package com.craftingdead.core.network.message.play;
 import java.util.function.Supplier;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record EnableCombatModeMessage(boolean enabled) {
 
@@ -33,9 +33,8 @@ public record EnableCombatModeMessage(boolean enabled) {
     return new EnableCombatModeMessage(in.readBoolean());
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(
-        () -> PlayerExtension.getOrThrow(ctx.get().getSender()).setCombatModeEnabled(this.enabled));
-    return true;
+  public static void handle(EnableCombatModeMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(
+        () -> PlayerExtension.getOrThrow(ctx.getSender()).setCombatModeEnabled(msg.enabled));
   }
 }

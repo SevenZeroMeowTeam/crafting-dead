@@ -81,7 +81,8 @@ public class SurvivalActionTypes {
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(SurvivalItems.RBI_SYRINGE)
               .duration(16)
-              .effect(() -> new MobEffectInstance(SurvivalMobEffects.INFECTION.get(), 9999999))
+              .effect(() -> new MobEffectInstance(
+                  SurvivalMobEffects.INFECTION.getHolder().orElseThrow(), 9999999))
               .resultItem(ModItems.SYRINGE)
               .build());
 

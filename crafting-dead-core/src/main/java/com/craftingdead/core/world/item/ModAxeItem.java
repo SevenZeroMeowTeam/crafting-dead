@@ -37,7 +37,7 @@ public class ModAxeItem extends AxeItem {
   private final float attackDamage;
 
   public ModAxeItem(Tier tier, float blockBreakSpeed, float attackDamage, float attackSpeed, Properties properties) {
-    super(tier, attackDamage, attackSpeed, properties);
+    super(tier, properties);
     this.blockBreakSpeed = blockBreakSpeed;
     this.attackDamage = attackDamage;
   }
@@ -45,8 +45,7 @@ public class ModAxeItem extends AxeItem {
   @Override
   public boolean hurtEnemy(ItemStack itemStack, LivingEntity targetEntity,
       LivingEntity attackerEntity) {
-    itemStack.hurtAndBreak(1, attackerEntity,
-        (entity) -> entity.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+    itemStack.hurtAndBreak(1, attackerEntity, EquipmentSlot.MAINHAND);
     return true;
   }
 
@@ -56,7 +55,7 @@ public class ModAxeItem extends AxeItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip,
+  public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext world, List<Component> tooltip,
       @NotNull TooltipFlag flag) {
     tooltip.add(Component.translatable("item.craftingdead.damage").append(" ").append(
             Component.translatable(String.valueOf((int) this.attackDamage))

@@ -56,8 +56,7 @@ public class ToolItem extends Item {
   @Override
   public boolean hurtEnemy(ItemStack itemStack, LivingEntity targetEntity,
       LivingEntity attackerEntity) {
-    itemStack.hurtAndBreak(1, attackerEntity,
-        (entity) -> entity.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+    itemStack.hurtAndBreak(1, attackerEntity, EquipmentSlot.MAINHAND);
     return true;
   }
 
@@ -65,14 +64,13 @@ public class ToolItem extends Item {
   public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos,
       LivingEntity entityLiving) {
     if (state.getDestroySpeed(worldIn, pos) != 0.0F) {
-      stack.hurtAndBreak(2, entityLiving,
-          (entity) -> entity.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+      stack.hurtAndBreak(2, entityLiving, EquipmentSlot.MAINHAND);
     }
     return true;
   }
 
   @Override
-  public boolean isCorrectToolForDrops(BlockState blockIn) {
+  public boolean isCorrectToolForDrops(ItemStack stack, BlockState blockIn) {
     return blockIn.is(Blocks.COBWEB);
   }
 }

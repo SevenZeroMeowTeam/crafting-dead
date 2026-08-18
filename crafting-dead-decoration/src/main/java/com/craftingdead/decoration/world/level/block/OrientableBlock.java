@@ -35,6 +35,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class OrientableBlock extends HorizontalDirectionalBlock {
 
+  public static final com.mojang.serialization.MapCodec<OrientableBlock> CODEC =
+      simpleCodec(properties -> new OrientableBlock(properties, direction -> Block.box(0, 0, 0, 16, 16, 16)));
+
   private final Function<Direction, VoxelShape> shapes;
   private final boolean wallMounted;
 
@@ -49,6 +52,11 @@ public class OrientableBlock extends HorizontalDirectionalBlock {
         .setValue(FACING, Direction.NORTH));
     this.shapes = shapes;
     this.wallMounted = wallMounted;
+  }
+
+  @Override
+  protected com.mojang.serialization.MapCodec<? extends HorizontalDirectionalBlock> codec() {
+    return CODEC;
   }
 
   @Override

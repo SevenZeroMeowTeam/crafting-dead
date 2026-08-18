@@ -25,7 +25,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record ParachuteSyncMessage(int entityId, boolean hasParachute) {
 
@@ -38,18 +38,17 @@ public record ParachuteSyncMessage(int entityId, boolean hasParachute) {
     return new ParachuteSyncMessage(buf.readInt(), buf.readBoolean());
   }
 
-  public static void handle(ParachuteSyncMessage packet, Supplier<NetworkEvent.Context> context) {
-    context.get().enqueueWork(() -> {
+  public static void handle(ParachuteSyncMessage packet, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> {
       assert Minecraft.getInstance().level != null;
       Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
       if (entity instanceof LivingEntity livingEntity) {
         if (packet.hasParachute()) {
-          livingEntity.addEffect(new MobEffectInstance(ModMobEffects.PARACHUTE.get()));
+          livingEntity.addEffect(new MobEffectInstance(ModMobEffects.PARACHUTE.getHolder().orElseThrow()));
         } else {
-          livingEntity.removeEffect(ModMobEffects.PARACHUTE.get());
+          livingEntity.removeEffect(ModMobEffects.PARACHUTE.getHolder().orElseThrow());
         }
       }
     });
-    context.get().setPacketHandled(true);
   }
 }

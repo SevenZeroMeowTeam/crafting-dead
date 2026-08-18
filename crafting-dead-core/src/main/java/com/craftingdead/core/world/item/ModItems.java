@@ -2065,11 +2065,11 @@ public class ModItems {
   private static HatItem.Properties hatArmor(float armor, float armorToughness) {
     return new HatItem.Properties()
         .attributeModifier(Attributes.ARMOR,
-            new AttributeModifier(HatItem.ARMOR_MODIFIER_ID, "Armor modifier",
-                armor, AttributeModifier.Operation.ADDITION))
+            new AttributeModifier(HatItem.ARMOR_MODIFIER_ID,
+                armor, AttributeModifier.Operation.ADD_VALUE))
         .attributeModifier(Attributes.ARMOR_TOUGHNESS,
-            new AttributeModifier(HatItem.ARMOR_MODIFIER_ID, "Armor toughness",
-                armorToughness, AttributeModifier.Operation.ADDITION));
+            new AttributeModifier(HatItem.ARMOR_MODIFIER_ID,
+                armorToughness, AttributeModifier.Operation.ADD_VALUE));
   }
 
   private static StorageItem weakVest() {
@@ -2087,11 +2087,11 @@ public class ModItems {
   private static StorageItem vest(float armor, float armorToughness) {
     return new StorageItem((StorageItem.Properties) new StorageItem.Properties()
         .attributeModifier(Attributes.ARMOR,
-            new AttributeModifier(StorageItem.ARMOR_MODIFIER_ID, "Armor modifier",
-                armor, AttributeModifier.Operation.ADDITION))
+            new AttributeModifier(StorageItem.ARMOR_MODIFIER_ID,
+                armor, AttributeModifier.Operation.ADD_VALUE))
         .attributeModifier(Attributes.ARMOR_TOUGHNESS,
-            new AttributeModifier(StorageItem.ARMOR_MODIFIER_ID, "Armor toughness",
-                armorToughness, AttributeModifier.Operation.ADDITION))
+            new AttributeModifier(StorageItem.ARMOR_MODIFIER_ID,
+                armorToughness, AttributeModifier.Operation.ADD_VALUE))
         .menuConstructor(GenericMenu::createVest)
         .slot(Equipment.Slot.VEST)
         .itemRows(2)

@@ -43,9 +43,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -79,6 +79,7 @@ public class ClientDist implements ModDist {
     modEventBus.addListener(this::handleEntityRenderersAddLayers);
     modEventBus.addListener(this::handleParticleFactoryRegisterEvent);
     modEventBus.addListener(this::handleEntityRenderersLayerDefinitions);
+    modEventBus.addListener(this::handleAddGuiOverlayLayers);
 
     context.registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
 
@@ -140,9 +141,12 @@ public class ClientDist implements ModDist {
   }
 
   private void handleEntityRenderersAddLayers(EntityRenderersEvent.AddLayers event) {
-    LivingEntityRenderer<?, ?> soliderZombie = event.getRenderer(SurvivalEntityTypes.SOLDIER_ZOMBIE.get());
-    LivingEntityRenderer<?, ?> fastZombie = event.getRenderer(SurvivalEntityTypes.FAST_ZOMBIE.get());
-    LivingEntityRenderer<?, ?> scoutZombie = event.getRenderer(SurvivalEntityTypes.SCOUT_ZOMBIE.get());
+    net.minecraft.client.renderer.entity.EntityRenderer<?> soliderZombie =
+        event.getEntityRenderer(SurvivalEntityTypes.SOLDIER_ZOMBIE.get());
+    net.minecraft.client.renderer.entity.EntityRenderer<?> fastZombie =
+        event.getEntityRenderer(SurvivalEntityTypes.FAST_ZOMBIE.get());
+    net.minecraft.client.renderer.entity.EntityRenderer<?> scoutZombie =
+        event.getEntityRenderer(SurvivalEntityTypes.SCOUT_ZOMBIE.get());
 
     if (soliderZombie instanceof AdvancedZombieRenderer soldierZombieRenderer) {
       soldierZombieRenderer.addLayer(new ParachuteLayer<>(soldierZombieRenderer, event.getEntityModels()));
@@ -177,23 +181,25 @@ public class ClientDist implements ModDist {
         SpellParticle.Provider::new);
   }
 
-  @SubscribeEvent
-  public void handleRenderGameOverlayPre(RenderGuiOverlayEvent.Pre event) {
-    var player = CraftingDead.getInstance().getClientDist().getCameraPlayer();
-    if (player == null) {
-      return;
-    }
+  public void handleAddGuiOverlayLayers(AddGuiOverlayLayersEvent event) {
+    event.getLayeredDraw().add(
+        ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "blood"),
+        (guiGraphics, deltaTracker) -> {
+          var player = CraftingDead.getInstance().getClientDist().getCameraPlayer();
+          if (player == null) {
+            return;
+          }
 
-    // Only draw in survival
-    if (this.minecraft.gameMode.canHurtPlayer() && !player.isCombatModeEnabled()) {
-      float healthPercentage =
-          player.entity().getHealth() / player.entity().getMaxHealth();
-      if (clientConfig.displayBlood.get() && healthPercentage < 1.0F
-          && player.entity().hasEffect(ModMobEffects.BLEEDING.get())) {
-        renderBlood(event.getWindow().getGuiScaledWidth(),
-            event.getWindow().getGuiScaledHeight(), healthPercentage);
-      }
-    }
+          // Only draw in survival
+          if (this.minecraft.gameMode.canHurtPlayer() && !player.isCombatModeEnabled()) {
+            float healthPercentage =
+                player.entity().getHealth() / player.entity().getMaxHealth();
+            if (clientConfig.displayBlood.get() && healthPercentage < 1.0F
+                && player.entity().hasEffect(ModMobEffects.BLEEDING.getHolder().orElseThrow())) {
+              renderBlood(guiGraphics.guiWidth(), guiGraphics.guiHeight(), healthPercentage);
+            }
+          }
+        });
   }
 
   private static void renderBlood(int width, int height, float healthPercentage) {

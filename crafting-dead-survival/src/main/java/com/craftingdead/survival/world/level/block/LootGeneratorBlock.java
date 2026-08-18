@@ -103,7 +103,8 @@ public class LootGeneratorBlock extends AirBlock {
     BlockState lootBlockState = this.lootBlock.get().defaultBlockState();
 
     boolean lootExists =
-        level.getBlockStates(new AABB(pos.north().west(), pos.south().east()))
+        level.getBlockStates(
+            new AABB(pos.north().west().getCenter(), pos.south().east().getCenter()))
             .anyMatch(lootBlockState::equals);
     if (!lootExists) {
       if (level.isEmptyBlock(pos.north())) {

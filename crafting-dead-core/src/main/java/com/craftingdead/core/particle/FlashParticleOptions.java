@@ -18,65 +18,37 @@
 
 package com.craftingdead.core.particle;
 
-import java.util.Locale;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 public record FlashParticleOptions(float red, float green, float blue, float scale)
     implements ParticleOptions {
 
-  public static final Codec<FlashParticleOptions> CODEC =
-      RecordCodecBuilder.create(instance -> instance
+  public static final MapCodec<FlashParticleOptions> CODEC =
+      RecordCodecBuilder.mapCodec(instance -> instance
           .group(
-              Codec.FLOAT.fieldOf("red").forGetter(FlashParticleOptions::red),
-              Codec.FLOAT.fieldOf("green").forGetter(FlashParticleOptions::green),
-              Codec.FLOAT.fieldOf("blue").forGetter(FlashParticleOptions::blue),
-              Codec.FLOAT.fieldOf("scale").forGetter(FlashParticleOptions::scale))
+              com.mojang.serialization.Codec.FLOAT.fieldOf("red")
+                  .forGetter(FlashParticleOptions::red),
+              com.mojang.serialization.Codec.FLOAT.fieldOf("green")
+                  .forGetter(FlashParticleOptions::green),
+              com.mojang.serialization.Codec.FLOAT.fieldOf("blue")
+                  .forGetter(FlashParticleOptions::blue),
+              com.mojang.serialization.Codec.FLOAT.fieldOf("scale")
+                  .forGetter(FlashParticleOptions::scale))
           .apply(instance, FlashParticleOptions::new));
 
-  @SuppressWarnings("deprecation")
-  public static final ParticleOptions.Deserializer<FlashParticleOptions> DESERIALIZER =
-      new ParticleOptions.Deserializer<FlashParticleOptions>() {
-        @Override
-        public FlashParticleOptions fromCommand(ParticleType<FlashParticleOptions> particleType,
-            StringReader stringReader) throws CommandSyntaxException {
-          stringReader.expect(' ');
-          float red = stringReader.readFloat();
-          stringReader.expect(' ');
-          float green = stringReader.readFloat();
-          stringReader.expect(' ');
-          float blue = stringReader.readFloat();
-          stringReader.expect(' ');
-          float scale = stringReader.readFloat();
-          return new FlashParticleOptions(red, green, blue, scale);
-        }
-
-        @Override
-        public FlashParticleOptions fromNetwork(ParticleType<FlashParticleOptions> particleType,
-            FriendlyByteBuf packetBuffer) {
-          return new FlashParticleOptions(packetBuffer.readFloat(), packetBuffer.readFloat(),
-              packetBuffer.readFloat(), packetBuffer.readFloat());
-        }
-      };
-
-  @Override
-  public void writeToNetwork(FriendlyByteBuf packetBuffer) {
-    packetBuffer.writeFloat(this.red);
-    packetBuffer.writeFloat(this.green);
-    packetBuffer.writeFloat(this.blue);
-    packetBuffer.writeFloat(this.scale);
-  }
-
-  @Override
-  public String writeToString() {
-    return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f",
-        net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.red, this.green, this.blue, this.scale);
-  }
+  public static final StreamCodec<RegistryFriendlyByteBuf, FlashParticleOptions> STREAM_CODEC =
+      StreamCodec.composite(
+          StreamCodecHelper.FLOAT, FlashParticleOptions::red,
+          StreamCodecHelper.FLOAT, FlashParticleOptions::green,
+          StreamCodecHelper.FLOAT, FlashParticleOptions::blue,
+          StreamCodecHelper.FLOAT, FlashParticleOptions::scale,
+          FlashParticleOptions::new);
 
   @Override
   public ParticleType<FlashParticleOptions> getType() {

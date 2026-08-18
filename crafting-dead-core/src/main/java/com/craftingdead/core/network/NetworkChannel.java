@@ -44,9 +44,10 @@ import com.craftingdead.core.network.message.play.TriggerPressedMessage;
 import com.craftingdead.core.network.message.play.TraumaPacket;
 import com.craftingdead.core.network.message.play.ValidatePendingHitMessage;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.Channel;
+import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.SimpleChannel;
 
 public enum NetworkChannel {
 
@@ -226,7 +227,7 @@ public enum NetworkChannel {
   /**
    * Network protocol version.
    */
-    private static final String NETWORK_VERSION = "0.0.1.2";
+    private static final int NETWORK_VERSION = 1;
   /**
    * Prevents re-registering messages.
    */
@@ -237,11 +238,11 @@ public enum NetworkChannel {
   private final SimpleChannel simpleChannel;
 
   NetworkChannel(ResourceLocation channelName) {
-    this.simpleChannel = NetworkRegistry.ChannelBuilder
+    this.simpleChannel = ChannelBuilder
         .named(channelName)
-        .clientAcceptedVersions(NETWORK_VERSION::equals)
-        .serverAcceptedVersions(NETWORK_VERSION::equals)
-        .networkProtocolVersion(() -> NETWORK_VERSION)
+        .clientAcceptedVersions(Channel.VersionTest.exact(NETWORK_VERSION))
+        .serverAcceptedVersions(Channel.VersionTest.exact(NETWORK_VERSION))
+        .networkProtocolVersion(NETWORK_VERSION)
         .simpleChannel();
   }
 

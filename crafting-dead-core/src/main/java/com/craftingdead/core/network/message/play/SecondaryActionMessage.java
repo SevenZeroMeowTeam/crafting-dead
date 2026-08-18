@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record SecondaryActionMessage(int entityId, boolean performing) {
 
@@ -35,12 +35,11 @@ public record SecondaryActionMessage(int entityId, boolean performing) {
     return new SecondaryActionMessage(in.readVarInt(), in.readBoolean());
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx.get(), this.entityId)
+  public static void handle(SecondaryActionMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx, msg.entityId)
         .getCapability(LivingExtension.CAPABILITY)
         .ifPresent(living -> living.mainHandGun()
-            .ifPresent(gun -> gun.setPerformingSecondaryAction(living, this.performing,
-                ctx.get().getDirection().getReceptionSide().isServer()))));
-    return true;
+            .ifPresent(gun -> gun.setPerformingSecondaryAction(living, msg.performing,
+                ctx.isServerSide()))));
   }
 }

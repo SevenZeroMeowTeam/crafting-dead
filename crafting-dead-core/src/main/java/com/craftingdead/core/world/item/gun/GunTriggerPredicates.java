@@ -44,7 +44,7 @@ public class GunTriggerPredicates {
       deferredRegister.makeRegistry(() -> new RegistryBuilder<PredicateRegistryEntry<Gun>>().hasTags());
 
   public static final Codec<PredicateRegistryEntry<Gun>> CODEC =
-      ExtraCodecs.lazyInitializedCodec(() -> registry.get().getCodec());
+      Codec.lazyInitialized(() -> registry.get().getCodec());
 
   public static final RegistryObject<PredicateRegistryEntry<Gun>> PERFORMING_SECONDARY_ACTION =
       deferredRegister.register("performing_secondary_action",

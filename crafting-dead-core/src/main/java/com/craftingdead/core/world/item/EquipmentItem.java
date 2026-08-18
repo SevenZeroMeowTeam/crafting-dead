@@ -29,6 +29,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 
 public abstract class EquipmentItem extends Item {
@@ -38,7 +39,7 @@ public abstract class EquipmentItem extends Item {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, Level world, List<Component> lines,
+  public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext world, List<Component> lines,
       TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, world, lines, tooltipFlag);
 
@@ -53,11 +54,11 @@ public abstract class EquipmentItem extends Item {
 
           for (var entry : attributeModifiers.entries()) {
             var modifier = entry.getValue();
-            var amount = modifier.getAmount();
+            var amount = modifier.amount();
 
             double multipliedAmount;
-            if (modifier.getOperation() != AttributeModifier.Operation.MULTIPLY_BASE
-                && modifier.getOperation() != AttributeModifier.Operation.MULTIPLY_TOTAL) {
+            if (modifier.operation() != AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                && modifier.operation() != AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
               if (entry.getKey().equals(Attributes.KNOCKBACK_RESISTANCE)) {
                 multipliedAmount = amount * 10.0D;
               } else {
@@ -67,26 +68,26 @@ public abstract class EquipmentItem extends Item {
               multipliedAmount = amount * 100.0D;
             }
 
-            if (modifier.getId() == Item.BASE_ATTACK_DAMAGE_UUID
-                || modifier.getId() == Item.BASE_ATTACK_SPEED_UUID) {
+            if (modifier.id() == Item.BASE_ATTACK_DAMAGE_ID
+                || modifier.id() == Item.BASE_ATTACK_SPEED_ID) {
               lines.add(Component.literal(" ")
                   .append(Component.translatable(
-                      "attribute.modifier.equals." + modifier.getOperation().toValue(),
-                      ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(multipliedAmount),
-                      Component.translatable(entry.getKey().getDescriptionId())))
+                      "attribute.modifier.equals." + modifier.operation().getSerializedName(),
+                      ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(multipliedAmount),
+                      Component.translatable(entry.getKey().value().getDescriptionId())))
                   .withStyle(ChatFormatting.DARK_GREEN));
             } else if (amount > 0.0D) {
               lines.add(Component.translatable(
-                  "attribute.modifier.plus." + modifier.getOperation().toValue(),
-                  ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(multipliedAmount),
-                  Component.translatable(entry.getKey().getDescriptionId()))
+                  "attribute.modifier.plus." + modifier.operation().getSerializedName(),
+                  ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(multipliedAmount),
+                  Component.translatable(entry.getKey().value().getDescriptionId()))
                       .withStyle(ChatFormatting.BLUE));
             } else if (amount < 0.0D) {
               multipliedAmount = multipliedAmount * -1.0D;
               lines.add(Component.translatable(
-                  "attribute.modifier.take." + modifier.getOperation().toValue(),
-                  ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(multipliedAmount),
-                  Component.translatable(entry.getKey().getDescriptionId()))
+                  "attribute.modifier.take." + modifier.operation().getSerializedName(),
+                  ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(multipliedAmount),
+                  Component.translatable(entry.getKey().value().getDescriptionId()))
                       .withStyle(ChatFormatting.RED));
             }
           }

@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record CrouchMessage(int entityId, boolean crouching) {
 
@@ -35,11 +35,10 @@ public record CrouchMessage(int entityId, boolean crouching) {
     return new CrouchMessage(in.readVarInt(), in.readBoolean());
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx.get(), this.entityId)
+  public static void handle(CrouchMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx, msg.entityId)
         .getCapability(LivingExtension.CAPABILITY)
-        .ifPresent(living -> living.setCrouching(this.crouching,
-            ctx.get().getDirection().getReceptionSide().isServer())));
-    return true;
+        .ifPresent(living -> living.setCrouching(msg.crouching,
+            ctx.isServerSide())));
   }
 }

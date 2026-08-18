@@ -55,7 +55,7 @@ public class MagazineItem extends Item {
   }
 
   @Override
-  public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag nbt) {
+  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
     return CapabilityUtil.serializableProvider(() -> new MagazineImpl(this), Magazine.CAPABILITY);
   }
 
@@ -66,32 +66,24 @@ public class MagazineItem extends Item {
   }
 
   @Override
-  public int getMaxDamage(ItemStack itemStack) {
-    return this.size;
+  public boolean isBarVisible(ItemStack itemStack) {
+    return this.size > 1;
   }
 
   @Override
-  public int getDamage(ItemStack itemStack) {
-    return this.size - itemStack
-        .getCapability(Magazine.CAPABILITY)
-        .map(Magazine::getSize)
-        .orElse(this.size);
+  public int getBarWidth(ItemStack itemStack) {
+    return Math.round(13.0F - (this.size
+        - itemStack.getCapability(Magazine.CAPABILITY).map(Magazine::getSize).orElse(this.size))
+        * 13.0F / this.size);
   }
 
   @Override
-  public void setDamage(ItemStack itemStack, int damage) {
-    itemStack
-        .getCapability(Magazine.CAPABILITY)
-        .ifPresent(magazine -> magazine.setSize(Math.max(0, this.size - damage)));
+  public int getBarColor(ItemStack itemStack) {
+    return 0x00C800;
   }
 
   @Override
-  public boolean canBeDepleted() {
-    return true;
-  }
-
-  @Override
-  public void appendHoverText(ItemStack stack, Level level, List<Component> lines,
+  public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext level, List<Component> lines,
       TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, level, lines, tooltipFlag);
 
@@ -113,30 +105,6 @@ public class MagazineItem extends Item {
           .withStyle(ChatFormatting.GRAY)
           .append(Component.literal(String.format("%.0f%%", this.armorPenetration))
               .withStyle(ChatFormatting.RED)));
-    }
-  }
-
-  @Override
-  public CompoundTag getShareTag(ItemStack itemStack) {
-    CompoundTag nbt = super.getShareTag(itemStack);
-    if (nbt == null) {
-      nbt = new CompoundTag();
-    }
-    CompoundTag magazineNbt = itemStack.getCapability(Magazine.CAPABILITY)
-        .map(INBTSerializable::serializeNBT)
-        .orElse(null);
-    if (magazineNbt != null && !magazineNbt.isEmpty()) {
-      nbt.put("magazine", magazineNbt);
-    }
-    return nbt;
-  }
-
-  @Override
-  public void readShareTag(ItemStack itemStack, @Nullable CompoundTag nbt) {
-    super.readShareTag(itemStack, nbt);
-    if (nbt != null && nbt.contains("magazine", Tag.TAG_COMPOUND)) {
-      itemStack.getCapability(Magazine.CAPABILITY)
-          .ifPresent(magazine -> magazine.deserializeNBT(nbt.getCompound("magazine")));
     }
   }
 

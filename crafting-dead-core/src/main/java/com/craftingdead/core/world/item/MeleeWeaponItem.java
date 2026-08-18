@@ -33,11 +33,12 @@ import com.google.common.collect.Multimap;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -46,20 +47,25 @@ public class MeleeWeaponItem extends ToolItem {
 
   private final int attackDamage;
 
-  private final Multimap<Attribute, AttributeModifier> attributeModifiers;
+  private final ItemAttributeModifiers attributeModifiers;
 
   public MeleeWeaponItem(int attackDamage, double attackSpeed, Item.Properties properties) {
     super(properties);
     this.attackDamage = attackDamage;
-    this.attributeModifiers = ImmutableMultimap.of(
-        Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID,
-            "Weapon modifier", this.attackDamage, AttributeModifier.Operation.ADDITION),
-        Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID,
-            "Weapon modifier", attackSpeed, AttributeModifier.Operation.ADDITION));
+    this.attributeModifiers = ItemAttributeModifiers.builder()
+        .add(Attributes.ATTACK_DAMAGE,
+            new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, this.attackDamage,
+                AttributeModifier.Operation.ADD_VALUE),
+            EquipmentSlotGroup.MAINHAND)
+        .add(Attributes.ATTACK_SPEED,
+            new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, attackSpeed,
+                AttributeModifier.Operation.ADD_VALUE),
+            EquipmentSlotGroup.MAINHAND)
+        .build();
   }
 
   @Override
-  public Multimap<Attribute, AttributeModifier> getAttributeModifiers(
+  public ItemAttributeModifiers getAttributeModifiers(
       EquipmentSlot equipmentSlot, ItemStack itemStack) {
     return equipmentSlot == EquipmentSlot.MAINHAND
         ? this.attributeModifiers
@@ -67,7 +73,7 @@ public class MeleeWeaponItem extends ToolItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip,
+  public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext world, List<Component> tooltip,
       @NotNull TooltipFlag flag) {
     tooltip.add(Component.translatable("item.craftingdead.damage").append(" ").append(
             Component.translatable(String.valueOf(this.attackDamage))
@@ -81,7 +87,7 @@ public class MeleeWeaponItem extends ToolItem {
   }
 
   @Override
-  public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag nbt) {
+  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
     var combatSlotProvider = LazyOptional.of(() -> CombatSlot.MELEE);
     var equipment = LazyOptional.of(() -> Equipment.forSlot(Equipment.Slot.MELEE));
     return new ICapabilityProvider() {

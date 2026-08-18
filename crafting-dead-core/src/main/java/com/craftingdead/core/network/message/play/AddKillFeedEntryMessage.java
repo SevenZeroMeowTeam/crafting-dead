@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.world.damagesource.KillFeedEntry;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record AddKillFeedEntryMessage(KillFeedEntry entry) {
 
@@ -34,9 +34,8 @@ public record AddKillFeedEntryMessage(KillFeedEntry entry) {
     return new AddKillFeedEntryMessage(KillFeedEntry.decode(in));
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> CraftingDead.getInstance().getClientDist().getIngameGui()
-        .addKillFeedEntry(this.entry));
-    return true;
+  public static void handle(AddKillFeedEntryMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> CraftingDead.getInstance().getClientDist().getIngameGui()
+        .addKillFeedEntry(msg.entry));
   }
 }

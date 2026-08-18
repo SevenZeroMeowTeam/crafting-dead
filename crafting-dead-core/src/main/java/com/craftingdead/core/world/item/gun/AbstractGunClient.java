@@ -18,6 +18,8 @@
 
 package com.craftingdead.core.world.item.gun;
 
+
+import net.minecraftforge.network.PacketDistributor;
 import com.craftingdead.core.ServerConfig;
 import com.craftingdead.core.world.item.gun.attachment.Attachments;
 import java.util.HashMap;
@@ -87,7 +89,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
   }
 
   public float getPartialTick() {
-    return this.minecraft.getFrameTime();
+    return this.minecraft.getTimer().getGameTimeDeltaPartialTick(false);
   }
 
   protected abstract Optional<SoundEvent> getSecondaryActionSound();
@@ -99,8 +101,9 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
         && this.livingHitValidationBuffer.size() > 0
         && this.hitValidationTicks++ >= AbstractGun.HIT_VALIDATION_DELAY_TICKS) {
       this.hitValidationTicks = 0;
-      NetworkChannel.PLAY.getSimpleChannel().sendToServer(
-          new ValidatePendingHitMessage(new HashMap<>(this.livingHitValidationBuffer.asMap())));
+      NetworkChannel.PLAY.getSimpleChannel().send(
+          new ValidatePendingHitMessage(new HashMap<>(this.livingHitValidationBuffer.asMap())),
+          PacketDistributor.SERVER.noArg());
       this.livingHitValidationBuffer.clear();
     }
 
@@ -217,8 +220,8 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
             this.livingHitValidationBuffer.put(hitEntity.getId(),
                 new PendingHit(
                     (byte) (AbstractGun.HIT_VALIDATION_DELAY_TICKS - this.hitValidationTicks),
-                    living.makeSnapshot(this.minecraft.getFrameTime()),
-                    hitLiving.makeSnapshot(this.minecraft.getFrameTime()), randomSeed,
+                    living.makeSnapshot(this.minecraft.getTimer().getGameTimeDeltaPartialTick(false)),
+                    hitLiving.makeSnapshot(this.minecraft.getTimer().getGameTimeDeltaPartialTick(false)), randomSeed,
                     this.gun.getShotCount()));
           });
     }

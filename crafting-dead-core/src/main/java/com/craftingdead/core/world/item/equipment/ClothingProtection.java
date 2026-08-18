@@ -18,7 +18,9 @@
 
 package com.craftingdead.core.world.item.equipment;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,10 +50,10 @@ public class ClothingProtection {
    * @return protection value (0.0 = no protection, 1.0 = full protection)
    */
   public static float getBiteProtection(@NotNull ItemStack itemStack) {
-    if (itemStack.isEmpty() || !itemStack.hasTag()) {
+    if (itemStack.isEmpty() || !itemStack.has(DataComponents.CUSTOM_DATA)) {
       return 0.0F;
     }
-    CompoundTag tag = itemStack.getTag();
+    CompoundTag tag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).getUnsafe();
     return tag != null ? tag.getFloat(BITE_PROTECTION_TAG) : 0.0F;
   }
 
@@ -63,10 +65,10 @@ public class ClothingProtection {
    * @return resistance value (0.0 = no resistance, 1.0 = full resistance)
    */
   public static float getStabResistance(@NotNull ItemStack itemStack) {
-    if (itemStack.isEmpty() || !itemStack.hasTag()) {
+    if (itemStack.isEmpty() || !itemStack.has(DataComponents.CUSTOM_DATA)) {
       return 0.0F;
     }
-    CompoundTag tag = itemStack.getTag();
+    CompoundTag tag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).getUnsafe();
     return tag != null ? tag.getFloat(STAB_RESISTANCE_TAG) : 0.0F;
   }
 
@@ -78,10 +80,10 @@ public class ClothingProtection {
    * @return resistance value (0.0 = no resistance, 1.0 = full resistance)
    */
   public static float getBluntResistance(@NotNull ItemStack itemStack) {
-    if (itemStack.isEmpty() || !itemStack.hasTag()) {
+    if (itemStack.isEmpty() || !itemStack.has(DataComponents.CUSTOM_DATA)) {
       return 0.0F;
     }
-    CompoundTag tag = itemStack.getTag();
+    CompoundTag tag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).getUnsafe();
     return tag != null ? tag.getFloat(BLUNT_RESISTANCE_TAG) : 0.0F;
   }
 
@@ -93,10 +95,10 @@ public class ClothingProtection {
    * @return weight modifier (-1.0 to 1.0, typically -0.1 to 0.0)
    */
   public static float getWeightModifier(@NotNull ItemStack itemStack) {
-    if (itemStack.isEmpty() || !itemStack.hasTag()) {
+    if (itemStack.isEmpty() || !itemStack.has(DataComponents.CUSTOM_DATA)) {
       return 0.0F;
     }
-    CompoundTag tag = itemStack.getTag();
+    CompoundTag tag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).getUnsafe();
     return tag != null ? tag.getFloat(WEIGHT_MODIFIER_TAG) : 0.0F;
   }
 
@@ -108,10 +110,10 @@ public class ClothingProtection {
    * @return tier string (default: "casual")
    */
   public static String getClothingTier(@NotNull ItemStack itemStack) {
-    if (itemStack.isEmpty() || !itemStack.hasTag()) {
+    if (itemStack.isEmpty() || !itemStack.has(DataComponents.CUSTOM_DATA)) {
       return "casual";
     }
-    CompoundTag tag = itemStack.getTag();
+    CompoundTag tag = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).getUnsafe();
     return tag != null ? tag.getString(CLOTHING_TIER_TAG) : "casual";
   }
 
@@ -122,8 +124,8 @@ public class ClothingProtection {
    * @param protection protection value (0.0 - 1.0)
    */
   public static void setBiteProtection(@NotNull ItemStack itemStack, float protection) {
-    CompoundTag tag = itemStack.getOrCreateTag();
-    tag.putFloat(BITE_PROTECTION_TAG, clamp(protection, 0.0F, 1.0F));
+    CustomData.update(DataComponents.CUSTOM_DATA, itemStack,
+        tag -> tag.putFloat(BITE_PROTECTION_TAG, clamp(protection, 0.0F, 1.0F)));
   }
 
   /**
@@ -133,8 +135,8 @@ public class ClothingProtection {
    * @param resistance resistance value (0.0 - 1.0)
    */
   public static void setStabResistance(@NotNull ItemStack itemStack, float resistance) {
-    CompoundTag tag = itemStack.getOrCreateTag();
-    tag.putFloat(STAB_RESISTANCE_TAG, clamp(resistance, 0.0F, 1.0F));
+    CustomData.update(DataComponents.CUSTOM_DATA, itemStack,
+        tag -> tag.putFloat(STAB_RESISTANCE_TAG, clamp(resistance, 0.0F, 1.0F)));
   }
 
   /**
@@ -144,8 +146,8 @@ public class ClothingProtection {
    * @param resistance resistance value (0.0 - 1.0)
    */
   public static void setBluntResistance(@NotNull ItemStack itemStack, float resistance) {
-    CompoundTag tag = itemStack.getOrCreateTag();
-    tag.putFloat(BLUNT_RESISTANCE_TAG, clamp(resistance, 0.0F, 1.0F));
+    CustomData.update(DataComponents.CUSTOM_DATA, itemStack,
+        tag -> tag.putFloat(BLUNT_RESISTANCE_TAG, clamp(resistance, 0.0F, 1.0F)));
   }
 
   /**
@@ -155,8 +157,8 @@ public class ClothingProtection {
    * @param weight weight modifier (-1.0 to 1.0)
    */
   public static void setWeightModifier(@NotNull ItemStack itemStack, float weight) {
-    CompoundTag tag = itemStack.getOrCreateTag();
-    tag.putFloat(WEIGHT_MODIFIER_TAG, clamp(weight, -1.0F, 1.0F));
+    CustomData.update(DataComponents.CUSTOM_DATA, itemStack,
+        tag -> tag.putFloat(WEIGHT_MODIFIER_TAG, clamp(weight, -1.0F, 1.0F)));
   }
 
   /**
@@ -166,8 +168,8 @@ public class ClothingProtection {
    * @param tier tier name (e.g., "casual", "utility", "military", "heavy")
    */
   public static void setClothingTier(@NotNull ItemStack itemStack, String tier) {
-    CompoundTag tag = itemStack.getOrCreateTag();
-    tag.putString(CLOTHING_TIER_TAG, tier);
+    CustomData.update(DataComponents.CUSTOM_DATA, itemStack,
+        tag -> tag.putString(CLOTHING_TIER_TAG, tier));
   }
 
   /**

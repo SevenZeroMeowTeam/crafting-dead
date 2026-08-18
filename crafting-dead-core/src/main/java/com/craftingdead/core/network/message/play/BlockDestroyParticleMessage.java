@@ -24,7 +24,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record BlockDestroyParticleMessage(BlockPos pos, BlockState state) {
 
@@ -37,14 +37,14 @@ public record BlockDestroyParticleMessage(BlockPos pos, BlockState state) {
     return new BlockDestroyParticleMessage(buf.readBlockPos(), Block.stateById(buf.readVarInt()));
   }
 
-  public static void handle(BlockDestroyParticleMessage msg, Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
+  public static void handle(BlockDestroyParticleMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> {
       var player = Minecraft.getInstance().player;
       if (player != null) {
         var state = player.level().getBlockState(msg.pos);
         player.level().addDestroyBlockEffect(msg.pos, state);
       }
     });
-    ctx.get().setPacketHandled(true);
+    ctx.setPacketHandled(true);
   }
 }

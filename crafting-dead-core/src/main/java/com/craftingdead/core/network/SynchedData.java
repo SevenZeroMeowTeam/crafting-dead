@@ -33,6 +33,7 @@ import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.EntityDataSerializer;
@@ -54,15 +55,15 @@ public class SynchedData {
   }
 
   public <T> void register(EntityDataAccessor<T> parameter, T value) {
-    int id = parameter.getId();
+    int id = parameter.id();
     if (id > 254) {
       throw new IllegalArgumentException(
           "Data parameter id is too big with " + id + "! (Max is 254)");
     } else if (this.entries.containsKey(id)) {
       throw new IllegalArgumentException("Duplicate id value for " + id + "!");
-    } else if (EntityDataSerializers.getSerializedId(parameter.getSerializer()) < 0) {
+    } else if (EntityDataSerializers.getSerializedId(parameter.serializer()) < 0) {
       throw new IllegalArgumentException(
-          "Unregistered serializer " + parameter.getSerializer() + " for " + id + "!");
+          "Unregistered serializer " + parameter.serializer() + " for " + id + "!");
     } else {
       this.createEntry(parameter, value);
     }
@@ -70,7 +71,7 @@ public class SynchedData {
 
   private <T> void createEntry(EntityDataAccessor<T> parameter, T value) {
     DataEntry<T> entry = new DataEntry<>(parameter, value);
-    this.entries.put(parameter.getId(), entry);
+    this.entries.put(parameter.id(), entry);
     this.empty = false;
   }
 
@@ -78,7 +79,7 @@ public class SynchedData {
   private <T> DataEntry<T> getEntry(EntityDataAccessor<T> parameter) {
     DataEntry<T> entry;
     try {
-      entry = (DataEntry<T>) this.entries.get(parameter.getId());
+      entry = (DataEntry<T>) this.entries.get(parameter.id());
     } catch (Throwable throwable) {
       CrashReport crashReport =
           CrashReport.forThrowable(throwable, "Getting data entry");
@@ -136,13 +137,13 @@ public class SynchedData {
 
   private static <T> void writeEntry(FriendlyByteBuf out, DataEntry<T> entry) {
     EntityDataAccessor<T> parameter = entry.getKey();
-    int i = EntityDataSerializers.getSerializedId(parameter.getSerializer());
+    int i = EntityDataSerializers.getSerializedId(parameter.serializer());
     if (i < 0) {
-      throw new EncoderException("Unknown serializer type " + parameter.getSerializer());
+      throw new EncoderException("Unknown serializer type " + parameter.serializer());
     } else {
-      out.writeByte(parameter.getId());
+      out.writeByte(parameter.id());
       out.writeVarInt(i);
-      parameter.getSerializer().write(out, entry.getValue());
+      parameter.serializer().codec().encode((RegistryFriendlyByteBuf) out, entry.getValue());
     }
   }
 
@@ -201,7 +202,7 @@ public class SynchedData {
   private static <T> SynchedData.DataEntry<T> readEntry(FriendlyByteBuf buf,
       int id, EntityDataSerializer<T> serializer) {
     return new SynchedData.DataEntry<>(serializer.createAccessor(id),
-        serializer.read(buf));
+        serializer.codec().decode((RegistryFriendlyByteBuf) buf));
   }
 
   public void assignValues(@Nullable List<DataEntry<?>> entries) {
@@ -210,7 +211,7 @@ public class SynchedData {
     }
 
     for (DataEntry<?> entry : entries) {
-      DataEntry<?> currentEntry = this.entries.get(entry.getKey().getId());
+      DataEntry<?> currentEntry = this.entries.get(entry.getKey().id());
       if (currentEntry != null) {
         this.assignValue(currentEntry, entry);
       }
@@ -219,10 +220,10 @@ public class SynchedData {
 
   @SuppressWarnings("unchecked")
   private <T> void assignValue(DataEntry<T> destination, DataEntry<?> source) {
-    if (!Objects.equals(source.parameter.getSerializer(), destination.parameter.getSerializer())) {
+    if (!Objects.equals(source.parameter.serializer(), destination.parameter.serializer())) {
       throw new IllegalStateException(String.format(
           "Data entry mismatch for %d: old=%s(%s), new=%s(%s)",
-          destination.parameter.getId(), destination.value, destination.value.getClass(),
+          destination.parameter.id(), destination.value, destination.value.getClass(),
           source.value,
           source.value.getClass()));
     } else {
@@ -275,7 +276,7 @@ public class SynchedData {
 
     public SynchedData.DataEntry<T> copy() {
       return new SynchedData.DataEntry<>(this.parameter,
-          this.parameter.getSerializer().copy(this.value));
+          this.parameter.serializer().copy(this.value));
     }
   }
 }

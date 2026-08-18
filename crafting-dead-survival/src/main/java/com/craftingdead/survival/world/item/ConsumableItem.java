@@ -23,8 +23,6 @@ import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.immerse.game.survival.SurvivalPlayerHandler;
 import com.craftingdead.immerse.world.item.hydration.Hydration;
 import com.craftingdead.survival.CraftingDeadSurvival;
-import com.craftingdead.survival.compat.ThirstWasTakenCompat;
-import com.craftingdead.survival.compat.ToughAsNailsCompat;
 import java.util.List;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -64,13 +62,14 @@ public class ConsumableItem extends Item {
     this.water = (type != Type.ONLY_FOOD) ? water : 0;
     this.emptyItem = emptyItem;
     this.foodProperties = (type == Type.ONLY_FOOD || type == Type.FOOD_AND_DRINK)
-        ? new FoodProperties.Builder().nutrition(nutrition).saturationMod(saturation).build()
+        ? new FoodProperties(nutrition, saturation, false, 1.6F, java.util.Optional.empty(),
+            java.util.List.of())
         : null;
     this.type = type;
   }
 
   @Override
-  public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag tag) {
+  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
     return (this.type != Type.ONLY_FOOD && CraftingDeadSurvival.instance().isImmerseLoaded())
         ? createHydrationProvider(this.water) : null;
   }
@@ -140,14 +139,7 @@ public class ConsumableItem extends Item {
   private void applyEffects(Player player) {
     player.awardStat(Stats.ITEM_USED.get(this));
     if (this.foodProperties != null) {
-      player.getFoodData()
-          .eat(this.foodProperties.getNutrition(), this.foodProperties.getSaturationModifier());
-    }
-    if (this.type != Type.ONLY_FOOD && this.water > 0
-        && !CraftingDeadSurvival.instance().isImmerseLoaded()) {
-      ToughAsNailsCompat.drink(player, this.water,
-          (float) (this.water * 0.25F
-              * CraftingDeadSurvival.serverConfig.drinkHydrationMultiplier.get()));
+      player.getFoodData().eat(this.foodProperties.nutrition(), this.foodProperties.saturation());
     }
   }
 
@@ -157,7 +149,8 @@ public class ConsumableItem extends Item {
   }
 
   @Override
-  public int getUseDuration(@NotNull ItemStack itemStack) {
+  public int getUseDuration(@NotNull ItemStack itemStack,
+      @NotNull net.minecraft.world.entity.LivingEntity livingEntity) {
     return 32;
   }
 
@@ -178,21 +171,16 @@ public class ConsumableItem extends Item {
       var handler = PlayerExtension.getOrThrow(player).getHandlerOrThrow(SurvivalPlayerHandler.TYPE);
       return handler.getWater() < handler.getMaxWater();
     }
-    if (ToughAsNailsCompat.isLoaded()) {
-      return ToughAsNailsCompat.isThirsty(player);
-    }
-    if (ThirstWasTakenCompat.isLoaded()) {
-      return ThirstWasTakenCompat.isThirsty(player);
-    }
     return true;
   }
 
   @Override
-  public void appendHoverText(@NotNull ItemStack itemStack, @Nullable Level level,
+  public void appendHoverText(@NotNull ItemStack itemStack,
+      net.minecraft.world.item.Item.TooltipContext level,
       @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
     if (this.foodProperties != null) {
       tooltip.add(Component.translatable("item.craftingdeadsurvival.consumable.food_info").withStyle(
-          ChatFormatting.GRAY).append(Component.literal(" " + this.foodProperties.getNutrition()).withStyle(ChatFormatting.RED)));
+          ChatFormatting.GRAY).append(Component.literal(" " + this.foodProperties.nutrition()).withStyle(ChatFormatting.RED)));
     }
     if (this.water > 0) {
       tooltip.add(Component.translatable("item.craftingdeadsurvival.consumable.water_info").withStyle(

@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record OpenStorageMessage(Equipment.Slot slot) {
 
@@ -34,9 +34,8 @@ public record OpenStorageMessage(Equipment.Slot slot) {
     return new OpenStorageMessage(in.readEnum(Equipment.Slot.class));
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(
-        () -> PlayerExtension.getOrThrow(ctx.get().getSender()).openMenu(this.slot));
-    return true;
+  public static void handle(OpenStorageMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(
+        () -> PlayerExtension.getOrThrow(ctx.getSender()).openMenu(msg.slot));
   }
 }

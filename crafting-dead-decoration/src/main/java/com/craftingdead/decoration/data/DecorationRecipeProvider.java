@@ -19,11 +19,12 @@
 package com.craftingdead.decoration.data;
 
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 import com.craftingdead.decoration.world.item.DecorationItems;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
@@ -36,12 +37,13 @@ import net.minecraftforge.common.Tags;
 
 public class DecorationRecipeProvider extends RecipeProvider {
 
-  public DecorationRecipeProvider(PackOutput output) {
-    super(output);
+  public DecorationRecipeProvider(PackOutput output,
+      CompletableFuture<HolderLookup.Provider> registries) {
+    super(output, registries);
   }
 
   @Override
-  protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+  protected void buildRecipes(RecipeOutput consumer) {
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, DecorationItems.CONCRETE_BARRIER_ITEM.get(), 5)
         .pattern(" # ")
         .pattern(" # ")

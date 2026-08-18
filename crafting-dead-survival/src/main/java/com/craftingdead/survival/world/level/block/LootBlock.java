@@ -37,8 +37,8 @@ public class LootBlock extends Block {
   }
 
   @Override
-  public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-      InteractionHand handIn, BlockHitResult hit) {
+  public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+      Player player, BlockHitResult hit) {
     level.destroyBlock(pos, true);
     return InteractionResult.SUCCESS;
   }

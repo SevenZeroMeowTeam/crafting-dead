@@ -139,7 +139,7 @@ public class ActionTypes {
               .duration(16)
               .resultItem(ModItems.SYRINGE)
               .useResultItemInCreative(false)
-              .effect(() -> new MobEffectInstance(ModMobEffects.ADRENALINE.get(), 
+              .effect(() -> new MobEffectInstance(ModMobEffects.ADRENALINE.getHolder().orElseThrow(), 
                   ServerConfig.instance.adrenalineDurationTicks.get(), 1))
               .build());
 

@@ -18,11 +18,12 @@
 
 package com.craftingdead.survival.data;
 
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 import com.craftingdead.core.world.item.ModItems;
 import com.craftingdead.survival.world.item.SurvivalItems;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
@@ -33,12 +34,13 @@ import net.minecraftforge.common.Tags;
 
 public class SurvivalRecipeProvider extends RecipeProvider {
 
-  public SurvivalRecipeProvider(PackOutput output) {
-    super(output);
+  public SurvivalRecipeProvider(PackOutput output,
+      CompletableFuture<HolderLookup.Provider> registries) {
+    super(output, registries);
   }
 
   @Override
-  protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+  protected void buildRecipes(RecipeOutput consumer) {
     ShapelessRecipeBuilder.shapeless(RecipeCategory.DECORATIONS, Items.STRING, 3)
         .requires(Ingredient.of(ModItems.CLEAN_RAG.get(), ModItems.DIRTY_RAG.get()))
         .unlockedBy("has_clean_rag", has(ModItems.CLEAN_RAG.get()))

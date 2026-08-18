@@ -24,6 +24,7 @@ import com.craftingdead.core.world.item.gun.magazine.Magazine;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
 public class MagazineAmmoProvider implements AmmoProvider {
@@ -40,16 +41,17 @@ public class MagazineAmmoProvider implements AmmoProvider {
   }
 
   @Override
-  public CompoundTag serializeNBT() {
+  public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
     CompoundTag nbt = new CompoundTag();
-    nbt.put("magazineStack", this.magazineStack.serializeNBT());
+    nbt.put("magazineStack", this.magazineStack.save(provider));
     return nbt;
   }
 
   @Override
-  public void deserializeNBT(CompoundTag nbt) {
+  public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
     if (nbt.contains("magazineStack", Tag.TAG_COMPOUND)) {
-      this.magazineStack = ItemStack.of(nbt.getCompound("magazineStack"));
+      this.magazineStack = ItemStack.parse(provider, nbt.getCompound("magazineStack"))
+          .orElse(ItemStack.EMPTY);
       this.stackChanged = true;
     }
   }
@@ -58,7 +60,7 @@ public class MagazineAmmoProvider implements AmmoProvider {
   public void encode(FriendlyByteBuf out, boolean writeAll) {
     if (this.stackChanged || writeAll) {
       out.writeBoolean(true);
-      out.writeItem(this.magazineStack);
+      ItemStack.OPTIONAL_STREAM_CODEC.encode((RegistryFriendlyByteBuf) out, this.magazineStack);
       this.stackChanged = false;
     } else {
       out.writeBoolean(false);
@@ -69,7 +71,7 @@ public class MagazineAmmoProvider implements AmmoProvider {
   @Override
   public void decode(FriendlyByteBuf in) {
     if (in.readBoolean()) {
-      this.magazineStack = in.readItem();
+      this.magazineStack = ItemStack.OPTIONAL_STREAM_CODEC.decode((RegistryFriendlyByteBuf) in);
     }
     this.getMagazine().ifPresent(magazine -> magazine.decode(in));
   }

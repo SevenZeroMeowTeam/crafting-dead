@@ -20,17 +20,17 @@ package com.craftingdead.core.world.item.crafting;
 
 import com.craftingdead.core.capability.CapabilityUtil;
 import com.craftingdead.core.world.item.gun.magazine.Magazine;
-import com.google.gson.JsonObject;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
 
@@ -41,15 +41,16 @@ public class UpgradeMagazineRecipe extends CustomRecipe {
   private final Ingredient magazine;
   private final ItemStack nextTier;
 
-  public UpgradeMagazineRecipe(ResourceLocation id, Ingredient magazine, ItemStack nextTier) {
-    super(id, CraftingBookCategory.MISC);
+  public UpgradeMagazineRecipe(CraftingBookCategory category, Ingredient magazine,
+      ItemStack nextTier) {
+    super(category);
     this.magazine = magazine;
     this.nextTier = nextTier;
   }
 
   @Override
-  public boolean matches(CraftingContainer inventory, Level world) {
-    for (int i = 0; i < inventory.getContainerSize(); ++i) {
+  public boolean matches(CraftingInput inventory, Level world) {
+    for (int i = 0; i < inventory.size(); ++i) {
       switch (i) {
         case MIDDLE_SLOT_INDEX: // Middle slot
           if (!this.magazine.test(inventory.getItem(i))) {
@@ -67,7 +68,7 @@ public class UpgradeMagazineRecipe extends CustomRecipe {
   }
 
   @Override
-  public ItemStack assemble(CraftingContainer inventory, RegistryAccess registryAccess) {
+  public ItemStack assemble(CraftingInput inventory, HolderLookup.Provider registryAccess) {
     Magazine magazine = CapabilityUtil.getOrThrow(
         Magazine.CAPABILITY, inventory.getItem(MIDDLE_SLOT_INDEX), Magazine.class);
 
@@ -83,28 +84,43 @@ public class UpgradeMagazineRecipe extends CustomRecipe {
   }
 
   @Override
+  public ItemStack getResultItem(HolderLookup.Provider provider) {
+    return this.nextTier;
+  }
+
+  @Override
   public RecipeSerializer<?> getSerializer() {
     return ModRecipeSerializers.UPGRADE_MAGAZINE.get();
   }
 
-  public static class Serializer
-      implements RecipeSerializer<UpgradeMagazineRecipe> {
+  public static class Serializer implements RecipeSerializer<UpgradeMagazineRecipe> {
+
+    private static final MapCodec<UpgradeMagazineRecipe> CODEC =
+        RecordCodecBuilder.mapCodec(instance -> instance
+            .group(
+                CraftingBookCategory.CODEC.fieldOf("category")
+                    .orElse(CraftingBookCategory.MISC).forGetter(r -> r.category()),
+                Ingredient.CODEC_NONEMPTY.fieldOf("magazine")
+                    .forGetter(r -> r.magazine),
+                ItemStack.SIMPLE_ITEM_CODEC.fieldOf("nextTier")
+                    .forGetter(r -> r.nextTier))
+            .apply(instance, UpgradeMagazineRecipe::new));
+
+    private static final StreamCodec<RegistryFriendlyByteBuf, UpgradeMagazineRecipe> STREAM_CODEC =
+        StreamCodec.composite(
+            CraftingBookCategory.STREAM_CODEC, r -> r.category(),
+            Ingredient.CONTENTS_STREAM_CODEC, r -> r.magazine,
+            ItemStack.STREAM_CODEC, r -> r.nextTier,
+            UpgradeMagazineRecipe::new);
 
     @Override
-    public UpgradeMagazineRecipe fromJson(ResourceLocation id, JsonObject json) {
-      return new UpgradeMagazineRecipe(id, Ingredient.fromJson(json.get("magazine")),
-          new ItemStack(ShapedRecipe.itemFromJson(json.getAsJsonObject("nextTier"))));
+    public MapCodec<UpgradeMagazineRecipe> codec() {
+      return CODEC;
     }
 
     @Override
-    public UpgradeMagazineRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-      return new UpgradeMagazineRecipe(id, Ingredient.fromNetwork(buf), buf.readItem());
-    }
-
-    @Override
-    public void toNetwork(FriendlyByteBuf buf, UpgradeMagazineRecipe recipe) {
-      recipe.magazine.toNetwork(buf);
-      buf.writeItem(recipe.nextTier);
+    public StreamCodec<RegistryFriendlyByteBuf, UpgradeMagazineRecipe> streamCodec() {
+      return STREAM_CODEC;
     }
   }
 }

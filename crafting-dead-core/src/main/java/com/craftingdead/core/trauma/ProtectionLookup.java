@@ -122,10 +122,7 @@ public final class ProtectionLookup {
       durabilityLoss = 1;
     }
     int finalLoss = durabilityLoss;
-    if (stack.hurt(finalLoss, Objects.requireNonNull(entity.getRandom()),
-        entity instanceof ServerPlayer serverPlayer ? serverPlayer : null)) {
-      entity.broadcastBreakEvent(Objects.requireNonNull(equipmentSlot));
-    }
+    stack.hurtAndBreak(finalLoss, entity, Objects.requireNonNull(equipmentSlot));
     return finalLoss;
   }
 

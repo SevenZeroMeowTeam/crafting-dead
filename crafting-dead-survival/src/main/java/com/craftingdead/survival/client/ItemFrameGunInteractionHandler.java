@@ -57,7 +57,8 @@ public class ItemFrameGunInteractionHandler {
           
           // Open the equipment/inspection menu for the gun
           // This will show gun stats, attachments, and allow inspection
-          NetworkChannel.PLAY.getSimpleChannel().sendToServer(new OpenEquipmentMenuMessage());
+          NetworkChannel.PLAY.getSimpleChannel().send(new OpenEquipmentMenuMessage(),
+              net.minecraftforge.network.PacketDistributor.SERVER.noArg());
           
           // Note: The gun remains in the item frame and cannot be fired or reloaded
           // from this interaction. This is purely for display and inspection purposes.

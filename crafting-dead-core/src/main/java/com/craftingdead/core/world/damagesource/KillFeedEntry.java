@@ -20,7 +20,9 @@ package com.craftingdead.core.world.damagesource;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 
 public class KillFeedEntry {
 
@@ -65,14 +67,17 @@ public class KillFeedEntry {
 
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.killerEntityId);
-    out.writeComponent(this.killerName);
-    out.writeComponent(this.deadName);
-    out.writeItem(this.weaponStack);
+    ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.encode(out, this.killerName);
+    ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.encode(out, this.deadName);
+    ItemStack.OPTIONAL_STREAM_CODEC.encode((RegistryFriendlyByteBuf) out, this.weaponStack);
     out.writeEnum(this.type);
   }
 
   public static KillFeedEntry decode(FriendlyByteBuf in) {
-    return new KillFeedEntry(in.readVarInt(), in.readComponent(), in.readComponent(), in.readItem(),
+    return new KillFeedEntry(in.readVarInt(),
+        ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.decode(in),
+        ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.decode(in),
+        ItemStack.OPTIONAL_STREAM_CODEC.decode((RegistryFriendlyByteBuf) in),
         in.readEnum(KillFeedEntry.Type.class));
   }
 }

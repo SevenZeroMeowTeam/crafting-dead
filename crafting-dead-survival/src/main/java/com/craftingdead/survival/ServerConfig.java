@@ -529,55 +529,55 @@ public class ServerConfig {
       this.alfaZombieVestEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.alfa_zombie.vest_equip_chance")
           .comment("Chance that the Zombie spawns with a vest. (0.1 = 10%)")
-          .defineInRange("alfaZombieVestEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("alfaZombieVestEquipChance", 1.0, 0.01, 1.0);
       this.desertRaiderVestEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.desert_raider_zombie.vest_equip_chance")
           .comment("Chance that the Zombie spawns with a vest. (0.1 = 10%)")
-          .defineInRange("desertRaiderVestEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("desertRaiderVestEquipChance", 1.0, 0.01, 1.0);
       this.juggernautZombieVestEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.juggernaut_zombie.vest_equip_chance")
           .comment("Chance that the Zombie spawns with a vest. (0.1 = 10%)")
-          .defineInRange("juggernautZombieVestEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("juggernautZombieVestEquipChance", 1.0, 0.01, 1.0);
       this.pilotZombieVestEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.pilot_zombie.vest_equip_chance")
           .comment("Chance that the Zombie spawns with a vest. (0.1 = 10%)")
-          .defineInRange("pilotZombieVestEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("pilotZombieVestEquipChance", 1.0, 0.01, 1.0);
       this.sniperZombieVestEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.sniper_zombie.vest_equip_chance")
           .comment("Chance that the Zombie spawns with a vest. (0.1 = 10%)")
-          .defineInRange("sniperZombieVestEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("sniperZombieVestEquipChance", 1.0, 0.01, 1.0);
       this.soldierZombieVestEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.soldier_zombie.vest_equip_chance")
           .comment("Chance that the Zombie spawns with a vest. (0.1 = 10%)")
-          .defineInRange("soldierZombieVestEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("soldierZombieVestEquipChance", 1.0, 0.01, 1.0);
       this.swatZombieVestEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.swat_zombie.vest_equip_chance")
           .comment("Chance that the Zombie spawns with a vest. (0.1 = 10%)")
-          .defineInRange("swatZombieVestEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("swatZombieVestEquipChance", 1.0, 0.01, 1.0);
       this.alfaZombieBackpackEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.alfa_zombie.backpack_equip_chance")
           .comment("Chance that the zombie spawns with a backpack. (0.1 = 10%)")
-          .defineInRange("alfaZombieBackpackEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("alfaZombieBackpackEquipChance", 1.0, 0.01, 1.0);
       this.desertRaiderBackpackEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.desert_raider_zombie.backpack_equip_chance")
           .comment("Chance that the zombie spawns with a backpack. (0.1 = 10%)")
-          .defineInRange("desertRaiderBackpackEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("desertRaiderBackpackEquipChance", 1.0, 0.01, 1.0);
       this.juggernautZombieBackpackEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.juggernaut_zombie.backpack_equip_chance")
           .comment("Chance that the zombie spawns with a backpack. (0.1 = 10%)")
-          .defineInRange("juggernautZombieBackpackEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("juggernautZombieBackpackEquipChance", 1.0, 0.01, 1.0);
       this.scoutZombieBackpackEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.scout_zombie.backpack_equip_chance")
           .comment("Chance that the zombie spawns with a backpack. (0.1 = 10%)")
-          .defineInRange("scoutZombieBackpackEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("scoutZombieBackpackEquipChance", 1.0, 0.01, 1.0);
       this.soldierZombieBackpackEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.soldier_zombie.backpack_equip_chance")
           .comment("Chance that the zombie spawns with a backpack. (0.1 = 10%)")
-          .defineInRange("soldierZombieBackpackEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("soldierZombieBackpackEquipChance", 1.0, 0.01, 1.0);
       this.swatZombieBackpackEquipChance = builder
           .translation("options.craftingdeadsurvival.zombies.swat_zombie.backpack_equip_chance")
           .comment("Chance that the zombie spawns with a backpack. (0.1 = 10%)")
-          .defineInRange("swatZombieBackpackEquipChance", 1.0F, 0.01F, 1.0F);
+          .defineInRange("swatZombieBackpackEquipChance", 1.0, 0.01, 1.0);
       this.fastZombieSpeed = builder
           .translation("options.craftingdeadsurvival.server.zombies.fast_zombie.speed")
           .comment("Defines how fast the zombie moves")
@@ -1050,7 +1050,7 @@ public class ServerConfig {
       this.brokenLegChance = builder
           .translation("options.craftingdeadsurvival.server.abilities.broken_leg.chance")
           .comment("Defines the chance of the player breaking his leg")
-          .defineInRange("brokenLegChance", 0.25F, 0.01F, 0.50F);
+          .defineInRange("brokenLegChance", 0.25, 0.01, 0.50);
       this.bleedingEnabled = builder
           .translation("options.craftingdeadsurvival.server.abilities.bleed_effect")
           .comment("Defines if players can bleed")

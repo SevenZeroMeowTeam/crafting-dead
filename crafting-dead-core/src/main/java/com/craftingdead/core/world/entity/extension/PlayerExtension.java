@@ -23,6 +23,7 @@ import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.capability.CapabilityUtil;
 import com.craftingdead.core.world.item.equipment.Equipment;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -72,7 +73,7 @@ public interface PlayerExtension<E extends Player>
 
   default boolean damageHandcuffs(int damage) {
     final var handcuffs = this.getHandcuffs().copy();
-    handcuffs.hurtAndBreak(damage, this.entity(), __ -> this.breakItem(handcuffs));
+    handcuffs.hurtAndBreak(damage, this.entity(), EquipmentSlot.MAINHAND);
     if (handcuffs.isEmpty()) {
       this.setHandcuffs(ItemStack.EMPTY);
       return true;

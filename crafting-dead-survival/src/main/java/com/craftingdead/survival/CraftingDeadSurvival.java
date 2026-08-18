@@ -19,7 +19,6 @@
 package com.craftingdead.survival;
 
 import com.craftingdead.survival.world.entity.extension.ALFAZombieHandler;
-import com.craftingdead.survival.compat.ThirstWasTakenCompat;
 import com.craftingdead.survival.world.item.ConsumableConfigOverrides;
 import com.craftingdead.survival.world.entity.extension.BountyHunterZombieHandler;
 import com.craftingdead.survival.world.entity.extension.DesertRaiderZombieHandler;
@@ -74,7 +73,6 @@ import com.craftingdead.survival.world.entity.monster.PoliceZombieEntity;
 import com.craftingdead.survival.world.entity.monster.TankZombie;
 import com.craftingdead.survival.world.entity.monster.WeakZombie;
 import com.craftingdead.survival.world.item.SurvivalItems;
-import com.craftingdead.survival.world.item.enchantment.SurvivalEnchantments;
 import com.craftingdead.survival.world.level.block.SurvivalBlocks;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
@@ -100,7 +98,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.data.ForgeBlockTagsProvider;
 // RegistryEvent was removed in 1.19+
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -160,14 +157,15 @@ public class CraftingDeadSurvival {
     modEventBus.addListener(this::handleCommonSetup);
     modEventBus.addListener(this::handleEntityAttributeCreation);
     modEventBus.addListener(this::handleGatherData);
+    modEventBus.addListener(this::handleSpawnPlacementRegister);
 
     context.registerConfig(ModConfig.Type.SERVER, serverConfigSpec);
 
     MinecraftForge.EVENT_BUS.register(this);
 
-    SurvivalEnchantments.deferredRegister.register(modEventBus);
     SurvivalActionTypes.deferredRegister.register(modEventBus);
     SurvivalItems.deferredRegister.register(modEventBus);
+
     SurvivalItems.CREATIVE_MODE_TABS.register(modEventBus);
     SurvivalMobEffects.deferredRegister.register(modEventBus);
     SurvivalEntityTypes.deferredRegister.register(modEventBus);
@@ -197,30 +195,33 @@ public class CraftingDeadSurvival {
     //   scope.setTag("survival.immerseLoaded", String.valueOf(this.isImmerseLoaded()));
     // });
     // Sentry telemetry disabled - dependency not bundled
-    event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(ModItems.SYRINGE.get()),
-        Ingredient.of(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE),
-        new ItemStack(SurvivalItems.CURE_SYRINGE.get())));
-
-    ThirstWasTakenCompat.registerDrinks();
-
-    registerEntitySpawnPlacements();
   }
 
-  private static void registerEntitySpawnPlacements() {
-    SpawnPlacements.register(SurvivalEntityTypes.FAST_ZOMBIE.get(),
-        SpawnPlacements.Type.ON_GROUND,
-        Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-        CraftingDeadSurvival::checkZombieSpawnRules);
+  @SubscribeEvent
+  public void handleBrewingRecipeRegister(net.minecraftforge.event.brewing.BrewingRecipeRegisterEvent event) {
+    event.addRecipe(new net.minecraftforge.common.brewing.BrewingRecipe(
+        Ingredient.of(ModItems.SYRINGE.get()),
+        Ingredient.of(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE),
+        new ItemStack(SurvivalItems.CURE_SYRINGE.get())));
+  }
 
-    SpawnPlacements.register(SurvivalEntityTypes.TANK_ZOMBIE.get(),
-        SpawnPlacements.Type.ON_GROUND,
+  private void handleSpawnPlacementRegister(
+      net.minecraftforge.event.entity.SpawnPlacementRegisterEvent event) {
+    var operation = net.minecraftforge.event.entity.SpawnPlacementRegisterEvent.Operation.REPLACE;
+    event.register(SurvivalEntityTypes.FAST_ZOMBIE.get(),
+        net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
         Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-        CraftingDeadSurvival::checkZombieSpawnRules);
+        CraftingDeadSurvival::checkZombieSpawnRules, operation);
 
-    SpawnPlacements.register(SurvivalEntityTypes.WEAK_ZOMBIE.get(),
-        SpawnPlacements.Type.ON_GROUND,
+    event.register(SurvivalEntityTypes.TANK_ZOMBIE.get(),
+        net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
         Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-        CraftingDeadSurvival::checkZombieSpawnRules);
+        CraftingDeadSurvival::checkZombieSpawnRules, operation);
+
+    event.register(SurvivalEntityTypes.WEAK_ZOMBIE.get(),
+        net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
+        Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+        CraftingDeadSurvival::checkZombieSpawnRules, operation);
   }
 
   private void handleEntityAttributeCreation(EntityAttributeCreationEvent event) {
@@ -274,8 +275,8 @@ public class CraftingDeadSurvival {
           existingFileHelper);
       generator.addProvider(true, new SurvivalItemTagsProvider(packOutput, lookupProvider,
           blockTagsProvider.contentsGetter(), existingFileHelper));
-      generator.addProvider(true, new SurvivalRecipeProvider(packOutput));
-      generator.addProvider(true, new SurvivalLootTableProvider(packOutput));
+      generator.addProvider(true, new SurvivalRecipeProvider(packOutput, lookupProvider));
+      generator.addProvider(true, new SurvivalLootTableProvider(packOutput, lookupProvider));
     }
 
     if (event.includeClient()) {
@@ -318,8 +319,9 @@ public class CraftingDeadSurvival {
       }
 
       zombie.getAttribute(Attributes.ARMOR)
-          .addPermanentModifier(new AttributeModifier("Armor bonus",
-              2, AttributeModifier.Operation.ADDITION));
+          .addPermanentModifier(new AttributeModifier(
+              ResourceLocation.fromNamespaceAndPath(ID, "armor_bonus"),
+              2, AttributeModifier.Operation.ADD_VALUE));
 
       var extension = LivingExtension.getOrThrow(zombie);
 
@@ -413,13 +415,7 @@ public class CraftingDeadSurvival {
     event.target().getCapability(LivingExtension.CAPABILITY)
         .resolve()
         .flatMap(living -> living.getHandler(SurvivalPlayerHandler.TYPE))
-        .ifPresent(playerHandler -> {
-          float enchantmentPct =
-              EnchantmentHelper.getItemEnchantmentLevel(SurvivalEnchantments.INFECTION.get(),
-                  event.getItemStack())
-                  / (float) SurvivalEnchantments.INFECTION.get().getMaxLevel();
-          playerHandler.infect(enchantmentPct);
-        });
+        .ifPresent(playerHandler -> playerHandler.infect(0.5F));
   }
 
   // TODO: Reimplement zombie spawn modification via data-driven BiomeModifier

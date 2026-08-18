@@ -47,15 +47,15 @@ public class GiantZombie extends GunZombie {
   }
 
   @Override
-  protected float getStandingEyeHeight(Pose pose, EntityDimensions entitySize) {
-    return 10.440001F;
+  public EntityDimensions getDefaultDimensions(Pose pose) {
+    return super.getDefaultDimensions(pose).withEyeHeight(10.440001F);
   }
 
   @Nullable
   @Override
   public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-      MobSpawnType spawnType, @Nullable SpawnGroupData groupData, @Nullable CompoundTag tag) {
-    groupData = super.finalizeSpawn(level, difficulty, spawnType, groupData, tag);
+      MobSpawnType spawnType, @Nullable SpawnGroupData groupData) {
+    groupData = super.finalizeSpawn(level, difficulty, spawnType, groupData);
     this.getAttribute(Attributes.MAX_HEALTH)
         .setBaseValue(CraftingDeadSurvival.serverConfig.giantZombieMaxHealth.get());
     this.getAttribute(Attributes.ATTACK_DAMAGE)

@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import com.craftingdead.core.CraftingDead;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record HitMessage(Vec3 hitPos, boolean dead) {
 
@@ -38,9 +38,8 @@ public record HitMessage(Vec3 hitPos, boolean dead) {
         in.readBoolean());
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(
-        () -> CraftingDead.getInstance().getClientDist().handleHit(this.hitPos, this.dead));
-    return true;
+  public static void handle(HitMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(
+        () -> CraftingDead.getInstance().getClientDist().handleHit(msg.hitPos, msg.dead));
   }
 }

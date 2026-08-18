@@ -44,7 +44,6 @@ import com.craftingdead.core.world.item.ModItems;
 import com.craftingdead.core.world.item.combatslot.CombatSlot;
 import com.craftingdead.core.world.item.combatslot.CombatSlotProvider;
 import com.craftingdead.core.world.item.crafting.ModRecipeSerializers;
-import com.craftingdead.core.world.item.enchantment.ModEnchantments;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.core.world.item.gun.Gun;
 import com.craftingdead.core.world.item.gun.GunConfigurations;
@@ -73,7 +72,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
@@ -151,7 +149,6 @@ public class CraftingDead {
     ModSoundEvents.deferredRegister.register(modEventBus);
     ModMenuTypes.deferredRegister.register(modEventBus);
     ModMobEffects.deferredRegister.register(modEventBus);
-    ModEnchantments.deferredRegister.register(modEventBus);
     ModParticleTypes.deferredRegister.register(modEventBus);
     ModRecipeSerializers.deferredRegister.register(modEventBus);
 
@@ -193,9 +190,14 @@ public class CraftingDead {
     //     scope -> scope.setTag("craftingdead.version", VERSION));
     // Sentry telemetry disabled - dependency not bundled
     NetworkChannel.loadChannels();
-    event.enqueueWork(() -> BrewingRecipeRegistry.addRecipe(Ingredient.of(ModItems.SYRINGE.get()),
+    MinecraftForge.EVENT_BUS.addListener(this::handleBrewingRecipeRegister);
+  }
+
+  private void handleBrewingRecipeRegister(
+      net.minecraftforge.event.brewing.BrewingRecipeRegisterEvent event) {
+    event.addRecipe(Ingredient.of(ModItems.SYRINGE.get()),
         Ingredient.of(Items.REDSTONE),
-        new ItemStack(ModItems.ADRENALINE_SYRINGE.get())));
+        new ItemStack(ModItems.ADRENALINE_SYRINGE.get()));
   }
 
   private void handleGatherData(GatherDataEvent event) {
@@ -208,7 +210,7 @@ public class CraftingDead {
       dataGenerator.addProvider(true, blockTagsProvider);
       dataGenerator.addProvider(true, new ModItemTagsProvider(packOutput, lookupProvider,
           blockTagsProvider.contentsGetter(), event.getExistingFileHelper()));
-      dataGenerator.addProvider(true, new ModRecipeProvider(packOutput));
+      dataGenerator.addProvider(true, new ModRecipeProvider(packOutput, lookupProvider));
       dataGenerator.addProvider(true, new GunDataProvider(packOutput));
     }
   }
@@ -302,7 +304,7 @@ public class CraftingDead {
   @SubscribeEvent(priority = EventPriority.LOWEST)
   public void handleLivingSetTarget(LivingChangeTargetEvent event) {
     if (event.getNewTarget() != null && event.getEntity() instanceof Mob mob) {
-      if (mob.hasEffect(ModMobEffects.FLASH_BLINDNESS.get())) {
+      if (mob.hasEffect(ModMobEffects.FLASH_BLINDNESS.getHolder().orElseThrow())) {
         event.setNewTarget(null);
       }
     }
@@ -329,7 +331,7 @@ public class CraftingDead {
     event.getEntity()
         .getCapability(LivingExtension.CAPABILITY)
         .ifPresent(living -> event.setCanceled(
-            living.handleDeathLoot(event.getSource(), event.getDrops(), event.getLootingLevel())));
+            living.handleDeathLoot(event.getSource(), event.getDrops(), 0)));
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -393,8 +395,8 @@ public class CraftingDead {
         FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
         living.encode(data, false);
         NetworkChannel.PLAY.getSimpleChannel().send(
-            PacketDistributor.TRACKING_ENTITY_AND_SELF.with(living::entity),
-            new SyncLivingMessage(living.entity().getId(), data));
+            new SyncLivingMessage(living.entity().getId(), data),
+            PacketDistributor.TRACKING_ENTITY_AND_SELF.with(living.entity()));
       }
     });
   }
@@ -436,8 +438,8 @@ public class CraftingDead {
     FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
     PlayerExtension.getOrThrow(event.getEntity()).encode(data, true);
     NetworkChannel.PLAY.getSimpleChannel().send(
-        PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event::getEntity),
-        new SyncLivingMessage(event.getEntity().getId(), data));
+        new SyncLivingMessage(event.getEntity().getId(), data),
+        PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event.getEntity()));
   }
 
   @SubscribeEvent
@@ -457,15 +459,15 @@ public class CraftingDead {
       FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
       trackedLiving.encode(data, true);
       NetworkChannel.PLAY.getSimpleChannel().send(
-          PacketDistributor.PLAYER.with(() -> playerEntity),
-          new SyncLivingMessage(trackedLiving.entity().getId(), data));
+          new SyncLivingMessage(trackedLiving.entity().getId(), data),
+          PacketDistributor.PLAYER.with(playerEntity));
     });
   }
 
   private void syncProtectionConfig(ServerPlayer player) {
     NetworkChannel.PLAY.getSimpleChannel().send(
-        PacketDistributor.PLAYER.with(() -> player),
-        new SyncProtectionConfigMessage(ProtectionConfig.getSerializedConfig()));
+        new SyncProtectionConfigMessage(ProtectionConfig.getSerializedConfig()),
+        PacketDistributor.PLAYER.with(player));
   }
 
   private void syncProtectionConfigToAllPlayers() {
@@ -475,7 +477,7 @@ public class CraftingDead {
     }
     String serializedConfig = ProtectionConfig.getSerializedConfig();
     server.getPlayerList().getPlayers().forEach(player -> NetworkChannel.PLAY.getSimpleChannel()
-        .send(PacketDistributor.PLAYER.with(() -> player),
-            new SyncProtectionConfigMessage(serializedConfig)));
+        .send(new SyncProtectionConfigMessage(serializedConfig),
+            PacketDistributor.PLAYER.with(player)));
   }
 }

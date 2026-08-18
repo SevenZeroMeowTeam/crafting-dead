@@ -36,6 +36,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -61,11 +62,10 @@ public class ZombieHandler implements LivingHandler {
   public static final LivingHandlerType<ZombieHandler> TYPE =
       new LivingHandlerType<>(ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "zombie"));
 
-  private static final UUID HEALTH_MODIFIER_BABY_UUID =
-      UUID.fromString("69d754ea-1ae3-4684-bb69-51a29de92b9a");
   private static final AttributeModifier HEALTH_MODIFIER_BABY =
-      new AttributeModifier(HEALTH_MODIFIER_BABY_UUID, "Baby health reduction", -1.5D,
-          AttributeModifier.Operation.MULTIPLY_BASE);
+      new AttributeModifier(
+          ResourceLocation.fromNamespaceAndPath("craftingdead", "baby_health_reduction"),
+          -1.5D, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
 
   protected final BasicLivingExtension<Zombie> extension;
 
@@ -167,7 +167,8 @@ public class ZombieHandler implements LivingHandler {
       return ItemStack.EMPTY;
     }
     var level = (ServerLevel) this.extension.level();
-    var lootTable = level.getServer().getLootData().getLootTable(location);
+    var lootTable = level.getServer().reloadableRegistries().getLootTable(
+        ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, location));
     if (lootTable == LootTable.EMPTY) {
       return vestStack;
     }
@@ -194,7 +195,8 @@ public class ZombieHandler implements LivingHandler {
       return ItemStack.EMPTY;
     }
     var level = (ServerLevel) this.extension.level();
-    var lootTable = level.getServer().getLootData().getLootTable(location);
+    var lootTable = level.getServer().reloadableRegistries().getLootTable(
+        ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, location));
     if (lootTable == LootTable.EMPTY) {
       return backpackStack;
     }
@@ -267,14 +269,14 @@ public class ZombieHandler implements LivingHandler {
   }
 
   @Override
-  public CompoundTag serializeNBT() {
+  public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
     var tag = new CompoundTag();
     tag.putInt("textureIndex", this.textureIndex);
     return tag;
   }
 
   @Override
-  public void deserializeNBT(CompoundTag tag) {
+  public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag tag) {
     this.textureIndex = tag.getInt("textureIndex");
   }
 }

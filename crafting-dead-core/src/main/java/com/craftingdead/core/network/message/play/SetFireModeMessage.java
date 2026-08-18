@@ -23,7 +23,7 @@ import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.core.world.item.gun.FireMode;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record SetFireModeMessage(int entityId, FireMode fireMode) {
 
@@ -36,12 +36,11 @@ public record SetFireModeMessage(int entityId, FireMode fireMode) {
     return new SetFireModeMessage(in.readVarInt(), in.readEnum(FireMode.class));
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx.get(), this.entityId)
+  public static void handle(SetFireModeMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx, msg.entityId)
         .getCapability(LivingExtension.CAPABILITY)
         .ifPresent(extension -> extension.mainHandGun()
-            .ifPresent(gun -> gun.setFireMode(extension, this.fireMode,
-                ctx.get().getDirection().getReceptionSide().isServer()))));
-    return true;
+            .ifPresent(gun -> gun.setFireMode(extension, msg.fireMode,
+                ctx.isServerSide()))));
   }
 }

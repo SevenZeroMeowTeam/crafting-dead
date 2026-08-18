@@ -18,6 +18,8 @@
 
 package com.craftingdead.core.world.action.item;
 
+
+import net.minecraftforge.network.PacketDistributor;
 import com.craftingdead.core.network.NetworkChannel;
 import com.craftingdead.core.network.message.play.BlockDestroyActionMessage;
 import com.craftingdead.core.world.action.ActionObserver;
@@ -110,7 +112,8 @@ public class BlockItemAction extends ItemAction {
   public void destroyBlockAction() {
     var pos = this.context.getClickedPos();
     if (this.type.getDestroyPredicate().test(this.performer.level().getBlockState(pos))) {
-      NetworkChannel.PLAY.getSimpleChannel().sendToServer(new BlockDestroyActionMessage(pos));
+      NetworkChannel.PLAY.getSimpleChannel().send(new BlockDestroyActionMessage(pos),
+          PacketDistributor.SERVER.noArg());
     }
   }
 }

@@ -38,8 +38,8 @@ public class SniperZombieEntity extends GunZombie {
   @Nullable
   @Override
   public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-      MobSpawnType spawnType, @Nullable SpawnGroupData groupData, @Nullable CompoundTag tag) {
-    groupData = super.finalizeSpawn(level, difficulty, spawnType, groupData, tag);
+      MobSpawnType spawnType, @Nullable SpawnGroupData groupData) {
+    groupData = super.finalizeSpawn(level, difficulty, spawnType, groupData);
     this.getAttribute(Attributes.MAX_HEALTH)
         .setBaseValue(CraftingDeadSurvival.serverConfig.sniperZombieMaxHealth.get());
     return groupData;

@@ -31,7 +31,7 @@ import com.craftingdead.core.world.entity.grenade.Grenade;
 import com.craftingdead.core.world.item.combatslot.CombatSlot;
 import com.craftingdead.core.world.item.combatslot.CombatSlotProvider;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -70,7 +70,7 @@ public class GrenadeItem extends Item {
   }
 
   @Override
-  public void appendHoverText(ItemStack item, @Nullable Level level,
+  public void appendHoverText(ItemStack item, net.minecraft.world.item.Item.TooltipContext level,
       List<Component> lines, TooltipFlag tooltipFlag) {
     lines.add(Component.translatable("grenade.information").withStyle(ChatFormatting.GRAY));
   }
@@ -113,7 +113,7 @@ public class GrenadeItem extends Item {
   }
 
   @Override
-  public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag nbt) {
+  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
     return CapabilityUtil.provider(() -> CombatSlot.GRENADE, CombatSlotProvider.CAPABILITY);
   }
 
@@ -153,15 +153,15 @@ public class GrenadeItem extends Item {
     protected ItemStack execute(BlockSource source, ItemStack itemStack) {
       if (ServerConfig.instance.explosivesDispenseGrenades.get()
           && itemStack.getItem() instanceof GrenadeItem grenadeItem) {
-        var direction = source.getBlockState().getValue(DispenserBlock.FACING);
-        var grenadeEntity = grenadeItem.grenadeEntitySupplier.apply(null, source.getLevel());
+        var direction = source.state().getValue(DispenserBlock.FACING);
+        var grenadeEntity = grenadeItem.grenadeEntitySupplier.apply(null, source.level());
         var position = DispenserBlock.getDispensePosition(source);
 
         grenadeEntity.setPos(position.x(), position.y(), position.z());
         grenadeEntity.shoot(direction.getStepX(), direction.getStepY(), direction.getStepZ(),
             grenadeItem.throwSpeed, 1.0F);
         grenadeEntity.setSticky(grenadeItem.isSticky);
-        source.getLevel().addFreshEntity(grenadeEntity);
+        source.level().addFreshEntity(grenadeEntity);
 
         itemStack.shrink(1);
         return itemStack;
@@ -172,9 +172,10 @@ public class GrenadeItem extends Item {
 
     @Override
     protected void playSound(BlockSource source) {
-      source.getLevel().playSound(null, source.x(), source.y(), source.z(),
+      var center = source.center();
+      source.level().playSound(null, center.x(), center.y(), center.z(),
           SoundEvents.SNOWBALL_THROW, SoundSource.BLOCKS, 0.5F,
-          0.4F / (source.getLevel().getRandom().nextFloat() * 0.4F + 0.8F));
+          0.4F / (source.level().getRandom().nextFloat() * 0.4F + 0.8F));
     }
   }
 }

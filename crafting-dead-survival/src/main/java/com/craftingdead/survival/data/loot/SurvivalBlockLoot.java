@@ -39,8 +39,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class SurvivalBlockLoot extends BlockLootSubProvider {
 
-  protected SurvivalBlockLoot() {
-    super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+  protected SurvivalBlockLoot(HolderLookup.Provider provider) {
+    super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
   }
 
   @Override

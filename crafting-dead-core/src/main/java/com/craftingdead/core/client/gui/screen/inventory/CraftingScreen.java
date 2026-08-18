@@ -18,6 +18,8 @@
 
 package com.craftingdead.core.client.gui.screen.inventory;
 
+
+import net.minecraftforge.network.PacketDistributor;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.network.NetworkChannel;
 import com.craftingdead.core.network.message.play.OpenEquipmentMenuMessage;
@@ -70,7 +72,7 @@ public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu>
    */
   @Override
   protected void renderBg(@NotNull GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-    this.renderBackground(guiGraphics);
+    this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
     RenderSystem.setShaderTexture(0, CRAFTING);
     guiGraphics.blit(CRAFTING, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
@@ -118,8 +120,11 @@ public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu>
     if (this.minecraft != null && this.minecraft.player != null) {
       InventoryScreen.renderEntityInInventory(guiGraphics,
           this.leftPos + 35, this.topPos + 72, 30,
-          Axis.YP.rotationDegrees((float) ((this.leftPos + 35) - this.oldMouseX)),
-          Axis.XP.rotationDegrees((float) ((this.topPos + 75 - 50) - this.oldMouseY)),
+          new org.joml.Vector3f(0.0F, 1.0F, 0.0F),
+          new org.joml.Quaternionf().rotationY(
+              (float) ((this.leftPos + 35) - this.oldMouseX) * 0.1F),
+          new org.joml.Quaternionf().rotationX(
+              (float) ((this.topPos + 75 - 50) - this.oldMouseY) * 0.1F),
           this.minecraft.player
       );
     }
@@ -151,7 +156,8 @@ public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu>
     if (this.minecraft != null && this.minecraft.player != null) {
       this.minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.2F, 1.0F);
     }
-    NetworkChannel.PLAY.getSimpleChannel().sendToServer(new OpenEquipmentMenuMessage());
+    NetworkChannel.PLAY.getSimpleChannel().send(new OpenEquipmentMenuMessage(),
+        PacketDistributor.SERVER.noArg());
   }
 
   /**

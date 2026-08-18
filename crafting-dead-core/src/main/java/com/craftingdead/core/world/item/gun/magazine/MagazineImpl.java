@@ -35,14 +35,14 @@ public class MagazineImpl implements Magazine {
   }
 
   @Override
-  public CompoundTag serializeNBT() {
+  public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
     CompoundTag nbt = new CompoundTag();
     nbt.putInt("size", this.size.get());
     return nbt;
   }
 
   @Override
-  public void deserializeNBT(CompoundTag nbt) {
+  public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
     this.size.set(nbt.getInt("size"));
   }
 

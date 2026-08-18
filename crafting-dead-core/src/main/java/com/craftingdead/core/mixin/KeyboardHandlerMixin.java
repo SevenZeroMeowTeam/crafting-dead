@@ -52,7 +52,7 @@ public class KeyboardHandlerMixin {
 
     int shiftKey = minecraft.options.keyShift.getKey().getValue();
     if (key == shiftKey
-        && playerExtension.entity().hasEffect(ModMobEffects.PARACHUTE.get())) {
+        && playerExtension.entity().hasEffect(ModMobEffects.PARACHUTE.getHolder().orElseThrow())) {
       ci.cancel();
     }
   }

@@ -24,6 +24,7 @@ import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.world.item.ModItems;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.resources.ResourceKey;
@@ -125,6 +126,6 @@ public class Skins {
             Arrays.stream(guns)
                 .map(RegistryObject::getId)
                 .collect(Collectors.toList())),
-        Lifecycle.stable());
+        RegistrationInfo.BUILT_IN);
   }
 }

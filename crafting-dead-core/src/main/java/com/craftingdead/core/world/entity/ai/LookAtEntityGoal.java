@@ -48,7 +48,7 @@ public class LookAtEntityGoal<T extends Entity> extends Goal {
 
   @Override
   public boolean canUse() {
-    if (this.goalOwner.hasEffect(ModMobEffects.FLASH_BLINDNESS.get())) {
+    if (this.goalOwner.hasEffect(ModMobEffects.FLASH_BLINDNESS.getHolder().orElseThrow())) {
       return false;
     }
 
@@ -79,7 +79,7 @@ public class LookAtEntityGoal<T extends Entity> extends Goal {
       return false;
     }
 
-    if (this.goalOwner.hasEffect(ModMobEffects.FLASH_BLINDNESS.get())) {
+    if (this.goalOwner.hasEffect(ModMobEffects.FLASH_BLINDNESS.getHolder().orElseThrow())) {
       return false;
     }
 

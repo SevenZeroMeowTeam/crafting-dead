@@ -21,7 +21,7 @@ package com.craftingdead.core.network.message.play;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record RightClickStateMessage(boolean isDown, int ticks) {
 
@@ -34,9 +34,9 @@ public record RightClickStateMessage(boolean isDown, int ticks) {
     return new RightClickStateMessage(buf.readBoolean(), buf.readInt());
   }
 
-  public static void handle(RightClickStateMessage msg, Supplier<Context> ctx) {
-    ctx.get().enqueueWork(() -> {
-      var player = ctx.get().getSender();
+  public static void handle(RightClickStateMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> {
+      var player = ctx.getSender();
       if (player == null || !player.isAlive()) {
         return;
       }
@@ -50,7 +50,7 @@ public record RightClickStateMessage(boolean isDown, int ticks) {
         extension.setRightClickTicks(0);
       }
     });
-    ctx.get().setPacketHandled(true);
+    ctx.setPacketHandled(true);
   }
 }
 

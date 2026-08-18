@@ -245,7 +245,7 @@ public class ServerConfig {
       this.handcuffDamageChance = builder
           .translation("options.craftingdead.server.handcuff_damage_chance")
           .comment("The Chance that the player damages the handcuff")
-          .defineInRange("handcuffDamageChance", 0.4F, 0.1F, 1.0F);
+          .defineInRange("handcuffDamageChance", 0.4D, 0.1D, 1.0D);
     }
     builder.pop();
 
@@ -257,116 +257,116 @@ public class ServerConfig {
       this.casualClothingDamageReduction = builder
           .translation("options.craftingdead.server.casualClothingDamageReduction")
           .comment("Sets the percentage of damage reduction. Default is 2% (0.02)")
-          .defineInRange("casualDamageReduction", 0.02F, 0.00F, 1.00F);
+          .defineInRange("casualDamageReduction", 0.02D, 0.00D, 1.00D);
 
       this.casualClothingBleedAndInfectionReduction = builder
           .translation("options.craftingdead.server.casualClothingBleedAndInfectionReduction")
           .comment("Sets the percentage of bleed and infection chance reduction. Default is 10% (0.10)")
-          .defineInRange("casualBleedAndInfectionReduction", 0.10F, 0.00F, 1.00F);
+          .defineInRange("casualBleedAndInfectionReduction", 0.10D, 0.00D, 1.00D);
 
       this.utilityClothingDamageReduction = builder
           .translation("options.craftingdead.server.utilityClothingDamageReduction")
           .comment("Sets the percentage of damage reduction. Default is 5% (0.05)")
-          .defineInRange("utilityDamageReduction", 0.05F, 0.00F, 1.00F);
+          .defineInRange("utilityDamageReduction", 0.05D, 0.00D, 1.00D);
 
       this.utilityClothingBleedAndInfectionReduction = builder
           .translation("options.craftingdead.server.utilityClothingBleedAndInfectionReduction")
           .comment("Sets the percentage of bleed and infection chance reduction. Default is 20% (0.20)")
-          .defineInRange("utilityBleedAndInfectionReduction", 0.20F, 0.00F, 1.00F);
+          .defineInRange("utilityBleedAndInfectionReduction", 0.20D, 0.00D, 1.00D);
 
       this.militaryClothingDamageReduction = builder
           .translation("options.craftingdead.server.militaryClothingDamageReduction")
           .comment("Sets the percentage of damage reduction. Default is 8% (0.08)")
-          .defineInRange("militaryDamageReduction", 0.08F, 0.00F, 1.00F);
+          .defineInRange("militaryDamageReduction", 0.08D, 0.00D, 1.00D);
 
       this.militaryClothingBleedAndInfectionReduction = builder
           .translation("options.craftingdead.server.militaryClothingBleedAndInfectionReduction")
           .comment("Sets the percentage of bleed and infection chance reduction. Default is 30% (0.30)")
-          .defineInRange("militaryBleedAndInfectionReduction", 0.30F, 0.00F, 1.00F);
+          .defineInRange("militaryBleedAndInfectionReduction", 0.30D, 0.00D, 1.00D);
 
       // Passive Protection - Casual Tier
       this.casualClothingBiteProtection = builder
           .translation("options.craftingdead.server.casualClothingBiteProtection")
           .comment("Bite protection for casual clothing (reduces infection chance). Default is 10% (0.10)")
-          .defineInRange("casualBiteProtection", 0.10F, 0.00F, 1.00F);
+          .defineInRange("casualBiteProtection", 0.10D, 0.00D, 1.00D);
 
       this.casualClothingStabResistance = builder
           .translation("options.craftingdead.server.casualClothingStabResistance")
           .comment("Stab resistance for casual clothing (reduces bleeding chance). Default is 5% (0.05)")
-          .defineInRange("casualStabResistance", 0.05F, 0.00F, 1.00F);
+          .defineInRange("casualStabResistance", 0.05D, 0.00D, 1.00D);
 
       this.casualClothingBluntResistance = builder
           .translation("options.craftingdead.server.casualClothingBluntResistance")
           .comment("Blunt resistance for casual clothing (reduces blunt damage). Default is 2% (0.02)")
-          .defineInRange("casualBluntResistance", 0.02F, 0.00F, 1.00F);
+          .defineInRange("casualBluntResistance", 0.02D, 0.00D, 1.00D);
 
       this.casualClothingWeightModifier = builder
           .translation("options.craftingdead.server.casualClothingWeightModifier")
           .comment("Weight modifier for casual clothing (affects movement speed). Default is 0% (0.00)")
-          .defineInRange("casualWeightModifier", 0.00F, -1.00F, 1.00F);
+          .defineInRange("casualWeightModifier", 0.00D, -1.00D, 1.00D);
 
       // Passive Protection - Utility Tier
       this.utilityClothingBiteProtection = builder
           .translation("options.craftingdead.server.utilityClothingBiteProtection")
           .comment("Bite protection for utility clothing. Default is 50% (0.50)")
-          .defineInRange("utilityBiteProtection", 0.50F, 0.00F, 1.00F);
+          .defineInRange("utilityBiteProtection", 0.50D, 0.00D, 1.00D);
 
       this.utilityClothingStabResistance = builder
           .translation("options.craftingdead.server.utilityClothingStabResistance")
           .comment("Stab resistance for utility clothing. Default is 15% (0.15)")
-          .defineInRange("utilityStabResistance", 0.15F, 0.00F, 1.00F);
+          .defineInRange("utilityStabResistance", 0.15D, 0.00D, 1.00D);
 
       this.utilityClothingBluntResistance = builder
           .translation("options.craftingdead.server.utilityClothingBluntResistance")
           .comment("Blunt resistance for utility clothing. Default is 10% (0.10)")
-          .defineInRange("utilityBluntResistance", 0.10F, 0.00F, 1.00F);
+          .defineInRange("utilityBluntResistance", 0.10D, 0.00D, 1.00D);
 
       this.utilityClothingWeightModifier = builder
           .translation("options.craftingdead.server.utilityClothingWeightModifier")
           .comment("Weight modifier for utility clothing. Default is -2.5% (-0.025)")
-          .defineInRange("utilityWeightModifier", -0.025F, -1.00F, 1.00F);
+          .defineInRange("utilityWeightModifier", -0.025D, -1.00D, 1.00D);
 
       // Passive Protection - Military Tier
       this.militaryClothingBiteProtection = builder
           .translation("options.craftingdead.server.militaryClothingBiteProtection")
           .comment("Bite protection for military clothing. Default is 40% (0.40)")
-          .defineInRange("militaryBiteProtection", 0.40F, 0.00F, 1.00F);
+          .defineInRange("militaryBiteProtection", 0.40D, 0.00D, 1.00D);
 
       this.militaryClothingStabResistance = builder
           .translation("options.craftingdead.server.militaryClothingStabResistance")
           .comment("Stab resistance for military clothing. Default is 30% (0.30)")
-          .defineInRange("militaryStabResistance", 0.30F, 0.00F, 1.00F);
+          .defineInRange("militaryStabResistance", 0.30D, 0.00D, 1.00D);
 
       this.militaryClothingBluntResistance = builder
           .translation("options.craftingdead.server.militaryClothingBluntResistance")
           .comment("Blunt resistance for military clothing. Default is 15% (0.15)")
-          .defineInRange("militaryBluntResistance", 0.15F, 0.00F, 1.00F);
+          .defineInRange("militaryBluntResistance", 0.15D, 0.00D, 1.00D);
 
       this.militaryClothingWeightModifier = builder
           .translation("options.craftingdead.server.militaryClothingWeightModifier")
           .comment("Weight modifier for military clothing. Default is -2% (-0.02)")
-          .defineInRange("militaryWeightModifier", -0.02F, -1.00F, 1.00F);
+          .defineInRange("militaryWeightModifier", -0.02D, -1.00D, 1.00D);
 
       // Passive Protection - Heavy Tier (Juggernaut, etc.)
       this.heavyClothingBiteProtection = builder
           .translation("options.craftingdead.server.heavyClothingBiteProtection")
           .comment("Bite protection for heavy clothing. Default is 60% (0.60)")
-          .defineInRange("heavyBiteProtection", 0.60F, 0.00F, 1.00F);
+          .defineInRange("heavyBiteProtection", 0.60D, 0.00D, 1.00D);
 
       this.heavyClothingStabResistance = builder
           .translation("options.craftingdead.server.heavyClothingStabResistance")
           .comment("Stab resistance for heavy clothing. Default is 40% (0.40)")
-          .defineInRange("heavyStabResistance", 0.40F, 0.00F, 1.00F);
+          .defineInRange("heavyStabResistance", 0.40D, 0.00D, 1.00D);
 
       this.heavyClothingBluntResistance = builder
           .translation("options.craftingdead.server.heavyClothingBluntResistance")
           .comment("Blunt resistance for heavy clothing. Default is 30% (0.30)")
-          .defineInRange("heavyBluntResistance", 0.30F, 0.00F, 1.00F);
+          .defineInRange("heavyBluntResistance", 0.30D, 0.00D, 1.00D);
 
       this.heavyClothingWeightModifier = builder
           .translation("options.craftingdead.server.heavyClothingWeightModifier")
           .comment("Weight modifier for heavy clothing. Default is -6% (-0.06)")
-          .defineInRange("heavyWeightModifier", -0.06F, -1.00F, 1.00F);
+          .defineInRange("heavyWeightModifier", -0.06D, -1.00D, 1.00D);
     }
     builder.pop();
 
@@ -379,7 +379,7 @@ public class ServerConfig {
       this.bandageHealAmount = builder
           .translation("options.craftingdead.server.medical.bandage.heal_amount")
           .comment("Amount of health restored by bandages")
-          .defineInRange("bandageHealAmount", 2.0F, 0.0F, 20.0F);
+          .defineInRange("bandageHealAmount", 2.0D, 0.0D, 20.0D);
 
       this.bandageDurationTicks = builder
           .translation("options.craftingdead.server.medical.bandage.duration_ticks")
@@ -394,13 +394,13 @@ public class ServerConfig {
       this.bandageBleedReductionChance = builder
           .translation("options.craftingdead.server.medical.bandage.bleed_reduction_chance")
           .comment("Chance to reduce bleeding when using bandage")
-          .defineInRange("bandageBleedReductionChance", 0.50F, 0.0F, 1.0F);
+          .defineInRange("bandageBleedReductionChance", 0.50D, 0.0D, 1.0D);
 
       // First Aid Kit configuration
       this.firstAidKitHealAmount = builder
           .translation("options.craftingdead.server.medical.first_aid_kit.heal_amount")
           .comment("Amount of health restored by first aid kit")
-          .defineInRange("firstAidKitHealAmount", 8.0F, 0.0F, 20.0F);
+          .defineInRange("firstAidKitHealAmount", 8.0D, 0.0D, 20.0D);
 
       this.firstAidKitDurationTicks = builder
           .translation("options.craftingdead.server.medical.first_aid_kit.duration_ticks")
@@ -415,7 +415,7 @@ public class ServerConfig {
       this.firstAidKitInfectionReductionChance = builder
           .translation("options.craftingdead.server.medical.first_aid_kit.infection_reduction_chance")
           .comment("Chance to reduce infection when using first aid kit")
-          .defineInRange("firstAidKitInfectionReductionChance", 0.65F, 0.0F, 1.0F);
+          .defineInRange("firstAidKitInfectionReductionChance", 0.65D, 0.0D, 1.0D);
 
       this.firstAidKitTraumaSeverityReduction = builder
           .translation("options.craftingdead.server.medical.first_aid_kit.trauma_severity_reduction")
@@ -436,23 +436,23 @@ public class ServerConfig {
       this.adrenalineAimSwayReductionFactor = builder
           .translation("options.craftingdead.server.medical.adrenaline.aim_sway_reduction_factor")
           .comment("Factor by which adrenaline reduces aim sway (1.0 = complete reduction)")
-          .defineInRange("adrenalineAimSwayReductionFactor", 1.0F, 0.0F, 1.0F);
+          .defineInRange("adrenalineAimSwayReductionFactor", 1.0D, 0.0D, 1.0D);
 
       this.adrenalineSlowReductionFactor = builder
           .translation("options.craftingdead.server.medical.adrenaline.slow_reduction_factor")
           .comment("Factor by which adrenaline reduces slowness effect")
-          .defineInRange("adrenalineSlowReductionFactor", 0.5F, 0.0F, 1.0F);
+          .defineInRange("adrenalineSlowReductionFactor", 0.5D, 0.0D, 1.0D);
 
       this.adrenalineBleedChanceMultiplier = builder
           .translation("options.craftingdead.server.medical.adrenaline.bleed_chance_multiplier")
           .comment("Multiplier for bleeding chance while under adrenaline effect")
-          .defineInRange("adrenalineBleedChanceMultiplier", 1.10F, 0.5F, 2.0F);
+          .defineInRange("adrenalineBleedChanceMultiplier", 1.10D, 0.5D, 2.0D);
 
       // Blood Syringe configuration
       this.bloodSyringeHealAmount = builder
           .translation("options.craftingdead.server.medical.blood_syringe.heal_amount")
           .comment("Amount of health restored by blood syringe")
-          .defineInRange("bloodSyringeHealAmount", 4.0F, 0.0F, 20.0F);
+          .defineInRange("bloodSyringeHealAmount", 4.0D, 0.0D, 20.0D);
 
       this.bloodSyringeDurationTicks = builder
           .translation("options.craftingdead.server.medical.blood_syringe.duration_ticks")
@@ -547,19 +547,19 @@ public class ServerConfig {
       this.crouchRecoilMultiplier = builder
           .translation("options.craftingdead.server.recoil.crouch_recoil_multiplier")
           .comment("Recoil multiplier applied while crouching. (0.2F = 20% less recoil)")
-          .defineInRange("crouchRecoilMultiplier", 0.1F, 0.01F, 1.0F);
+          .defineInRange("crouchRecoilMultiplier", 0.1D, 0.01D, 1.0D);
       this.proneRecoilMultiplier = builder
           .translation("options.craftingdead.server.recoil.prone_recoil_multiplier")
           .comment("Recoil multiplier applied while prone. (0.2F = 20% less recoil)")
-          .defineInRange("proneRecoilMultiplier", 0.2F, 0.01F, 1.0F);
+          .defineInRange("proneRecoilMultiplier", 0.2D, 0.01D, 1.0D);
       this.tacticalGripRecoilMultiplier = builder
           .translation("options.craftingdead.server.recoil.tactical_grip_recoil_multiplier")
           .comment("Recoil multiplier applied when a tactical grip is attached. (0.2F = 20% less recoil)")
-          .defineInRange("tacticalGripRecoilMultiplier", 0.6F, 0.01F, 1.0F);
+          .defineInRange("tacticalGripRecoilMultiplier", 0.6D, 0.01D, 1.0D);
       this.bipodRecoilMultiplier = builder
           .translation("options.craftingdead.server.recoil.bipod_recoil_multiplier")
           .comment("Recoil multiplier applied when a bipod is attached. (0.2F = 20% less recoil)")
-          .defineInRange("bipodRecoilMultiplier", 0.6F, 0.01F, 1.0F);
+          .defineInRange("bipodRecoilMultiplier", 0.6D, 0.01D, 1.0D);
     }
     builder.pop();
 

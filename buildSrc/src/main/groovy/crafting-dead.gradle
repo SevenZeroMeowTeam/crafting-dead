@@ -15,7 +15,7 @@ minecraft {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -39,7 +39,6 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 jar {
     archiveBaseName = project.name
     from rootProject.file('LICENSE.txt')
-    finalizedBy('reobfJar') 
 }
 
 license {

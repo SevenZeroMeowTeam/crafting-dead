@@ -39,8 +39,8 @@ public class FirefighterZombieEntity extends ModZombie {
   @Nullable
   @Override
   public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-      MobSpawnType spawnType, SpawnGroupData groupData, CompoundTag tag) {
-    groupData = super.finalizeSpawn(level, difficulty, spawnType, groupData, tag);
+      MobSpawnType spawnType, SpawnGroupData groupData) {
+    groupData = super.finalizeSpawn(level, difficulty, spawnType, groupData);
     this.getAttribute(Attributes.MAX_HEALTH)
         .setBaseValue(CraftingDeadSurvival.serverConfig.fireFighterZombieMaxHealth.get());
     return groupData;

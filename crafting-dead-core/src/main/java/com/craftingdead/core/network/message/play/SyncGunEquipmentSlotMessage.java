@@ -25,7 +25,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record SyncGunEquipmentSlotMessage(int entityId, EquipmentSlot slot, FriendlyByteBuf data) {
 
@@ -51,11 +51,10 @@ public record SyncGunEquipmentSlotMessage(int entityId, EquipmentSlot slot, Frie
         new FriendlyByteBuf(Unpooled.wrappedBuffer(data)));
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> NetworkUtil.getEntity(ctx.get(), this.entityId, LivingEntity.class)
-        .getItemBySlot(this.slot)
+  public static void handle(SyncGunEquipmentSlotMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> NetworkUtil.getEntity(ctx, msg.entityId, LivingEntity.class)
+        .getItemBySlot(msg.slot)
         .getCapability(Gun.CAPABILITY)
-        .ifPresent(gun -> gun.decode(this.data)));
-    return true;
+        .ifPresent(gun -> gun.decode(msg.data)));
   }
 }

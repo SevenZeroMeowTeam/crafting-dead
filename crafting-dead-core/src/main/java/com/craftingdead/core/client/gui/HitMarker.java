@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import com.craftingdead.core.client.util.RenderUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -99,30 +100,29 @@ public class HitMarker {
           (height / 2) - pos.y - markerSizeMean, 0);
       RenderSystem.lineWidth(oneToZeroFadePct * 4.5F);
       final var tessellator = Tesselator.getInstance();
-      final var builder = tessellator.getBuilder();
       final var matrix = poseStack.last().pose();
-      builder.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
+      var builder =
+          tessellator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
       builder
-          .vertex(matrix, higherCrossEndPos, leastCrossEndPos, 0.0F)
-          .color(255, 255, 255, 255)
-          .normal(0.0F, 1.0F, 0.0F)
-          .endVertex();
+          .addVertex(matrix, higherCrossEndPos, leastCrossEndPos, 0.0F)
+          .setColor(255, 255, 255, 255)
+          .setNormal(0.0F, 1.0F, 0.0F);
       builder
-          .vertex(matrix, leastCrossEndPos, higherCrossEndPos, 0.0F)
-          .color(255, 255, 255, 255)
-          .normal(0.0F, 1.0F, 0.0F)
-          .endVertex();
-      tessellator.end();
-      builder.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
+          .addVertex(matrix, leastCrossEndPos, higherCrossEndPos, 0.0F)
+          .setColor(255, 255, 255, 255)
+          .setNormal(0.0F, 1.0F, 0.0F);
+      BufferUploader.drawWithShader(builder.buildOrThrow());
+      builder =
+          tessellator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
       builder
-          .vertex(matrix, leastCrossEndPos, leastCrossEndPos, 0.0F)
-          .color(255, 255, 255, 255)
-          .normal(1.0F, 0.0F, 0.0F).endVertex();
+          .addVertex(matrix, leastCrossEndPos, leastCrossEndPos, 0.0F)
+          .setColor(255, 255, 255, 255)
+          .setNormal(1.0F, 0.0F, 0.0F);
       builder
-          .vertex(matrix, higherCrossEndPos, higherCrossEndPos, 0.0F)
-          .color(255, 255, 255, 255)
-          .normal(1.0F, 0.0F, 0.0F).endVertex();
-      tessellator.end();
+          .addVertex(matrix, higherCrossEndPos, higherCrossEndPos, 0.0F)
+          .setColor(255, 255, 255, 255)
+          .setNormal(1.0F, 0.0F, 0.0F);
+      BufferUploader.drawWithShader(builder.buildOrThrow());
     }
     poseStack.popPose();
     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

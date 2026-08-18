@@ -50,7 +50,6 @@ import com.craftingdead.core.world.entity.extension.EntitySnapshot;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.core.world.inventory.GunCraftSlotType;
-import com.craftingdead.core.world.item.enchantment.ModEnchantments;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.core.world.item.equipment.Hat;
 import com.craftingdead.core.world.item.gun.ammoprovider.AmmoProvider;
@@ -77,6 +76,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.thread.BlockableEventLoop;
@@ -94,7 +95,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.DigDurabilityEnchantment;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -278,9 +279,9 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (sendUpdate) {
       var target = living.level().isClientSide()
           ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY.with(living::entity);
-      NetworkChannel.PLAY.getSimpleChannel().send(target,
-          new TriggerPressedMessage(living.entity().getId(), triggerPressed));
+          : PacketDistributor.TRACKING_ENTITY.with(living.entity());
+      NetworkChannel.PLAY.getSimpleChannel().send(
+          new TriggerPressedMessage(living.entity().getId(), triggerPressed), target);
     }
   }
 
@@ -303,9 +304,9 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (sendUpdate) {
       var target = living.level().isClientSide()
           ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY.with(living::entity);
-      NetworkChannel.PLAY.getSimpleChannel().send(target,
-          new NPCTriggerPressedMessage(living.entity().getId(), triggerPressed));
+          : PacketDistributor.TRACKING_ENTITY.with(living.entity());
+      NetworkChannel.PLAY.getSimpleChannel().send(
+          new NPCTriggerPressedMessage(living.entity().getId(), triggerPressed), target);
     }
   }
 
@@ -331,7 +332,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
       return;
     }
 
-    int latencyTicks = (player.entity().latency / 1000) * 20 + tickOffset;
+    int latencyTicks = tickOffset;
     int tick = player.entity().getServer().getTickCount();
 
     if (tick - latencyTicks > this.triggerPressedTicks && !this.isTriggerPressed()) {
@@ -504,9 +505,9 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (!level.isClientSide()
         && !(living.entity() instanceof Player player && player.isCreative())) {
       final int unbreakingLevel =
-          EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, this.itemStack);
-      if (!DigDurabilityEnchantment.shouldIgnoreDurabilityDrop(
-          this.itemStack, unbreakingLevel, level.getRandom())) {
+          EnchantmentHelper.getItemEnchantmentLevel(getEnchantmentHolder(level, Enchantments.UNBREAKING),
+              this.itemStack);
+      if (level.getRandom().nextFloat() >= 1.0F / (unbreakingLevel + 1)) {
         this.ammoProvider.getExpectedMagazine().decrementSize();
       }
     }
@@ -573,9 +574,9 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (!level.isClientSide()
         && !(living.entity() instanceof Player player && player.isCreative())) {
       final int unbreakingLevel =
-          EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, this.itemStack);
-      if (!DigDurabilityEnchantment.shouldIgnoreDurabilityDrop(
-          this.itemStack, unbreakingLevel, level.getRandom())) {
+          EnchantmentHelper.getItemEnchantmentLevel(getEnchantmentHolder(level, Enchantments.UNBREAKING),
+              this.itemStack);
+      if (level.getRandom().nextFloat() >= 1.0F / (unbreakingLevel + 1)) {
         this.ammoProvider.getExpectedMagazine().decrementSize();
       }
     }
@@ -660,13 +661,12 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
               * distance));
     }
 
-    var armorPenetration = Math.min((1.0F
-        + (EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.ARMOR_PENETRATION.get(),
-            this.itemStack) / 255.0F))
-        * this.ammoProvider.getExpectedMagazine().getArmorPenetration(), 1.0F);
+    var armorPenetration =
+        Math.min(this.ammoProvider.getExpectedMagazine().getArmorPenetration(), 1.0F);
     if (armorPenetration > 0 && hitEntity instanceof LivingEntity livingEntityHit) {
       var reducedDamage =
-          damage - CombatRules.getDamageAfterAbsorb(damage, livingEntityHit.getArmorValue(),
+          damage - CombatRules.getDamageAfterAbsorb(livingEntityHit, damage,
+              livingEntityHit.damageSources().generic(), livingEntityHit.getArmorValue(),
               (float) livingEntityHit.getAttribute(Attributes.ARMOR_TOUGHNESS).getValue());
       // Apply armor penetration by adding to the damage lost by armor absorption
       damage += reducedDamage * armorPenetration;
@@ -724,9 +724,9 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
 
     checkCreateExplosion(this.itemStack, entity, hitPos);
 
-    if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS,
+    if (EnchantmentHelper.getItemEnchantmentLevel(getEnchantmentHolder(entity.level(), Enchantments.FLAME),
         this.itemStack) > 0) {
-      hitEntity.setSecondsOnFire(100);
+      hitEntity.igniteForSeconds(100.0F);
     }
 
     MinecraftForge.EVENT_BUS
@@ -736,9 +736,8 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (hitEntity instanceof LivingEntity hitLivingEntity
         && entity instanceof ServerPlayer player) {
       // Alert client of hit (real hit as opposed to client prediction)
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          PacketDistributor.PLAYER.with(() -> player),
-          new HitMessage(hitPos, hitLivingEntity.isDeadOrDying()));
+      NetworkChannel.PLAY.getSimpleChannel().send(new HitMessage(hitPos, hitLivingEntity.isDeadOrDying()),
+          PacketDistributor.PLAYER.with(player));
     }
   }
 
@@ -756,13 +755,12 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
           * distance));
     }
 
-    var armorPenetration = Math.min((1.0F
-        + (EnchantmentHelper.getItemEnchantmentLevel(ModEnchantments.ARMOR_PENETRATION.get(),
-        this.itemStack) / 255.0F))
-        * this.ammoProvider.getExpectedMagazine().getArmorPenetration(), 1.0F);
+    var armorPenetration =
+        Math.min(this.ammoProvider.getExpectedMagazine().getArmorPenetration(), 1.0F);
     if (armorPenetration > 0 && hitEntity instanceof LivingEntity livingEntityHit) {
       var reducedDamage =
-          damage - CombatRules.getDamageAfterAbsorb(damage, livingEntityHit.getArmorValue(),
+          damage - CombatRules.getDamageAfterAbsorb(livingEntityHit, damage,
+              livingEntityHit.damageSources().generic(), livingEntityHit.getArmorValue(),
               (float) livingEntityHit.getAttribute(Attributes.ARMOR_TOUGHNESS).getValue());
       // Apply armor penetration by adding to the damage lost by armor absorption
       damage += reducedDamage * armorPenetration;
@@ -811,9 +809,9 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
 
     checkCreateExplosion(this.itemStack, entity, hitPos);
 
-    if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS,
+    if (EnchantmentHelper.getItemEnchantmentLevel(getEnchantmentHolder(entity.level(), Enchantments.FLAME),
         this.itemStack) > 0) {
-      hitEntity.setSecondsOnFire(100);
+      hitEntity.igniteForSeconds(100.0F);
     }
 
     MinecraftForge.EVENT_BUS
@@ -823,9 +821,8 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (hitEntity instanceof LivingEntity hitLivingEntity
         && entity instanceof ServerPlayer player) {
       // Alert client of hit (real hit as opposed to client prediction)
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          PacketDistributor.PLAYER.with(() -> player),
-          new HitMessage(hitPos, hitLivingEntity.isDeadOrDying()));
+      NetworkChannel.PLAY.getSimpleChannel().send(new HitMessage(hitPos, hitLivingEntity.isDeadOrDying()),
+          PacketDistributor.PLAYER.with(player));
     }
   }
 
@@ -861,7 +858,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
 
     checkCreateExplosion(this.itemStack, entity, result.getLocation());
 
-    if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS,
+    if (EnchantmentHelper.getItemEnchantmentLevel(getEnchantmentHolder(entity.level(), Enchantments.FLAME),
         this.itemStack) > 0) {
       if (CampfireBlock.canLight(blockState)) {
         level.setBlockAndUpdate(blockPos, blockState.setValue(BlockStateProperties.LIT, true));
@@ -928,10 +925,10 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (sendUpdate) {
       var target = living.level().isClientSide()
           ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY.with(living::entity);
+          : PacketDistributor.TRACKING_ENTITY.with(living.entity());
       NetworkChannel.PLAY
           .getSimpleChannel()
-          .send(target, new SetFireModeMessage(living.entity().getId(), this.fireMode));
+          .send(new SetFireModeMessage(living.entity().getId(), this.fireMode), target);
     }
   }
 
@@ -962,10 +959,11 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (sendUpdate) {
       var target = living.level().isClientSide()
           ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY.with(living::entity);
-      NetworkChannel.PLAY.getSimpleChannel().send(target,
+          : PacketDistributor.TRACKING_ENTITY.with(living.entity());
+      NetworkChannel.PLAY.getSimpleChannel().send(
           new SecondaryActionMessage(living.entity().getId(),
-              this.isPerformingSecondaryAction()));
+              this.isPerformingSecondaryAction()),
+          target);
     }
   }
 
@@ -1000,33 +998,33 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
   }
 
   @Override
-  public CompoundTag serializeNBT() {
+  public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
     var tag = new CompoundTag();
     if (!this.initialized) {
       return tag;
     }
     tag.putString("ammoProviderType", AmmoProviderTypes.registry.get().getKey(this.ammoProvider.getType()).toString());
-    tag.put("ammoProvider", this.ammoProvider.serializeNBT());
+    tag.put("ammoProvider", this.ammoProvider.serializeNBT(provider));
     var attachmentsTag = this.attachments.values().stream()
         .map(a -> Attachments.registry.get().getKey(a))
         .map(ResourceLocation::toString)
         .map(StringTag::valueOf)
         .collect(ListTag::new, ListTag::add, List::addAll);
     tag.put("attachments", attachmentsTag);
-    tag.put("paintStack", this.getPaintStack().serializeNBT());
+    tag.put("paintStack", this.getPaintStack().save(provider));
     if (this.skin != null) {
       tag.put("skin", Skin.CODEC.encodeStart(NbtOps.INSTANCE, this.skin)
-          .getOrThrow(false, logger::error));
+          .getOrThrow());
     }
     return tag;
   }
 
   @Override
-  public void deserializeNBT(CompoundTag tag) {
+  public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag tag) {
     if (tag.contains("ammoProviderType", Tag.TAG_STRING)) {
       this.setAmmoProvider(AmmoProviderTypes.registry.get().getValue(
           ResourceLocation.parse(tag.getString("ammoProviderType"))).create());
-      this.ammoProvider.deserializeNBT(tag.getCompound("ammoProvider"));
+      this.ammoProvider.deserializeNBT(provider, tag.getCompound("ammoProvider"));
       this.ammoProviderChanged = true;
     }
     this.setAttachments(tag.getList("attachments", Tag.TAG_STRING)
@@ -1035,7 +1033,8 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
         .map(ResourceLocation::parse)
         .map(Attachments.registry.get()::getValue)
         .collect(Collectors.toMap(Attachment::getInventorySlot, v -> v)));
-    this.setPaintStack(ItemStack.of(tag.getCompound("paintStack")));
+    this.setPaintStack(ItemStack.parse(provider, tag.getCompound("paintStack"))
+        .orElse(ItemStack.EMPTY));
     this.skin = Skin.CODEC.parse(NbtOps.INSTANCE, tag.get("skin")).result().orElse(null);
   }
 
@@ -1046,7 +1045,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
         : this.dataManager.packDirty(), out);
     if (writeAll || this.attachmentsDirty) {
       out.writeVarInt(this.attachments.size());
-      this.attachments.values().forEach(a -> out.writeRegistryId(Attachments.registry.get(), a));
+      this.attachments.values().forEach(a -> out.writeResourceLocation(Attachments.registry.get().getKey(a)));
     } else {
       out.writeVarInt(-1);
     }
@@ -1054,7 +1053,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
 
     if (this.ammoProviderChanged || writeAll) {
       out.writeBoolean(true);
-      out.writeRegistryId(AmmoProviderTypes.registry.get(), this.ammoProvider.getType());
+      out.writeResourceLocation(AmmoProviderTypes.registry.get().getKey(this.ammoProvider.getType()));
     } else {
       out.writeBoolean(false);
     }
@@ -1083,14 +1082,14 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (size > -1) {
       var builder = ImmutableMap.<GunCraftSlotType, Attachment>builderWithExpectedSize(size);
       for (int i = 0; i < size; i++) {
-        var attachment = in.readRegistryIdSafe(Attachment.class);
+        var attachment = Attachments.registry.get().getValue(in.readResourceLocation());
         builder.put(attachment.getInventorySlot(), attachment);
       }
       this.attachments = builder.build();
     }
 
     if (in.readBoolean()) {
-      this.ammoProvider = in.readRegistryIdSafe(AmmoProviderType.class).create();
+      this.ammoProvider = AmmoProviderTypes.registry.get().getValue(in.readResourceLocation()).create();
     }
     this.ammoProvider.decode(in);
 
@@ -1098,7 +1097,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
       if (in.readBoolean()) {
         this.skin = null;
       } else {
-        this.skin = in.readWithCodec(NbtOps.INSTANCE, Skin.CODEC);
+        this.skin = in.readWithCodec(NbtOps.INSTANCE, Skin.CODEC, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
       }
     }
   }
@@ -1113,14 +1112,21 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
 
   private static void checkCreateExplosion(ItemStack magazineStack, Entity entity,
       Vec3 position) {
+    var level = entity.level();
     float explosionSize =
-        EnchantmentHelper.getItemEnchantmentLevel(Enchantments.POWER_ARROWS, magazineStack)
-            / (float) Enchantments.POWER_ARROWS.getMaxLevel();
+        EnchantmentHelper.getItemEnchantmentLevel(getEnchantmentHolder(level, Enchantments.POWER),
+            magazineStack)
+            / 5.0F;
     if (explosionSize > 0) {
       entity.level().explode(
           entity, position.x(), position.y(), position.z(), explosionSize, false,
           Level.ExplosionInteraction.NONE);
     }
+  }
+
+  private static Holder<Enchantment> getEnchantmentHolder(Level level,
+      ResourceKey<Enchantment> key) {
+    return level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(key);
   }
 
   public static Optional<Vec3> rayTrace(Level level, EntitySnapshot fromSnapshot,

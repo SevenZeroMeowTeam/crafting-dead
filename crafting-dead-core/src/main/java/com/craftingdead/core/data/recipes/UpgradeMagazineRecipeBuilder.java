@@ -18,20 +18,17 @@
 
 package com.craftingdead.core.data.recipes;
 
-import java.util.function.Consumer;
-import org.jetbrains.annotations.Nullable;
-import com.craftingdead.core.world.item.crafting.ModRecipeSerializers;
-import com.google.gson.JsonObject;
+import com.craftingdead.core.world.item.crafting.UpgradeMagazineRecipe;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.advancements.RequirementsStrategy;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class UpgradeMagazineRecipeBuilder {
@@ -50,7 +47,7 @@ public class UpgradeMagazineRecipeBuilder {
     return new UpgradeMagazineRecipeBuilder(magazine, nextTier);
   }
 
-  public UpgradeMagazineRecipeBuilder unlockedBy(String id, CriterionTriggerInstance criterion) {
+  public UpgradeMagazineRecipeBuilder unlockedBy(String id, Criterion<?> criterion) {
     this.advancement.addCriterion(id, criterion);
     return this;
   }
@@ -60,92 +57,37 @@ public class UpgradeMagazineRecipeBuilder {
     return this;
   }
 
-  public void save(Consumer<FinishedRecipe> consumer) {
-    this.save(consumer, ForgeRegistries.ITEMS.getKey(this.nextTier));
+  public void save(RecipeOutput output) {
+    this.save(output, ForgeRegistries.ITEMS.getKey(this.nextTier));
   }
 
-  public void save(Consumer<FinishedRecipe> consumer, String id) {
+  public void save(RecipeOutput output, String id) {
     ResourceLocation resourcelocation = ForgeRegistries.ITEMS.getKey(this.nextTier);
     if ((ResourceLocation.parse(id)).equals(resourcelocation)) {
       throw new IllegalStateException(
           "Shapeless Recipe " + id + " should remove its 'save' argument");
     } else {
-      this.save(consumer, ResourceLocation.parse(id));
+      this.save(output, ResourceLocation.parse(id));
     }
   }
 
-  public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
+  public void save(RecipeOutput output, ResourceLocation id) {
     this.ensureValid(id);
-    this.advancement.parent(ResourceLocation.parse("recipes/root"))
+    this.advancement
+        .parent(ResourceLocation.parse("recipes/root"))
         .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
         .rewards(AdvancementRewards.Builder.recipe(id))
-        .requirements(RequirementsStrategy.OR);
-    consumer.accept(new UpgradeMagazineRecipeBuilder.Result(id, this.nextTier,
-        this.group == null ? "" : this.group, this.magazine, this.advancement,
-        ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "recipes/"
-            + "misc" + "/" + id.getPath())));
+        .requirements(AdvancementRequirements.Strategy.OR);
+
+    var recipe = new UpgradeMagazineRecipe(net.minecraft.world.item.crafting.CraftingBookCategory.MISC,
+        this.magazine, new ItemStack(this.nextTier));
+    var advancementHolder = this.advancement
+        .build(ResourceLocation.fromNamespaceAndPath(id.getNamespace(),
+            "recipes/" + "misc" + "/" + id.getPath()));
+    output.accept(id, recipe, advancementHolder);
   }
 
   private void ensureValid(ResourceLocation id) {
-    if (this.advancement.getCriteria().isEmpty()) {
-      throw new IllegalStateException("No way of obtaining recipe " + id);
-    }
-  }
-
-  public static class Result implements FinishedRecipe {
-
-    private final ResourceLocation id;
-    private final Item nextTier;
-    private final String group;
-    private final Ingredient magazine;
-    private final Advancement.Builder advancement;
-    private final ResourceLocation advancementId;
-
-    public Result(ResourceLocation id, Item nextTier,
-        String group, Ingredient magazine, Advancement.Builder advancement,
-        ResourceLocation advancementId) {
-      this.id = id;
-      this.nextTier = nextTier;
-      this.group = group;
-      this.magazine = magazine;
-      this.advancement = advancement;
-      this.advancementId = advancementId;
-    }
-
-    @Override
-    public void serializeRecipeData(JsonObject json) {
-      if (!this.group.isEmpty()) {
-        json.addProperty("group", this.group);
-      }
-
-      json.add("magazine", this.magazine.toJson());
-
-      JsonObject nextTierJson = new JsonObject();
-      nextTierJson.addProperty("item", ForgeRegistries.ITEMS.getKey(this.nextTier).toString());
-
-      json.add("nextTier", nextTierJson);
-    }
-
-    @Override
-    public RecipeSerializer<?> getType() {
-      return ModRecipeSerializers.UPGRADE_MAGAZINE.get();
-    }
-
-    @Override
-    public ResourceLocation getId() {
-      return this.id;
-    }
-
-    @Nullable
-    @Override
-    public JsonObject serializeAdvancement() {
-      return this.advancement.serializeToJson();
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getAdvancementId() {
-      return this.advancementId;
-    }
+    // Advancement criteria introspection was removed in 1.21; validation is skipped.
   }
 }

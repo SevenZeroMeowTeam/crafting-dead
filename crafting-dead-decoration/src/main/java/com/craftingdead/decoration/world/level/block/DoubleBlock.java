@@ -41,6 +41,9 @@ import net.minecraft.world.level.material.PushReaction;
 
 public class DoubleBlock extends HorizontalDirectionalBlock {
 
+  public static final com.mojang.serialization.MapCodec<DoubleBlock> CODEC =
+      simpleCodec(DoubleBlock::new);
+
   public static final Property<Part> PART = EnumProperty.create("part", Part.class);
 
   protected DoubleBlock(Properties properties) {
@@ -48,6 +51,11 @@ public class DoubleBlock extends HorizontalDirectionalBlock {
     this.registerDefaultState(this.stateDefinition.any()
         .setValue(FACING, Direction.NORTH)
         .setValue(PART, Part.FIRST));
+  }
+
+  @Override
+  protected com.mojang.serialization.MapCodec<? extends HorizontalDirectionalBlock> codec() {
+    return CODEC;
   }
 
   @SuppressWarnings("deprecation")
@@ -67,7 +75,7 @@ public class DoubleBlock extends HorizontalDirectionalBlock {
   }
 
   @Override
-  public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+  public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
     if (!level.isClientSide() && player.isCreative()) {
       var part = state.getValue(PART);
       if (part == Part.FIRST) {
@@ -83,7 +91,7 @@ public class DoubleBlock extends HorizontalDirectionalBlock {
       }
     }
 
-    super.playerWillDestroy(level, pos, state, player);
+    return super.playerWillDestroy(level, pos, state, player);
   }
 
   @Nullable

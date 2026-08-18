@@ -19,11 +19,12 @@
 package com.craftingdead.core.world.item.equipment;
 
 import com.google.common.collect.Multimap;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 public record SimpleHat(
-    Multimap<Attribute, AttributeModifier> attributeModifier,
+    Multimap<Holder<Attribute>, AttributeModifier> attributeModifier,
     boolean waterBreathing,
     boolean nightVision,
     float headshotReductionPercentage,

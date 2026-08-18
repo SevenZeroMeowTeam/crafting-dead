@@ -20,37 +20,34 @@ package com.craftingdead.core.network;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.util.LogicalSidedProvider;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class NetworkUtil {
 
-  public static Entity getEntityOrSender(NetworkEvent.Context context, int entityId) {
+  public static Entity getEntityOrSender(CustomPayloadEvent.Context context, int entityId) {
     return getEntityOrSender(context, entityId, Entity.class);
   }
 
-  public static <T extends Entity> T getEntityOrSender(NetworkEvent.Context context, int entityId,
-      Class<T> clazz) {
-    return switch (context.getDirection().getReceptionSide()) {
-      case CLIENT -> getEntity(context, entityId, clazz);
-      case SERVER -> {
-        if (clazz.isInstance(context.getSender())) {
-          yield clazz.cast(context.getSender());
-        } else {
-          throw new IllegalStateException("Sender is not instance of: " + clazz.getName());
-        }
-      }
-      default -> throw new IllegalStateException("Invalid side");
-    };
+  public static <T extends Entity> T getEntityOrSender(CustomPayloadEvent.Context context,
+      int entityId, Class<T> clazz) {
+    if (context.isClientSide()) {
+      return getEntity(context, entityId, clazz);
+    }
+    if (clazz.isInstance(context.getSender())) {
+      return clazz.cast(context.getSender());
+    }
+    throw new IllegalStateException("Sender is not instance of: " + clazz.getName());
   }
 
-  public static Entity getEntity(NetworkEvent.Context context, int entityId) {
+  public static Entity getEntity(CustomPayloadEvent.Context context, int entityId) {
     return getEntity(context, entityId, Entity.class);
   }
 
-  public static <T extends Entity> T getEntity(NetworkEvent.Context context, int entityId,
+  public static <T extends Entity> T getEntity(CustomPayloadEvent.Context context, int entityId,
       Class<T> clazz) {
     return LogicalSidedProvider.CLIENTWORLD
-        .get(context.getDirection().getReceptionSide())
+        .get(context.isClientSide() ? net.minecraftforge.fml.LogicalSide.CLIENT
+            : net.minecraftforge.fml.LogicalSide.SERVER)
         .map(level -> level.getEntity(entityId))
         .filter(clazz::isInstance)
         .map(clazz::cast)

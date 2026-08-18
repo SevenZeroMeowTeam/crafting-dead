@@ -10,8 +10,7 @@
     "EntityMixin",
     "ItemEntityMixin",
     "ExplosionMixin",
-    "LivingEntityMixin",
-    "FriendlyByteBufMixin"
+    "LivingEntityMixin"
   ],
   "client": [
     "GameRendererMixin",

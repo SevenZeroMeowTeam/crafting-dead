@@ -29,6 +29,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
@@ -39,10 +40,10 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class HatItem extends EquipmentItem {
 
-  public static final UUID ARMOR_MODIFIER_ID =
-      UUID.fromString("88251241-3150-423f-95be-b3daaabd48bb");
+  public static final net.minecraft.resources.ResourceLocation ARMOR_MODIFIER_ID =
+      net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("craftingdead", "hat_armor_modifier");
 
-  private final Multimap<Attribute, AttributeModifier> attributeModifiers;
+  private final Multimap<Holder<Attribute>, AttributeModifier> attributeModifiers;
 
   private final float headshotReductionPercentage;
 
@@ -65,7 +66,7 @@ public class HatItem extends EquipmentItem {
   }
 
   @Override
-  public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> lines,
+  public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext world, List<Component> lines,
       TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, world, lines, tooltipFlag);
     if (this.headshotReductionPercentage > 0.0F) {
@@ -92,7 +93,7 @@ public class HatItem extends EquipmentItem {
   }
 
   @Override
-  public ICapabilityProvider initCapabilities(ItemStack itemStack, @Nullable CompoundTag nbt) {
+  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
     return CapabilityUtil.provider(
         () -> new SimpleHat(
             this.attributeModifiers,
@@ -105,7 +106,7 @@ public class HatItem extends EquipmentItem {
 
   public static class Properties extends Item.Properties {
 
-    private final ImmutableMultimap.Builder<Attribute, AttributeModifier> attributeModifiers =
+    private final ImmutableMultimap.Builder<Holder<Attribute>, AttributeModifier> attributeModifiers =
         ImmutableMultimap.builder();
     private float headshotReductionPercentage;
     private boolean immuneToFlashes;
@@ -113,7 +114,7 @@ public class HatItem extends EquipmentItem {
     private boolean nightVision;
     private boolean waterBreathing;
 
-    public Properties attributeModifier(Attribute attribute, AttributeModifier modifier) {
+    public Properties attributeModifier(Holder<Attribute> attribute, AttributeModifier modifier) {
       this.attributeModifiers.put(attribute, modifier);
       return this;
     }

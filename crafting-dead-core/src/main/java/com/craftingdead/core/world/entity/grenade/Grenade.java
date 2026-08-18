@@ -40,7 +40,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 
 public abstract class Grenade extends BounceableProjectileEntity {
 
@@ -124,7 +123,7 @@ public abstract class Grenade extends BounceableProjectileEntity {
 
   @Override
   public boolean hurt(DamageSource source, float amount) {
-    if (source.isIndirect()) {
+    if (source.getDirectEntity() != source.getEntity()) {
       this.setDeltaMovement(source.getEntity().getLookAngle().scale(1.5D));
     }
     return super.hurt(source, amount);
@@ -244,8 +243,9 @@ public abstract class Grenade extends BounceableProjectileEntity {
   }
 
   @Override
-  protected void defineSynchedData() {
-    this.getEntityData().define(ACTIVATED, false);
+  protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
+    super.defineSynchedData(builder);
+    builder.define(ACTIVATED, false);
   }
 
   public DamageSource createDamageSource() {

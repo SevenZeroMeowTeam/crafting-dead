@@ -24,13 +24,14 @@ import com.craftingdead.core.world.action.ActionType;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record PerformActionMessage(ActionType<?> actionType, int performerEntityId,
     FriendlyByteBuf buf) {
 
   public void encode(FriendlyByteBuf out) {
-    out.writeRegistryId(com.craftingdead.core.world.action.ActionTypes.REGISTRY.get(), this.actionType);
+    out.writeResourceLocation(
+        com.craftingdead.core.world.action.ActionTypes.REGISTRY.get().getKey(this.actionType));
     out.writeVarInt(this.performerEntityId);
     out.writeVarInt(this.buf.readableBytes());
     out.writeBytes(this.buf);
@@ -38,21 +39,22 @@ public record PerformActionMessage(ActionType<?> actionType, int performerEntity
   }
 
   public static PerformActionMessage decode(FriendlyByteBuf in) {
-    return new PerformActionMessage(in.readRegistryId(), in.readVarInt(),
+    var actionType = com.craftingdead.core.world.action.ActionTypes.REGISTRY.get()
+        .getValue(in.readResourceLocation());
+    return new PerformActionMessage(java.util.Objects.requireNonNull(actionType), in.readVarInt(),
         new FriendlyByteBuf(in.readBytes(in.readVarInt())));
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(() -> {
+  public static void handle(PerformActionMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(() -> {
       final var performerEntity =
-          NetworkUtil.getEntityOrSender(ctx.get(), this.performerEntityId, LivingEntity.class);
+          NetworkUtil.getEntityOrSender(ctx, msg.performerEntityId, LivingEntity.class);
       final var performer = LivingExtension.getOrThrow(performerEntity);
-      final var serverSide = ctx.get().getDirection().getReceptionSide().isServer();
-      if (!serverSide || this.actionType.isTriggeredByClient()) {
-        performer.performAction(this.actionType.decode(performer, this.buf), serverSide);
+      final var serverSide = ctx.isServerSide();
+      if (!serverSide || msg.actionType.isTriggeredByClient()) {
+        performer.performAction(msg.actionType.decode(performer, msg.buf), serverSide);
       }
-      this.buf.release();
+      msg.buf.release();
     });
-    return true;
   }
 }

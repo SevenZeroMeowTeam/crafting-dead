@@ -21,7 +21,7 @@ package com.craftingdead.core.network.message.play;
 import java.util.function.Supplier;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record OpenEquipmentMenuMessage() {
 
@@ -31,9 +31,8 @@ public record OpenEquipmentMenuMessage() {
     return new OpenEquipmentMenuMessage();
   }
 
-  public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-    ctx.get().enqueueWork(
-        () -> PlayerExtension.getOrThrow(ctx.get().getSender()).openEquipmentMenu());
-    return true;
+  public static void handle(OpenEquipmentMenuMessage msg, CustomPayloadEvent.Context ctx) {
+    ctx.enqueueWork(
+        () -> PlayerExtension.getOrThrow(ctx.getSender()).openEquipmentMenu());
   }
 }
