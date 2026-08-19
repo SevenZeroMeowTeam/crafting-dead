@@ -8,14 +8,27 @@
 
 ## 分支信息
 
-| 分支 | Minecraft 版本 | Forge 版本 | 状态 |
-|------|----------------|------------|------|
-| `1.20.x` | **1.20.1** | **47.4.22** | ✅ 活跃维护 |
-| `1.18.x` | 1.18.2 | 40.2.0 | ⏸ 归档 |
+| 分支 | Minecraft 版本 | Forge 版本 | Java | 状态 |
+|------|----------------|------------|------|------|
+| `1.21.x` | **1.21.1** | **52.1.16** | 21 | ✅ 活跃维护（当前分支） |
+| `1.20.x` | 1.19.2 | 43.5.2 | 17 | ✅ 维护中 |
+| `1.19.x` | 1.19.2 | 43.5.2 | 17 | ✅ 维护中 |
 
 ---
 
 ## 更新日志
+
+### v1.2.6（survival 感染伤害崩溃修复）
+
+**关键修复：玩家被感染后服务器崩溃**
+- 修复 `SurvivalDamageSource` 设计缺陷：原实现在类加载时用
+  `RegistryAccess.EMPTY`/`FROZEN`（仅含静态注册表）查找 `damage_type`
+  （数据驱动注册表），必然抛出 "Missing registry: minecraft:damage_type"，
+  服务器加载 Crafting Dead 后玩家被感染触发 `InfectionMobEffect` 即崩溃
+- 改为运行时从实体所在世界的 `RegistryAccess` 解析伤害类型 holder
+- 新增数据驱动伤害类型 `craftingdeadsurvival:infection`
+  （`data/craftingdeadsurvival/damage_type/infection.json`），
+  保留自定义死亡信息 `death.attack.infection`
 
 ### v1.9.4 / v1.2.5 / v1.0.6 / v0.0.6（CI 自动构建与 Release 发布稳定版）
 
@@ -238,11 +251,11 @@ crafting-dead
 
 | 技术 | 用途 |
 |------|------|
-| **Minecraft Forge 47.4.22** | Mod 加载框架 |
-| **Minecraft 1.20.1** | 游戏版本 |
-| **Java 17+** | 开发语言 |
+| **Minecraft Forge 52.1.16** | Mod 加载框架 |
+| **Minecraft 1.21.1** | 游戏版本 |
+| **Java 21** | 开发语言 |
 | **Gradle 8.5** | 构建工具 |
-| **SpongePowered Mixin 0.8.5** | 运行时字节码注入 |
+| **SpongePowered Mixin 0.8.7** | 运行时字节码注入 |
 | **Spigot API 1.20.1** | WorldGuard 模块 Bukkit 集成 |
 | **WorldGuard 7.0.x** | 区域保护联动 |
 | **WorldEdit** | 区域坐标处理 |
@@ -253,7 +266,7 @@ crafting-dead
 
 ### 前置要求
 
-- [JDK 17+](https://adoptium.net/)
+- [JDK 21](https://adoptium.net/)（1.21.x 分支；1.19.x/1.20.x 分支使用 JDK 17）
 - Git
 
 ### 克隆与构建
@@ -263,8 +276,8 @@ crafting-dead
 git clone https://github.com/SevenZeroMeowTeam/crafting-dead.git
 cd crafting-dead
 
-# 切换到 1.20.x 分支
-git checkout 1.20.x
+# 切换到 1.21.x 分支（默认活跃分支）
+git checkout 1.21.x
 
 # 编译打包（跳过测试）
 ./gradlew build -x test
@@ -286,11 +299,12 @@ git checkout 1.20.x
 
 ### 持续集成与自动发布
 
-推送到 `1.20.x` 分支后，GitHub Actions 自动执行：
+推送到 `1.21.x` / `1.20.x` / `1.19.x` 分支后，GitHub Actions 自动执行：
 
-1. **构建** — `./gradlew build` 编译全部四个模块
-2. **Artifact** — 构建产物上传至 Actions 工件（保留 90 天）
-3. **Release** — 自动创建 GitHub Release 并附带全部 jar 文件
+1. **构建** — `./gradlew clean build` 编译全部四个模块
+2. **Artifact** — 构建产物上传至 Actions 工件（按分支与构建编号命名）
+3. **Release** — 自动创建 GitHub Release（tag 格式 `build-<分支>-<构建编号>`）
+   并附带全部 jar 文件与自动生成的发布说明
 
 下载地址：[Releases](https://github.com/SevenZeroMeowTeam/crafting-dead/releases)
 
@@ -387,7 +401,7 @@ git checkout 1.20.x
 ## 鸣谢
 
 - **NexusNode** — 原始模组作者
-- **SevenZeroMeowTeam** — 1.20.1 适配维护与持续更新
+- **SevenZeroMeowTeam** — 1.19.2 / 1.21.1 多版本适配维护与持续更新
 - **Minecraft Forge 团队** — Mod 加载框架
 - **SpongePowered** — Mixin 框架
 - **所有贡献者** — 问题反馈与代码贡献
