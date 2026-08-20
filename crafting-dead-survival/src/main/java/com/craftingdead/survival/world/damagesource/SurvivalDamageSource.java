@@ -37,11 +37,18 @@ public class SurvivalDamageSource {
    * (loaded from datapacks), so it must NOT be looked up via a static/frozen
    * RegistryAccess — that only contains static registries and would throw
    * "Missing registry: minecraft:damage_type".
+   *
+   * <p>This method is intentionally exception-free: it is invoked from entity ticking
+   * ({@code MobEffect.applyEffectTick}). An uncaught exception there propagates up the
+   * entity tick and can crash the server tick loop, disconnecting every player. If the
+   * data-driven damage type (or the registry itself) is unavailable, we fall back to the
+   * vanilla generic source instead of throwing.
    */
   public static DamageSource infection(LivingEntity entity) {
     var holder = entity.level().registryAccess()
-        .registryOrThrow(Registries.DAMAGE_TYPE)
-        .getHolderOrThrow(INFECTION_TYPE);
-    return new DamageSource(holder);
+        .registry(Registries.DAMAGE_TYPE)
+        .flatMap(registry -> registry.getHolder(INFECTION_TYPE))
+        .orElse(null);
+    return holder != null ? new DamageSource(holder) : entity.damageSources().generic();
   }
 }

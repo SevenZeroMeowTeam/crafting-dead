@@ -49,6 +49,8 @@ public class SurvivalActionTypes {
           () -> EntityItemActionType
               .builder(TargetSelector.SELF_OR_OTHERS.hasEffect(SurvivalMobEffects.BROKEN_LEG))
               .forItem(SurvivalItems.SPLINT)
+              .customAction((performer, target) -> target.entity().removeEffect(
+                  SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow()))
               .build());
 
   public static final RegistryObject<EntityItemActionType<?>> USE_MORPHINE_SYRINGE =
@@ -56,6 +58,8 @@ public class SurvivalActionTypes {
           () -> EntityItemActionType
               .builder(TargetSelector.SELF_OR_OTHERS.hasEffect(SurvivalMobEffects.BROKEN_LEG))
               .forItem(SurvivalItems.MORPHINE_SYRINGE)
+              .customAction((performer, target) -> target.entity().removeEffect(
+                  SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow()))
               .build());
 
   public static final RegistryObject<EntityItemActionType<?>> USE_SYRINGE_ON_ZOMBIE =
@@ -73,6 +77,8 @@ public class SurvivalActionTypes {
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS.hasEffect(SurvivalMobEffects.INFECTION))
               .forItem(SurvivalItems.CURE_SYRINGE)
               .duration(16)
+              .customAction((performer, target) -> target.entity().removeEffect(
+                  SurvivalMobEffects.INFECTION.getHolder().orElseThrow()))
               .resultItem(ModItems.SYRINGE)
               .build());
 
