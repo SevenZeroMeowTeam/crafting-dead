@@ -25,3 +25,7 @@
 # 参考源码目录（不纳入构建）
 /crafting-dead-1.18.x-guns/
 /crafting-dead-Medical/
+
+# 构建与游戏日志（不入库）
+/build_log.txt
+/logs/
