@@ -29,7 +29,7 @@ public class BrokenLegMobEffect extends MobEffect {
   public BrokenLegMobEffect() {
     super(MobEffectCategory.HARMFUL, 0x816C5A);
     this.addAttributeModifier(Attributes.MOVEMENT_SPEED,
-        ResourceLocation.parse("021BEAA1-498F-4D7B-933E-F0FA0B88B9D1"),
+        ResourceLocation.fromNamespaceAndPath("craftingdeadsurvival", "broken_leg_speed"),
         -0.15D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
   }
 
