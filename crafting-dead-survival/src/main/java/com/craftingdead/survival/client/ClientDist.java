@@ -43,7 +43,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RegisterGuiLayersEvent;
+import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -79,7 +79,7 @@ public class ClientDist implements ModDist {
     modEventBus.addListener(this::handleEntityRenderersAddLayers);
     modEventBus.addListener(this::handleParticleFactoryRegisterEvent);
     modEventBus.addListener(this::handleEntityRenderersLayerDefinitions);
-    modEventBus.addListener(this::handleRegisterGuiLayers);
+    modEventBus.addListener(this::handleAddGuiOverlayLayers);
 
     context.registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
 
@@ -181,8 +181,8 @@ public class ClientDist implements ModDist {
         SpellParticle.Provider::new);
   }
 
-  public void handleRegisterGuiLayers(RegisterGuiLayersEvent event) {
-    event.registerLayers(
+  public void handleAddGuiOverlayLayers(AddGuiOverlayLayersEvent event) {
+    event.getLayeredDraw().add(
         ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "blood"),
         (guiGraphics, deltaTracker) -> {
           var player = CraftingDead.getInstance().getClientDist().getCameraPlayer();
