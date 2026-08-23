@@ -301,7 +301,10 @@ final class PlayerExtensionImpl<E extends Player>
   @Override
   public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
     var tag = super.serializeNBT(provider);
-    tag.put("handcuffs", this.getHandcuffs().save(provider));
+    ItemStack handcuffs = this.getHandcuffs();
+    if (!handcuffs.isEmpty()) {
+      tag.put("handcuffs", handcuffs.save(provider));
+    }
     return tag;
   }
 

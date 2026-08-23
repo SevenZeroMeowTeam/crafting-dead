@@ -63,6 +63,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -456,7 +457,8 @@ public class CraftingDead {
   private static void startTracking(Entity targetEntity, ServerPlayer playerEntity) {
     targetEntity.getCapability(LivingExtension.CAPABILITY).ifPresent(trackedLiving -> {
       trackedLiving.handleStartTracking(playerEntity);
-      FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
+      RegistryFriendlyByteBuf data = new RegistryFriendlyByteBuf(
+          new FriendlyByteBuf(Unpooled.buffer()), targetEntity.level().registryAccess());
       trackedLiving.encode(data, true);
       NetworkChannel.PLAY.getSimpleChannel().send(
           new SyncLivingMessage(trackedLiving.entity().getId(), data),

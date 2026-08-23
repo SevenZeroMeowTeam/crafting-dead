@@ -23,6 +23,7 @@ import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public record SyncLivingMessage(int entityId, FriendlyByteBuf data) {
@@ -39,8 +40,11 @@ public record SyncLivingMessage(int entityId, FriendlyByteBuf data) {
   }
 
   public static void handle(SyncLivingMessage msg, CustomPayloadEvent.Context ctx) {
-    ctx.enqueueWork(() -> NetworkUtil.getEntity(ctx, msg.entityId)
-        .getCapability(LivingExtension.CAPABILITY)
-        .ifPresent(living -> living.decode(msg.data)));
+    ctx.enqueueWork(() -> {
+      var entity = NetworkUtil.getEntity(ctx, msg.entityId);
+      entity.getCapability(LivingExtension.CAPABILITY)
+          .ifPresent(living -> living.decode(
+              new RegistryFriendlyByteBuf(msg.data, entity.level().registryAccess())));
+    });
   }
 }
