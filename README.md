@@ -18,6 +18,24 @@
 
 ## 更新日志
 
+### v1.9.4 / v1.2.6 / v1.0.6 / v0.0.6（实体同步崩溃修复）
+
+**关键修复：进世界后实体同步 `ClassCastException` 崩溃**
+- 症状：服务器线程 "Ticking entity" 崩溃
+  `ClassCastException: FriendlyByteBuf cannot be cast to RegistryFriendlyByteBuf`
+  （`BaseLivingExtension.encode` 内部使用 `ItemStack.OPTIONAL_STREAM_CODEC`，
+  该编解码器必须配合带注册表访问的 `RegistryFriendlyByteBuf`）
+- 修复所有以普通 `FriendlyByteBuf` 调用 ItemStack 编解码的路径：
+  - `handleLivingUpdate`（实体每 tick 同步）与 `handlePlayerChangedDimension`
+    （跨维度同步）改为用 `RegistryFriendlyByteBuf` 包裹并携带
+    `entity.level().registryAccess()`
+  - `SyncGunContainerSlotMessage` / `SyncGunEquipmentSlotMessage` 构造器
+    新增 `RegistryAccess` 参数，`AbstractContainerMenuMixin` 传入
+    `player.level().registryAccess()`
+  - `KillFeedEntry` 击杀信息不再用 `ItemStack.OPTIONAL_STREAM_CODEC`
+    （网络消息编解码只能拿到普通 buffer），改为按注册表 id + 数量编码武器
+  - `BaseLivingExtension` 的 handler 子缓冲同样用 `RegistryFriendlyByteBuf` 包裹
+
 ### v1.9.4 / v1.2.6 / v1.0.6 / v0.0.6（1.21.1 适配稳定版）
 
 **关键修复：1.21.1 启动崩溃（Mixin 注入继承方法失败）**
