@@ -58,6 +58,7 @@ import com.craftingdead.core.event.LivingExtensionEvent;
 import com.craftingdead.core.world.entity.extension.ClothingProtectionHandler;
 import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -68,10 +69,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -329,10 +332,30 @@ public class CraftingDead {
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
   public void handleLivingDrops(LivingDropsEvent event) {
-    event.getEntity()
+    boolean canceled = event.getEntity()
         .getCapability(LivingExtension.CAPABILITY)
-        .ifPresent(living -> event.setCanceled(
-            living.handleDeathLoot(event.getSource(), event.getDrops(), 0)));
+        .map(living -> living.handleDeathLoot(event.getSource(), event.getDrops(), 0))
+        .orElse(false);
+    event.setCanceled(canceled);
+    if (!canceled) {
+      scatterDrops(event.getEntity(), event.getDrops());
+    }
+  }
+
+  /**
+   * 物理散落：让击杀产生的掉落物以带随机速度与朝向的方式向四周散落，
+   * 落地后保持为可拾取实体（保留默认拾取延迟）。
+   */
+  private static void scatterDrops(LivingEntity entity, Collection<ItemEntity> drops) {
+    var random = entity.getRandom();
+    for (var itemEntity : drops) {
+      itemEntity.setDeltaMovement(new Vec3(
+          (random.nextDouble() - 0.5D) * 0.7D,
+          random.nextDouble() * 0.35D + 0.15D,
+          (random.nextDouble() - 0.5D) * 0.7D));
+      itemEntity.setDefaultPickUpDelay();
+      itemEntity.setYRot(random.nextFloat() * 360.0F);
+    }
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
