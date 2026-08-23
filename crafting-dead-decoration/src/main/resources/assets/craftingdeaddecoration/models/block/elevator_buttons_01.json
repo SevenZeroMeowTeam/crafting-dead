@@ -3,7 +3,7 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "craftingdeaddecoration:block/elevator_buttons_01",
-		"particle": "craftingdeaddecoration:block/levator_buttons_01"
+		"particle": "craftingdeaddecoration:block/elevator_buttons_01"
 	},
 	"elements": [
 		{

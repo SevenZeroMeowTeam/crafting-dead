@@ -121,7 +121,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
+import net.minecraftforge.client.event.RegisterGuiLayersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -217,7 +217,7 @@ public class ClientDist implements ModDist {
     modBus.addListener(this::handleEntityRenderersAddLayers);
     modBus.addListener(this::handleEntityRenderersLayerDefinitions);
     modBus.addListener(this::handleRegisterClientReloadListeners);
-    modBus.addListener(this::handleAddGuiOverlayLayers);
+    modBus.addListener(this::handleRegisterGuiLayers);
 
     MinecraftForge.EVENT_BUS.register(this);
     // Auto-updater moved to crafting-dead-updater mod (separate optional mod)
@@ -651,8 +651,8 @@ public class ClientDist implements ModDist {
     }
   }
 
-  public void handleAddGuiOverlayLayers(AddGuiOverlayLayersEvent event) {
-    event.getLayeredDraw().add(
+  public void handleRegisterGuiLayers(RegisterGuiLayersEvent event) {
+    event.registerLayers(
         ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "overlay"),
         (guiGraphics, deltaTracker) -> {
           var player = this.getCameraPlayer();
