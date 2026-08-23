@@ -26,6 +26,7 @@ import com.craftingdead.core.client.util.RenderUtil;
 import com.craftingdead.core.world.effect.ModMobEffects;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.ModDist;
+import com.craftingdead.survival.client.gui.MoonHudOverlay;
 import com.craftingdead.survival.client.model.PipeBombModel;
 import com.craftingdead.survival.client.model.SupplyDropModel;
 import com.craftingdead.survival.client.model.geom.SurvivalModelLayers;
@@ -45,6 +46,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
@@ -71,9 +73,11 @@ public class ClientDist implements ModDist {
       new ResourceLocation(CraftingDeadSurvival.ID, "textures/gui/blood_2.png");
 
   private final Minecraft minecraft;
+  private final MoonHudOverlay moonHudOverlay;
 
   public ClientDist(FMLJavaModLoadingContext context) {
     this.minecraft = Minecraft.getInstance();
+    this.moonHudOverlay = new MoonHudOverlay(this.minecraft);
     final IEventBus modEventBus = context.getModEventBus();
     modEventBus.addListener(this::handleEntityRenderers);
     modEventBus.addListener(this::handleEntityRenderersAddLayers);
@@ -203,5 +207,13 @@ public class ClientDist implements ModDist {
     RenderUtil.blit(0, 0, width, height);
     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     RenderSystem.disableBlend();
+  }
+
+  @SubscribeEvent
+  public void handleRenderGuiPost(RenderGuiEvent.Post event) {
+    this.moonHudOverlay.render(event.getPoseStack(),
+        event.getWindow().getGuiScaledWidth(),
+        event.getWindow().getGuiScaledHeight(),
+        event.getPartialTick());
   }
 }

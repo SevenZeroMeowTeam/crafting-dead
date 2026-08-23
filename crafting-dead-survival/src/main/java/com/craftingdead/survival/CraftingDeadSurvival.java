@@ -76,6 +76,9 @@ import com.craftingdead.survival.world.entity.monster.WeakZombie;
 import com.craftingdead.survival.world.item.SurvivalItems;
 import com.craftingdead.survival.world.item.enchantment.SurvivalEnchantments;
 import com.craftingdead.survival.world.level.block.SurvivalBlocks;
+import com.craftingdead.survival.network.SurvivalNetworkChannel;
+import com.craftingdead.survival.world.MoonEventHandler;
+import com.craftingdead.survival.world.moon.ApocalypseManager;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -164,6 +167,7 @@ public class CraftingDeadSurvival {
     context.registerConfig(ModConfig.Type.SERVER, serverConfigSpec);
 
     MinecraftForge.EVENT_BUS.register(this);
+    MinecraftForge.EVENT_BUS.register(new MoonEventHandler());
 
     SurvivalEnchantments.deferredRegister.register(modEventBus);
     SurvivalActionTypes.deferredRegister.register(modEventBus);
@@ -191,6 +195,7 @@ public class CraftingDeadSurvival {
   // ================================================================================
 
   private void handleCommonSetup(FMLCommonSetupEvent event) {
+    SurvivalNetworkChannel.loadChannels();
     // TelemetryManager.initialize(ID, VERSION, Optional::empty, scope -> {
     //   scope.setTag("survival.version", VERSION);
     //   scope.setTag("survival.immerseLoaded", String.valueOf(this.isImmerseLoaded()));
@@ -336,6 +341,16 @@ public class CraftingDeadSurvival {
                 serverConfig.zombieHandDropChance.get().floatValue());
               }
           );
+
+      // 末日进化：随天数提升僵尸血量 / 攻击 / 速度
+      if (serverConfig.zombieEvolutionEnabled.get()) {
+        ApocalypseManager.applyZombieEvolution(zombie, level);
+      }
+      // 血月：僵尸有概率额外进化
+      if (serverConfig.moonEventsEnabled.get()
+          && ApocalypseManager.isBloodMoon(level)) {
+        ApocalypseManager.applyBloodMoonEvolution(zombie, level);
+      }
     }
   }
 
