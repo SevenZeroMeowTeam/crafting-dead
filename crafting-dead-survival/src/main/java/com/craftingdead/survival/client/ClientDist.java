@@ -26,6 +26,7 @@ import com.craftingdead.core.client.util.RenderUtil;
 import com.craftingdead.core.world.effect.ModMobEffects;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.ModDist;
+import com.craftingdead.survival.client.gui.MoonHudOverlay;
 import com.craftingdead.survival.client.model.PipeBombModel;
 import com.craftingdead.survival.client.model.SupplyDropModel;
 import com.craftingdead.survival.client.model.geom.SurvivalModelLayers;
@@ -71,9 +72,11 @@ public class ClientDist implements ModDist {
       ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "textures/gui/blood_2.png");
 
   private final Minecraft minecraft;
+  private final MoonHudOverlay moonHudOverlay;
 
   public ClientDist(FMLJavaModLoadingContext context) {
     this.minecraft = Minecraft.getInstance();
+    this.moonHudOverlay = new MoonHudOverlay(this.minecraft);
     final IEventBus modEventBus = context.getModEventBus();
     modEventBus.addListener(this::handleEntityRenderers);
     modEventBus.addListener(this::handleEntityRenderersAddLayers);
@@ -200,6 +203,10 @@ public class ClientDist implements ModDist {
             }
           }
         });
+    event.getLayeredDraw().add(
+        ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "moon_hud"),
+        (guiGraphics, deltaTracker) -> this.moonHudOverlay.render(guiGraphics,
+            deltaTracker.getGameTimeDeltaPartialTick(false)));
   }
 
   private static void renderBlood(int width, int height, float healthPercentage) {

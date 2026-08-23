@@ -29,3 +29,6 @@
 # 构建与游戏日志（不入库）
 /build_log.txt
 /logs/
+
+# 源码备份（不入库）
+/backup/
