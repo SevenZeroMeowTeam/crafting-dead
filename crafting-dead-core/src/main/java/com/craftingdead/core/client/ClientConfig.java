@@ -28,6 +28,8 @@ public class ClientConfig {
 
   public final ForgeConfigSpec.BooleanValue displayBlood;
 
+  public final ForgeConfigSpec.BooleanValue displayTargetInfo;
+
   public final ForgeConfigSpec.ConfigValue<String> killSound;
 
   public final ForgeConfigSpec.ConfigValue<String> crosshair;
@@ -40,6 +42,10 @@ public class ClientConfig {
       this.displayBlood = builder
           .translation("options.craftingdead.client.display_blood")
           .define("displayBlood", true);
+      this.displayTargetInfo = builder
+          .translation("options.craftingdead.client.display_target_info")
+          .comment("Display Jade-like target info overlay (block/entity name, mod and health)")
+          .define("displayTargetInfo", true);
       this.killSound = builder
           .translation("options.craftingdead.client.kill_sound")
           .define("killSound", SoundEvents.TRIDENT_RETURN.getLocation().toString(),
