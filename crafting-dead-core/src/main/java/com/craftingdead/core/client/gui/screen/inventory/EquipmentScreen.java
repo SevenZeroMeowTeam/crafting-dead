@@ -128,7 +128,6 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
 
   @Override
   protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-    this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
     RenderSystem.setShaderTexture(0, BACKGROUND);
 
     guiGraphics.blit(BACKGROUND, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);

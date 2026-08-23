@@ -72,7 +72,6 @@ public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu>
    */
   @Override
   protected void renderBg(@NotNull GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-    this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
     RenderSystem.setShaderTexture(0, CRAFTING);
     guiGraphics.blit(CRAFTING, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 

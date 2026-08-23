@@ -83,7 +83,6 @@ public class GenericContainerScreen extends AbstractContainerScreen<GenericMenu>
 
   @Override
   protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-    this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     RenderSystem.setShaderTexture(0, GENERIC_CONTAINER_TEXTURE);
     int x = (this.width - this.imageWidth) / 2;
