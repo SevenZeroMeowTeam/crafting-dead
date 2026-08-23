@@ -44,6 +44,7 @@ import com.craftingdead.core.ModDist;
 import com.craftingdead.core.ServerConfig;
 import com.craftingdead.core.client.crosshair.CrosshairManager;
 import com.craftingdead.core.client.gui.IngameGui;
+import com.craftingdead.core.client.gui.TargetOverlay;
 import com.craftingdead.core.client.gui.screen.inventory.EquipmentScreen;
 import com.craftingdead.core.client.gui.screen.inventory.GenericContainerScreen;
 import com.craftingdead.core.client.model.C4ExplosiveModel;
@@ -178,6 +179,8 @@ public class ClientDist implements ModDist {
 
   private final IngameGui ingameGui;
 
+  private final TargetOverlay targetOverlay;
+
   private final ItemRenderDispatcher itemRenderDispatcher;
 
   private final CameraManager cameraManager;
@@ -227,6 +230,7 @@ public class ClientDist implements ModDist {
 
     this.ingameGui =
         new IngameGui(this.minecraft, this, new ResourceLocation(clientConfig.crosshair.get()));
+    this.targetOverlay = new TargetOverlay(this.minecraft);
     this.cameraManager = new CameraManager();
   }
 
@@ -657,6 +661,7 @@ public class ClientDist implements ModDist {
     this.ingameGui.renderOverlay(player, heldStack, gun, event.getPoseStack(),
         window.getGuiScaledWidth(), window.getGuiScaledHeight(),
         event.getPartialTick());
+    this.targetOverlay.render(event.getPoseStack(), event.getPartialTick());
   }
 
   @SubscribeEvent
