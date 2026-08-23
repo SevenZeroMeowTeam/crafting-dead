@@ -142,7 +142,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
     return switch (transformType) {
       case THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND,
           FIRST_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND,
-          FIXED, HEAD -> true;
+          FIXED, HEAD, GROUND -> true;
       default -> false;
     };
   }
@@ -196,6 +196,18 @@ public class GunRenderer implements CombatSlotItemRenderer {
           poseStack.translate(-0.25F, 0, 0);
           poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
           poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
+          this.renderGun(gun, true, false, itemStack.hasFoil(), 0.0F,
+              transformType, partialTick, poseStack, bufferSource, packedLight,
+              packedOverlay);
+          break;
+        case GROUND:
+          // 掉落在地面的物品实体：使用模型自带的 ground 变换平放，
+          // 并将模型从原点抬高到贴合地面（掉落物实体自身会带上下浮动）。
+          poseStack.translate(0.0F, 0.25F, 0.0F);
+          this.renderGun(gun, true, false, itemStack.hasFoil(), 0.0F,
+              transformType, partialTick, poseStack, bufferSource, packedLight,
+              packedOverlay);
+          break;
         default:
           this.renderGun(gun, true, false, itemStack.hasFoil(), 0.0F,
               transformType, partialTick, poseStack, bufferSource, packedLight,
