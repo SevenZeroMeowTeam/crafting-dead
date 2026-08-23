@@ -18,6 +18,30 @@
 
 ## 更新日志
 
+### v1.9.4 / v1.2.6 / v1.0.6 / v0.0.6（1.21.1 适配稳定版）
+
+**关键修复：1.21.1 启动崩溃（Mixin 注入继承方法失败）**
+- `ZombieMixin` 原从 `@Mixin(Zombie.class)` 注入 `die` / `tickDeath` 失败
+  （Mixin 的 `@Inject` 按方法名解析时只能命中**目标类自身声明**的方法，
+  `die` / `tickDeath` 声明于 `LivingEntity`，`Zombie` 仅继承），启动即 FATAL
+- 尸体保留逻辑迁移至新增的 `SurvivalLivingEntityMixin`：挂在
+  `LivingEntity` 上，通过 `instanceof Zombie` 守卫确保仅对僵尸生效，
+  并用 `@Shadow` 访问受保护的 `deathTime` 字段
+
+**1.21.1 完整适配（Forge 52.1.16，Java 21）**
+- 客户端 GUI 图层事件改用 `AddGuiOverlayLayersEvent`（匹配构建版本 52.1.16）
+- `BrokenLegMobEffect` 修正 `addAttributeModifier` 的 `ResourceLocation` id 参数
+- `ConsumableConfigOverrides` 改用 `entrySet()` 读取配置
+  （`valueMap()` 在 night-config 3.7.4 中不受支持），修复进世界崩溃
+- 实体同步改用 `RegistryFriendlyByteBuf`，修复玩家被追踪时的强转崩溃；
+  空 `ItemStack` 序列化前判空
+
+**新功能**
+- 僵尸尸体保留：僵尸死亡后尸体保留 120 秒，保持躺倒状态
+  （保留碰撞箱、可被推动），到期后移除
+- 枪械弹壳抛壳粒子效果（开火时从抛壳窗喷出）
+- TaCZ 兼容补丁（LocalPlayer 充能方法）与击杀掉落物物理散落
+
 ### v1.2.6（survival 感染伤害崩溃修复）
 
 **关键修复：玩家被感染后服务器崩溃**
@@ -181,7 +205,7 @@ crafting-dead
 ├── crafting-dead-survival      # 生存扩展
 │   ├── 口渴系统 (Thirst)
 │   ├── 温度系统 (Temperature)
-│   ├── 丧尸增强 (ZombieMixin)
+│   ├── 丧尸增强 (ZombieMixin, SurvivalLivingEntityMixin)
 │   └── 生存状态效果
 │
 ├── crafting-dead-decoration    # 装饰方块
