@@ -18,6 +18,29 @@
 
 ## 更新日志
 
+### v1.9.4-1.19.2 / v1.2.5-1.19.2 / v1.0.6-1.19.2（末日生存系统：月亮事件 / 僵尸进化 / 计分板 / 击杀HUD）
+
+**新功能：末日生存系统（与 1.21.x 分支同步的新功能）**
+- **左上角 HUD**：实时显示玩家手持的主手/副手武器或工具（图标 + 名称，兼容其他模组物品）；
+  击杀信息（`玩家 用 [武器] 击杀了 目标`，最多 5 条、5 秒淡出）；月亮事件激活时顶部显示横幅提示
+- **僵尸进化**：每 14 天进化一次（可配置），随天数无限提升，
+  每级提升血量 +50%、攻击 +50%、速度 +5%（倍率可配置），仅对新生成的僵尸生效
+- **计分板**：侧边栏显示天数 / 时间（24 小时制）/ 月相（满月、新月等 8 种）/ 今日事件 / 事件状态 / 进化等级
+- **月亮事件**（28 天为一个周期）：
+  - 第 6 天 **蓝月**：玩家全天获得幸运效果
+  - 第 13 天 **血月**（每 14 天一次）：怪物增多（自动在玩家周围额外生成僵尸）、禁止睡觉、
+    僵尸有概率额外进化、禁止苦力怕/蜘蛛/洞穴蜘蛛/女巫生成
+  - 第 20 天 **黄月**：农作物生长加速（每次生长额外再长一次）
+  - 第 27 天 **超级血月**（每 28 天一次）：血月加强版（更多怪物、进化概率提升至 90%）
+- **击杀掉落**：玩家击杀生物时概率掉落原版精选物品与其他模组物品（数量 1-3，概率可配置）
+- **配置**：全部功能可在 `serverconfig/craftingdeadsurvival-server.toml` 的
+  `moon-events` 段调整（开关、进化间隔/倍率、血月生成间隔/数量、掉落概率等）
+- **实现**：新增 `MoonEventType` / `ApocalypseManager`、`MoonEventHandler`、
+  `SurvivalNetworkChannel` + `SyncMoonDataMessage` / `SurvivalKillFeedMessage`、
+  `MoonDataHolder` / `MoonHudOverlay`
+- 1.19.2 版本使用 PoseStack 渲染 HUD（`RenderGuiEvent.Post`）、`LivingSpawnEvent` 事件体系、
+  `NetworkRegistry` 网络通道等 1.19.2 API 完整适配
+
 ### v1.9.4-1.19.2 / v1.2.5-1.19.2 / v1.0.6-1.19.2（Jade 风格目标信息显示）
 
 **新功能：Jade 风格目标信息叠加层**
@@ -225,7 +248,9 @@ crafting-dead
 │   ├── 口渴系统 (Thirst)
 │   ├── 温度系统 (Temperature)
 │   ├── 丧尸增强 (ZombieMixin)
-│   └── 生存状态效果
+│   ├── 末日生存系统 (MoonEventType, ApocalypseManager, MoonEventHandler)
+│   ├── 月亮事件 HUD (MoonHudOverlay)
+│   └── 生存网络同步 (SurvivalNetworkChannel)
 │
 ├── crafting-dead-decoration    # 装饰方块
 │   ├── 路障 (Barricades)
@@ -273,6 +298,8 @@ crafting-dead
 - 温度管理（寒冷/炎热）
 - 丧尸增强 AI
 - 装备耐久与磨损
+- 末日生存系统：月亮事件（血月/蓝月/黄月/超级血月）、僵尸进化（随天数提升血量/攻击/速度）、
+  计分板（天数/时间/月相）、左上角 HUD（手持武器/击杀信息）、击杀概率掉落
 
 ### 装饰方块
 
