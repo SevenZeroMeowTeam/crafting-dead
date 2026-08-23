@@ -416,7 +416,8 @@ public class CraftingDead {
     event.getEntity().getCapability(LivingExtension.CAPABILITY).ifPresent(living -> {
       living.tick();
       if (!living.level().isClientSide() && living.requiresSync()) {
-        FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
+        RegistryFriendlyByteBuf data = new RegistryFriendlyByteBuf(
+            new FriendlyByteBuf(Unpooled.buffer()), living.level().registryAccess());
         living.encode(data, false);
         NetworkChannel.PLAY.getSimpleChannel().send(
             new SyncLivingMessage(living.entity().getId(), data),
@@ -459,7 +460,8 @@ public class CraftingDead {
 
   @SubscribeEvent
   public void handlePlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-    FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
+    RegistryFriendlyByteBuf data = new RegistryFriendlyByteBuf(
+        new FriendlyByteBuf(Unpooled.buffer()), event.getEntity().level().registryAccess());
     PlayerExtension.getOrThrow(event.getEntity()).encode(data, true);
     NetworkChannel.PLAY.getSimpleChannel().send(
         new SyncLivingMessage(event.getEntity().getId(), data),

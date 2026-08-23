@@ -93,7 +93,7 @@ public class AbstractContainerMenuMixin {
               }
               NetworkChannel.PLAY.getSimpleChannel().send(
                   new SyncGunContainerSlotMessage(
-                      player.getId(), slotIndex, gun, false),
+                      player.getId(), slotIndex, gun, false, player.level().registryAccess()),
                   PacketDistributor.PLAYER.with(player));
             });
         return true;

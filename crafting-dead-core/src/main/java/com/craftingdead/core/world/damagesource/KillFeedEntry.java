@@ -20,9 +20,9 @@ package com.craftingdead.core.world.damagesource;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class KillFeedEntry {
 
@@ -69,15 +69,30 @@ public class KillFeedEntry {
     out.writeVarInt(this.killerEntityId);
     ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.encode(out, this.killerName);
     ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.encode(out, this.deadName);
-    ItemStack.OPTIONAL_STREAM_CODEC.encode((RegistryFriendlyByteBuf) out, this.weaponStack);
+    // 击杀信息仅用于渲染武器图标，用注册表 id + 数量编码即可；
+    // ItemStack.OPTIONAL_STREAM_CODEC 需要 RegistryFriendlyByteBuf（带注册表访问），
+    // 而网络消息编解码拿到的是普通 FriendlyByteBuf，强行强转会导致崩溃。
+    out.writeBoolean(!this.weaponStack.isEmpty());
+    if (!this.weaponStack.isEmpty()) {
+      out.writeResourceLocation(BuiltInRegistries.ITEM.getKey(this.weaponStack.getItem()));
+      out.writeVarInt(this.weaponStack.getCount());
+    }
     out.writeEnum(this.type);
   }
 
   public static KillFeedEntry decode(FriendlyByteBuf in) {
-    return new KillFeedEntry(in.readVarInt(),
-        ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.decode(in),
-        ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.decode(in),
-        ItemStack.OPTIONAL_STREAM_CODEC.decode((RegistryFriendlyByteBuf) in),
+    int killerEntityId = in.readVarInt();
+    Component killerName = ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.decode(in);
+    Component deadName = ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.decode(in);
+    ItemStack weaponStack = ItemStack.EMPTY;
+    if (in.readBoolean()) {
+      var item = BuiltInRegistries.ITEM.get(in.readResourceLocation());
+      int count = in.readVarInt();
+      if (item != null) {
+        weaponStack = new ItemStack(item, count);
+      }
+    }
+    return new KillFeedEntry(killerEntityId, killerName, deadName, weaponStack,
         in.readEnum(KillFeedEntry.Type.class));
   }
 }

@@ -22,7 +22,9 @@ import java.util.function.Supplier;
 import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.item.gun.Gun;
 import io.netty.buffer.Unpooled;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.network.CustomPayloadEvent;
@@ -30,8 +32,9 @@ import net.minecraftforge.event.network.CustomPayloadEvent;
 public record SyncGunEquipmentSlotMessage(int entityId, EquipmentSlot slot, FriendlyByteBuf data) {
 
   public SyncGunEquipmentSlotMessage(int entityId, EquipmentSlot slot, Gun gun,
-      boolean writeAll) {
-    this(entityId, slot, new FriendlyByteBuf(Unpooled.buffer()));
+      boolean writeAll, RegistryAccess registryAccess) {
+    this(entityId, slot,
+        new RegistryFriendlyByteBuf(new FriendlyByteBuf(Unpooled.buffer()), registryAccess));
     gun.encode(this.data, writeAll);
   }
 

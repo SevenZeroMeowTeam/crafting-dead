@@ -608,7 +608,8 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     out.writeVarInt(handlersToSend.size());
     for (var entry : handlersToSend) {
       out.writeResourceLocation(entry.getKey().id());
-      var handlerData = new FriendlyByteBuf(Unpooled.buffer());
+      var handlerData = new RegistryFriendlyByteBuf(
+          new FriendlyByteBuf(Unpooled.buffer()), this.entity().level().registryAccess());
       entry.getValue().encode(handlerData, writeAll);
       out.writeVarInt(handlerData.readableBytes());
       out.writeBytes(handlerData);
