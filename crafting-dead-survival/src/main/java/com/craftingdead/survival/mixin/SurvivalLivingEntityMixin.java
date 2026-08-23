@@ -19,16 +19,15 @@
 package com.craftingdead.survival.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.level.Level;
 
 /**
  * 僵尸尸体保留逻辑。
@@ -37,9 +36,16 @@ import net.minecraft.world.level.Level;
  * {@code die} 与 {@code tickDeath} 都声明于 {@link LivingEntity}（{@link Zombie}
  * 只是继承），因此本 mixin 必须挂在 {@link LivingEntity} 上，并通过
  * {@code instanceof Zombie} 守卫确保仅对僵尸生效。
+ *
+ * <p>mixin 类不能 {@code extends LivingEntity}（Mixin 注解处理器会报
+ * "Superclass ... was not found in the hierarchy of target class"），需要访问
+ * 受保护字段 {@code deathTime} 时应改用 {@code @Shadow}。
  */
 @Mixin(LivingEntity.class)
-public abstract class SurvivalLivingEntityMixin extends LivingEntity {
+public abstract class SurvivalLivingEntityMixin {
+
+  @Shadow
+  protected int deathTime;
 
   /**
    * 尸体保留时长（tick）。默认 120 秒 = 2400 tick。
@@ -53,17 +59,14 @@ public abstract class SurvivalLivingEntityMixin extends LivingEntity {
   @Unique
   private long corpseDespawnTick = -1L;
 
-  protected SurvivalLivingEntityMixin(EntityType<? extends LivingEntity> type, Level level) {
-    super(type, level);
-  }
-
   /**
    * 僵尸死亡时记录尸体保留截止时间（仅服务端）。
    */
   @Inject(at = @At("HEAD"), method = "die")
   private void craftingdead$onDeath(DamageSource source, CallbackInfo callbackInfo) {
-    if (this instanceof Zombie && !this.level().isClientSide()) {
-      this.corpseDespawnTick = this.level().getGameTime() + CORPSE_DESPAWN_TICKS;
+    LivingEntity self = (LivingEntity) (Object) this;
+    if (self instanceof Zombie && !self.level().isClientSide()) {
+      this.corpseDespawnTick = self.level().getGameTime() + CORPSE_DESPAWN_TICKS;
     }
   }
 
@@ -73,13 +76,14 @@ public abstract class SurvivalLivingEntityMixin extends LivingEntity {
    */
   @Inject(at = @At("HEAD"), method = "tickDeath", cancellable = true)
   private void craftingdead$onTickDeath(CallbackInfo callbackInfo) {
-    if (this instanceof Zombie && !this.level().isClientSide() && this.corpseDespawnTick >= 0L) {
+    LivingEntity self = (LivingEntity) (Object) this;
+    if (self instanceof Zombie && !self.level().isClientSide() && this.corpseDespawnTick >= 0L) {
       this.deathTime++;
       if (this.deathTime >= 20) {
         // 保持完全躺倒状态（防止 MC 默认在 20 tick 后移除实体）
         this.deathTime = 20;
-        if (this.level().getGameTime() >= this.corpseDespawnTick) {
-          this.remove(Entity.RemovalReason.DISCARDED);
+        if (self.level().getGameTime() >= this.corpseDespawnTick) {
+          self.remove(Entity.RemovalReason.DISCARDED);
         }
       }
       callbackInfo.cancel();
