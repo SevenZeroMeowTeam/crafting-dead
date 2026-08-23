@@ -259,6 +259,30 @@ public class ServerConfig {
   public final ForgeConfigSpec.DoubleValue foodSaturationMultiplier;
   public final ForgeConfigSpec.DoubleValue drinkHydrationMultiplier;
 
+  // ================================================================================
+  // Moon Events / Apocalypse Values
+  // ================================================================================
+
+  public final ForgeConfigSpec.BooleanValue moonEventsEnabled;
+  public final ForgeConfigSpec.BooleanValue scoreboardEnabled;
+  public final ForgeConfigSpec.BooleanValue zombieEvolutionEnabled;
+  public final ForgeConfigSpec.IntValue evolutionIntervalDays;
+  public final ForgeConfigSpec.DoubleValue evolutionHealthPerTier;
+  public final ForgeConfigSpec.DoubleValue evolutionDamagePerTier;
+  public final ForgeConfigSpec.DoubleValue evolutionSpeedPerTier;
+  public final ForgeConfigSpec.IntValue bloodMoonSpawnIntervalTicks;
+  public final ForgeConfigSpec.IntValue bloodMoonSpawnCount;
+  public final ForgeConfigSpec.IntValue bloodMoonMaxZombiesNear;
+  public final ForgeConfigSpec.DoubleValue bloodMoonExtraEvolutionChance;
+  public final ForgeConfigSpec.DoubleValue superBloodMoonExtraEvolutionChance;
+  public final ForgeConfigSpec.IntValue blueMoonLuckAmplifier;
+  public final ForgeConfigSpec.DoubleValue yellowMoonGrowthBoostChance;
+  public final ForgeConfigSpec.BooleanValue killFeedEnabled;
+  public final ForgeConfigSpec.BooleanValue killDropsEnabled;
+  public final ForgeConfigSpec.DoubleValue killDropChance;
+  public final ForgeConfigSpec.IntValue killDropMin;
+  public final ForgeConfigSpec.IntValue killDropMax;
+
   public ServerConfig(ForgeConfigSpec.Builder builder) {
     // Game-Settings configuration
     builder
@@ -1116,6 +1140,71 @@ public class ServerConfig {
           .translation("options.craftingdeadsurvival.server.food_drink.hydration_multiplier")
           .comment("Multiplier for all drink hydration/water values (1.0 = default, 2.0 = double hydration)")
           .defineInRange("drinkHydrationMultiplier", 1.0D, 0.0D, 10.0D);
+    }
+    builder.pop();
+
+    // Moon Events / Apocalypse configuration
+    builder
+        .comment("末日生存：月亮事件、僵尸进化、计分板与击杀掉落")
+        .push("moon-events");
+    {
+      this.moonEventsEnabled = builder
+          .comment("启用血月 / 超级血月 / 蓝月 / 黄月等月亮事件")
+          .define("moonEventsEnabled", true);
+      this.scoreboardEnabled = builder
+          .comment("在计分板侧边栏显示天数 / 时间 / 月相 / 事件 / 进化等级")
+          .define("scoreboardEnabled", true);
+      this.zombieEvolutionEnabled = builder
+          .comment("启用僵尸进化（每 evolutionIntervalDays 天提升血量 / 攻击 / 速度）")
+          .define("zombieEvolutionEnabled", true);
+      this.evolutionIntervalDays = builder
+          .comment("僵尸进化的间隔天数")
+          .defineInRange("evolutionIntervalDays", 14, 1, 10000);
+      this.evolutionHealthPerTier = builder
+          .comment("每级进化提升的血量倍率（0.5 = 每级 +50% 血量）")
+          .defineInRange("evolutionHealthPerTier", 0.5D, 0.0D, 100.0D);
+      this.evolutionDamagePerTier = builder
+          .comment("每级进化提升的攻击倍率（0.5 = 每级 +50% 攻击）")
+          .defineInRange("evolutionDamagePerTier", 0.5D, 0.0D, 100.0D);
+      this.evolutionSpeedPerTier = builder
+          .comment("每级进化提升的速度倍率（0.05 = 每级 +5% 速度）")
+          .defineInRange("evolutionSpeedPerTier", 0.05D, 0.0D, 10.0D);
+      this.bloodMoonSpawnIntervalTicks = builder
+          .comment("血月额外生成僵尸的间隔（tick，20 tick = 1 秒）")
+          .defineInRange("bloodMoonSpawnIntervalTicks", 100, 1, Integer.MAX_VALUE);
+      this.bloodMoonSpawnCount = builder
+          .comment("每次血月生成周期每个玩家周围额外生成的僵尸数量")
+          .defineInRange("bloodMoonSpawnCount", 3, 0, 100);
+      this.bloodMoonMaxZombiesNear = builder
+          .comment("血月时玩家周围 48 格内允许存在的最大僵尸数量（防止卡顿）")
+          .defineInRange("bloodMoonMaxZombiesNear", 40, 1, 500);
+      this.bloodMoonExtraEvolutionChance = builder
+          .comment("血月夜晚僵尸额外进化一级的概率（0.5 = 50%）")
+          .defineInRange("bloodMoonExtraEvolutionChance", 0.5D, 0.0D, 1.0D);
+      this.superBloodMoonExtraEvolutionChance = builder
+          .comment("超级血月夜晚僵尸额外进化一级的概率（0.9 = 90%）")
+          .defineInRange("superBloodMoonExtraEvolutionChance", 0.9D, 0.0D, 1.0D);
+      this.blueMoonLuckAmplifier = builder
+          .comment("蓝月时玩家获得的幸运效果等级（0 = 幸运 I）")
+          .defineInRange("blueMoonLuckAmplifier", 0, 0, 255);
+      this.yellowMoonGrowthBoostChance = builder
+          .comment("黄月时农作物额外生长一次的概率（0.3 = 30%）")
+          .defineInRange("yellowMoonGrowthBoostChance", 0.3D, 0.0D, 1.0D);
+      this.killFeedEnabled = builder
+          .comment("在左上角显示击杀信息（玩家用什么武器击杀了什么）")
+          .define("killFeedEnabled", true);
+      this.killDropsEnabled = builder
+          .comment("击杀时概率掉落原版 / 其他模组物品")
+          .define("killDropsEnabled", true);
+      this.killDropChance = builder
+          .comment("每次击杀掉落物品的概率（0.15 = 15%）")
+          .defineInRange("killDropChance", 0.15D, 0.0D, 1.0D);
+      this.killDropMin = builder
+          .comment("击杀掉落物品的最小数量")
+          .defineInRange("killDropMin", 1, 1, 64);
+      this.killDropMax = builder
+          .comment("击杀掉落物品的最大数量")
+          .defineInRange("killDropMax", 3, 1, 64);
     }
     builder.pop();
   }
