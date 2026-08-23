@@ -43,12 +43,15 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -143,9 +146,35 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
         && this.gun.getShotCount() != this.lastShotCount && this.gun.getShotCount() > 0;
   }
 
+  /**
+   * 枪械弹壳抛壳：开火时从枪侧抛壳窗喷出一枚铁粒纹理的弹壳粒子，
+   * 带随机侧向/上抛速度，受重力下落。
+   */
+  private void spawnShellCasing(LivingEntity entity, T gun) {
+    var level = entity.level();
+    if (!level.isClientSide() || gun == null) {
+      return;
+    }
+    var random = level.getRandom();
+    var look = entity.getLookAngle();
+    // 抛壳方向：实体右侧
+    var right = new Vec3(-look.z, 0.0D, look.x).normalize();
+    var pos = entity.getEyePosition()
+        .add(right.scale(0.35D))
+        .add(0.0D, -0.2D, 0.0D);
+    var motion = right.scale(0.12D + random.nextDouble() * 0.15D)
+        .add(0.0D, 0.12D + random.nextDouble() * 0.15D, 0.0D)
+        .add(look.scale(0.05D));
+    level.addParticle(
+        new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.IRON_NUGGET)),
+        pos.x, pos.y, pos.z, motion.x, motion.y, motion.z);
+  }
+
   public void handleShoot(LivingExtension<?, ?> living) {
     var entity = living.entity();
     var gun = living.mainHandGun().orElse(null);
+
+    this.spawnShellCasing(entity, gun);
 
     if (this.canFlash(living)) {
       this.remainingFlashTicks = MUZZLE_FLASH_DURATION_TICKS;
