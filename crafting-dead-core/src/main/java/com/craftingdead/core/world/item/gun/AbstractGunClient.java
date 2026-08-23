@@ -150,9 +150,9 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
    * 枪械弹壳抛壳：开火时从枪侧抛壳窗喷出一枚铁粒纹理的弹壳粒子，
    * 带随机侧向/上抛速度，受重力下落。
    */
-  private void spawnShellCasing(LivingEntity entity, T gun) {
+  private void spawnShellCasing(LivingEntity entity) {
     var level = entity.level();
-    if (!level.isClientSide() || gun == null) {
+    if (!level.isClientSide()) {
       return;
     }
     var random = level.getRandom();
@@ -174,7 +174,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
     var entity = living.entity();
     var gun = living.mainHandGun().orElse(null);
 
-    this.spawnShellCasing(entity, gun);
+    this.spawnShellCasing(entity);
 
     if (this.canFlash(living)) {
       this.remainingFlashTicks = MUZZLE_FLASH_DURATION_TICKS;
