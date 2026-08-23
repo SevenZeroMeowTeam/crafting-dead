@@ -18,6 +18,22 @@
 
 ## 更新日志
 
+### v1.9.4 / v1.2.6 / v1.0.6 / v0.0.6（GUI 渲染栈溢出崩溃修复）
+
+**关键修复：打开背包/装备界面时 `StackOverflowError` 崩溃**
+- 症状：渲染界面时 FATAL 崩溃
+  `ReportedException: Rendering screen → Caused by: StackOverflowError`
+  （栈帧在 `renderBg` 与 `AbstractContainerScreen.renderBackground` 之间无限循环）
+- 根因：1.21.1 原版 `AbstractContainerScreen.renderBackground()` 内部会调用
+  `renderBg()`（渲染流程为 `render → renderBackground → renderBg`），
+  而旧版（1.18.x）代码在 `renderBg` 里又调用 `this.renderBackground(...)`，
+  造成 `renderBg → renderBackground → renderBg` 无限递归
+- 修复：删除三个容器界面 `renderBg` 中的 `renderBackground` 调用，
+  背景由原版渲染流程负责：
+  - `EquipmentScreen`（装备界面，原崩溃点）
+  - `CraftingScreen`（合成界面）
+  - `GenericContainerScreen`（通用容器界面）
+
 ### v1.9.4 / v1.2.6 / v1.0.6 / v0.0.6（实体同步崩溃修复）
 
 **关键修复：进世界后实体同步 `ClassCastException` 崩溃**
