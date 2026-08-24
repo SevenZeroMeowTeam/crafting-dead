@@ -504,6 +504,40 @@ public class ModRecipeProvider extends RecipeProvider {
         .unlockedBy("has_light_gray_dye", has(Items.LIGHT_GRAY_DYE))
         .save(consumer);
 
+    // 98K 狙击步枪（奖励箱 / 合成获得）
+    ShapedRecipeBuilder.shaped(ModItems.KAR98K.get())
+        .pattern(" d ")
+        .pattern("abc")
+        .pattern(" e ")
+        .define('a', ModItems.MEDIUM_STOCK.get())
+        .define('b', ModItems.MEDIUM_BODY.get())
+        .define('c', ModItems.HEAVY_BARREL.get())
+        .define('d', Items.BROWN_DYE)
+        .define('e', ModItems.HEAVY_BOLT.get())
+        .unlockedBy("has_brown_dye", has(Items.BROWN_DYE))
+        .save(consumer);
+
+    // 98K 专用倍镜
+    ShapedRecipeBuilder.shaped(ModItems.KAR98K_SCOPE.get())
+        .pattern("igi")
+        .pattern("grg")
+        .pattern("igi")
+        .define('g', Items.GLASS)
+        .define('i', Items.IRON_ORE)
+        .define('r', Items.REDSTONE)
+        .unlockedBy("has_redstone", has(Items.REDSTONE))
+        .save(consumer);
+
+    // 创造弹药箱
+    ShapedRecipeBuilder.shaped(ModItems.CREATIVE_AMMO_BOX.get())
+        .pattern("iii")
+        .pattern("idi")
+        .pattern("iii")
+        .define('i', Items.IRON_INGOT)
+        .define('d', Items.DIAMOND)
+        .unlockedBy("has_diamond", has(Items.DIAMOND))
+        .save(consumer);
+
     // ================================================================================
     // Shotguns
     // ================================================================================

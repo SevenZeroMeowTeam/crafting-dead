@@ -162,6 +162,9 @@ public class CraftingDead {
     MinecraftForge.EVENT_BUS.register(this);
 //    MinecraftForge.EVENT_BUS.register(TraumaHandler.INSTANCE);
 
+    // 品质系统：合成随机品质 / 品质伤害加成 / 剑 50 伤害无 CD / 初始奖励 / 创造弹药箱
+    MinecraftForge.EVENT_BUS.register(com.craftingdead.core.quality.QualityEventHandler.INSTANCE);
+
     ProtectionConfig.load();
   }
 

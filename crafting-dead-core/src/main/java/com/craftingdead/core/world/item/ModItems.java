@@ -406,6 +406,14 @@ public class ModItems {
               .stacksTo(1)
               ));
 
+  public static final RegistryObject<MagazineItem> KAR98K_AMMUNITION =
+      deferredRegister.register("kar98k_ammunition",
+          () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
+              .setSize(5)
+              .setArmorPenetration(0.85F)
+              .stacksTo(1)
+              ));
+
   public static final RegistryObject<MagazineItem> TRENCH_GUN_SHELLS =
       deferredRegister.register("trench_gun_shells",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
@@ -527,6 +535,12 @@ public class ModItems {
   public static final RegistryObject<AttachmentItem> EOTECH_SIGHT =
       deferredRegister.register("eotech_sight",
           () -> new AttachmentItem(Attachments.EOTECH_SIGHT, new Item.Properties()
+              .stacksTo(1)
+              ));
+
+  public static final RegistryObject<AttachmentItem> KAR98K_SCOPE =
+      deferredRegister.register("kar98k_scope",
+          () -> new AttachmentItem(Attachments.KAR98K_SCOPE, new Item.Properties()
               .stacksTo(1)
               ));
 
@@ -953,6 +967,17 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
+  // Kar98k 98k 狙击步枪（奖励箱 / 合成获得，配专用倍镜）
+  public static final RegistryObject<GunItem> KAR98K =
+      deferredRegister.register("kar98k",
+          () -> AimableGunItem.builder(GunConfigurations.KAR98K.getKey())
+              .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::boltActionSniper)
+              .putReloadAnimation(ReloadAnimation::new)
+              .putAnimation(GunAnimationEvent.INSPECT, InspectAnimation::new)
+              .setDefaultMagazine(ModItems.KAR98K_AMMUNITION)
+              .addAcceptedAttachment(Attachments.KAR98K_SCOPE)
+              .build());
+
   // ================================================================================
   // Shotguns
   // ================================================================================
@@ -1056,27 +1081,27 @@ public class ModItems {
   // ================================================================================
 
   public static final RegistryObject<Item> CROWBAR = deferredRegister.register("crowbar",
-      () -> new MeleeWeaponItem(7, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(100)
           ));
 
   public static final RegistryObject<Item> BAT = deferredRegister.register("bat",
-      () -> new MeleeWeaponItem(5, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(55)
           ));
 
   public static final RegistryObject<Item> KATANA = deferredRegister.register("katana",
-      () -> new MeleeWeaponItem(18, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(40)
           ));
 
   public static final RegistryObject<Item> PIPE = deferredRegister.register("pipe",
-      () -> new MeleeWeaponItem(9, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(60)
           ));
 
   public static final RegistryObject<Item> RUSTY_PIPE = deferredRegister.register("rusty_pipe",
-      () -> new MeleeWeaponItem(9, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(20)
           ));
 
@@ -1091,17 +1116,17 @@ public class ModItems {
           ));
 
   public static final RegistryObject<Item> BOWIE_KNIFE = deferredRegister.register("bowie_knife",
-      () -> new MeleeWeaponItem(15, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(20)
           ));
 
   public static final RegistryObject<Item> GOLF_CLUB = deferredRegister.register("golf_club",
-      () -> new MeleeWeaponItem(6, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(40)
           ));
 
   public static final RegistryObject<Item> NIGHT_STICK = deferredRegister.register("night_stick",
-      () -> new MeleeWeaponItem(4, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(70)
           ));
 
@@ -1112,7 +1137,7 @@ public class ModItems {
               ));
 
   public static final RegistryObject<Item> NAIL_BAT = deferredRegister.register("nail_bat",
-      () -> new MeleeWeaponItem(8, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(55)
           ));
 
@@ -1127,23 +1152,23 @@ public class ModItems {
           ));
 
   public static final RegistryObject<Item> BROADSWORD = deferredRegister.register("broadsword",
-      () -> new MeleeWeaponItem(14, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(55)
           ));
 
   public static final RegistryObject<Item> MACHETE = deferredRegister.register("machete",
-      () -> new MeleeWeaponItem(12, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(70)
           ));
 
   public static final RegistryObject<Item> WEAPONIZED_SCYTHE =
       deferredRegister.register("weaponized_scythe",
-          () -> new MeleeWeaponItem(15, -2.4F, new Item.Properties()
+          () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
               .durability(40)
               ));
 
   public static final RegistryObject<Item> SCYTHE = deferredRegister.register("scythe",
-      () -> new MeleeWeaponItem(20, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(20)
           ));
 
@@ -1153,17 +1178,17 @@ public class ModItems {
           ));
 
   public static final RegistryObject<Item> BO_STAFF = deferredRegister.register("bo_staff",
-      () -> new MeleeWeaponItem(4, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(70)
           ));
 
   public static final RegistryObject<Item> WRENCH = deferredRegister.register("wrench",
-      () -> new MeleeWeaponItem(8, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(120)
           ));
 
   public static final RegistryObject<Item> FRYING_PAN = deferredRegister.register("frying_pan",
-      () -> new MeleeWeaponItem(6, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(80)
           ));
 
@@ -1173,24 +1198,40 @@ public class ModItems {
           ));
 
   public static final RegistryObject<Item> COMBAT_KNIFE = deferredRegister.register("combat_knife",
-      () -> new MeleeWeaponItem(14, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(100)
           ));
 
   public static final RegistryObject<Item> STEEL_BAT = deferredRegister.register("steel_bat",
-      () -> new MeleeWeaponItem(7, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(180)
           ));
 
   public static final RegistryObject<Item> CLEAVER = deferredRegister.register("cleaver",
-      () -> new MeleeWeaponItem(10, -2.4F, new Item.Properties()
+      () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(80)
           ));
 
   public static final RegistryObject<Item> BROKEN_BOTTLE =
       deferredRegister.register("broken_bottle",
-          () -> new MeleeWeaponItem(15, -2.4F, new Item.Properties()
+          () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
               .durability(10)
+              ));
+
+  // ================================================================================
+  // 自定义奖励 / 弹药物品
+  // ================================================================================
+
+  public static final RegistryObject<Item> CREATIVE_AMMO_BOX =
+      deferredRegister.register("creative_ammo_box",
+          () -> new CreativeAmmoBoxItem(new Item.Properties()
+              .stacksTo(1)
+              ));
+
+  public static final RegistryObject<Item> STARTER_REWARD_BOX =
+      deferredRegister.register("starter_reward_box",
+          () -> new StarterRewardBoxItem(new Item.Properties()
+              .stacksTo(1)
               ));
 
   // ================================================================================
@@ -2239,6 +2280,7 @@ public class ModItems {
     items.add(new ItemStack(AS50_MAGAZINE.get()));
     items.add(new ItemStack(M1GARAND_AMMUNITION.get()));
     items.add(new ItemStack(AWP_MAGAZINE.get()));
+    items.add(new ItemStack(KAR98K_AMMUNITION.get()));
     items.add(new ItemStack(TRENCH_GUN_SHELLS.get()));
     items.add(new ItemStack(MOSSBERG_SHELLS.get()));
     items.add(new ItemStack(DMR_MAGAZINE.get()));
@@ -2258,6 +2300,11 @@ public class ModItems {
     items.add(new ItemStack(TACTICAL_GRIP.get()));
     items.add(new ItemStack(BIPOD.get()));
     items.add(new ItemStack(EOTECH_SIGHT.get()));
+    items.add(new ItemStack(KAR98K_SCOPE.get()));
+
+    // 奖励 / 弹药物品
+    items.add(new ItemStack(CREATIVE_AMMO_BOX.get()));
+    items.add(new ItemStack(STARTER_REWARD_BOX.get()));
 
     // Grenades
     items.add(new ItemStack(FIRE_GRENADE.get()));
