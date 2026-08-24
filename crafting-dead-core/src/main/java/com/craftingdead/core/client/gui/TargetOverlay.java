@@ -20,6 +20,7 @@ package com.craftingdead.core.client.gui;
 
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.client.ClientDist;
+import com.craftingdead.core.quality.QualityHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -112,8 +113,9 @@ public class TargetOverlay {
 
   private void renderEntity(GuiGraphics guiGraphics, Entity entity) {
     var name = entity.getDisplayName();
+    var entityKey = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
     var modName = Component.literal(
-        String.valueOf(ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()).getNamespace()));
+        QualityHelper.getModDisplayName(entityKey == null ? "?" : entityKey.getNamespace()));
 
     if (entity instanceof LivingEntity living) {
       var healthPct = Mth.clamp(living.getHealth() / Math.max(living.getMaxHealth(), 1.0F),
@@ -128,7 +130,8 @@ public class TargetOverlay {
 
   private Component getModName(BlockState state) {
     var key = ForgeRegistries.BLOCKS.getKey(state.getBlock());
-    return Component.literal(key == null ? "?" : key.getNamespace());
+    return Component.literal(
+        QualityHelper.getModDisplayName(key == null ? "?" : key.getNamespace()));
   }
 
   /**

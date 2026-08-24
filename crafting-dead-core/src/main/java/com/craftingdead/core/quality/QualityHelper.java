@@ -22,7 +22,9 @@ import com.craftingdead.core.world.item.ClothingItem;
 import com.craftingdead.core.world.item.MeleeWeaponItem;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -48,6 +50,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
@@ -520,6 +523,32 @@ public final class QualityHelper {
   // ================================================================================
   // 跨模组物品辅助（TaCZ 枪械等，按注册表 id 软引用，未安装对应模组时安全降级）
   // ================================================================================
+
+  private static final Map<String, String> MOD_DISPLAY_NAME_CACHE = new HashMap<>();
+
+  /**
+   * 自动获取模组的显示名称（如 "tacz" -&gt; "TaCZ"、"minecraft" -&gt; "Minecraft"）。
+   *
+   * <p>自动从已加载的模组清单（ModList）中查询，对其他模组无需手动配置即可生效；
+   * 未找到对应模组时回退为命名空间本身。结果会被缓存，避免重复查询。
+   */
+  public static String getModDisplayName(String namespace) {
+    if (namespace == null || namespace.isEmpty()) {
+      return "?";
+    }
+    return MOD_DISPLAY_NAME_CACHE.computeIfAbsent(namespace, ns -> {
+      if ("minecraft".equals(ns)) {
+        return "Minecraft";
+      }
+      try {
+        return ModList.get().getModContainerById(ns)
+            .map(container -> container.getModInfo().getDisplayName())
+            .orElse(ns);
+      } catch (Exception ignored) {
+        return ns;
+      }
+    });
+  }
 
   /**
    * 解析其他模组注册的物品（按注册表 id），未安装或不存在时返回 null。
