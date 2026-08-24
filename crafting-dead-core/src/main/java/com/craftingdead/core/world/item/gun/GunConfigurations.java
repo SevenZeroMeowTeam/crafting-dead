@@ -582,6 +582,25 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.DMR_RELOAD)
               .build());
 
+  // Kar98k 98k 狙击步枪（奖励箱 / 合成获得）
+  public static final RegistryObject<GunConfiguration> KAR98K =
+      deferredRegister.register("kar98k",
+          () -> GunConfiguration.builder()
+              .aimable(true)
+              .setFireDelayMs(1400)
+              .setDamage(25)
+              .setReloadDurationTicks(20 * 3)
+              .setAccuracy(0.96F)
+              .setRecoil(8.0F)
+              .setRange(350.0D)
+              .setCrosshairEnabled(false)
+              .addFireMode(FireMode.SEMI)
+              .setShootSound(ModSoundEvents.AWP_SHOOT)
+              .setDistantShootSound(ModSoundEvents.AWP_DISTANT_SHOOT)
+              .setSilencedShootSound(ModSoundEvents.SILENCED_M4A1_SHOOT)
+              .setReloadSound(ModSoundEvents.AWP_RELOAD)
+              .build());
+
   // ================================================================================
   // Shotguns
   // ================================================================================
