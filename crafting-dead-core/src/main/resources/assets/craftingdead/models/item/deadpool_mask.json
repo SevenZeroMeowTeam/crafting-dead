@@ -1,6 +1,10 @@
-﻿{
+{
   "parent": "forge:item/default",
   "loader": "forge:separate_transforms",
+  "textures": {
+    "base": "craftingdead:hats/deadpool_mask",
+    "particle": "craftingdead:hats/deadpool_mask"
+  },
   "base": {
     "parent": "item/generated",
     "textures": {

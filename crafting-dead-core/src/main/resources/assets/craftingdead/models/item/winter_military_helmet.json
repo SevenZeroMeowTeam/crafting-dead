@@ -1,6 +1,10 @@
-﻿{
+{
   "parent": "forge:item/default",
   "loader": "forge:separate_transforms",
+  "textures": {
+    "base": "craftingdead:hats/winter_military_helmet",
+    "particle": "craftingdead:hats/winter_military_helmet"
+  },
   "base": {
     "parent": "item/generated",
     "textures": {

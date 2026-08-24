@@ -1,6 +1,10 @@
-﻿{
+{
 	"parent": "forge:item/default",
 	"loader": "forge:separate_transforms",
+	"textures": {
+	  "base": "craftingdead:backpack/tan_gun_bag",
+	  "particle": "craftingdead:backpack/tan_gun_bag"
+	},
 	"base": {
 		"parent": "item/generated",
 		"textures": {
