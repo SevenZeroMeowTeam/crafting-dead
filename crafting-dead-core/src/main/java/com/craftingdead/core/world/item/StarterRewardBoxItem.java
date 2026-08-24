@@ -78,10 +78,13 @@ public class StarterRewardBoxItem extends Item {
     // 3. 箭：一支即可（无限附魔下射击不消耗箭矢）
     ItemStack arrow = new ItemStack(Items.ARROW, 1);
 
-    // 4. 初始奖励武器 / 工具 / 盔甲：材质随机 + 品质随机
+    // 4. 初始奖励武器 / 工具 / 盔甲：材质随机 + 品质随机 + 属性（附魔）随机
     ItemStack melee = QualityHelper.createSwordOfMaterial(ToolMaterialType.rollRandom());
     ItemStack pickaxe = QualityHelper.createPickaxeOfMaterial(ToolMaterialType.rollRandom());
     ItemStack chestplate = QualityHelper.createChestplateOfMaterial(ToolMaterialType.rollRandom());
+    QualityHelper.applyRandomAttributes(melee, level);
+    QualityHelper.applyRandomAttributes(pickaxe, level);
+    QualityHelper.applyRandomAttributes(chestplate, level);
 
     if (player instanceof ServerPlayer serverPlayer) {
       if (!taCzGun.isEmpty()) {

@@ -381,9 +381,19 @@ public final class QualityHelper {
   // ================================================================================
 
   /**
-   * 给物品附加指定数量的随机附魔属性（仅选择对该物品适用的附魔）。
+   * 给物品附加指定数量的随机附魔属性（仅选择对该物品适用的附魔，满级）。
    */
   public static void applyRandomEnchantments(ItemStack stack, Level level, int count) {
+    applyRandomEnchantments(stack, level, count, Integer.MAX_VALUE);
+  }
+
+  /**
+   * 给物品附加指定数量的随机附魔属性（仅选择对该物品适用的附魔）。
+   *
+   * @param levelCap 附魔等级上限（1..levelCap 内随机），品质越高可出现的等级越高
+   */
+  public static void applyRandomEnchantments(ItemStack stack, Level level, int count,
+      int levelCap) {
     if (stack.isEmpty() || level == null) {
       return;
     }
@@ -411,13 +421,67 @@ public final class QualityHelper {
         break;
       }
       try {
-        enchantments.set(holder, Math.max(1, holder.value().getMaxLevel()));
+        int maxLevel = Math.max(1, holder.value().getMaxLevel());
+        int levelToApply = Math.min(maxLevel,
+            1 + ThreadLocalRandom.current().nextInt(Math.max(1, levelCap)));
+        enchantments.set(holder, levelToApply);
         added++;
       } catch (Exception ignored) {
         // 忽略不兼容的附魔
       }
     }
     EnchantmentHelper.setEnchantments(stack, enchantments.toImmutable());
+  }
+
+  /**
+   * 按物品品质随机"属性"（附魔）：品质越高，附魔数量越多、等级越高。
+   * 神话品质附加全部适用附魔的满级（无视游戏规则）。
+   */
+  public static void applyRandomAttributes(ItemStack stack, Level level) {
+    if (stack.isEmpty() || level == null || !isQualityItem(stack)) {
+      return;
+    }
+    ItemQuality quality = getQuality(stack);
+    if (quality == null) {
+      return;
+    }
+    if (quality == ItemQuality.MYTHIC) {
+      applyFullEnchantments(stack, level);
+      return;
+    }
+    int count = 0;
+    int levelCap = 1;
+    switch (quality) {
+      case LEGENDARY -> {
+        count = 3 + ThreadLocalRandom.current().nextInt(2);
+        levelCap = 4;
+      }
+      case HERO -> {
+        count = 3;
+        levelCap = 4;
+      }
+      case EPIC -> {
+        count = 2 + ThreadLocalRandom.current().nextInt(2);
+        levelCap = 3;
+      }
+      case RARE -> {
+        count = 2;
+        levelCap = 3;
+      }
+      case EXCELLENT -> {
+        count = 1 + ThreadLocalRandom.current().nextInt(2);
+        levelCap = 2;
+      }
+      case COMMON -> {
+        count = ThreadLocalRandom.current().nextInt(2);
+        levelCap = 1;
+      }
+      case POOR -> count = 0;
+      default -> count = 0;
+    }
+    if (count > 0) {
+      applyRandomEnchantments(stack, level, count, levelCap);
+    }
   }
 
   /**

@@ -99,6 +99,7 @@
   "message.craftingdead.reward_box_opened": "Reward box opened: TaCZ AK-47 / 7.62x39 Ammo / Full-enchanted Bow / Arrow",
 
   "quality.craftingdead.mythic": "Mythic",
+  "quality.craftingdead.mythic_tooltip": "Ignores game rules · Unbreakable · Damage x5",
   "quality.craftingdead.legendary": "Legendary",
   "quality.craftingdead.hero": "Hero",
   "quality.craftingdead.epic": "Epic",
