@@ -1,6 +1,10 @@
-﻿{
+{
   "parent": "forge:item/default",
   "loader": "forge:separate_transforms",
+  "textures": {
+    "base": "craftingdead:hats/nv_goggles_hat",
+    "particle": "craftingdead:hats/nv_goggles_hat"
+  },
   "base": {
     "parent": "item/generated",
     "textures": {

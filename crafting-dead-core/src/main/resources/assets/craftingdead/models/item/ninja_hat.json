@@ -1,6 +1,10 @@
-﻿{
+{
   "parent": "forge:item/default",
   "loader": "forge:separate_transforms",
+  "textures": {
+    "base": "craftingdead:hats/ninja_hat",
+    "particle": "craftingdead:hats/ninja_hat"
+  },
   "base": {
     "parent": "item/generated",
     "textures": {
