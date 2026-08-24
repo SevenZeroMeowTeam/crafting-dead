@@ -1,6 +1,10 @@
-﻿{
+{
   "parent": "forge:item/default",
   "loader": "forge:separate_transforms",
+  "textures": {
+    "base": "craftingdead:hats/gas_mask",
+    "particle": "craftingdead:hats/gas_mask"
+  },
   "base": {
     "parent": "item/generated",
     "textures": {

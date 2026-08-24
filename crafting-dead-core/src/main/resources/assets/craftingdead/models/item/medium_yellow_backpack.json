@@ -1,6 +1,10 @@
-﻿{
+{
 	"parent": "forge:item/default",
 	"loader": "forge:separate_transforms",
+	"textures": {
+	  "base": "craftingdead:backpack/medium_yellow_backpack",
+	  "particle": "craftingdead:backpack/medium_yellow_backpack"
+	},
 	"base": {
 		"parent": "item/generated",
 		"textures": {
