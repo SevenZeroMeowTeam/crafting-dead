@@ -18,6 +18,8 @@
 
 package com.craftingdead.core.world.item;
 
+import com.craftingdead.core.quality.QualityHelper;
+import com.craftingdead.core.quality.ToolMaterialType;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -53,6 +55,10 @@ public class ModShovelItem extends ShovelItem {
 
   @Override
   public float getDestroySpeed(ItemStack itemStack, BlockState state) {
+    ToolMaterialType material = QualityHelper.getToolMaterial(itemStack);
+    if (material != null) {
+      return material.getDigSpeed();
+    }
     return this.blockBreakSpeed;
   }
 

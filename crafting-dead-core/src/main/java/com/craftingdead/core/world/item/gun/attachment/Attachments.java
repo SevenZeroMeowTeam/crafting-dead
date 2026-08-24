@@ -106,4 +106,14 @@ public class Attachments {
               .setInventorySlot(GunCraftSlotType.OVERBARREL_ATTACHMENT)
               .setItem(ModItems.EOTECH_SIGHT)
               .build());
+
+  // Kar98k 专用倍镜（6 倍镜，仅 98k 使用）
+  public static final RegistryObject<Attachment> KAR98K_SCOPE =
+      deferredRegister.register("kar98k_scope",
+          () -> Attachment.builder()
+              .addMultiplier(Attachment.MultiplierType.ZOOM, 6.0F)
+              .setInventorySlot(GunCraftSlotType.OVERBARREL_ATTACHMENT)
+              .setScope(true)
+              .setItem(ModItems.KAR98K_SCOPE)
+              .build());
 }
