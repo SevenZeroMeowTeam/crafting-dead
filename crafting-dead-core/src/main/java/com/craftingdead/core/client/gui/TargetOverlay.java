@@ -21,6 +21,7 @@ package com.craftingdead.core.client.gui;
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.client.ClientDist;
 import com.craftingdead.core.client.util.RenderUtil;
+import com.craftingdead.core.quality.QualityHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -129,7 +130,7 @@ public class TargetOverlay {
   }
 
   private String getModId(net.minecraft.resources.ResourceLocation key) {
-    return key == null ? "?" : key.getNamespace();
+    return QualityHelper.getModDisplayName(key == null ? "?" : key.getNamespace());
   }
 
   /**
