@@ -19,6 +19,13 @@ versionRange = "[1.6.0-alpha,)"
 
 [[dependencies.craftingdeadsurvival]]
 mandatory = true
+modId = "minecraft"
+ordering = "NONE"
+side = "BOTH"
+versionRange = "[1.19,1.20)"
+
+[[dependencies.craftingdeadsurvival]]
+mandatory = true
 modId = "forge"
 ordering = "NONE"
 side = "BOTH"
