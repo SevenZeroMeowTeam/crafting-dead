@@ -20,7 +20,7 @@ package com.craftingdead.decoration.world.item;
 
 import com.craftingdead.decoration.CraftingDeadDecoration;
 import com.craftingdead.decoration.world.level.block.DecorationBlocks;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -1990,16 +1990,17 @@ public static final RegistryObject<BlockItem> ROAD_BARRICADE_3 =
           () -> new BlockItem(DecorationBlocks.VIBRANT_QUARTZ_GLASS.get(),
               new Item.Properties()));
 
-  public static final CreativeModeTab TAB =
-      new CreativeModeTab("craftingdeaddecoration") {
-        @Override
-        public ItemStack makeIcon() {
-          return new ItemStack(DecorationItems.STACKED_WOODEN_PALLETS.get());
-        }
+  public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
+      DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CraftingDeadDecoration.ID);
 
-        @Override
-        public void fillItemList(NonNullList<ItemStack> items) {
-          deferredRegister.getEntries().forEach(entry -> items.add(new ItemStack(entry.get())));
-        }
-      }.setBackgroundSuffix("item_search.png");
+  public static final RegistryObject<CreativeModeTab> TAB =
+      CREATIVE_MODE_TABS.register("main",
+          () -> CreativeModeTab.builder()
+              .title(Component.translatable("craftingdeaddecoration"))
+              .icon(() -> new ItemStack(DecorationItems.STACKED_WOODEN_PALLETS.get()))
+              .withSearchBar()
+              .displayItems((params, output) -> {
+                deferredRegister.getEntries().forEach(entry -> output.accept(entry.get()));
+              })
+              .build());
 }

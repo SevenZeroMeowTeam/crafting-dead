@@ -24,8 +24,8 @@ import com.craftingdead.core.network.message.play.OpenEquipmentMenuMessage;
 import com.craftingdead.core.world.inventory.CraftingMenu;
 import com.craftingdead.core.world.item.ModItems;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiComponent;
+import com.mojang.math.Axis;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -58,9 +58,9 @@ public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu>
    * Main render method, called every frame.
    */
   @Override
-  public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-    super.render(poseStack, mouseX, mouseY, partialTicks);
-    this.renderTooltip(poseStack, mouseX, mouseY);
+  public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    super.render(guiGraphics, mouseX, mouseY, partialTicks);
+    this.renderTooltip(guiGraphics, mouseX, mouseY);
     this.oldMouseX = mouseX;
     this.oldMouseY = mouseY;
   }
@@ -69,56 +69,57 @@ public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu>
    * Renders the background of the crafting screen.
    */
   @Override
-  protected void renderBg(@NotNull PoseStack poseStack, float partialTicks, int mouseX, int mouseY) {
-    this.renderBackground(poseStack);
+  protected void renderBg(@NotNull GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
+    this.renderBackground(guiGraphics);
     RenderSystem.setShaderTexture(0, CRAFTING);
-    this.blit(poseStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+    guiGraphics.blit(CRAFTING, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
     RenderSystem.setShaderTexture(0, EQUIPMENT);
-    this.blit(poseStack, this.leftPos, this.topPos - 28, 183, 36, 28, 31);
-    this.blit(poseStack, this.leftPos + 30, this.topPos - 28, 211, 0, 29, 35);
+    guiGraphics.blit(EQUIPMENT, this.leftPos, this.topPos - 28, 183, 36, 28, 31);
+    guiGraphics.blit(EQUIPMENT, this.leftPos + 30, this.topPos - 28, 211, 0, 29, 35);
 
-    this.renderFakeItems(poseStack);
-    this.renderInteractiveTooltips(poseStack, mouseX, mouseY);
-    this.renderPlayerEntity(poseStack);
+    this.renderFakeItems(guiGraphics);
+    this.renderInteractiveTooltips(guiGraphics, mouseX, mouseY);
+    this.renderPlayerEntity(guiGraphics);
   }
 
   /**
    * Prevents rendering labels on the screen.
    */
   @Override
-  protected void renderLabels(@NotNull PoseStack poseStack, int x, int y) {}
+  protected void renderLabels(@NotNull GuiGraphics guiGraphics, int x, int y) {}
 
   /**
    * Renders fake items in the GUI.
    */
-  private void renderFakeItems(PoseStack poseStack) {
-    this.itemRenderer.renderGuiItem(new ItemStack(ModItems.MEDIUM_BLUE_BACKPACK.get()),
+  private void renderFakeItems(GuiGraphics guiGraphics) {
+    guiGraphics.renderItem(new ItemStack(ModItems.MEDIUM_BLUE_BACKPACK.get()),
         this.leftPos + 6, this.topPos - 20);
-    this.itemRenderer.renderGuiItem(new ItemStack(ModItems.PICKAXE.get()),
+    guiGraphics.renderItem(new ItemStack(ModItems.PICKAXE.get()),
         this.leftPos + 36, this.topPos - 22);
   }
 
   /**
    * Renders tooltips for interactive elements based on mouse position.
    */
-  private void renderInteractiveTooltips(PoseStack poseStack, int mouseX, int mouseY) {
+  private void renderInteractiveTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
     if (this.isMouseOver(this.leftPos, this.topPos - 28, 29, 28, mouseX, mouseY)) {
-      this.renderTooltip(poseStack, Component.translatable("inventory_inventory.information"), mouseX, mouseY);
+      guiGraphics.renderTooltip(this.font, Component.translatable("inventory_inventory.information"), mouseX, mouseY);
     }
     if (this.isMouseOver(this.leftPos + 30, this.topPos - 28, 29, 28, mouseX, mouseY)) {
-      this.renderTooltip(poseStack, Component.translatable("inventory_crafting.information"), mouseX, mouseY);
+      guiGraphics.renderTooltip(this.font, Component.translatable("inventory_crafting.information"), mouseX, mouseY);
     }
   }
 
   /**
    * Renders the player's 3D model in the crafting screen.
    */
-  private void renderPlayerEntity(PoseStack poseStack) {
+  private void renderPlayerEntity(GuiGraphics guiGraphics) {
     if (this.minecraft != null && this.minecraft.player != null) {
-      InventoryScreen.renderEntityInInventory(this.leftPos + 35, this.topPos + 72, 30,
-          (float) ((this.leftPos + 35) - this.oldMouseX),
-          (float) ((this.topPos + 75 - 50) - this.oldMouseY),
+      InventoryScreen.renderEntityInInventory(guiGraphics,
+          this.leftPos + 35, this.topPos + 72, 30,
+          Axis.YP.rotationDegrees((float) ((this.leftPos + 35) - this.oldMouseX)),
+          Axis.XP.rotationDegrees((float) ((this.topPos + 75 - 50) - this.oldMouseY)),
           this.minecraft.player
       );
     }
@@ -148,7 +149,7 @@ public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu>
    */
   private void handleEquipmentMenuOpen() {
     if (this.minecraft != null && this.minecraft.player != null) {
-      this.minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK, 0.2F, 1.0F);
+      this.minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.2F, 1.0F);
     }
     NetworkChannel.PLAY.getSimpleChannel().sendToServer(new OpenEquipmentMenuMessage());
   }

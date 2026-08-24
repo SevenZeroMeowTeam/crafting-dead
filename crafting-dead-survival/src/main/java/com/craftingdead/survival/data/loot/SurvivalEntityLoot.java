@@ -18,9 +18,13 @@
 
 package com.craftingdead.survival.data.loot;
 
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import com.craftingdead.survival.world.entity.SurvivalEntityTypes;
-import net.minecraft.data.loot.EntityLoot;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -36,10 +40,14 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.registries.RegistryObject;
 
-public class SurvivalEntityLoot extends EntityLoot {
+public class SurvivalEntityLoot extends EntityLootSubProvider {
+
+  protected SurvivalEntityLoot() {
+    super(FeatureFlagSet.of());
+  }
 
   @Override
-  protected void addTables() {
+  public void generate() {
     var zombieLoot = LootTable.lootTable()
         .withPool(LootPool.lootPool()
             .setRolls(ConstantValue.exactly(1.0F))

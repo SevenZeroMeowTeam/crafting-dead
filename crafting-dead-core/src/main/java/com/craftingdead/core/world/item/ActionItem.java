@@ -63,7 +63,7 @@ public class ActionItem extends Item {
   @Override
   public InteractionResult interactLivingEntity(ItemStack itemStack, Player player,
       LivingEntity targetEntity, InteractionHand hand) {
-    if (!player.getLevel().isClientSide()) {
+    if (!player.level().isClientSide()) {
       var performer = PlayerExtension.getOrThrow(player);
       var target = LivingExtension.getOrThrow(targetEntity);
       if (this.getActionType().createEntityAction(performer, target, hand)
@@ -77,7 +77,7 @@ public class ActionItem extends Item {
 
   @Override
   public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-    if (!player.getLevel().isClientSide()) {
+    if (!player.level().isClientSide()) {
       var performer = PlayerExtension.getOrThrow(player);
       var hitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
       if (hitResult.getType() == HitResult.Type.BLOCK

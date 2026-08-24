@@ -211,7 +211,7 @@ public class ClientDist implements ModDist {
 
   @SubscribeEvent
   public void handleRenderGuiPost(RenderGuiEvent.Post event) {
-    this.moonHudOverlay.render(event.getPoseStack(),
+    this.moonHudOverlay.render(event.getGuiGraphics(),
         event.getWindow().getGuiScaledWidth(),
         event.getWindow().getGuiScaledHeight(),
         event.getPartialTick());

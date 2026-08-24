@@ -20,9 +20,9 @@ package com.craftingdead.core.client.animation.gun;
 
 import com.craftingdead.core.client.animation.TimedAnimation;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
+import org.joml.Vector3f;
 
 public class InspectAnimation extends TimedAnimation {
 

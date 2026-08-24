@@ -23,11 +23,11 @@ import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import org.joml.Vector3f;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -46,7 +46,7 @@ public interface CustomItemRenderer {
    * @param transformType - the perspective
    * @return true if this renderer should handle the given render type, otherwise false
    */
-  boolean handlePerspective(ItemStack itemStack, ItemTransforms.TransformType transformType);
+  boolean handlePerspective(ItemStack itemStack, ItemDisplayContext transformType);
 
   /**
    * Called to do the actual rendering.
@@ -54,7 +54,7 @@ public interface CustomItemRenderer {
    * @param transformType - the perspective
    * @param itemStack - {@link ItemStack} being rendered
    */
-  void render(ItemStack itemStack, ItemTransforms.TransformType transformType,
+  void render(ItemStack itemStack, ItemDisplayContext transformType,
       @Nullable LivingExtension<?, ?> living, PoseStack poseStack,
       MultiBufferSource bufferSource, int packedLight, int packedOverlay);
 

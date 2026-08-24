@@ -69,7 +69,7 @@ public class SmokeGrenadeEntity extends Grenade {
   @Override
   public void activatedChanged(boolean activated) {
     if (!activated) {
-      if (!this.getLevel().isClientSide()) {
+      if (!this.level().isClientSide()) {
         this.kill();
       }
     }
@@ -81,14 +81,14 @@ public class SmokeGrenadeEntity extends Grenade {
     double radius = Mth.lerp(Math.min(activatedTicksCount, 30D) / 30D, 2D, 5D)
         * ServerConfig.instance.explosivesSmokeGrenadeRadius.get();
 
-    if (this.getLevel().isClientSide()) {
+    if (this.level().isClientSide()) {
       if (activatedTicksCount % 10 == 0) {
         this.getMinimumTicksUntilAutoDeactivation().ifPresent(maximumDuration -> {
           float progress =
               Math.max(activatedTicksCount - (maximumDuration * START_DECREASING_PITCH_AT), 0)
                   / (float) (maximumDuration * (1F - START_DECREASING_PITCH_AT));
           float gradualPitch = Mth.lerp(1F - progress, 0.5F, 1.7F);
-          this.getLevel().playLocalSound(this.getX(), this.getY(), this.getZ(),
+          this.level().playLocalSound(this.getX(), this.getY(), this.getZ(),
               SoundEvents.FIRE_EXTINGUISH, SoundSource.HOSTILE, 1.5F, gradualPitch, false);
         });
       }
@@ -104,7 +104,7 @@ public class SmokeGrenadeEntity extends Grenade {
               radius * Math.abs(Math.sin(phi) * Math.sin(theta)) * this.random.nextDouble();
           double extraZ = radius * Math.cos(phi);
 
-          this.getLevel().addParticle(LARGE_WHITE_SMOKE, true, this.getX() + extraX,
+          this.level().addParticle(LARGE_WHITE_SMOKE, true, this.getX() + extraX,
               this.getY() + extraY, this.getZ() + extraZ, 0, 0, 0);
         }
       }
@@ -123,11 +123,11 @@ public class SmokeGrenadeEntity extends Grenade {
           double distance2D = Mth.sqrt((float) (xDiff * xDiff + zDiff * zDiff));
 
           if (distance2D <= detectionRadius) {
-            BlockState blockState = this.getLevel().getBlockState(blockPos);
+            BlockState blockState = this.level().getBlockState(blockPos);
             if (blockState.getBlock() instanceof FireBlock) {
               // Sets the fire block to its final age.
               // It should be extinguished in a short time.
-              this.getLevel().setBlock(blockPos, blockState.setValue(FireBlock.AGE, 15),
+              this.level().setBlock(blockPos, blockState.setValue(FireBlock.AGE, 15),
                   FIRE_BLOCK_STATE_FLAGS);
             }
           }

@@ -18,15 +18,21 @@
 
 package com.craftingdead.decoration.data.loot;
 
+import java.util.Set;
 import com.craftingdead.decoration.world.level.block.DecorationBlocks;
-import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.RegistryObject;
 
-public class DecorationBlockLoot extends BlockLoot {
+public class DecorationBlockLoot extends BlockLootSubProvider {
+
+  public DecorationBlockLoot() {
+    super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+  }
 
   @Override
-  protected void addTables() {
+  protected void generate() {
     for (var entry : DecorationBlocks.deferredRegister.getEntries()) {
       this.dropSelf(entry.get());
     }

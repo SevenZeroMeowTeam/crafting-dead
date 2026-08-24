@@ -21,7 +21,6 @@ package com.craftingdead.core.world.damagesource;
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.world.entity.grenade.Grenade;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -43,15 +42,17 @@ public class ModDamageSource {
   }
 
   public static DamageSource grenade(Grenade grenade, @Nullable Entity thrower) {
-    // 1.19.2: use EntityDamageSource to attribute the damage to the thrower
+    // TODO: Register custom damage type (grenade) as data-driven DamageType entry
     if (thrower instanceof LivingEntity livingThrower) {
-      return new EntityDamageSource("mob", livingThrower);
+      return livingThrower.damageSources().mobAttack(livingThrower);
     }
-    return new DamageSource("generic");
+    return grenade.damageSources().generic();
   }
 
   public static DamageSource bleeding(LivingEntity entity) {
-    return new DamageSource("generic");
+    // Resolve the GENERIC damage type holder from the entity's live registry access.
+    // RegistryAccess.EMPTY must NOT be used as it contains no registries.
+    return entity.damageSources().generic();
   }
 
   /**
@@ -59,7 +60,7 @@ public class ModDamageSource {
    */
   public static DamageSource causeUnscaledExplosionDamage(@Nullable LivingEntity source) {
     if (source != null) {
-      return new EntityDamageSource("mob", source);
+      return source.damageSources().mobAttack(source);
     }
     return null;
   }

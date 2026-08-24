@@ -49,7 +49,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
@@ -99,8 +99,8 @@ public class SupplyDrop extends Entity implements MenuProvider {
   public void tick() {
     super.baseTick();
 
-    if (!this.getLevel().isClientSide() && !this.chunkLoaded) {
-      if (this.getLevel() instanceof ServerLevel serverLevel) {
+    if (!this.level().isClientSide() && !this.chunkLoaded) {
+      if (this.level() instanceof ServerLevel serverLevel) {
         var chunkPos = new ChunkPos(this.blockPosition());
         serverLevel.getChunkSource()
             .addRegionTicket(SUPPLY_DROP_TICKET, chunkPos, 1, chunkPos);
@@ -117,7 +117,7 @@ public class SupplyDrop extends Entity implements MenuProvider {
       this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.0025D, 0.0D));
     }
 
-    if (this.isOnGround()) {
+    if (this.onGround()) {
       this.setDeltaMovement(this.getDeltaMovement().scale(0.5D));
       this.dropActive = true;
 
@@ -135,12 +135,12 @@ public class SupplyDrop extends Entity implements MenuProvider {
 
   @Override
   public void remove(RemovalReason reason) {
-    if (!this.getLevel().isClientSide() && reason.shouldDestroy()) {
-      Containers.dropContents(this.getLevel(), this, this.container);
+    if (!this.level().isClientSide() && reason.shouldDestroy()) {
+      Containers.dropContents(this.level(), this, this.container);
     }
 
-    if (!this.getLevel().isClientSide() && this.chunkLoaded) {
-      if (this.getLevel() instanceof ServerLevel serverLevel) {
+    if (!this.level().isClientSide() && this.chunkLoaded) {
+      if (this.level() instanceof ServerLevel serverLevel) {
         var chunkPos = new ChunkPos(this.blockPosition());
         serverLevel.getChunkSource()
             .removeRegionTicket(SUPPLY_DROP_TICKET, chunkPos, 1, chunkPos);
@@ -200,7 +200,7 @@ public class SupplyDrop extends Entity implements MenuProvider {
       return false;
     }
 
-    if (this.getLevel().isClientSide() || this.isRemoved()) {
+    if (this.level().isClientSide() || this.isRemoved()) {
       return true;
     }
 
@@ -216,17 +216,17 @@ public class SupplyDrop extends Entity implements MenuProvider {
     if (this.lootTable == null) {
       return;
     }
-    var lootTable = this.getLevel().getServer().getLootTables().get(this.lootTable);
+    var lootTable = this.level().getServer().getLootData().getLootTable(this.lootTable);
     CriteriaTriggers.GENERATE_LOOT.trigger(player, this.lootTable);
     this.lootTable = null;
-    var builder = new LootContext.Builder((ServerLevel) this.getLevel())
+    var builder = new LootParams.Builder((ServerLevel) this.level())
         .withParameter(LootContextParams.ORIGIN, this.position())
         .withParameter(LootContextParams.KILLER_ENTITY, this);
     if (player != null) {
       builder.withLuck(player.getLuck())
           .withParameter(LootContextParams.THIS_ENTITY, player);
     }
-    lootTable.fill(this.container, builder.create(LootContextParamSets.CHEST));
+    lootTable.fill(this.container, builder.create(LootContextParamSets.CHEST), 0L);
 
   }
 

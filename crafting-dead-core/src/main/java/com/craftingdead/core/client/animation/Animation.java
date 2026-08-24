@@ -19,10 +19,10 @@
 package com.craftingdead.core.client.animation;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemDisplayContext;
+import org.joml.Vector3f;
 
 public interface Animation {
 
@@ -38,7 +38,7 @@ public interface Animation {
 
   void remove();
 
-  default boolean handlePerspective(ItemTransforms.TransformType transformType) {
+  default boolean handlePerspective(ItemDisplayContext transformType) {
     return true;
   }
 }

@@ -22,7 +22,8 @@ import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.client.model.geom.ModModelLayers;
 import com.craftingdead.core.world.entity.grenade.Grenade;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
+import org.joml.Vector3f;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -46,8 +47,8 @@ public class C4ExplosiveRenderer extends EntityRenderer<Grenade> {
 
     if (!entity.hasStoppedMoving()) {
       float rotation = (entity.tickCount + partialTicks) * 15F;
-      poseStack.mulPose(Vector3f.XP.rotationDegrees(rotation));
-      poseStack.mulPose(Vector3f.ZP.rotationDegrees(rotation));
+      poseStack.mulPose(Axis.XP.rotationDegrees(rotation));
+      poseStack.mulPose(Axis.ZP.rotationDegrees(rotation));
     } else {
       poseStack.mulPose(entity.getHitDirection().getRotation());
     }
@@ -61,6 +62,6 @@ public class C4ExplosiveRenderer extends EntityRenderer<Grenade> {
   @Override
   public ResourceLocation getTextureLocation(Grenade entity) {
     return new ResourceLocation(CraftingDead.ID,
-        "textures/entity/grenade/" + net.minecraft.core.Registry.ENTITY_TYPE.getKey(entity.getType()).getPath() + ".png");
+        "textures/entity/grenade/" + net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath() + ".png");
   }
 }

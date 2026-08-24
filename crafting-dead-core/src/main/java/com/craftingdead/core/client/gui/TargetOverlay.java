@@ -22,9 +22,8 @@ import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.client.ClientDist;
 import com.craftingdead.core.client.util.RenderUtil;
 import com.craftingdead.core.quality.QualityHelper;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
@@ -42,7 +41,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * Jade 风格的目标信息叠加层：显示准星所指方块/实体的名称、模组来源与实体血量。
- * 1.19.2 版本（使用 PoseStack + RenderUtil）。
+ * 1.20.1 版本（使用 GuiGraphics）。
  */
 public class TargetOverlay {
 
@@ -67,7 +66,7 @@ public class TargetOverlay {
     this.minecraft = minecraft;
   }
 
-  public void render(PoseStack poseStack, float partialTick) {
+  public void render(GuiGraphics guiGraphics, float partialTick) {
     var player = this.minecraft.player;
     if (player == null || player.isSpectator() || this.minecraft.options.hideGui) {
       return;
@@ -79,13 +78,13 @@ public class TargetOverlay {
     // 实体优先于方块（与 Jade 行为一致）
     var entity = this.getEntityHit(player, partialTick);
     if (entity != null) {
-      this.renderEntity(poseStack, entity);
+      this.renderEntity(guiGraphics, entity);
       return;
     }
 
     var blockHit = player.pick(RANGE, partialTick, false);
     if (blockHit.getType() == HitResult.Type.BLOCK) {
-      this.renderBlock(poseStack, (BlockHitResult) blockHit);
+      this.renderBlock(guiGraphics, (BlockHitResult) blockHit);
     }
   }
 
@@ -100,7 +99,7 @@ public class TargetOverlay {
     return hit == null ? null : hit.getEntity();
   }
 
-  private void renderBlock(PoseStack poseStack, BlockHitResult blockHit) {
+  private void renderBlock(GuiGraphics guiGraphics, BlockHitResult blockHit) {
     var level = this.minecraft.level;
     if (level == null) {
       return;
@@ -110,10 +109,10 @@ public class TargetOverlay {
     var modName = Component.literal(this.getModId(
         ForgeRegistries.BLOCKS.getKey(state.getBlock())));
     var toolInfo = this.getHarvestTool(state);
-    this.renderPanel(poseStack, name, modName, toolInfo, null);
+    this.renderPanel(guiGraphics, name, modName, toolInfo, null);
   }
 
-  private void renderEntity(PoseStack poseStack, Entity entity) {
+  private void renderEntity(GuiGraphics guiGraphics, Entity entity) {
     var name = entity.getDisplayName();
     var modName = Component.literal(this.getModId(
         ForgeRegistries.ENTITY_TYPES.getKey(entity.getType())));
@@ -123,9 +122,9 @@ public class TargetOverlay {
           0.0F, 1.0F);
       var healthText = Component.literal(
           String.format("%.0f / %.0f", living.getHealth(), living.getMaxHealth()));
-      this.renderPanel(poseStack, name, modName, null, new HealthBar(healthPct, healthText));
+      this.renderPanel(guiGraphics, name, modName, null, new HealthBar(healthPct, healthText));
     } else {
-      this.renderPanel(poseStack, name, modName, null, null);
+      this.renderPanel(guiGraphics, name, modName, null, null);
     }
   }
 
@@ -158,7 +157,7 @@ public class TargetOverlay {
         Component.translatable("target.craftingdead.tool_" + toolKey));
   }
 
-  private void renderPanel(PoseStack poseStack, Component name, Component modName,
+  private void renderPanel(GuiGraphics guiGraphics, Component name, Component modName,
       @Nullable Component extraLine, @Nullable HealthBar healthBar) {
     var font = this.minecraft.font;
 
@@ -181,23 +180,23 @@ public class TargetOverlay {
     var y = PANEL_TOP;
 
     // 背景
-    RenderUtil.fill(poseStack, x, y, panelWidth, panelHeight, PANEL_BACKGROUND);
+    RenderUtil.fill(guiGraphics.pose(), x, y, panelWidth, panelHeight, PANEL_BACKGROUND);
 
     // 边框（Jade 风格的四边细线）
-    RenderUtil.fill(poseStack, x, y, panelWidth, 1, PANEL_BORDER);
-    RenderUtil.fill(poseStack, x, y + panelHeight - 1, panelWidth, 1, PANEL_BORDER);
-    RenderUtil.fill(poseStack, x, y, 1, panelHeight, PANEL_BORDER);
-    RenderUtil.fill(poseStack, x + panelWidth - 1, y, 1, panelHeight, PANEL_BORDER);
+    RenderUtil.fill(guiGraphics.pose(), x, y, panelWidth, 1, PANEL_BORDER);
+    RenderUtil.fill(guiGraphics.pose(), x, y + panelHeight - 1, panelWidth, 1, PANEL_BORDER);
+    RenderUtil.fill(guiGraphics.pose(), x, y, 1, panelHeight, PANEL_BORDER);
+    RenderUtil.fill(guiGraphics.pose(), x + panelWidth - 1, y, 1, panelHeight, PANEL_BORDER);
 
     // 名称（左）与模组来源（右）
-    GuiComponent.drawString(poseStack, font, name, x + PADDING, y + PADDING, NAME_COLOR);
-    GuiComponent.drawString(poseStack, font, modName, x + panelWidth - PADDING - modWidth,
+    guiGraphics.drawString(font, name, x + PADDING, y + PADDING, NAME_COLOR);
+    guiGraphics.drawString(font, modName, x + panelWidth - PADDING - modWidth,
         y + PADDING, MOD_COLOR);
 
     // 破坏工具信息（方块专用）
     var lineY = y + PADDING + lineHeight;
     if (extraLine != null) {
-      GuiComponent.drawString(poseStack, font, extraLine, x + PADDING, lineY + 2, MOD_COLOR);
+      guiGraphics.drawString(font, extraLine, x + PADDING, lineY + 2, MOD_COLOR);
       lineY += lineHeight + 2;
     }
 
@@ -206,16 +205,16 @@ public class TargetOverlay {
       var barX = x + PADDING;
       var barWidth = 60;
       // 血量背景 + 边框
-      RenderUtil.fill(poseStack, barX - 1, barY - 1, barWidth + 2, BAR_HEIGHT + 2, BAR_BORDER);
-      RenderUtil.fill(poseStack, barX, barY, barWidth, BAR_HEIGHT, BAR_BACKGROUND);
+      RenderUtil.fill(guiGraphics.pose(), barX - 1, barY - 1, barWidth + 2, BAR_HEIGHT + 2, BAR_BORDER);
+      RenderUtil.fill(guiGraphics.pose(), barX, barY, barWidth, BAR_HEIGHT, BAR_BACKGROUND);
       // 血量填充（随剩余血量由绿转红）
       var fillWidth = Math.round(barWidth * healthBar.healthPct);
       if (fillWidth > 0) {
-        RenderUtil.fill(poseStack, barX, barY, fillWidth, BAR_HEIGHT,
+        RenderUtil.fill(guiGraphics.pose(), barX, barY, fillWidth, BAR_HEIGHT,
             this.getHealthColor(healthBar.healthPct));
       }
       // 血量文本
-      GuiComponent.drawString(poseStack, font, healthBar.healthText, barX + barWidth + 5,
+      guiGraphics.drawString(font, healthBar.healthText, barX + barWidth + 5,
           barY - 2, NAME_COLOR);
     }
   }

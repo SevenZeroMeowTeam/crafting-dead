@@ -18,9 +18,23 @@
 
 package com.craftingdead.survival.world.damagesource;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.LivingEntity;
 
 public class SurvivalDamageSource {
 
-  public static final DamageSource INFECTION = new DamageSource("generic");
+  /**
+   * 1.20.1 中 DamageSource 需要 Holder，且数据驱动的伤害类型在服务端准备完成后才可用，
+   * 因此改为运行时解析：从实体所在世界的注册表中取 damage_type holder。
+   * 若注册表/类型不可用则回退到原版 generic，避免实体 tick 中抛异常导致服务器崩溃。
+   */
+  public static DamageSource infection(LivingEntity entity) {
+    var holder = entity.level().registryAccess()
+        .registry(Registries.DAMAGE_TYPE)
+        .flatMap(registry -> registry.getHolder(DamageTypes.GENERIC))
+        .orElse(null);
+    return holder != null ? new DamageSource(holder) : entity.damageSources().generic();
+  }
 }

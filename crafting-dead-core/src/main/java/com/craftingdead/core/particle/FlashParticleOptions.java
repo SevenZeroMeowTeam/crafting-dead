@@ -75,7 +75,7 @@ public record FlashParticleOptions(float red, float green, float blue, float sca
   @Override
   public String writeToString() {
     return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f",
-        net.minecraft.core.Registry.PARTICLE_TYPE.getKey(this.getType()), this.red, this.green, this.blue, this.scale);
+        net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()), this.red, this.green, this.blue, this.scale);
   }
 
   @Override

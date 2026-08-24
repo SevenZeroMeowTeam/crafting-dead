@@ -61,11 +61,6 @@ public abstract class Grenade extends BounceableProjectileEntity {
     super(type, thrower, level);
   }
 
-  @Override
-  public Packet<?> getAddEntityPacket() {
-    return NetworkHooks.getEntitySpawningPacket(this);
-  }
-
   public abstract GrenadeItem asItem();
 
   /**
@@ -129,7 +124,7 @@ public abstract class Grenade extends BounceableProjectileEntity {
 
   @Override
   public boolean hurt(DamageSource source, float amount) {
-    if (source.getDirectEntity() != source.getEntity()) {
+    if (source.isIndirect()) {
       this.setDeltaMovement(source.getEntity().getLookAngle().scale(1.5D));
     }
     return super.hurt(source, amount);
@@ -138,8 +133,8 @@ public abstract class Grenade extends BounceableProjectileEntity {
   @Override
   public void onSurfaceHit(BlockHitResult blockRayTraceResult) {
     var bounceSound = this.getBounceSound(blockRayTraceResult);
-    if (this.getLevel().isClientSide()) {
-      this.getLevel().playLocalSound(this.getX(), this.getY(), this.getZ(),
+    if (this.level().isClientSide()) {
+      this.level().playLocalSound(this.getX(), this.getY(), this.getZ(),
           bounceSound.soundEvent(), SoundSource.NEUTRAL, bounceSound.volume(),
           bounceSound.pitch(), false);
     }
@@ -151,7 +146,7 @@ public abstract class Grenade extends BounceableProjectileEntity {
     if (canPickup) {
       this.kill();
       playerEntity.addItem(new ItemStack(this.asItem(), 1));
-      this.getLevel().playLocalSound(this.getX(), this.getY(), this.getZ(),
+      this.level().playLocalSound(this.getX(), this.getY(), this.getZ(),
           SoundEvents.ITEM_PICKUP,
           SoundSource.PLAYERS, 0.2F,
           (this.random.nextFloat() - this.random.nextFloat()) * 1.4F + 2.0F, false);

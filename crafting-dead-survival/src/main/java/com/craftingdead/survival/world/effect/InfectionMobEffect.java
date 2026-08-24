@@ -39,7 +39,7 @@ public class InfectionMobEffect extends MobEffect {
   @Override
   public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
     if (livingEntity.getHealth() > 1.0F) {
-      livingEntity.hurt(SurvivalDamageSource.INFECTION, 1.0F);
+      livingEntity.hurt(SurvivalDamageSource.infection(livingEntity), 1.0F);
     }
   }
 

@@ -21,11 +21,12 @@ package com.craftingdead.core.client.animation.gun;
 import com.craftingdead.core.client.animation.TimedAnimation;
 import com.craftingdead.core.util.EasingFunction;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.util.Mth;
+import com.mojang.math.Axis;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class ShootAnimation extends TimedAnimation {
 
@@ -49,14 +50,14 @@ public class ShootAnimation extends TimedAnimation {
   }
 
 
-  private Quaternion getRecoilRotation(float percent) {
+  private Quaternionf getRecoilRotation(float percent) {
     float easedBounce = EasingFunction.SINE_IN.andThen(EasingFunction.ELASTIC_OUT).apply(percent);
     float xRot = this.bounceAmplification * Mth.sin(easedBounce * Mth.PI);
     float yRot = this.bounceAmplification * 0.1F * Mth.sin(easedBounce * Mth.PI * 2);
     float zRot = this.bounceAmplification * 0.05F * Mth.sin(easedBounce * Mth.PI * 2);
-    var q = Vector3f.XP.rotationDegrees(xRot);
-    q.mul(Vector3f.YP.rotationDegrees(yRot));
-    q.mul(Vector3f.ZP.rotationDegrees(zRot));
+    var q = Axis.XP.rotationDegrees(xRot);
+    q.mul(Axis.YP.rotationDegrees(yRot));
+    q.mul(Axis.ZP.rotationDegrees(zRot));
     return q;
   }
 
@@ -73,11 +74,11 @@ public class ShootAnimation extends TimedAnimation {
     switch (arm) {
       case LEFT:
         poseStack.translate(0, -translation * 0.25F, translation * 0.5F);
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(-armAngle));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-armAngle));
         break;
       case RIGHT:
         poseStack.translate(0, 0, translation);
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(-armAngle));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-armAngle));
         break;
     }
   }

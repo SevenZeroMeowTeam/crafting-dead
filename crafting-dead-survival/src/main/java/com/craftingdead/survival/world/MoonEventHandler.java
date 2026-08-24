@@ -56,7 +56,7 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.level.BlockEvent;
@@ -198,7 +198,7 @@ public class MoonEventHandler {
     var config = CraftingDeadSurvival.serverConfig;
     int amplifier = config.blueMoonLuckAmplifier.get();
     for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-      if (player.getLevel().dimension() != Level.OVERWORLD) {
+      if (player.level().dimension() != Level.OVERWORLD) {
         continue;
       }
       var instance = player.getEffect(MobEffects.LUCK);
@@ -220,7 +220,7 @@ public class MoonEventHandler {
     }
     int count = config.bloodMoonSpawnCount.get();
     for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-      if (player.getLevel().dimension() != Level.OVERWORLD) {
+      if (player.level().dimension() != Level.OVERWORLD) {
         continue;
       }
       int near = level.getEntitiesOfClass(Zombie.class,
@@ -286,14 +286,14 @@ public class MoonEventHandler {
   // ================================================================================
 
   @SubscribeEvent(priority = EventPriority.HIGHEST)
-  public void handleCheckSpawn(LivingSpawnEvent.CheckSpawn event) {
+  public void handleCheckSpawn(MobSpawnEvent.PositionCheck event) {
     if (!CraftingDeadSurvival.serverConfig.moonEventsEnabled.get()) {
       return;
     }
     if (event.getLevel().isClientSide()) {
       return;
     }
-    if (!ApocalypseManager.isBloodMoon(event.getEntity().getLevel())) {
+    if (!ApocalypseManager.isBloodMoon(event.getEntity().level())) {
       return;
     }
     if (ApocalypseManager.isForbiddenMob(event.getEntity().getType())) {
@@ -311,7 +311,7 @@ public class MoonEventHandler {
       return;
     }
     Player player = event.getEntity();
-    if (ApocalypseManager.isBloodMoon(player.getLevel())) {
+    if (ApocalypseManager.isBloodMoon(player.level())) {
       event.setResult(Player.BedSleepingProblem.NOT_POSSIBLE_NOW);
       player.displayClientMessage(Component.literal("§c血月降临，无法入睡！"), true);
     }
@@ -344,7 +344,7 @@ public class MoonEventHandler {
   @SubscribeEvent(priority = EventPriority.LOW)
   public void handleLivingDeath(LivingDeathEvent event) {
     LivingEntity victim = event.getEntity();
-    var level = victim.getLevel();
+    var level = victim.level();
     if (level.isClientSide()) {
       return;
     }
@@ -435,7 +435,7 @@ public class MoonEventHandler {
   @SubscribeEvent
   public void handlePlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
     if (event.getEntity() instanceof ServerPlayer player) {
-      ServerLevel level = player.getLevel();
+      ServerLevel level = player.serverLevel();
       this.updateScoreboard(player, level);
       this.sendMoonData(player, level);
     }

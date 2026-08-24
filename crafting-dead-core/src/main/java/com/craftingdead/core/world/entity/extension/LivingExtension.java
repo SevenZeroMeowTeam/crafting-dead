@@ -238,7 +238,7 @@ public interface LivingExtension<E extends LivingEntity, H extends LivingHandler
    * @return the {@link Level}
    */
   default Level level() {
-    return this.entity().getLevel();
+    return this.entity().level();
   }
 
   /**

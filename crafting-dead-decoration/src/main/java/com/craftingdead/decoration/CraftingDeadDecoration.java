@@ -59,20 +59,23 @@ public class CraftingDeadDecoration {
 
     DecorationBlocks.deferredRegister.register(modEventBus);
     DecorationItems.deferredRegister.register(modEventBus);
+    DecorationItems.CREATIVE_MODE_TABS.register(modEventBus);
 
     MinecraftForge.EVENT_BUS.addListener(this::onMissingMappings);
   }
 
   private void handleGatherData(GatherDataEvent event) {
     var generator = event.getGenerator();
+    var packOutput = generator.getPackOutput();
     var existingFileHelper = event.getExistingFileHelper();
+    var lookupProvider = event.getLookupProvider();
     if (event.includeClient()) {
-      generator.addProvider(true, new DecorationBlockModelProvider(generator, existingFileHelper));
-      generator.addProvider(true, new DecorationBlockStateProvider(generator, existingFileHelper));
-      generator.addProvider(true, new DecorationItemModelProvider(generator, existingFileHelper));
+      generator.addProvider(true, new DecorationBlockModelProvider(packOutput, existingFileHelper));
+      generator.addProvider(true, new DecorationBlockStateProvider(packOutput, existingFileHelper));
+      generator.addProvider(true, new DecorationItemModelProvider(packOutput, existingFileHelper));
     } else if (event.includeServer()) {
-      generator.addProvider(true, new DecorationLootTableProvider(generator));
-      generator.addProvider(true, new DecorationRecipeProvider(generator));
+      generator.addProvider(true, new DecorationLootTableProvider(packOutput));
+      generator.addProvider(true, new DecorationRecipeProvider(packOutput));
     }
   }
 

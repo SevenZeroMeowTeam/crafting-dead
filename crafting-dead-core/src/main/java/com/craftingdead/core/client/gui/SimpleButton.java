@@ -18,9 +18,8 @@
 
 package com.craftingdead.core.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -30,7 +29,7 @@ public class SimpleButton extends Button {
   private int backgroundColour = 0x333333;
 
   public SimpleButton(int x, int y, int width, int height, Component text, OnPress action) {
-    super(x, y, width, height, text, action);
+    super(x, y, width, height, text, action, Button.DEFAULT_NARRATION);
     this.setFGColor(0xE3BE2B);
   }
 
@@ -39,14 +38,14 @@ public class SimpleButton extends Button {
   }
 
   @Override
-  public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+  public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
     final Minecraft minecraft = Minecraft.getInstance();
-    GuiComponent.fill(poseStack, this.x, this.y, this.x + this.getWidth() + 1, this.y + this.getHeight() + 1,
+    guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth() + 1, this.getY() + this.getHeight() + 1,
         0x33000000);
-    GuiComponent.fill(poseStack, this.x, this.y, this.x + this.getWidth(), this.y + this.getHeight(),
+    guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(),
         this.backgroundColour | Mth.ceil(this.alpha * 255.0F) << 24);
-    GuiComponent.drawCenteredString(poseStack, minecraft.font, this.getMessage(),
-        this.x + this.getWidth() / 2, this.y + (this.getHeight() - 8) / 2,
+    guiGraphics.drawCenteredString(minecraft.font, this.getMessage(),
+        this.getX() + this.getWidth() / 2, this.getY() + (this.getHeight() - 8) / 2,
         (this.active ? this.isHovered ? this.packedFGColor : 0xFFFFFF : 0xA0A0A0)
             | Mth.ceil(this.alpha * 255.0F) << 24);
   }

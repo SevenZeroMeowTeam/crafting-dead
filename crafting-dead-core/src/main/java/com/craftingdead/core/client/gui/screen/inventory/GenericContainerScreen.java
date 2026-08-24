@@ -25,9 +25,8 @@ import com.craftingdead.core.network.message.play.OpenEquipmentMenuMessage;
 import com.craftingdead.core.world.inventory.AbstractMenu;
 import com.craftingdead.core.world.inventory.GenericMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.function.Consumer;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -68,29 +67,29 @@ public class GenericContainerScreen extends AbstractContainerScreen<GenericMenu>
   }
 
   @Override
-  public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-    super.render(poseStack, mouseX, mouseY, partialTicks);
-    this.renderTooltip(poseStack, mouseX, mouseY);
+  public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    super.render(guiGraphics, mouseX, mouseY, partialTicks);
+    this.renderTooltip(guiGraphics, mouseX, mouseY);
   }
 
   @Override
-  protected void renderLabels(PoseStack poseStack, int mouseX, int mouseY) {
-    GuiComponent.drawString(poseStack, this.font, this.title, 8, 6, TITLE_TEXT_COLOUR);
-    GuiComponent.drawString(poseStack, this.font, this.playerInventoryTitle, 8,
-        this.imageHeight - 96 + 2, TITLE_TEXT_COLOUR);
+  protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    guiGraphics.drawString(this.font, this.title, 8, 6, TITLE_TEXT_COLOUR, false);
+    guiGraphics.drawString(this.font, this.playerInventoryTitle, 8,
+        this.imageHeight - 96 + 2, TITLE_TEXT_COLOUR, false);
   }
 
   @Override
-  protected void renderBg(PoseStack poseStack, float partialTicks, int mouseX, int mouseY) {
-    this.renderBackground(poseStack);
+  protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
+    this.renderBackground(guiGraphics);
     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     RenderSystem.setShaderTexture(0, GENERIC_CONTAINER_TEXTURE);
     int x = (this.width - this.imageWidth) / 2;
     int y = (this.height - this.imageHeight - 8) / 2;
     int heightOffset = (6 * AbstractMenu.SLOT_SIZE + AbstractMenu.SLOT_SIZE)
         - (this.menu.getRows() * AbstractMenu.SLOT_SIZE + AbstractMenu.SLOT_SIZE);
-    this.blit(poseStack, x, y, 0, 0, this.imageWidth, 21);
-    this.blit(poseStack, x, y + 21, 0, 21 + heightOffset, this.imageWidth,
+    guiGraphics.blit(GENERIC_CONTAINER_TEXTURE, x, y, 0, 0, this.imageWidth, 21);
+    guiGraphics.blit(GENERIC_CONTAINER_TEXTURE, x, y + 21, 0, 21 + heightOffset, this.imageWidth,
         96 + (this.menu.getRows() * AbstractMenu.SLOT_SIZE + AbstractMenu.SLOT_SIZE));
   }
 }

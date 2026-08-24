@@ -29,7 +29,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HeadedModel;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -86,7 +86,7 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
 
         if (!itemStack.isEmpty()) {
           var bakedModel =
-              itemRenderer.getModel(itemStack, livingEntity.getLevel(), livingEntity, 0);
+              itemRenderer.getModel(itemStack, livingEntity.level(), livingEntity, 0);
 
           poseStack.pushPose();
 
@@ -113,7 +113,7 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
           }
 
           // Renders the item. Also note the TransformType.
-          itemRenderer.render(itemStack, ItemTransforms.TransformType.HEAD, false,
+          itemRenderer.render(itemStack, ItemDisplayContext.HEAD, false,
               poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY, bakedModel);
 
           poseStack.popPose();

@@ -57,7 +57,7 @@ public class LookAtEntityGoal<T extends Entity> extends Goal {
     }
 
     var possibleEntities =
-        this.goalOwner.getLevel().getEntitiesOfClass(this.watchedClass, this.goalOwner
+        this.goalOwner.level().getEntitiesOfClass(this.watchedClass, this.goalOwner
             .getBoundingBox().inflate((double) this.maxDistance, 4.0D, (double) this.maxDistance));
 
     double lastSqDistance = Double.MAX_VALUE;

@@ -175,6 +175,6 @@ public class ModSoundEvents {
 
   private static RegistryObject<SoundEvent> register(String name) {
     ResourceLocation registryName = new ResourceLocation(CraftingDead.ID, name);
-    return deferredRegister.register(name, () -> new SoundEvent(registryName));
+    return deferredRegister.register(name, () -> SoundEvent.createVariableRangeEvent(registryName));
   }
 }

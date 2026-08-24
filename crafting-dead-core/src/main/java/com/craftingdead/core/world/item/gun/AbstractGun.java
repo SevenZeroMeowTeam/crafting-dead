@@ -97,7 +97,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.DigDurabilityEnchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.BellBlock;
@@ -694,7 +693,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
         if (entity instanceof ServerPlayer player) {
           player.playNotifySound(SoundEvents.ITEM_BREAK, player.getSoundSource(), 0.65F, 1.5F);
         }
-        hitEntity.getLevel().playSound(null, hitEntity.getX(), hitEntity.getY(), hitEntity.getZ(),
+        hitEntity.level().playSound(null, hitEntity.getX(), hitEntity.getY(), hitEntity.getZ(),
             SoundEvents.ITEM_BREAK, hitEntity.getSoundSource(), 0.65F, 1.5F);
       }
     }
@@ -781,7 +780,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
             .map(Hat::headshotReductionPercentage)
             .orElse(0.0F);
         damage *= (float) (headshotDamagePercent * ServerConfig.instance.headshotBonusDamage.get());
-        hitEntity.getLevel().playSound(null, hitEntity.getX(), hitEntity.getY(), hitEntity.getZ(),
+        hitEntity.level().playSound(null, hitEntity.getX(), hitEntity.getY(), hitEntity.getZ(),
             SoundEvents.ITEM_BREAK, hitEntity.getSoundSource(), 0.65F, 1.5F);
       }
     }
@@ -834,7 +833,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
       BlockState blockState, boolean playSound) {
     final var entity = living.entity();
     final var block = blockState.getBlock();
-    final var level = entity.getLevel();
+    final var level = entity.level();
     final var blockPos = result.getBlockPos();
 
     // Post gun hit block event
@@ -1069,8 +1068,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
         out.writeBoolean(true);
       } else {
         out.writeBoolean(false);
-        out.writeNbt((CompoundTag) Skin.CODEC.encodeStart(NbtOps.INSTANCE, this.skin)
-            .result().orElseThrow());
+        out.writeWithCodec(NbtOps.INSTANCE, Skin.CODEC, this.skin);
       }
     } else {
       out.writeBoolean(false);
@@ -1100,7 +1098,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
       if (in.readBoolean()) {
         this.skin = null;
       } else {
-        this.skin = Skin.CODEC.parse(NbtOps.INSTANCE, in.readNbt()).result().orElseThrow();
+        this.skin = in.readWithCodec(NbtOps.INSTANCE, Skin.CODEC);
       }
     }
   }
@@ -1119,9 +1117,9 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
         EnchantmentHelper.getItemEnchantmentLevel(Enchantments.POWER_ARROWS, magazineStack)
             / (float) Enchantments.POWER_ARROWS.getMaxLevel();
     if (explosionSize > 0) {
-      entity.getLevel().explode(
+      entity.level().explode(
           entity, position.x(), position.y(), position.z(), explosionSize, false,
-          Explosion.BlockInteraction.NONE);
+          Level.ExplosionInteraction.NONE);
     }
   }
 

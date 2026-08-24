@@ -10,15 +10,16 @@
 
 | 分支 | Minecraft 版本 | Forge 版本 | 状态 |
 |------|----------------|------------|------|
+| `1.21.x` | 1.21.1 | 52.1.16 | ✅ 活跃维护 |
 | `1.20.x` | **1.20.1** | **47.4.22** | ✅ 活跃维护 |
-| `1.19.x` | **1.19.2** | **43.5.2** | ✅ 活跃维护 |
+| `1.19.x` | 1.19.2 | 43.5.2 | ✅ 活跃维护 |
 | `1.18.x` | 1.18.2 | 40.2.0 | ⏸ 归档 |
 
 ---
 
 ## 更新日志
 
-### v1.9.5-1.19.2 / v1.2.6-1.19.2 / v1.0.7-1.19.2（品质系统 / 新人奖励箱 / 98K 狙击步枪 / 创造弹药箱）
+### v1.9.5-1.20.1 / v1.2.6-1.20.1 / v1.0.7-1.20.1（品质系统 / 新人奖励箱 / 98K 狙击步枪 / 创造弹药箱）
 
 **新功能：装备品质系统（工具 / 武器 / 盔甲，自动兼容其他模组，与 1.21.x 分支同步）**
 
@@ -57,7 +58,7 @@
 - `creative_ammo_box`：创造弹药箱（持有时主手枪械无限弹药）
 - `starter_reward_box`：新人奖励箱（首次进入世界发放）
 
-### v1.9.4-1.19.2 / v1.2.5-1.19.2 / v1.0.6-1.19.2（末日生存系统：月亮事件 / 僵尸进化 / 计分板 / 击杀HUD）
+### v1.9.4-1.20.1 / v1.2.5-1.20.1 / v1.0.6-1.20.1（末日生存系统：月亮事件 / 僵尸进化 / 计分板 / 击杀HUD）
 
 **新功能：末日生存系统（与 1.21.x 分支同步的新功能）**
 - **左上角 HUD**：实时显示玩家手持的主手/副手武器或工具（图标 + 名称，兼容其他模组物品）；
@@ -77,10 +78,10 @@
 - **实现**：新增 `MoonEventType` / `ApocalypseManager`、`MoonEventHandler`、
   `SurvivalNetworkChannel` + `SyncMoonDataMessage` / `SurvivalKillFeedMessage`、
   `MoonDataHolder` / `MoonHudOverlay`
-- 1.19.2 版本使用 PoseStack 渲染 HUD（`RenderGuiEvent.Post`）、`LivingSpawnEvent` 事件体系、
-  `NetworkRegistry` 网络通道等 1.19.2 API 完整适配
+- 1.20.1 版本使用 GuiGraphics 渲染 HUD（`RenderGuiEvent.Post`）、`MobSpawnEvent` 事件体系、
+  `NetworkRegistry` 网络通道等 1.20.1 API 完整适配
 
-### v1.9.4-1.19.2 / v1.2.5-1.19.2 / v1.0.6-1.19.2（Jade 风格目标信息显示）
+### v1.9.4-1.20.1 / v1.2.5-1.20.1 / v1.0.6-1.20.1（Jade 风格目标信息显示）
 
 **新功能：Jade 风格目标信息叠加层**
 - 准星所指的方块/实体会在屏幕顶部居中显示信息面板（类似 Jade/HWYLA）
@@ -88,11 +89,11 @@
 - 实体：显示实体名称 + 血量条（随剩余血量由绿转红）+ 血量数值 + 模组来源
 - 实体优先于方块显示，射线距离 4.5 格
 - 客户端配置 `displayTargetInfo`（默认开启）可开关
-- 实现：新增 `TargetOverlay` 客户端渲染类（1.19.2 版本，使用 PoseStack），
+- 实现：新增 `TargetOverlay` 客户端渲染类（1.20.1 版本，使用 GuiGraphics），
   通过 `RenderGuiEvent.Pre` 渲染
 - 与 1.21.x 分支同步的新功能
 
-### v1.9.4-1.19.2 / v1.2.5-1.19.2 / v1.0.6-1.19.2（掉落物 3D 模型渲染）
+### v1.9.4-1.20.1 / v1.2.5-1.20.1 / v1.0.6-1.20.1（掉落物 3D 模型渲染）
 
 **新功能：掉落物品在地面上以 3D 模型显示并可拾取**
 - 枪械作为掉落物实体（击杀掉落、丢弃等）时，不再显示为扁平的 2D 贴图，
@@ -102,64 +103,38 @@
   `render()` 新增 `GROUND` 分支，将模型抬高到贴合地面后渲染
 - 与 1.21.x 分支同步的新功能
 
-### v1.9.4-1.19.2 / v1.2.5-1.19.2 / v1.0.6-1.19.2（1.19.2 移植版）
+### v1.9.4-1.20.1 / v1.2.5-1.20.1 / v1.0.6-1.20.1（1.20.1 移植版）
 
-**1.19.2 适配（Forge 43.5.2）**
+**1.20.1 适配（Forge 47.4.22）**
 
-基于 `1.20.x` 代码库反向移植至 Minecraft **1.19.2** / Forge **43.5.2**，
-创建独立 `1.19.x` 分支，涵盖以下主要 API 差异适配：
+将 `1.20.x` 分支正式移植至 Minecraft **1.20.1** / Forge **47.4.22**，
+恢复该分支真正的 1.20.x 兼容（此前曾被误标为 1.19.2），涵盖以下主要 API 差异适配：
 
-- `ResourceLocation` 构造函数：`parse()` / `fromNamespaceAndPath()` 在 1.19.2 不存在，
-  全部恢复为 `new ResourceLocation(ns, path)` / `new ResourceLocation(str)`
-- 注册表系统：`BuiltInRegistries` 恢复为 `net.minecraft.core.Registry`；
-  `Skins` 自定义注册表适配 1.19.2 的 `MappedRegistry` 三参构造
-- 伤害系统：恢复 `DamageSource` / `EntityDamageSource` 直接构造，
-  `Level.explode` 恢复七参签名（无 `DamageSource` 参数），
-  移除 `isIndirect()` 改用 `getDirectEntity() != getEntity()`
-- 创造模式物品栏：`CreativeModeTab` 恢复匿名类 + `makeIcon()` / `fillItemList()` 写法
-- 渲染与数学库：恢复 `com.mojang.math.Vector3f` / `Quaternion`（1.19.2 无 `org.joml` 依赖）
-- GUI 渲染：`GuiGraphics` 恢复为 `PoseStack` + `GuiComponent` 静态方法，
-  `renderEntityInInventory` 恢复浮点角度签名，`blit` 恢复 7 参实例方法
-- 物品展示：`ItemDisplayContext` 恢复为 `ItemTransforms.TransformType`
-- 数据生成：`LootParams` 恢复为 `LootContext`，`BlockTagsProvider` 恢复为
-  `net.minecraft.data.tags` 包，`LootContextParamSet` 显式导入
-- 事件系统：`MobSpawnEvent.FinalizeSpawn` 恢复为 `LivingSpawnEvent.SpecialSpawn`
-- 方块属性：`Properties.of()` 恢复为带 `Material` 参数的版本，
-  `MapColor` / `mapColor()` 恢复为 `MaterialColor` / `color()`，
-  `ButtonBlock` 恢复 `StoneButtonBlock`（1.19.2 无 `BlockSetType`）
-- 移除 `crafting-dead-worldguard` 模块（其反射代码依赖 1.18.2 CraftBukkit 类，无法移植）
-- GitHub Actions 工作流与 README 分支表已加入 `1.19.x` 分支支持
+- 版本声明：`mods.toml` 声明 Minecraft 兼容范围 `[1.20,1.21)`（兼容 1.20 - 1.20.6）、
+  Forge 范围 `[47.3.0,)`；`gradle.properties` 使用 1.20.1 / 47.4.22
+- GUI 渲染：`PoseStack` + `GuiComponent` 恢复为 `GuiGraphics`（含 TargetOverlay / MoonHudOverlay / 计分板 Mixin），
+  `RenderGuiEvent` 使用 `getGuiGraphics()`
+- 事件系统：`LivingSpawnEvent.CheckSpawn`（1.20 移除）改为 `MobSpawnEvent.PositionCheck`；
+  `MobSpawnEvent.FinalizeSpawn` 保持不变
+- 伤害系统：`DamageSource` 使用 Holder 运行时解析（`SurvivalDamageSource.infection(LivingEntity)`），
+  避免 `RegistryAccess.EMPTY` 运行时崩溃
+- 配方：`ShapedRecipe` 构造器增加 `CraftingBookCategory` 参数；
+  `Recipe.assemble()` / `getResultItem()` 增加 `RegistryAccess` 参数
+- 物品渲染：`ItemRenderer.renderGuiItem` 改为 `GuiGraphics.renderItem`
+- 实体 API：`Entity.getLevel()` 改为 `level()`；`ServerPlayer.level()` 改用 `serverLevel()`
+- 数据生成：使用 `PackOutput` / `RecipeCategory` 等 1.20.1 API
+- 恢复 `crafting-dead-worldguard` 模块（1.20.1 Bukkit 插件）
+- 品质系统 / 新人奖励箱 / 98K / 创造弹药箱 / 末日生存系统等功能与 1.19.x、1.21.x 分支同步
 
 **模块版本**
-- `crafting-dead-core` -> `1.9.4`
-- `crafting-dead-survival` -> `1.2.5`
-- `crafting-dead-decoration` -> `1.0.6`
-
-### v1.9.4 / v1.2.5 / v1.0.6 / v0.0.6（CI 自动构建与 Release 发布稳定版）
-
-**过时 API 清理**
-- 移除全部 `ResourceLocation(String)` / `ResourceLocation(String, String)` 待删除构造函数，
-  迁移至 `ResourceLocation.parse()` / `ResourceLocation.fromNamespaceAndPath()`
-- `@Mod` 主类与客户端分发类改用 `FMLJavaModLoadingContext` 构造器注入，
-  移除 `FMLJavaModLoadingContext.get()` / `ModLoadingContext.get()` 待删除调用
-- `DistExecutor` 客户端分发改为基于 `FMLEnvironment.dist` 的条件判断
-- 各模块配置注册改为通过注入的上下文调用 `registerConfig`
-
-**GitHub Actions 稳定性增强**
-- 修复工作流在 Markdown 变更时被 `paths-ignore` 忽略，导致 README 更新后不触发构建的问题
-- 确保推送至 `1.20.x` / `1.18.x` 时都会执行 `clean build` 与自动发布
-- 发布流程增加 `generate_release_notes` 与构建产物校验，确保 Release 中包含实际 jar 文件
-- 上传产物名称按分支和构建编号区分，避免不同运行记录混淆
-
-**构建与打包修复**
-- 强制执行 `./gradlew clean build --no-daemon`，避免旧缓存导致的构建状态不干净
-- 增加 `if-no-files-found: error`，防止在构建失败时仍然上传空产物
-- 自动打包四个模块的 `.jar`，并发布到 GitHub Releases
+- `crafting-dead-core` -> `1.9.5`
+- `crafting-dead-survival` -> `1.2.6`
+- `crafting-dead-decoration` -> `1.0.7`
 
 **版本更新**
-- `crafting-dead-core` -> `1.9.4`
-- `crafting-dead-survival` -> `1.2.5`
-- `crafting-dead-decoration` -> `1.0.6`
+- `crafting-dead-core` -> `1.9.5`
+- `crafting-dead-survival` -> `1.2.6`
+- `crafting-dead-decoration` -> `1.0.7`
 - `crafting-dead-worldguard` -> `0.0.6`
 
 ### v1.9.3 / v1.2.4 / v1.0.5 / v0.0.5（GitHub Actions 自动构建 + Release 发布修复）

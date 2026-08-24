@@ -21,9 +21,9 @@ package com.craftingdead.core.client.renderer;
 import java.util.Random;
 import com.craftingdead.core.util.MutableVector2f;
 import com.mojang.blaze3d.Blaze3D;
-import com.mojang.math.Vector3f;
 import net.minecraft.Util;
 import net.minecraft.util.Mth;
+import org.joml.Vector3f;
 
 public class CameraManager {
 

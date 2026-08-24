@@ -22,20 +22,23 @@ import java.util.concurrent.CompletableFuture;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.tags.ModItemTags;
 import com.craftingdead.core.world.item.ModItems;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.data.tags.TagsProvider.TagLookup;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class ModItemTagsProvider extends ItemTagsProvider {
 
-  public ModItemTagsProvider(DataGenerator generator,
-      BlockTagsProvider blockTagsProvider, ExistingFileHelper existingFileHelper) {
-    super(generator, blockTagsProvider, CraftingDead.ID, existingFileHelper);
+  public ModItemTagsProvider(PackOutput output,
+      CompletableFuture<HolderLookup.Provider> lookupProvider,
+      CompletableFuture<TagLookup<Block>> blockTags, ExistingFileHelper existingFileHelper) {
+    super(output, lookupProvider, blockTags, CraftingDead.ID, existingFileHelper);
   }
 
   @Override
-  protected void addTags() {
+  protected void addTags(HolderLookup.Provider provider) {
     this.tag(ModItemTags.MAGAZINES)
         .add(ModItems.STANAG_BOX_MAGAZINE.get())
         .add(ModItems.STANAG_DRUM_MAGAZINE.get())

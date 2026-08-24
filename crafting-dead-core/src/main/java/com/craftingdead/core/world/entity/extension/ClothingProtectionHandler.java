@@ -184,13 +184,13 @@ public class ClothingProtectionHandler implements PlayerHandler {
     }
 
     // Check for projectiles
-    if (source.isProjectile() || sourceMsg.contains("arrow")
+    if (source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE) || sourceMsg.contains("arrow") 
         || sourceMsg.contains("bullet")) {
       return DamageType.PROJECTILE;
     }
 
     // Environmental damage (fire, fall, drown, etc.)
-    if (source.isFire() || sourceMsg.contains("fall")
+    if (source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE) || source.is(net.minecraft.tags.DamageTypeTags.IS_FALL) || sourceMsg.contains("fall")
         || sourceMsg.contains("drown") || sourceMsg.contains("lava")) {
       return DamageType.ENVIRONMENTAL;
     }

@@ -2,9 +2,9 @@ name: Crafting Dead
 
 on:
   push:
-    branches: [ 1.20.x, 1.19.x, 1.18.x ]
+    branches: [ 1.20.x, 1.18.x ]
   pull_request:
-    branches: [ 1.20.x, 1.19.x, 1.18.x ]
+    branches: [ 1.20.x, 1.18.x ]
   workflow_dispatch:
 
 permissions:
@@ -39,19 +39,20 @@ jobs:
           ./crafting-dead-core/build/libs/*.jar
           ./crafting-dead-survival/build/libs/*.jar
           ./crafting-dead-decoration/build/libs/*.jar
+          ./crafting-dead-worldguard/build/libs/*.jar
         if-no-files-found: error
 
     - name: Read mod versions
-      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/1.20.x' || github.ref == 'refs/heads/1.19.x' || github.ref == 'refs/heads/1.18.x')
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/1.20.x' || github.ref == 'refs/heads/1.18.x')
       id: versions
       run: |
-        echo "mc=$(grep '^minecraft_version=' gradle.properties | cut -d'=' -f2)" >> "$GITHUB_OUTPUT"
         echo "core=$(grep '^mod_version=' crafting-dead-core/gradle.properties | cut -d'=' -f2)" >> "$GITHUB_OUTPUT"
         echo "survival=$(grep '^mod_version=' crafting-dead-survival/gradle.properties | cut -d'=' -f2)" >> "$GITHUB_OUTPUT"
         echo "decoration=$(grep '^mod_version=' crafting-dead-decoration/gradle.properties | cut -d'=' -f2)" >> "$GITHUB_OUTPUT"
+        echo "worldguard=$(grep '^mod_version=' crafting-dead-worldguard/gradle.properties | cut -d'=' -f2)" >> "$GITHUB_OUTPUT"
 
     - name: Publish to GitHub Releases
-      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/1.20.x' || github.ref == 'refs/heads/1.19.x' || github.ref == 'refs/heads/1.18.x')
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/1.20.x' || github.ref == 'refs/heads/1.18.x')
       uses: softprops/action-gh-release@v2
       with:
         tag_name: build-${{ github.ref_name }}-${{ github.run_number }}
@@ -63,9 +64,10 @@ jobs:
 
           | 模块 | 版本 |
           |------|------|
-          | crafting-dead-core | ${{ steps.versions.outputs.mc }}-${{ steps.versions.outputs.core }}.${{ github.run_number }} |
-          | crafting-dead-survival | ${{ steps.versions.outputs.mc }}-${{ steps.versions.outputs.survival }}.${{ github.run_number }} |
-          | crafting-dead-decoration | ${{ steps.versions.outputs.mc }}-${{ steps.versions.outputs.decoration }}.${{ github.run_number }} |
+          | crafting-dead-core | 1.20.1-${{ steps.versions.outputs.core }}.${{ github.run_number }} |
+          | crafting-dead-survival | 1.20.1-${{ steps.versions.outputs.survival }}.${{ github.run_number }} |
+          | crafting-dead-decoration | 1.20.1-${{ steps.versions.outputs.decoration }}.${{ github.run_number }} |
+          | crafting-dead-worldguard | 1.20.1-${{ steps.versions.outputs.worldguard }}.${{ github.run_number }} |
 
           **提交信息**: ${{ github.event.head_commit.message || 'N/A' }}
 
@@ -75,3 +77,4 @@ jobs:
           crafting-dead-core/build/libs/*.jar
           crafting-dead-survival/build/libs/*.jar
           crafting-dead-decoration/build/libs/*.jar
+          crafting-dead-worldguard/build/libs/*.jar

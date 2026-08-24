@@ -38,7 +38,7 @@ public class ParachuteMobEffect extends MobEffect {
   @Override
   public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
     livingEntity.resetFallDistance();
-    if (livingEntity.isOnGround() || livingEntity.isInWater()) {
+    if (livingEntity.onGround() || livingEntity.isInWater()) {
       livingEntity.removeEffect(ModMobEffects.PARACHUTE.get());
       this.syncParachuteEffect(livingEntity, false);
       return;
@@ -53,7 +53,7 @@ public class ParachuteMobEffect extends MobEffect {
   }
 
   private void syncParachuteEffect(LivingEntity entity, boolean hasParachute) {
-    if (!entity.getLevel().isClientSide()) {
+    if (!entity.level().isClientSide()) {
       NetworkChannel.PLAY.getSimpleChannel()
           .send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity),
               new ParachuteSyncMessage(entity.getId(), hasParachute));

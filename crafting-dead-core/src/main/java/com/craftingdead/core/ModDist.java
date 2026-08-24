@@ -18,8 +18,8 @@
 
 package com.craftingdead.core;
 
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public interface ModDist {
 
@@ -29,6 +29,6 @@ public interface ModDist {
    */
   @Deprecated
   default RegistryAccess registryAccess() {
-    return RegistryAccess.fromRegistryOfRegistries(Registry.REGISTRY);
+    return RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
   }
 }

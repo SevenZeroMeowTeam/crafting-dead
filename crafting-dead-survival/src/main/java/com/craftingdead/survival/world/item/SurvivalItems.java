@@ -33,7 +33,7 @@ import com.craftingdead.survival.world.level.block.SurvivalBlocks;
 import com.craftingdead.survival.world.level.storage.loot.BuiltInLootTables;
 import java.util.List;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -699,18 +699,18 @@ public class SurvivalItems {
             .withStyle(ChatFormatting.GRAY));
   }
 
-  public static final CreativeModeTab TAB = new CreativeModeTab("craftingdeadsurvival") {
-    @Override
-    public ItemStack makeIcon() {
-      return new ItemStack(RBI_SYRINGE.get());
-    }
+  public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
+      DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CraftingDeadSurvival.ID);
 
-    @Override
-    public void fillItemList(NonNullList<ItemStack> items) {
-      deferredRegister.getEntries().stream()
-          .map(RegistryObject::get)
-          .map(ItemStack::new)
-          .forEach(items::add);
-    }
-  };
+  public static final RegistryObject<CreativeModeTab> TAB =
+      CREATIVE_MODE_TABS.register("main",
+          () -> CreativeModeTab.builder()
+              .title(Component.translatable("craftingdeadsurvival"))
+              .icon(() -> new ItemStack(RBI_SYRINGE.get()))
+              .displayItems((params, output) -> {
+                deferredRegister.getEntries().stream()
+                    .map(RegistryObject::get)
+                    .forEach(output::accept);
+              })
+              .build());
 }

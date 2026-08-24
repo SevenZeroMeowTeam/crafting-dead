@@ -35,8 +35,10 @@ public class KillFeedDamageSource extends DamageSource implements KillFeedProvid
 
   public KillFeedDamageSource(LivingEntity killer, ItemStack itemStack,
       KillFeedEntry.Type killFeedType) {
-    // 1.19.2: DamageSource is a simple string-based message id.
-    super("mob");
+    // Use the killer's damage sources to resolve the damage type holder from the
+    // live registry access. RegistryAccess.EMPTY must NOT be used here as it
+    // contains no registries and would throw "Missing registry: minecraft:damage_type".
+    super(killer.damageSources().mobAttack(killer).typeHolder());
     this.killer = killer;
     this.itemStack = itemStack;
     this.killFeedType = killFeedType;

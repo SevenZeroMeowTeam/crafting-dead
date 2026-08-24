@@ -18,8 +18,8 @@
 
 package com.craftingdead.survival.mixin;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.scores.Objective;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,15 +43,15 @@ public class ScoreboardSidebarMixin {
   private static final int SIDEBAR_Y_OFFSET = 45;
 
   @Inject(method = "displayScoreboardSidebar", at = @At("HEAD"))
-  private void craftingdead$shiftSidebarDown(PoseStack poseStack, Objective objective,
+  private void craftingdead$shiftSidebarDown(GuiGraphics guiGraphics, Objective objective,
       CallbackInfo ci) {
-    poseStack.pushPose();
-    poseStack.translate(0.0F, SIDEBAR_Y_OFFSET, 0.0F);
+    guiGraphics.pose().pushPose();
+    guiGraphics.pose().translate(0.0F, SIDEBAR_Y_OFFSET, 0.0F);
   }
 
   @Inject(method = "displayScoreboardSidebar", at = @At("RETURN"))
-  private void craftingdead$restorePose(PoseStack poseStack, Objective objective,
+  private void craftingdead$restorePose(GuiGraphics guiGraphics, Objective objective,
       CallbackInfo ci) {
-    poseStack.popPose();
+    guiGraphics.pose().popPose();
   }
 }

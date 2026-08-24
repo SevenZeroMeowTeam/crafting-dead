@@ -33,7 +33,7 @@ import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.tags.SurvivalItemTags;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -50,7 +50,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -149,7 +149,7 @@ public class ZombieHandler implements LivingHandler {
   protected Optional<Item> getRandomItem(TagKey<Item> tagKey, float probability) {
     var random = this.extension.random();
     return random.nextFloat() < probability
-        ? Registry.ITEM.getTag(tagKey)
+        ? BuiltInRegistries.ITEM.getTag(tagKey)
             .flatMap(tag -> tag.getRandomElement(random))
             .map(Holder::value)
         : Optional.empty();
@@ -167,11 +167,11 @@ public class ZombieHandler implements LivingHandler {
       return ItemStack.EMPTY;
     }
     var level = (ServerLevel) this.extension.level();
-    var lootTable = level.getServer().getLootTables().get(location);
+    var lootTable = level.getServer().getLootData().getLootTable(location);
     if (lootTable == LootTable.EMPTY) {
       return vestStack;
     }
-    var lootParams = new LootContext.Builder(level)
+    var lootParams = new LootParams.Builder(level)
         .withParameter(LootContextParams.ORIGIN,
             this.extension.entity().position())
         .create(LootContextParamSets.CHEST);
@@ -194,11 +194,11 @@ public class ZombieHandler implements LivingHandler {
       return ItemStack.EMPTY;
     }
     var level = (ServerLevel) this.extension.level();
-    var lootTable = level.getServer().getLootTables().get(location);
+    var lootTable = level.getServer().getLootData().getLootTable(location);
     if (lootTable == LootTable.EMPTY) {
       return backpackStack;
     }
-    var lootParams = new LootContext.Builder(level)
+    var lootParams = new LootParams.Builder(level)
         .withParameter(LootContextParams.ORIGIN,
             this.extension.entity().position())
         .create(LootContextParamSets.CHEST);

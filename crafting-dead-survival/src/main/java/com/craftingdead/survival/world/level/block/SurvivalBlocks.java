@@ -24,7 +24,6 @@ import com.craftingdead.survival.particles.SurvivalParticleTypes;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -36,31 +35,31 @@ public class SurvivalBlocks {
 
   public static final RegistryObject<Block> MILITARY_LOOT =
       deferredRegister.register("military_loot",
-          () -> new LootBlock(BlockBehaviour.Properties.of(Material.METAL)
+          () -> new LootBlock(BlockBehaviour.Properties.of()
               .strength(5.0F, 5.0F)
               .noOcclusion()));
 
   public static final RegistryObject<Block> MEDICAL_LOOT =
       deferredRegister.register("medic_loot",
-          () -> new LootBlock(BlockBehaviour.Properties.of(Material.METAL)
+          () -> new LootBlock(BlockBehaviour.Properties.of()
               .strength(5.0F, 5.0F)
               .noOcclusion()));
 
   public static final RegistryObject<Block> CIVILIAN_LOOT =
       deferredRegister.register("civilian_loot",
-          () -> new LootBlock(BlockBehaviour.Properties.of(Material.METAL)
+          () -> new LootBlock(BlockBehaviour.Properties.of()
               .strength(5.0F, 5.0F)
               .noOcclusion()));
 
   public static final RegistryObject<Block> RARE_CIVILIAN_LOOT =
       deferredRegister.register("civilian_rare_loot",
-          () -> new LootBlock(BlockBehaviour.Properties.of(Material.METAL)
+          () -> new LootBlock(BlockBehaviour.Properties.of()
               .strength(5.0F, 5.0F)
               .noOcclusion()));
 
   public static final RegistryObject<Block> POLICE_LOOT =
       deferredRegister.register("police_loot",
-          () -> new LootBlock(BlockBehaviour.Properties.of(Material.METAL)
+          () -> new LootBlock(BlockBehaviour.Properties.of()
               .strength(5.0F, 5.0F)
               .noOcclusion()));
 
@@ -99,7 +98,7 @@ public class SurvivalBlocks {
       Supplier<? extends ParticleOptions> particleOptions, Supplier<Integer> refreshDelayTicks,
       Supplier<Boolean> enabled) {
     return new LootGeneratorBlock(
-        BlockBehaviour.Properties.of(Material.METAL)
+        BlockBehaviour.Properties.of()
             .strength(5.0F, 5.0F)
             .noOcclusion()
             .noCollission(),

@@ -52,7 +52,7 @@ public class BoltCuttersItem extends MeleeWeaponItem {
                   .withStyle(ChatFormatting.GREEN),
               true);
         } else {
-          playerHit.getLevel().playLocalSound(playerHit.getX(), playerHit.getY(),
+          playerHit.level().playLocalSound(playerHit.getX(), playerHit.getY(),
               playerHit.getZ(), SoundEvents.ITEM_BREAK,
               playerHit.getSoundSource(), 0.2F, 0.5F, false);
         }
@@ -60,6 +60,6 @@ public class BoltCuttersItem extends MeleeWeaponItem {
         itemStack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
       }
     }
-    return InteractionResult.sidedSuccess(player.getLevel().isClientSide());
+    return InteractionResult.sidedSuccess(player.level().isClientSide());
   }
 }

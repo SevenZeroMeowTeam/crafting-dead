@@ -41,7 +41,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -56,14 +56,14 @@ public class IngameGui {
 
   private static final Random random = new Random();
 
-  private static void drawCenteredString(PoseStack poseStack, Font font, Component text,
+  private static void drawCenteredString(GuiGraphics guiGraphics, Font font, Component text,
       int x, int y, int color) {
-    GuiComponent.drawCenteredString(poseStack, font, text, x, y, color);
+    guiGraphics.drawCenteredString(font, text, x, y, color);
   }
 
-  private static void drawCenteredString(PoseStack poseStack, Font font, String text,
+  private static void drawCenteredString(GuiGraphics guiGraphics, Font font, String text,
       int x, int y, int color) {
-    GuiComponent.drawCenteredString(poseStack, font, text, x, y, color);
+    guiGraphics.drawCenteredString(font, text, x, y, color);
   }
 
   private static final ResourceLocation HEALTH =
@@ -110,10 +110,10 @@ public class IngameGui {
     this.hitMarker = hitMarker;
   }
 
-  private void renderGunFlash(PoseStack poseStack, Gun gun, int width, int height,
+  private void renderGunFlash(GuiGraphics guiGraphics, Gun gun, int width, int height,
       float partialTicks) {
     if (gun.getClient().isFlashing()) {
-      // (poseStack already provided as parameter)
+      PoseStack poseStack = guiGraphics.pose();
       poseStack.pushPose();
       {
         final var flashIntensity = (random.nextInt(3) + 5) / 10.0F;
@@ -168,14 +168,14 @@ public class IngameGui {
   }
 
   public void renderOverlay(PlayerExtension<AbstractClientPlayer> player, ItemStack heldStack,
-      @Nullable Gun gun, PoseStack poseStack, int width, int height, float partialTick) {
+      @Nullable Gun gun, GuiGraphics guiGraphics, int width, int height, float partialTick) {
     if (this.hitMarker != null) {
-      if (this.hitMarker.render(poseStack, width, height, partialTick)) {
+      if (this.hitMarker.render(guiGraphics.pose(), width, height, partialTick)) {
         this.hitMarker = null;
       }
     }
 
-    this.renderKillFeed(poseStack, partialTick);
+    this.renderKillFeed(guiGraphics, partialTick);
 
     heldStack.getCapability(Scope.CAPABILITY)
         .filter(scope -> scope.isScoping(player))
@@ -183,27 +183,27 @@ public class IngameGui {
 
     player.getActionObserver()
         .flatMap(ActionObserver::getProgressBar)
-        .ifPresent(observer -> renderProgress(poseStack, this.minecraft.font, width,
+        .ifPresent(observer -> renderProgress(guiGraphics, this.minecraft.font, width,
             height, observer.getMessage(), observer.getSubMessage().orElse(null),
             observer.getProgress(partialTick)));
 
     if (gun != null) {
-      this.renderGunFlash(poseStack, gun, width, height, partialTick);
+      this.renderGunFlash(guiGraphics, gun, width, height, partialTick);
     }
 
     // Needs to render after blood or else it causes Z level issues
     if (gun != null) {
-      this.renderAmmo(poseStack, width, height, gun);
+      this.renderAmmo(guiGraphics, width, height, gun);
     }
 
     if (player.isCombatModeEnabled()) {
-      this.renderCombatMode(player, poseStack, width, height, partialTick);
+      this.renderCombatMode(player, guiGraphics, width, height, partialTick);
     }
 
-    this.renderHandcuffsDamage(poseStack, player.getHandcuffs(), width, height);
+    this.renderHandcuffsDamage(guiGraphics, player.getHandcuffs(), width, height);
   }
 
-  private void renderKillFeed(PoseStack poseStack, float partialTicks) {
+  private void renderKillFeed(GuiGraphics guiGraphics, float partialTicks) {
     if (this.killFeedMessages.isEmpty()) {
       return;
     }
@@ -235,12 +235,12 @@ public class IngameGui {
     for (int i = 0; i < this.killFeedMessages.size(); i++) {
       final KillFeedEntry killFeedMessage = this.killFeedMessages.get(i);
       float killFeedMessageY = 5.0F + ((i - (1.0F * animationPct)) * 12.0F);
-      this.renderKillFeedEntry(killFeedMessage, poseStack, killFeedMessageX, killFeedMessageY,
+      this.renderKillFeedEntry(killFeedMessage, guiGraphics, killFeedMessageX, killFeedMessageY,
           i == 0 ? 1.0F - animationPct : 1.0F);
     }
   }
 
-  private void renderKillFeedEntry(KillFeedEntry entry, PoseStack poseStack,
+  private void renderKillFeedEntry(KillFeedEntry entry, GuiGraphics guiGraphics,
       float x, float y, float alpha) {
     final String killerName = entry.getKillerName().getString();
     final String deadName = entry.getDeadName().getString();
@@ -266,16 +266,16 @@ public class IngameGui {
       return;
     }
 
-    // (poseStack already provided as parameter)
+    PoseStack poseStack = guiGraphics.pose();
     int colour = 0x000000 + (opacity << 24);
     RenderUtil.fillGradient(poseStack, x, y,
         x + killerNameWidth + deadNameWidth + spacing, y + 11, colour, colour);
 
-    GuiComponent.drawString(poseStack, this.minecraft.font, killerName,
-        (int) (x + 2), (int) (y + 2), 0xFFFFFF + ((int) (alpha * 255.0F) << 24));
-    GuiComponent.drawString(poseStack, this.minecraft.font, deadName,
+    guiGraphics.drawString(this.minecraft.font, killerName,
+        (int) (x + 2), (int) (y + 2), 0xFFFFFF + ((int) (alpha * 255.0F) << 24), true);
+    guiGraphics.drawString(this.minecraft.font, deadName,
         (int) (x + killerNameWidth + spacing - 1), (int) (y + 2),
-        0xFFFFFF + (opacity << 24));
+        0xFFFFFF + (opacity << 24), true);
 
     switch (entry.getType()) {
       case HEADSHOT:
@@ -332,13 +332,13 @@ public class IngameGui {
     }
   }
 
-  private void renderHandcuffsDamage(PoseStack poseStack, ItemStack handcuffs,
+  private void renderHandcuffsDamage(GuiGraphics guiGraphics, ItemStack handcuffs,
       int width, int height) {
     if (!handcuffs.isEmpty()) {
       final var mWidth = width / 2;
       final var mHeight = height / 2;
       final var damage = handcuffs.getMaxDamage() - handcuffs.getDamageValue();
-      drawCenteredString(poseStack, this.minecraft.font,
+      drawCenteredString(guiGraphics, this.minecraft.font,
           Component.literal(damage + "/" + handcuffs.getMaxDamage()), mWidth + 1, mHeight + 10,
           0xFFFFFFFF);
 
@@ -348,20 +348,20 @@ public class IngameGui {
         modelViewStack.translate(mWidth - 20.0F, mHeight - 30.0F, 0.0F);
         final var scale = 2.5F;
         modelViewStack.scale(scale, scale, scale);
-        this.minecraft.getItemRenderer().renderGuiItem(handcuffs, 0, 0);
+        guiGraphics.renderItem(handcuffs, 0, 0);
       }
       modelViewStack.popPose();
       RenderSystem.applyModelViewMatrix();
     }
   }
 
-  private void renderAmmo(PoseStack poseStack, int width, int height, Gun gun) {
+  private void renderAmmo(GuiGraphics guiGraphics, int width, int height, Gun gun) {
     int x = width - 115;
     int boxHeight = 25;
 
-    RenderUtil.fillGradient(poseStack, x - 10, height - boxHeight, x + 30, height, 0x00000000,
+    RenderUtil.fillGradient(guiGraphics.pose(), x - 10, height - boxHeight, x + 30, height, 0x00000000,
         0x55000000);
-    RenderUtil.fill(poseStack, x + 30, height - boxHeight, x + 30 + 90, height, 0x55000000);
+    RenderUtil.fill(guiGraphics.pose(), x + 30, height - boxHeight, x + 30 + 90, height, 0x55000000);
 
     AmmoProvider ammoProvider = gun.getAmmoProvider();
     int ammoCount = ammoProvider.getMagazine().map(Magazine::getSize).orElse(0);
@@ -377,48 +377,49 @@ public class IngameGui {
     int reserveTextWidth =
         (int) (this.minecraft.font.width(reserveText) * reserveTextScale);
 
-    GuiComponent.drawString(poseStack, this.minecraft.font,
+    guiGraphics.drawString(this.minecraft.font,
         ammoText,
         x + 55 - ammoTextWidth - (empty ? 0 : reserveTextWidth),
         height - (boxHeight / 2) - this.minecraft.font.lineHeight / 2,
         empty ? ChatFormatting.RED.getColor() : 0xFFFFFFFF);
 
     if (!empty) {
-      // (poseStack already provided as parameter)
+      PoseStack poseStack = guiGraphics.pose();
       poseStack.pushPose();
       poseStack.translate(x + 55 - reserveTextWidth,
           height - (boxHeight / 2) - (reserveTextScale * 2), 0);
       poseStack.scale(reserveTextScale, reserveTextScale, reserveTextScale);
-      GuiComponent.drawString(poseStack, this.minecraft.font,
+      guiGraphics.drawString(this.minecraft.font,
           reserveText, 0, 0, empty ? ChatFormatting.RED.getColor() : 0xFFFFFFFF);
       poseStack.popPose();
     }
 
     String fireMode = I18n.get(gun.getFireMode().getTranslationKey());
-    GuiComponent.drawString(poseStack, this.minecraft.font,
+    guiGraphics.drawString(this.minecraft.font,
         fireMode, x + 65, height - 16, 0xFFFFFFFF);
   }
 
-  private static void renderProgress(PoseStack poseStack, Font font,
+  private static void renderProgress(GuiGraphics guiGraphics, Font font,
       int width, int height, Component message, @Nullable Component subMessage, float percent) {
     final int barWidth = 100;
     final int barHeight = 10;
     final int barColour = 0xC0FFFFFF;
     final float x = width / 2 - barWidth / 2;
     final float y = height / 2;
-    GuiComponent.drawString(poseStack, font, message.getString(), (int) x,
+    guiGraphics.drawString(font, message.getString(), (int) x,
         (int) (y - barHeight - ((font.lineHeight / 2) + 0.5F)), 0xFFFFFF);
-    RenderUtil.fillGradient(poseStack, x, y, x + barWidth * percent, y + barHeight, barColour,
+    RenderUtil.fillGradient(guiGraphics.pose(), x, y, x + barWidth * percent, y + barHeight, barColour,
         barColour);
     if (subMessage != null) {
-      GuiComponent.drawString(poseStack, font, subMessage.getString(), (int) x,
+      guiGraphics.drawString(font, subMessage.getString(), (int) x,
           (int) (y + barHeight + ((font.lineHeight / 2) + 0.5F)), 0xFFFFFF);
     }
   }
 
   private void renderCombatMode(PlayerExtension<AbstractClientPlayer> player,
-      PoseStack poseStack, int width, int height, float partialTick) {
+      GuiGraphics guiGraphics, int width, int height, float partialTick) {
     final var inventory = player.entity().getInventory();
+    final PoseStack poseStack = guiGraphics.pose();
 
     int boxX = width - 115;
     int boxWidth = 110;
@@ -437,7 +438,7 @@ public class IngameGui {
       RenderUtil.fill(poseStack, boxX + 1, boxY + 1, boxWidth - 2, boxHeight - 2, 0xCCFFFFFF);
     }
     RenderUtil.fill(poseStack, boxX, boxY, boxWidth, boxHeight, 0x66000000);
-    GuiComponent.drawString(poseStack, this.minecraft.font, "1", boxX + boxWidth - 10, boxY + 5, 0xFFFFFFFF);
+    guiGraphics.drawString(this.minecraft.font, "1", boxX + boxWidth - 10, boxY + 5, 0xFFFFFFFF);
     RenderUtil.renderItemInCombatSlot(primaryStack,
         boxX + boxWidth - rightPadding, boxY + topPadding, poseStack, partialTick);
 
@@ -449,7 +450,7 @@ public class IngameGui {
       RenderUtil.fill(poseStack, boxX + 1, boxY + 1, boxWidth - 2, boxHeight - 2, 0xCCFFFFFF);
     }
     RenderUtil.fill(poseStack, boxX, boxY, boxWidth, boxHeight, 0x66000000);
-    GuiComponent.drawString(poseStack, this.minecraft.font, "2", boxX + boxWidth - 10, boxY + 5, 0xFFFFFFFF);
+    guiGraphics.drawString(this.minecraft.font, "2", boxX + boxWidth - 10, boxY + 5, 0xFFFFFFFF);
     RenderUtil.renderItemInCombatSlot(secondaryStack,
         boxX + boxWidth - rightPadding, boxY + topPadding, poseStack, partialTick);
 
@@ -461,7 +462,7 @@ public class IngameGui {
       RenderUtil.fill(poseStack, boxX + 1, boxY + 1, boxWidth - 2, boxHeight - 2, 0xCCFFFFFF);
     }
     RenderUtil.fill(poseStack, boxX, boxY, boxWidth, boxHeight, 0x66000000);
-    GuiComponent.drawString(poseStack, this.minecraft.font, "3", boxX + boxWidth - 10, boxY + 5, 0xFFFFFFFF);
+    guiGraphics.drawString(this.minecraft.font, "3", boxX + boxWidth - 10, boxY + 5, 0xFFFFFFFF);
     RenderUtil.renderItemInCombatSlot(meleeStack,
         boxX + boxWidth - rightPadding, boxY + topPadding, poseStack, partialTick);
 
@@ -475,7 +476,7 @@ public class IngameGui {
         RenderUtil.fill(poseStack, boxX + 1, boxY + 1, boxWidth - 2, boxHeight - 2, 0xCCFFFFFF);
       }
       RenderUtil.fill(poseStack, boxX, boxY, boxWidth, boxHeight, 0x66000000);
-      GuiComponent.drawString(poseStack, this.minecraft.font, String.valueOf(4 + i), boxX + boxWidth - 7,
+      guiGraphics.drawString(this.minecraft.font, String.valueOf(4 + i), boxX + boxWidth - 7,
           boxY + 1, 0xFFFFFFFF);
 
       poseStack.pushPose();
@@ -509,7 +510,7 @@ public class IngameGui {
     RenderUtil.blit(5, height - healthBoxHeight / 2 - 8, 16, 16);
     RenderSystem.disableBlend();
 
-    drawCenteredString(poseStack, this.minecraft.font,
+    drawCenteredString(guiGraphics, this.minecraft.font,
         String.valueOf(Math.round(health)), 31,
         height - healthBoxHeight / 2 - this.minecraft.font.lineHeight / 2, 0xFFFFFFFF);
     RenderUtil.fill(poseStack, 42, height - healthBoxHeight / 2 - 5, 65, 10, 0x66000000);
@@ -523,7 +524,7 @@ public class IngameGui {
       RenderUtil.blit(armourX + 5, height - healthBoxHeight / 2 - 8, 16, 16);
       RenderSystem.disableBlend();
 
-      drawCenteredString(poseStack, this.minecraft.font,
+      drawCenteredString(guiGraphics, this.minecraft.font,
           String.valueOf(Math.round(armour)), armourX + 31,
           height - healthBoxHeight / 2 - this.minecraft.font.lineHeight / 2, 0xFFFFFFFF);
       RenderUtil.fill(poseStack, armourX + 42, height - healthBoxHeight / 2 - 5, 65, 10,

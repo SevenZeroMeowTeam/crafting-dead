@@ -40,12 +40,12 @@ public record BlockDestroyActionMessage(BlockPos pos) {
     ctx.get().enqueueWork(() -> {
       var player = ctx.get().getSender();
       if (player != null) {
-        var level = player.getLevel();
+        var level = player.level();
         var state = level.getBlockState(msg.pos);
         if (!state.isAir()) {
           NetworkChannel.PLAY.getSimpleChannel().send(PacketDistributor.TRACKING_CHUNK.with(() ->
               level.getChunkAt(msg.pos())), new BlockDestroyParticleMessage(msg.pos(), state));
-          player.getLevel().setBlock(msg.pos, Blocks.AIR.defaultBlockState(), 3);
+          player.level().setBlock(msg.pos, Blocks.AIR.defaultBlockState(), 3);
         }
       }
     });

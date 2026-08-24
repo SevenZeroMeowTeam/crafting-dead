@@ -46,7 +46,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Transformation;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
+import org.joml.Vector3f;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -62,6 +63,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -123,7 +125,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
       MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
     var gun = CapabilityUtil.getOrThrow(Gun.CAPABILITY, itemStack, Gun.class);
     this.renderGun(gun, false, true, itemStack.hasFoil(), 0.0F,
-        ItemTransforms.TransformType.GUI, partialTick, poseStack, bufferSource, packedLight,
+        ItemDisplayContext.GUI, partialTick, poseStack, bufferSource, packedLight,
         packedOverlay);
   }
 
@@ -135,7 +137,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
   }
 
   @Override
-  public boolean handlePerspective(ItemStack item, ItemTransforms.TransformType transformType) {
+  public boolean handlePerspective(ItemStack item, ItemDisplayContext transformType) {
     return switch (transformType) {
       case THIRD_PERSON_LEFT_HAND, THIRD_PERSON_RIGHT_HAND,
           FIRST_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND,
@@ -147,7 +149,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
   @Override
   public void render(
       ItemStack itemStack,
-      ItemTransforms.TransformType transformType,
+      ItemDisplayContext transformType,
       @Nullable LivingExtension<?, ?> living,
       PoseStack poseStack,
       MultiBufferSource bufferSource,
@@ -191,8 +193,8 @@ public class GunRenderer implements CombatSlotItemRenderer {
         case FIXED:
           poseStack.scale(1.5F, 1.5F, 1.5F);
           poseStack.translate(-0.25F, 0, 0);
-          poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
-          poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
+          poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+          poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
           this.renderGun(gun, true, false, itemStack.hasFoil(), 0.0F,
               transformType, partialTick, poseStack, bufferSource, packedLight,
               packedOverlay);
@@ -266,9 +268,9 @@ public class GunRenderer implements CombatSlotItemRenderer {
 
       poseStack.mulPoseMatrix(rightHandTransforms.getMatrix());
       {
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(95.0F));
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(100.0F));
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(95.0F));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(100.0F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
 
         poseStack.translate(0.9F, -0.75F, 0.5F);
 
@@ -291,9 +293,9 @@ public class GunRenderer implements CombatSlotItemRenderer {
 
       poseStack.mulPoseMatrix(leftHandTransforms.getMatrix());
       {
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(95.0F));
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(95.0F));
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(120.0F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(95.0F));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(95.0F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(120.0F));
 
         poseStack.translate(0.05F, -1.05F, 0.30F);
 
@@ -355,7 +357,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
       ItemStack itemStack,
       Gun gun,
       boolean aiming,
-      ItemTransforms.TransformType transformType,
+      ItemDisplayContext transformType,
       float partialTicks,
       PoseStack poseStack,
       MultiBufferSource renderTypeBuffer,
@@ -428,7 +430,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
       boolean renderDefaultMagazine,
       boolean foil,
       float aimingPct,
-      ItemTransforms.TransformType transformType,
+      ItemDisplayContext transformType,
       float partialTick,
       PoseStack poseStack,
       MultiBufferSource bufferSource,
@@ -486,7 +488,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
   }
 
   protected final void renderBakedModel(BakedModel bakedModel, boolean foil, int colour,
-      ItemTransforms.TransformType transformType, PoseStack poseStack,
+      ItemDisplayContext transformType, PoseStack poseStack,
       MultiBufferSource renderTypeBuffer, int packedLight, int packedOverlay) {
     poseStack.pushPose();
     {
@@ -528,7 +530,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
       @Nullable ResourceLocation skinTextureLocation,
       int colour,
       boolean foil,
-      ItemTransforms.TransformType transformType,
+      ItemDisplayContext transformType,
       float partialTicks,
       PoseStack matrixStack,
       MultiBufferSource renderTypeBuffer,
@@ -569,7 +571,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
       @Nullable ResourceLocation skinTextureLocation,
       int color,
       boolean foil,
-      ItemTransforms.TransformType transformType,
+      ItemDisplayContext transformType,
       PoseStack poseStack,
       MultiBufferSource renderTypeBuffer,
       int packedLight,

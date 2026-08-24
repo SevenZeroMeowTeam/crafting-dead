@@ -22,7 +22,7 @@ import java.util.Set;
 import com.craftingdead.decoration.CraftingDeadDecoration;
 import com.craftingdead.decoration.world.level.block.DecorationBlocks;
 import java.util.Map;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -30,7 +30,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class DecorationBlockModelProvider extends BlockModelProvider {
 
-  public DecorationBlockModelProvider(DataGenerator output,
+  public DecorationBlockModelProvider(PackOutput output,
       ExistingFileHelper existingFileHelper) {
     super(output, CraftingDeadDecoration.ID, existingFileHelper);
   }

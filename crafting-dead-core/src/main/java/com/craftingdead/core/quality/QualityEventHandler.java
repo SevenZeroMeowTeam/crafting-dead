@@ -63,7 +63,7 @@ public class QualityEventHandler {
 
   @SubscribeEvent
   public void handleItemCrafted(PlayerEvent.ItemCraftedEvent event) {
-    if (event.getEntity().level.isClientSide()) {
+    if (event.getEntity().level().isClientSide()) {
       return;
     }
     ItemStack result = event.getCrafting();
@@ -73,7 +73,7 @@ public class QualityEventHandler {
     // 神话配方产物：保留神话品质，并附加全部适用附魔的满级（神话无视游戏规则）。
     // 注意：不能走下方随机品质，否则会覆盖神话品质。
     if (QualityHelper.isMythic(result)) {
-      QualityHelper.applyFullEnchantments(result, event.getEntity().level);
+      QualityHelper.applyFullEnchantments(result, event.getEntity().level());
       return;
     }
     // 普通合成工具 / 武器 / 盔甲：
@@ -81,7 +81,7 @@ public class QualityEventHandler {
     //  - 属性（附魔）随机（品质越高，附魔数量越多、等级越高）
     // 注：合成物品不再随机分配"工具材质"——随机材质仅用于初始奖励装备。
     QualityHelper.applyRandomQualityForCrafted(result);
-    QualityHelper.applyRandomAttributes(result, event.getEntity().level);
+    QualityHelper.applyRandomAttributes(result, event.getEntity().level());
   }
 
   // ================================================================================
@@ -90,7 +90,7 @@ public class QualityEventHandler {
 
   @SubscribeEvent(priority = EventPriority.HIGH)
   public void handleLivingDamage(LivingDamageEvent event) {
-    if (event.getEntity().level.isClientSide()) {
+    if (event.getEntity().level().isClientSide()) {
       return;
     }
     DamageSource source = event.getSource();
@@ -129,7 +129,7 @@ public class QualityEventHandler {
 
   @SubscribeEvent
   public void handlePlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-    if (event.getEntity().level.isClientSide()) {
+    if (event.getEntity().level().isClientSide()) {
       return;
     }
     Player player = event.getEntity();
@@ -159,7 +159,7 @@ public class QualityEventHandler {
       return;
     }
     Player player = event.player;
-    if (player.level.isClientSide()) {
+    if (player.level().isClientSide()) {
       return;
     }
 

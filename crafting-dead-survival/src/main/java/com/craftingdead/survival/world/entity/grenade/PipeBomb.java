@@ -58,9 +58,9 @@ public class PipeBomb extends Grenade implements ExplosionSource {
   @Override
   public void activatedChanged(boolean activated) {
     if (activated) {
-      if (!this.getLevel().isClientSide()) {
+      if (!this.level().isClientSide()) {
         this.kill();
-        this.getLevel().explode(this,
+        this.level().explode(this, this.createDamageSource(), null,
             this.getX(), this.getY() + this.getBbHeight(), this.getZ(),
             CraftingDeadSurvival.serverConfig.pipeBombRadius.get().floatValue(), false,
             CraftingDeadSurvival.serverConfig.pipeBombBlockInteraction.get());
@@ -71,14 +71,14 @@ public class PipeBomb extends Grenade implements ExplosionSource {
   @Override
   public void onGrenadeTick() {
     if (this.tickCount % 6 == 0) {
-      if (this.getLevel().isClientSide()) {
-        this.getLevel().addParticle(RED_FLASH, true,
+      if (this.level().isClientSide()) {
+        this.level().addParticle(RED_FLASH, true,
             this.getX(), this.getY(), this.getZ(), 0D, 0D, 0D);
       } else {
         this.getMinimumTicksUntilAutoActivation().ifPresent(ticks -> {
           var pitchProgress = this.tickCount / (float) ticks;
           var gradualPitch = Mth.lerp(pitchProgress, 1.0F, 2F);
-          this.playSound(SoundEvents.NOTE_BLOCK_BELL, 1.7F, gradualPitch);
+          this.playSound(SoundEvents.NOTE_BLOCK_BELL.value(), 1.7F, gradualPitch);
         });
       }
     }

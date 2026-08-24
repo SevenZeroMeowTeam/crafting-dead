@@ -20,6 +20,7 @@ package com.craftingdead.survival.data.models;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -31,6 +32,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 
 public class SurvivalModelProvider implements DataProvider {
@@ -38,14 +40,13 @@ public class SurvivalModelProvider implements DataProvider {
   private static final Logger logger = LogManager.getLogger();
   private static final Gson gson =
       new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-  private final Path outputFolder;
+  private final PackOutput output;
 
-  public SurvivalModelProvider(Path outputFolder) {
-    this.outputFolder = outputFolder;
+  public SurvivalModelProvider(PackOutput output) {
+    this.output = output;
   }
 
-  @Override
-  public void run(CachedOutput cache) throws java.io.IOException {
+  public CompletableFuture<?> run(CachedOutput cache) {
     Map<ResourceLocation, Supplier<JsonElement>> models = Maps.newHashMap();
     BiConsumer<ResourceLocation, Supplier<JsonElement>> modelConsumer = (model, json) -> {
       Supplier<JsonElement> existingJson = models.put(model, json);
@@ -56,19 +57,18 @@ public class SurvivalModelProvider implements DataProvider {
 
     new SurvivalItemModelGenerators(modelConsumer).run();
 
-    Path outputFolder = this.outputFolder;
+    Path outputFolder = this.output.getOutputFolder();
 
-    this.saveCollection(cache, outputFolder, models,
+    return this.saveCollection(cache, outputFolder, models,
         SurvivalModelProvider::createModelPath);
   }
 
-  private <T> void saveCollection(CachedOutput cache, Path outputFolder,
-      Map<T, ? extends Supplier<JsonElement>> models, BiFunction<Path, T, Path> pathFunc)
-      throws java.io.IOException {
-    for (var entry : models.entrySet()) {
+  private <T> CompletableFuture<?> saveCollection(CachedOutput cache, Path outputFolder,
+      Map<T, ? extends Supplier<JsonElement>> models, BiFunction<Path, T, Path> pathFunc) {
+    return CompletableFuture.allOf(models.entrySet().stream().map(entry -> {
       Path path = pathFunc.apply(outputFolder, entry.getKey());
-      DataProvider.saveStable(cache, entry.getValue().get(), path);
-    }
+      return DataProvider.saveStable(cache, entry.getValue().get(), path);
+    }).toArray(CompletableFuture[]::new));
   }
 
   private static Path createModelPath(Path parentDir, ResourceLocation modelLocation) {

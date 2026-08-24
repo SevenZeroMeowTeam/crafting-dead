@@ -71,7 +71,7 @@ public final class ProtectionLookup {
       if (helmetProfile.stunThreshold() > 0.0F && incomingEnergy > helmetProfile.stunThreshold()) {
         forcedSevere = true;
       }
-      if (!entity.getLevel().isClientSide()) {
+      if (!entity.level().isClientSide()) {
         helmetDurabilityLoss = applyDurabilityLoss(helmetStack, helmetProfile, helmetAbsorbed,
             entity, EquipmentSlot.HEAD);
       }
@@ -87,7 +87,7 @@ public final class ProtectionLookup {
       float share = Math.min(energy * 0.15F, vestProfile.stoppingPower() * 0.5F);
       vestAbsorbed = Math.min(energy, share);
       energy = Math.max(0.0F, energy - vestAbsorbed);
-      if (!entity.getLevel().isClientSide()) {
+      if (!entity.level().isClientSide()) {
         vestDurabilityLoss = applyDurabilityLoss(vestStack, vestProfile, vestAbsorbed, entity,
             EquipmentSlot.CHEST);
       }

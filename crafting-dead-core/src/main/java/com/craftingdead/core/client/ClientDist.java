@@ -88,7 +88,8 @@ import com.craftingdead.core.world.item.gun.skin.Paint;
 import com.craftingdead.core.world.item.gun.skin.Skins;
 import com.craftingdead.core.world.item.scope.Scope;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
+import org.joml.Vector3f;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -237,9 +238,12 @@ public class ClientDist implements ModDist {
   @Override
   public RegistryAccess registryAccess() {
     var minecraft = Minecraft.getInstance();
-    if (minecraft.level != null) {
-      return minecraft.level.registryAccess();
+    if (FMLEnvironment.dist.isDedicatedServer() && minecraft.getSingleplayerServer() != null) {
+      return minecraft.getSingleplayerServer().registryAccess();
+    } else if (FMLEnvironment.dist.isClient() && minecraft.player != null) {
+      return minecraft.player.connection.registryAccess();
     }
+
     return ModDist.super.registryAccess();
   }
 
@@ -657,11 +661,10 @@ public class ClientDist implements ModDist {
 
     var heldStack = player.mainHandItem();
     var gun = heldStack.getCapability(Gun.CAPABILITY).orElse(null);
-    var window = event.getWindow();
-    this.ingameGui.renderOverlay(player, heldStack, gun, event.getPoseStack(),
-        window.getGuiScaledWidth(), window.getGuiScaledHeight(),
+    this.ingameGui.renderOverlay(player, heldStack, gun, event.getGuiGraphics(),
+        event.getGuiGraphics().guiWidth(), event.getGuiGraphics().guiHeight(),
         event.getPartialTick());
-    this.targetOverlay.render(event.getPoseStack(), event.getPartialTick());
+    this.targetOverlay.render(event.getGuiGraphics(), event.getPartialTick());
   }
 
   @SubscribeEvent
@@ -677,9 +680,9 @@ public class ClientDist implements ModDist {
       }
     }
 
-    this.lastPitch = Mth.lerp(0.1F, this.lastPitch, mutableCameraRotations.x());
-    this.lastYaw = Mth.lerp(0.1F, this.lastYaw, mutableCameraRotations.y());
-    this.lastRoll = Mth.lerp(0.1F, this.lastRoll, mutableCameraRotations.z());
+    this.lastPitch = Mth.lerp(0.1F, this.lastPitch, mutableCameraRotations.x);
+    this.lastYaw = Mth.lerp(0.1F, this.lastYaw, mutableCameraRotations.y);
+    this.lastRoll = Mth.lerp(0.1F, this.lastRoll, mutableCameraRotations.z);
     mutableCameraRotations.set(0.0F, 0.0F, 0.0F);
     event.setPitch(event.getPitch() + this.lastPitch);
     event.setYaw(event.getYaw() + this.lastYaw);
@@ -875,7 +878,7 @@ public class ClientDist implements ModDist {
       int packedLight) {
     poseStack.pushPose();
     poseStack.translate(0.0D, -1.08D, -1.0D);
-    poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
+    poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
 
     var vertexConsumer = ItemRenderer.getArmorFoilBuffer(
         bufferSource,

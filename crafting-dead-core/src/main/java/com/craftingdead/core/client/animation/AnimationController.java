@@ -21,7 +21,7 @@ package com.craftingdead.core.client.animation;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import org.joml.Vector3f;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 

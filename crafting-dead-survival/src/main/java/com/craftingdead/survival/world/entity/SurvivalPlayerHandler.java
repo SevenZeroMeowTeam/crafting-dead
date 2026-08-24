@@ -124,7 +124,7 @@ public class SurvivalPlayerHandler implements PlayerHandler {
   public void infect(float chance) {
     var entity = this.player.entity();
     if (!entity.isCreative()
-        && entity.getLevel().getDifficulty() != Difficulty.PEACEFUL
+        && entity.level().getDifficulty() != Difficulty.PEACEFUL
         && entity.getRandom().nextFloat() < chance
         && !entity.hasEffect(SurvivalMobEffects.INFECTION.get())
         && CraftingDeadSurvival.serverConfig.infectionEnabled.get()
@@ -142,7 +142,7 @@ public class SurvivalPlayerHandler implements PlayerHandler {
     if (!invulnerable
         && CraftingDeadSurvival.serverConfig.bleedingEnabled.get()
         && !this.player.entity().hasEffect(ModMobEffects.BLEEDING.get())
-        && (source.getDirectEntity() != null || source.isExplosion())) {
+        && (source.getDirectEntity() != null || source.is(net.minecraft.world.damagesource.DamageTypes.EXPLOSION))) {
       float bleedChance;
       if (!this.player.getItemInSlot(Slot.CLOTHING).isEmpty()) {
         bleedChance = Objects.requireNonNull(ClothingItem.getClothingItem(this.player.entity()))
@@ -161,7 +161,7 @@ public class SurvivalPlayerHandler implements PlayerHandler {
     if (!invulnerable
         && CraftingDeadSurvival.serverConfig.brokenLegsEnabled.get()
         && !this.player.entity().hasEffect(SurvivalMobEffects.BROKEN_LEG.get())
-        && source == DamageSource.FALL) {
+        && source == this.player.entity().damageSources().fall()) {
       var legBreakChance =
           CraftingDeadSurvival.serverConfig.brokenLegChance.get() * this.player.entity().fallDistance / this.player.entity().getMaxFallDistance();
       if (random.nextFloat() < legBreakChance

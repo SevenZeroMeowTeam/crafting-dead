@@ -26,18 +26,20 @@ import com.google.gson.JsonSyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 
 /**
- * 神话升级配方（1.19.2 版）。
+ * 神话升级配方（1.20.1 版）。
  *
  * <p>3x3 合成网格（缺一不可）：
  * <pre>
@@ -56,12 +58,12 @@ public class MythicUpgradeRecipe extends ShapedRecipe {
 
   public MythicUpgradeRecipe(ResourceLocation id, int width, int height,
       NonNullList<Ingredient> recipeItems, ItemStack baseResult) {
-    super(id, "", width, height, recipeItems, baseResult);
+    super(id, "", CraftingBookCategory.MISC, width, height, recipeItems, baseResult);
     this.baseResult = baseResult;
   }
 
   @Override
-  public ItemStack assemble(CraftingContainer container) {
+  public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
     // 找到网格中的核心物品（非下界合金锭、非钻石的物品即下界合金武器/工具/盔甲）
     ItemStack core = ItemStack.EMPTY;
     for (int i = 0; i < container.getContainerSize(); i++) {
@@ -80,7 +82,7 @@ public class MythicUpgradeRecipe extends ShapedRecipe {
   }
 
   @Override
-  public ItemStack getResultItem() {
+  public ItemStack getResultItem(RegistryAccess registryAccess) {
     // JEI / 配方书展示：神话版本
     ItemStack result = this.baseResult.copy();
     QualityHelper.applyMythicUpgrade(result);

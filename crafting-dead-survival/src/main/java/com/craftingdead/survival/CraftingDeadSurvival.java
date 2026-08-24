@@ -108,7 +108,7 @@ import net.minecraftforge.common.data.ForgeBlockTagsProvider;
 // RegistryEvent was removed in 1.19+
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.living.LivingPackSizeEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.entity.living.MobSpawnEvent;
 // NOTE: BiomeLoadingEvent was removed in 1.19.4+. Zombie spawn modification
 // needs to be reimplemented via data-driven BiomeModifier JSON files.
 import net.minecraftforge.eventbus.api.Event;
@@ -172,6 +172,7 @@ public class CraftingDeadSurvival {
     SurvivalEnchantments.deferredRegister.register(modEventBus);
     SurvivalActionTypes.deferredRegister.register(modEventBus);
     SurvivalItems.deferredRegister.register(modEventBus);
+    SurvivalItems.CREATIVE_MODE_TABS.register(modEventBus);
     SurvivalMobEffects.deferredRegister.register(modEventBus);
     SurvivalEntityTypes.deferredRegister.register(modEventBus);
     SurvivalParticleTypes.deferredRegister.register(modEventBus);
@@ -270,18 +271,20 @@ public class CraftingDeadSurvival {
 
   private void handleGatherData(GatherDataEvent event) {
     var generator = event.getGenerator();
+    var packOutput = generator.getPackOutput();
+    var lookupProvider = event.getLookupProvider();
     var existingFileHelper = event.getExistingFileHelper();
     if (event.includeServer()) {
-      var blockTagsProvider = new ForgeBlockTagsProvider(generator,
+      var blockTagsProvider = new ForgeBlockTagsProvider(packOutput, lookupProvider,
           existingFileHelper);
-      generator.addProvider(true, new SurvivalItemTagsProvider(generator,
-          blockTagsProvider, existingFileHelper));
-      generator.addProvider(true, new SurvivalRecipeProvider(generator));
-      generator.addProvider(true, new SurvivalLootTableProvider(generator));
+      generator.addProvider(true, new SurvivalItemTagsProvider(packOutput, lookupProvider,
+          blockTagsProvider.contentsGetter(), existingFileHelper));
+      generator.addProvider(true, new SurvivalRecipeProvider(packOutput));
+      generator.addProvider(true, new SurvivalLootTableProvider(packOutput));
     }
 
     if (event.includeClient()) {
-      generator.addProvider(true, new SurvivalModelProvider(generator.getOutputFolder()));
+      generator.addProvider(true, new SurvivalModelProvider(packOutput));
     }
   }
 
@@ -305,8 +308,8 @@ public class CraftingDeadSurvival {
   }
 
   @SubscribeEvent
-  public void handleSpecialSpawn(LivingSpawnEvent.SpecialSpawn event) {
-    var level = event.getEntity().getLevel();
+  public void handleSpecialSpawn(MobSpawnEvent.FinalizeSpawn event) {
+    var level = event.getEntity().level();
     if (!level.isClientSide() && event.getEntity() instanceof Zombie zombie) {
 
       zombie.getAttribute(Attributes.ATTACK_KNOCKBACK)

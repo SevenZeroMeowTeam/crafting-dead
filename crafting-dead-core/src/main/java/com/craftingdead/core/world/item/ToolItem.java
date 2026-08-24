@@ -48,7 +48,7 @@ public class ToolItem extends Item {
       return 15.0F;
     } else {
       return blockState.is(BlockTags.LEAVES)
-          || blockState.is(BlockTags.REPLACEABLE_PLANTS)
+          || blockState.is(BlockTags.REPLACEABLE)
           || blockState.is(BlockTags.CROPS) ? 1.5F : 1.0F;
     }
   }

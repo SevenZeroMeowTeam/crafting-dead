@@ -202,7 +202,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
 
     if (!entity.isSilent() && shootSound != null) {
       // Sounds have to be played on the main thread (unfortunately)
-      this.minecraft.execute(() -> entity.getLevel().playLocalSound(
+      this.minecraft.execute(() -> entity.level().playLocalSound(
           entity.getX(), entity.getY(), entity.getZ(), shootSound,
           entity.getSoundSource(), farAway && amplifyDistantSound ? 8.0F : 1.0F, 1.0F, true));
     }
@@ -230,7 +230,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
       return;
     }
 
-    final Level level = hitEntity.getLevel();
+    final Level level = hitEntity.level();
 
     if (headshot) {
       final int particleCount = 12;
@@ -262,7 +262,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
   public void handleHitBlock(LivingExtension<?, ?> living,
       BlockHitResult result, BlockState blockState, boolean playSound) {
     Entity entity = living.entity();
-    Level level = entity.getLevel();
+    Level level = entity.level();
     Vec3 location = result.getLocation();
 
     if (playSound) {

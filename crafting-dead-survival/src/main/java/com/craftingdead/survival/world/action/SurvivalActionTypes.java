@@ -31,7 +31,6 @@ import com.craftingdead.survival.world.item.SurvivalItems;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Zombie;
@@ -65,7 +64,7 @@ public class SurvivalActionTypes {
               .forItem(ModItems.SYRINGE)
               .duration(16)
               .customAction((performer, target) -> target.entity().hurt(
-                  new EntityDamageSource("mob", (LivingEntity) target.entity()), 2.0F), 0.25F)
+                  performer.level().damageSources().mobAttack((LivingEntity) target.entity()), 2.0F), 0.25F)
               .resultItem(SurvivalItems.RBI_SYRINGE)
               .build());
 
