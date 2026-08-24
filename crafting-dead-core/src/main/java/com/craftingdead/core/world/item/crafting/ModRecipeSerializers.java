@@ -37,4 +37,8 @@ public class ModRecipeSerializers {
   public static final RegistryObject<SimpleCraftingRecipeSerializer<?>> DUPLICATE_MAGAZINE =
       deferredRegister.register("duplicate_magazine",
           () -> new SimpleCraftingRecipeSerializer<>(DuplicateMagazineRecipe::new));
+
+  public static final RegistryObject<RecipeSerializer<?>> MYTHIC_UPGRADE =
+      deferredRegister.register("mythic_upgrade",
+          MythicUpgradeRecipe.Serializer::new);
 }

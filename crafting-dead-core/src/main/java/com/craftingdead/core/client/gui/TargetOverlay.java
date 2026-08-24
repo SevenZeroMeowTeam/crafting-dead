@@ -24,11 +24,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -104,7 +106,8 @@ public class TargetOverlay {
     var state = level.getBlockState(blockHit.getBlockPos());
     var name = state.getBlock().getName();
     var modName = this.getModName(state);
-    this.renderPanel(guiGraphics, name, modName, null);
+    var toolInfo = this.getHarvestTool(state);
+    this.renderPanel(guiGraphics, name, modName, toolInfo, null);
   }
 
   private void renderEntity(GuiGraphics guiGraphics, Entity entity) {
@@ -117,9 +120,9 @@ public class TargetOverlay {
           0.0F, 1.0F);
       MutableComponent healthText = Component.literal(
           String.format("%.0f / %.0f", living.getHealth(), living.getMaxHealth()));
-      this.renderPanel(guiGraphics, name, modName, new HealthBar(healthPct, healthText));
+      this.renderPanel(guiGraphics, name, modName, null, new HealthBar(healthPct, healthText));
     } else {
-      this.renderPanel(guiGraphics, name, modName, null);
+      this.renderPanel(guiGraphics, name, modName, null, null);
     }
   }
 
@@ -128,19 +131,48 @@ public class TargetOverlay {
     return Component.literal(key == null ? "?" : key.getNamespace());
   }
 
+  /**
+   * 计算方块需要的破坏工具，并判断玩家当前手持工具是否合适（模仿 Jade）。
+   */
+  private Component getHarvestTool(BlockState state) {
+    String toolKey = null;
+    if (state.is(BlockTags.MINEABLE_WITH_PICKAXE)) {
+      toolKey = "pickaxe";
+    } else if (state.is(BlockTags.MINEABLE_WITH_AXE)) {
+      toolKey = "axe";
+    } else if (state.is(BlockTags.MINEABLE_WITH_SHOVEL)) {
+      toolKey = "shovel";
+    } else if (state.is(BlockTags.MINEABLE_WITH_HOE)) {
+      toolKey = "hoe";
+    }
+    if (toolKey == null) {
+      return Component.translatable("target.craftingdead.tool_any");
+    }
+    var held = this.minecraft.player == null ? ItemStack.EMPTY
+        : this.minecraft.player.getMainHandItem();
+    boolean correct = held.isCorrectToolForDrops(state);
+    return Component.translatable(
+        correct ? "target.craftingdead.tool_correct" : "target.craftingdead.tool_wrong",
+        Component.translatable("target.craftingdead.tool_" + toolKey));
+  }
+
   private void renderPanel(GuiGraphics guiGraphics, Component name, Component modName,
-      @Nullable HealthBar healthBar) {
+      @Nullable Component extraLine, @Nullable HealthBar healthBar) {
     var font = this.minecraft.font;
 
     var nameWidth = font.width(name);
     var modWidth = font.width(modName);
     var contentWidth = Math.max(nameWidth + MOD_NAME_SPACING + modWidth,
         healthBar == null ? 0 : 60);
+    if (extraLine != null) {
+      contentWidth = Math.max(contentWidth, font.width(extraLine));
+    }
 
     var panelWidth = contentWidth + PADDING * 2;
     var lineHeight = font.lineHeight;
+    var extraArea = extraLine == null ? 0 : lineHeight + 2;
     var barArea = healthBar == null ? 0 : BAR_HEIGHT + 3;
-    var panelHeight = PADDING * 2 + lineHeight + barArea;
+    var panelHeight = PADDING * 2 + lineHeight + extraArea + barArea;
 
     var screenWidth = guiGraphics.guiWidth();
     var x = (screenWidth - panelWidth) / 2;
@@ -160,8 +192,15 @@ public class TargetOverlay {
     guiGraphics.drawString(font, modName, x + panelWidth - PADDING - modWidth,
         y + PADDING, MOD_COLOR, false);
 
+    // 破坏工具信息（方块专用）
+    var lineY = y + PADDING + lineHeight;
+    if (extraLine != null) {
+      guiGraphics.drawString(font, extraLine, x + PADDING, lineY + 2, MOD_COLOR, false);
+      lineY += lineHeight + 2;
+    }
+
     if (healthBar != null) {
-      var barY = y + PADDING + lineHeight + 3;
+      var barY = lineY + 3;
       var barX = x + PADDING;
       var barWidth = 60;
       // 血量背景 + 边框

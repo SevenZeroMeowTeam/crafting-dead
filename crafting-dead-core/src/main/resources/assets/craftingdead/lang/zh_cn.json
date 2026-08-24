@@ -86,6 +86,7 @@
   "message.craftingdead.starter_given": "已发放新人奖励箱（TaCZ AK-47 + 弹药 + 全套附魔弓 + 箭）",
   "message.craftingdead.reward_box_opened": "已打开新人奖励箱，获得 TaCZ AK-47 / 7.62x39 弹药 / 全套附魔弓 / 箭",
 
+  "quality.craftingdead.mythic": "神话",
   "quality.craftingdead.legendary": "传说",
   "quality.craftingdead.hero": "英雄",
   "quality.craftingdead.epic": "史诗",
@@ -93,6 +94,14 @@
   "quality.craftingdead.excellent": "优秀",
   "quality.craftingdead.common": "普通",
   "quality.craftingdead.poor": "劣质",
+
+  "target.craftingdead.tool_any": "无需工具",
+  "target.craftingdead.tool_pickaxe": "镐子",
+  "target.craftingdead.tool_axe": "斧子",
+  "target.craftingdead.tool_shovel": "铲子",
+  "target.craftingdead.tool_hoe": "锄头",
+  "target.craftingdead.tool_correct": "工具：%s（合适）",
+  "target.craftingdead.tool_wrong": "工具：%s（不合适）",
 
   "tool_material.craftingdead.prefix": "材质：",
   "tool_material.craftingdead.wood": "木质",

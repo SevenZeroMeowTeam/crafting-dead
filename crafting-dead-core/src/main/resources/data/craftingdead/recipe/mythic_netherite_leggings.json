@@ -1,0 +1,23 @@
+{
+  "type": "craftingdead:mythic_upgrade",
+  "category": "equipment",
+  "pattern": [
+    "NDN",
+    "DCD",
+    "NDN"
+  ],
+  "key": {
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "C": {
+      "item": "minecraft:netherite_leggings"
+    }
+  },
+  "result": {
+    "id": "minecraft:netherite_leggings"
+  }
+}
