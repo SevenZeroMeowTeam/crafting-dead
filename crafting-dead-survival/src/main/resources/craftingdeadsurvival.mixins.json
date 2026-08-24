@@ -9,7 +9,9 @@
     "SurvivalLivingEntityMixin",
     "SpawnPlacementsMixin"
   ],
-  "client": [],
+  "client": [
+    "ScoreboardSidebarMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
