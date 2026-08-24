@@ -39,6 +39,7 @@ import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
@@ -244,6 +245,77 @@ public final class QualityHelper {
       return;
     }
     stack.getOrCreateTag().putBoolean("Unbreakable", true);
+  }
+
+  /**
+   * 给物品附加所有适用附魔的最大等级（如弓的全套附魔：力量 V / 冲击 II / 火矢 /
+   * 无限 / 耐久 III / 经验修补）。用于"新人奖励弓"等初始装备。
+   */
+  public static void applyFullEnchantments(ItemStack stack, Level level) {
+    if (stack.isEmpty()) {
+      return;
+    }
+    for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS.getValues()) {
+      try {
+        if (enchantment.canEnchant(stack)) {
+          stack.enchant(enchantment, Math.max(1, enchantment.getMaxLevel()));
+        }
+      } catch (Exception ignored) {
+        // 忽略不兼容 / 异常的模组附魔
+      }
+    }
+  }
+
+  // ================================================================================
+  // 跨模组物品辅助（TaCZ 枪械等，按注册表 id 软引用，未安装对应模组时安全降级）
+  // ================================================================================
+
+  /**
+   * 解析其他模组注册的物品（按注册表 id），未安装或不存在时返回 null。
+   */
+  public static Item resolveItem(String namespace, String path) {
+    Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(namespace, path));
+    return (item == null || item == Items.AIR) ? null : item;
+  }
+
+  /**
+   * 创建一把 TaCZ（Timeless and Classics Zero）枪械。
+   *
+   * <p>TaCZ 1.1.x 使用统一的 {@code tacz:modern_kinetic_gun} 物品，通过物品
+   * NBT 中的 {@code GunId} 区分具体枪械，{@code GunCurrentAmmoCount}
+   * 记录枪内已装填的弹药数。未安装 TaCZ 或枪械不存在时返回空栈。
+   *
+   * @param gunId        枪械 id，如 "tacz:ak47"（可省略命名空间）
+   * @param currentAmmo  枪内预装填的弹药数量（弹匣容量）
+   */
+  public static ItemStack createTaCZGun(String gunId, int currentAmmo) {
+    Item gunItem = resolveItem("tacz", "modern_kinetic_gun");
+    if (gunItem == null) {
+      return ItemStack.EMPTY;
+    }
+    ItemStack stack = new ItemStack(gunItem);
+    final String id = gunId.contains(":") ? gunId : "tacz:" + gunId;
+    stack.getOrCreateTag().putString("GunId", id);
+    stack.getOrCreateTag().putInt("GunCurrentAmmoCount", Math.max(0, currentAmmo));
+    return stack;
+  }
+
+  /**
+   * 创建 TaCZ 弹药（{@code tacz:ammo} + NBT 中的 {@code AmmoId}）。
+   * 未安装 TaCZ 或弹药不存在时返回空栈。
+   *
+   * @param ammoId  弹药 id，如 "tacz:762x39"（可省略命名空间）
+   * @param count   弹药数量（每发占一个物品）
+   */
+  public static ItemStack createTaCZAmmo(String ammoId, int count) {
+    Item ammoItem = resolveItem("tacz", "ammo");
+    if (ammoItem == null) {
+      return ItemStack.EMPTY;
+    }
+    ItemStack stack = new ItemStack(ammoItem, Math.max(1, count));
+    final String id = ammoId.contains(":") ? ammoId : "tacz:" + ammoId;
+    stack.getOrCreateTag().putString("AmmoId", id);
+    return stack;
   }
 
   /**

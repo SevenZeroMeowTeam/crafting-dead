@@ -19,7 +19,6 @@
 package com.craftingdead.core.world.item;
 
 import com.craftingdead.core.quality.QualityHelper;
-import com.craftingdead.core.world.item.gun.attachment.Attachments;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -29,6 +28,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -39,12 +39,14 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>玩家首次进入世界时由系统自动发放。右键使用后开出：
  * <ul>
- *   <li>Kar98k 98k 狙击步枪（已装弹匣、已装专用倍镜）</li>
- *   <li>Kar98k 专用倍镜</li>
- *   <li>创造弹药箱</li>
+ *   <li>TaCZ（Timeless and Classics Zero）模组枪械：AK-47（已装填 30 发 7.62x39）</li>
+ *   <li>TaCZ 7.62x39 弹药 ×64</li>
+ *   <li>原版弓：全套附魔（力量 V / 冲击 II / 火矢 / 无限 / 耐久 III / 经验修补）、无耐久</li>
+ *   <li>箭 ×1（配合无限附魔使用，一支即可）</li>
  * </ul>
  *
- * <p>开出的物品均附带 5 种随机附魔属性且无耐久（-1）。
+ * <p>初始装备武器使用其他模组的枪械（而非本模组自带武器）；
+ * 由于 TaCZ 不含弓与箭，另给予一把全套附魔（含无限）、无耐久的弓和一支箭。
  */
 public class StarterRewardBoxItem extends Item {
 
@@ -59,24 +61,28 @@ public class StarterRewardBoxItem extends Item {
       return InteractionResultHolder.success(box);
     }
 
-    // 1. Kar98k（已装弹匣 + 已装专用倍镜）
-    ItemStack kar98k = new ItemStack(ModItems.KAR98K.get());
-    ItemStack magazine = new ItemStack(ModItems.KAR98K_AMMUNITION.get());
-    QualityHelper.prepareRewardGun(kar98k, magazine, Attachments.KAR98K_SCOPE.get());
-    this.enchantAndUnbreakable(level, kar98k);
+    // 1. TaCZ（其他模组）枪械：AK-47，预装填 30 发；另附 64 发 7.62x39 弹药
+    //    若未安装 TaCZ 则返回空栈，跳过（弓作为兜底远程武器仍然发放）。
+    ItemStack taCzGun = QualityHelper.createTaCZGun("tacz:ak47", 30);
+    ItemStack taCzAmmo = QualityHelper.createTaCZAmmo("tacz:762x39", 64);
 
-    // 2. Kar98k 专用倍镜
-    ItemStack scope = new ItemStack(ModItems.KAR98K_SCOPE.get());
-    this.enchantAndUnbreakable(level, scope);
+    // 2. 原版弓：全套附魔（含无限）+ 无耐久
+    ItemStack bow = new ItemStack(Items.BOW);
+    QualityHelper.applyFullEnchantments(bow, level);
+    QualityHelper.setUnbreakable(bow);
 
-    // 3. 创造弹药箱
-    ItemStack ammoBox = new ItemStack(ModItems.CREATIVE_AMMO_BOX.get());
-    this.enchantAndUnbreakable(level, ammoBox);
+    // 3. 箭：一支即可（无限附魔下射击不消耗箭矢）
+    ItemStack arrow = new ItemStack(Items.ARROW, 1);
 
     if (player instanceof ServerPlayer serverPlayer) {
-      this.give(serverPlayer, kar98k);
-      this.give(serverPlayer, scope);
-      this.give(serverPlayer, ammoBox);
+      if (!taCzGun.isEmpty()) {
+        this.give(serverPlayer, taCzGun);
+      }
+      if (!taCzAmmo.isEmpty()) {
+        this.give(serverPlayer, taCzAmmo);
+      }
+      this.give(serverPlayer, bow);
+      this.give(serverPlayer, arrow);
       serverPlayer.displayClientMessage(
           Component.translatable("message.craftingdead.reward_box_opened")
               .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD),
@@ -85,11 +91,6 @@ public class StarterRewardBoxItem extends Item {
 
     box.shrink(1);
     return InteractionResultHolder.success(box);
-  }
-
-  private void enchantAndUnbreakable(Level level, ItemStack stack) {
-    QualityHelper.applyRandomEnchantments(stack, level, 5);
-    QualityHelper.setUnbreakable(stack);
   }
 
   private void give(ServerPlayer player, ItemStack stack) {

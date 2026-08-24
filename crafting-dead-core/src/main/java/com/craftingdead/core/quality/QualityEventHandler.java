@@ -23,6 +23,7 @@ import com.craftingdead.core.world.item.gun.Gun;
 import com.craftingdead.core.world.item.gun.ammoprovider.AmmoProvider;
 import com.craftingdead.core.world.item.gun.ammoprovider.MagazineAmmoProvider;
 import com.craftingdead.core.world.item.gun.ammoprovider.RefillableAmmoProvider;
+import com.craftingdead.core.world.item.gun.magazine.Magazine;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -161,7 +162,15 @@ public class QualityEventHandler {
       boolean infiniteActive =
           provider instanceof RefillableAmmoProvider refillable && refillable.hasInfiniteAmmo();
       if (hasBox && !infiniteActive) {
-        gun.setAmmoProvider(new RefillableAmmoProvider(provider.getMagazineStack(), 0, true));
+        // 只有枪械已装填弹匣时才启用无限弹药：若枪械当前没有可用的弹匣
+        // （弹匣栈为空或没有 Magazine 能力），强行切换为 RefillableAmmoProvider 后，
+        // 玩家换弹完成时 getExpectedMagazine() 会抛出 "No magazine capability"，
+        // 导致服务器 "Ticking player" 崩溃（与 1.21.x 相同的修复）。
+        ItemStack magazineStack = provider.getMagazineStack();
+        if (!magazineStack.isEmpty()
+            && magazineStack.getCapability(Magazine.CAPABILITY).isPresent()) {
+          gun.setAmmoProvider(new RefillableAmmoProvider(magazineStack, 0, true));
+        }
       } else if (!hasBox && infiniteActive) {
         gun.setAmmoProvider(new MagazineAmmoProvider(provider.getMagazineStack()));
       }
