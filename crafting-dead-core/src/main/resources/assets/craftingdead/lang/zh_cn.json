@@ -83,8 +83,8 @@
   "message.switch_fire_mode": "已切换到%s模式",
   "message.low_health": "%1$s的健康状态不佳",
 
-  "message.craftingdead.starter_given": "已发放新人奖励箱（98K狙击步枪 + 98K专用倍镜 + 创造弹药箱）",
-  "message.craftingdead.reward_box_opened": "已打开新人奖励箱，获得 98K / 专用倍镜 / 创造弹药箱",
+  "message.craftingdead.starter_given": "已发放新人奖励箱（TaCZ AK-47 + 弹药 + 全套附魔弓 + 箭）",
+  "message.craftingdead.reward_box_opened": "已打开新人奖励箱，获得 TaCZ AK-47 / 7.62x39 弹药 / 全套附魔弓 / 箭",
 
   "quality.craftingdead.legendary": "传说",
   "quality.craftingdead.hero": "英雄",
@@ -244,7 +244,7 @@
   "item.craftingdead.creative_ammo_box.tooltip": "持有时主手枪械无限弹药",
   "item.craftingdead.starter_reward_box": "新人奖励箱",
   "item.craftingdead.starter_reward_box.tooltip": "右键打开新人奖励箱",
-  "item.craftingdead.starter_reward_box.contents": "内含：98K狙击步枪 / 98K专用倍镜 / 创造弹药箱（附带5种随机附魔、无耐久）",
+  "item.craftingdead.starter_reward_box.contents": "内含：TaCZ AK-47 / 7.62x39 弹药x64 / 弓（全套附魔含无限、无耐久）/ 箭x1",
   "item.craftingdead.katana": "武士刀",
   "item.craftingdead.fire_axe": "消防斧",
   "item.craftingdead.chainsaw": "损坏的链锯",

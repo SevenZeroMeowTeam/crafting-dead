@@ -52,6 +52,11 @@ public class RefillableReloadAction extends AbstractReloadAction {
   @Override
   protected void loadNewMagazineStack(boolean displayOnly) {
     if (!displayOnly) {
+      // 防御：弹匣栈为空 / 没有 Magazine 能力时直接跳过结算，
+      // 避免 getExpectedMagazine() 抛 "No magazine capability" 导致服务器崩溃。
+      if (!this.ammoProvider.getMagazine().isPresent()) {
+        return;
+      }
       this.oldAmmoCount = this.ammoProvider.getExpectedMagazine().getSize();
       this.ammoProvider.refillMagazine();
     }
@@ -59,6 +64,10 @@ public class RefillableReloadAction extends AbstractReloadAction {
 
   @Override
   protected void revert() {
+    // 防御：同上，取消换弹时同样跳过，避免空弹匣崩溃。
+    if (!this.ammoProvider.getMagazine().isPresent()) {
+      return;
+    }
     this.ammoProvider.moveAmmoToReserve(this.ammoProvider.getExpectedMagazine().getSize());
     this.ammoProvider.moveAmmoToMagazine(this.oldAmmoCount);
   }
