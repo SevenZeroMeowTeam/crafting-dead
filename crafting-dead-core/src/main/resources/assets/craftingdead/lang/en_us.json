@@ -97,6 +97,7 @@
   "message.craftingdead.starter_given": "Starter reward box granted (TaCZ AK-47 + Ammo + Full-enchanted Bow + Arrow)",
   "message.craftingdead.reward_box_opened": "Reward box opened: TaCZ AK-47 / 7.62x39 Ammo / Full-enchanted Bow / Arrow",
 
+  "quality.craftingdead.mythic": "Mythic",
   "quality.craftingdead.legendary": "Legendary",
   "quality.craftingdead.hero": "Hero",
   "quality.craftingdead.epic": "Epic",
@@ -104,6 +105,14 @@
   "quality.craftingdead.excellent": "Excellent",
   "quality.craftingdead.common": "Common",
   "quality.craftingdead.poor": "Poor",
+
+  "target.craftingdead.tool_any": "No tool required",
+  "target.craftingdead.tool_pickaxe": "Pickaxe",
+  "target.craftingdead.tool_axe": "Axe",
+  "target.craftingdead.tool_shovel": "Shovel",
+  "target.craftingdead.tool_hoe": "Hoe",
+  "target.craftingdead.tool_correct": "Tool: %s (correct)",
+  "target.craftingdead.tool_wrong": "Tool: %s (wrong)",
 
   "tool_material.craftingdead.prefix": "Material: ",
   "tool_material.craftingdead.wood": "Wood",

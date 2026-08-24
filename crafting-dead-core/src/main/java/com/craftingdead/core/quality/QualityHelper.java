@@ -57,6 +57,8 @@ public final class QualityHelper {
   public static final String TOOL_MATERIAL_KEY = "cd_tool_material";
   /** 玩家是否已领取初始奖励的持久化 NBT 键。 */
   public static final String STARTER_GIVEN_KEY = "cd_starter_given";
+  /** 神话物品使用的 custom_model_data 值（触发神话贴图模型覆盖）。 */
+  public static final int MYTHIC_CUSTOM_MODEL_DATA = 15001;
 
   private QualityHelper() {}
 
@@ -109,6 +111,97 @@ public final class QualityHelper {
     }
   }
 
+  /**
+   * 是否为神话品质。
+   */
+  public static boolean isMythic(ItemStack stack) {
+    return getQuality(stack) == ItemQuality.MYTHIC;
+  }
+
+  /**
+   * 获取物品的"基础材质等级"（0=未知/木，1=石，2=铁/金，3=钻石，4=下界合金）。
+   * 用于合成时按材质高低调整品质出现概率：材质越高，优秀品质概率越高。
+   */
+  public static int getMaterialTier(ItemStack stack) {
+    if (stack.isEmpty()) {
+      return 0;
+    }
+    var item = stack.getItem();
+    if (item instanceof DiggerItem digger) {
+      return digger.getTier().getLevel();
+    }
+    if (item instanceof SwordItem sword) {
+      return sword.getTier().getLevel();
+    }
+    if (item instanceof ArmorItem armor) {
+      try {
+        String name = armor.getMaterial().getName();
+        String material = name.contains(":") ? name.substring(name.indexOf(':') + 1) : name;
+        return switch (material) {
+          case "leather", "chainmail" -> 1;
+          case "iron", "gold" -> 2;
+          case "diamond" -> 3;
+          case "netherite" -> 4;
+          default -> 0;
+        };
+      } catch (Exception ignored) {
+        return 0;
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * 按材质等级加权的品质随机抽取：材质越高，劣质/普通权重越低，高品质相对更容易出现。
+   */
+  public static ItemQuality rollQualityWeighted(int materialTier) {
+    List<ItemQuality> qualities = List.of(ItemQuality.values());
+    int penalty = Math.min(materialTier * 3, 10);
+    int total = 0;
+    int[] weights = new int[qualities.size()];
+    for (int i = 0; i < qualities.size(); i++) {
+      ItemQuality quality = qualities.get(i);
+      // i 越大品质越低，被惩罚越多（劣质/普通权重降低）
+      int reduction = (int) ((qualities.size() - 1 - i) / (double) (qualities.size() - 1) * penalty);
+      weights[i] = Math.max(1, quality.getWeight() - reduction);
+      total += weights[i];
+    }
+    int roll = ThreadLocalRandom.current().nextInt(total);
+    for (int i = 0; i < qualities.size(); i++) {
+      roll -= weights[i];
+      if (roll < 0) {
+        return qualities.get(i);
+      }
+    }
+    return ItemQuality.COMMON;
+  }
+
+  /**
+   * 合成物品品质随机：根据物品的基础材质加权（材质越高，优秀品质概率越高）。
+   */
+  public static void applyRandomQualityForCrafted(ItemStack stack) {
+    if (isQualityItem(stack)) {
+      setQuality(stack, rollQualityWeighted(getMaterialTier(stack)));
+    }
+  }
+
+  /**
+   * 将物品升级为神话品质：
+   * <ul>
+   *   <li>附加神话品质（最高伤害倍率）</li>
+   *   <li>无耐久（-1），无视耐久规则</li>
+   *   <li>设置 CustomModelData NBT，触发神话贴图</li>
+   * </ul>
+   */
+  public static void applyMythicUpgrade(ItemStack stack) {
+    if (stack.isEmpty()) {
+      return;
+    }
+    setQuality(stack, ItemQuality.MYTHIC);
+    setUnbreakable(stack);
+    stack.getOrCreateTag().putInt("CustomModelData", MYTHIC_CUSTOM_MODEL_DATA);
+  }
+
   // ================================================================================
   // 工具材质读写
   // ================================================================================
@@ -135,6 +228,60 @@ public final class QualityHelper {
     if (isTool(stack)) {
       setToolMaterial(stack, ToolMaterialType.rollRandom());
     }
+  }
+
+  /**
+   * 按指定材质创建初始奖励用近战武器（剑），并附加随机品质。
+   */
+  public static ItemStack createSwordOfMaterial(ToolMaterialType material) {
+    Item item = switch (material) {
+      case WOOD -> Items.WOODEN_SWORD;
+      case STONE -> Items.STONE_SWORD;
+      case IRON -> Items.IRON_SWORD;
+      case GOLD -> Items.GOLDEN_SWORD;
+      case DIAMOND -> Items.DIAMOND_SWORD;
+      case NETHERITE -> Items.NETHERITE_SWORD;
+    };
+    ItemStack stack = new ItemStack(item);
+    setToolMaterial(stack, material);
+    applyRandomQualityForCrafted(stack);
+    return stack;
+  }
+
+  /**
+   * 按指定材质创建初始奖励用镐子，并附加随机品质。
+   */
+  public static ItemStack createPickaxeOfMaterial(ToolMaterialType material) {
+    Item item = switch (material) {
+      case WOOD -> Items.WOODEN_PICKAXE;
+      case STONE -> Items.STONE_PICKAXE;
+      case IRON -> Items.IRON_PICKAXE;
+      case GOLD -> Items.GOLDEN_PICKAXE;
+      case DIAMOND -> Items.DIAMOND_PICKAXE;
+      case NETHERITE -> Items.NETHERITE_PICKAXE;
+    };
+    ItemStack stack = new ItemStack(item);
+    setToolMaterial(stack, material);
+    applyRandomQualityForCrafted(stack);
+    return stack;
+  }
+
+  /**
+   * 按指定材质创建初始奖励用胸甲，并附加随机品质。
+   */
+  public static ItemStack createChestplateOfMaterial(ToolMaterialType material) {
+    Item item = switch (material) {
+      case WOOD -> Items.LEATHER_CHESTPLATE;
+      case STONE -> Items.CHAINMAIL_CHESTPLATE;
+      case IRON -> Items.IRON_CHESTPLATE;
+      case GOLD -> Items.GOLDEN_CHESTPLATE;
+      case DIAMOND -> Items.DIAMOND_CHESTPLATE;
+      case NETHERITE -> Items.NETHERITE_CHESTPLATE;
+    };
+    ItemStack stack = new ItemStack(item);
+    setToolMaterial(stack, material);
+    applyRandomQualityForCrafted(stack);
+    return stack;
   }
 
   // ================================================================================
