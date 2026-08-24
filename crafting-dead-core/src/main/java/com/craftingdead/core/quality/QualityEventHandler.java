@@ -70,9 +70,18 @@ public class QualityEventHandler {
     if (result.isEmpty()) {
       return;
     }
-    // 合成工具 / 武器 / 盔甲：品质随机（按物品基础材质加权，材质越高优秀品质概率越高）。
+    // 神话配方产物：保留神话品质，并附加全部适用附魔的满级（神话无视游戏规则）。
+    // 注意：不能走下方随机品质，否则会覆盖神话品质。
+    if (QualityHelper.isMythic(result)) {
+      QualityHelper.applyFullEnchantments(result, event.getEntity().level);
+      return;
+    }
+    // 普通合成工具 / 武器 / 盔甲：
+    //  - 品质随机（按物品基础材质加权，材质越高优秀品质概率越高）
+    //  - 属性（附魔）随机（品质越高，附魔数量越多、等级越高）
     // 注：合成物品不再随机分配"工具材质"——随机材质仅用于初始奖励装备。
     QualityHelper.applyRandomQualityForCrafted(result);
+    QualityHelper.applyRandomAttributes(result, event.getEntity().level);
   }
 
   // ================================================================================
@@ -192,6 +201,12 @@ public class QualityEventHandler {
     ItemQuality quality = QualityHelper.getQuality(stack);
     if (quality != null) {
       event.getToolTip().add(1, quality.getDisplayName());
+      if (quality == ItemQuality.MYTHIC) {
+        // 神话专属描述：无视游戏规则
+        event.getToolTip().add(2,
+            Component.translatable("quality.craftingdead.mythic_tooltip")
+                .withStyle(ChatFormatting.LIGHT_PURPLE));
+      }
     }
 
     ToolMaterialType material = QualityHelper.getToolMaterial(stack);

@@ -87,6 +87,7 @@
   "message.craftingdead.reward_box_opened": "已打开新人奖励箱，获得 TaCZ AK-47 / 7.62x39 弹药 / 全套附魔弓 / 箭",
 
   "quality.craftingdead.mythic": "神话",
+  "quality.craftingdead.mythic_tooltip": "无视游戏规则 · 不可破坏 · 伤害×5",
   "quality.craftingdead.legendary": "传说",
   "quality.craftingdead.hero": "英雄",
   "quality.craftingdead.epic": "史诗",
