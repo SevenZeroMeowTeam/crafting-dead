@@ -6,6 +6,8 @@
 
 ---
 
+[discord](https://discord.gg/yMuNQgad4)
+
 ## 分支信息
 
 | 分支 | Minecraft 版本 | Forge 版本 | 状态 |
