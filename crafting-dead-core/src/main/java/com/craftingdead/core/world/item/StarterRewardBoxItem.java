@@ -19,6 +19,8 @@
 package com.craftingdead.core.world.item;
 
 import com.craftingdead.core.quality.QualityHelper;
+import com.craftingdead.core.quality.QualityHelper;
+import com.craftingdead.core.quality.ToolMaterialType;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -43,10 +45,14 @@ import org.jetbrains.annotations.Nullable;
  *   <li>TaCZ 7.62x39 弹药 ×64</li>
  *   <li>原版弓：全套附魔（力量 V / 冲击 II / 火矢 / 无限 / 耐久 III / 经验修补）、无耐久</li>
  *   <li>箭 ×1（配合无限附魔使用，一支即可）</li>
+ *   <li>随机材质的近战武器（剑）+ 随机品质</li>
+ *   <li>随机材质的镐子 + 随机品质</li>
+ *   <li>随机材质的胸甲 + 随机品质</li>
  * </ul>
  *
  * <p>初始装备武器使用其他模组的枪械（而非本模组自带武器）；
  * 由于 TaCZ 不含弓与箭，另给予一把全套附魔（含无限）、无耐久的弓和一支箭。
+ * 武器 / 工具 / 盔甲的材质为随机，品质为随机。
  */
 public class StarterRewardBoxItem extends Item {
 
@@ -74,6 +80,11 @@ public class StarterRewardBoxItem extends Item {
     // 3. 箭：一支即可（无限附魔下射击不消耗箭矢）
     ItemStack arrow = new ItemStack(Items.ARROW, 1);
 
+    // 4. 初始奖励武器 / 工具 / 盔甲：材质随机 + 品质随机
+    ItemStack melee = QualityHelper.createSwordOfMaterial(ToolMaterialType.rollRandom());
+    ItemStack pickaxe = QualityHelper.createPickaxeOfMaterial(ToolMaterialType.rollRandom());
+    ItemStack chestplate = QualityHelper.createChestplateOfMaterial(ToolMaterialType.rollRandom());
+
     if (player instanceof ServerPlayer serverPlayer) {
       if (!taCzGun.isEmpty()) {
         this.give(serverPlayer, taCzGun);
@@ -83,6 +94,9 @@ public class StarterRewardBoxItem extends Item {
       }
       this.give(serverPlayer, bow);
       this.give(serverPlayer, arrow);
+      this.give(serverPlayer, melee);
+      this.give(serverPlayer, pickaxe);
+      this.give(serverPlayer, chestplate);
       serverPlayer.displayClientMessage(
           Component.translatable("message.craftingdead.reward_box_opened")
               .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD),

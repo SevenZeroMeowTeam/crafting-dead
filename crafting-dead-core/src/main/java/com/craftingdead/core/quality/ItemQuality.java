@@ -29,14 +29,16 @@ import net.minecraft.network.chat.TextColor;
  *
  * <p>品质从高到低：
  * <pre>
- * 橙色（传说） &gt; 红色（英雄） &gt; 金色（史诗） &gt; 紫色（稀有）
- *   &gt; 蓝色（优秀） &gt; 绿色（普通） &gt; 黑色（劣质）
+ * 神话（紫粉） &gt; 传说（橙色） &gt; 英雄（红色） &gt; 史诗（金色） &gt; 稀有（紫色）
+ *   &gt; 优秀（蓝色） &gt; 普通（绿色） &gt; 劣质（黑色）
  * </pre>
  *
  * <p>品质越高，武器 / 工具造成的伤害越高。
  */
 public enum ItemQuality {
 
+  /** 神话 - 紫粉（最高品质，无视游戏规则，由下界合金+钻石合成） */
+  MYTHIC("mythic", 0xFF00FF, 5.0F, 1),
   /** 传说 - 橙色 */
   LEGENDARY("legendary", 0xFFB000, 3.0F, 1),
   /** 英雄 - 红色 */

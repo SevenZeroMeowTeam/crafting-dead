@@ -70,8 +70,9 @@ public class QualityEventHandler {
     if (result.isEmpty()) {
       return;
     }
-    QualityHelper.applyRandomQuality(result);
-    QualityHelper.applyRandomToolMaterial(result);
+    // 合成工具 / 武器 / 盔甲：品质随机（按物品基础材质加权，材质越高优秀品质概率越高）。
+    // 注：合成物品不再随机分配"工具材质"——随机材质仅用于初始奖励装备。
+    QualityHelper.applyRandomQualityForCrafted(result);
   }
 
   // ================================================================================
