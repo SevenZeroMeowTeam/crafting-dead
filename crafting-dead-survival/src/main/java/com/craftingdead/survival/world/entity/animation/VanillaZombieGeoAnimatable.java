@@ -16,33 +16,31 @@
  * https://craftingdead.net/terms.php
  */
 
-package com.craftingdead.survival.world.entity.monster;
+package com.craftingdead.survival.world.entity.animation;
 
-import com.craftingdead.core.world.entity.ai.FollowAttractiveGrenadeGoal;
-import com.craftingdead.survival.world.entity.animation.ZombieAnimations;
-import net.minecraft.world.entity.Entity;
+import com.craftingdead.survival.world.entity.monster.ModZombie;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.level.Level;
-import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.GeoReplacedEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class ModZombie extends Zombie implements GeoEntity {
+/**
+ * 用于替换原版 {@code EntityType.ZOMBIE} 渲染的 GeckoLib 单例动画对象，
+ * 使其也能使用与 {@link ModZombie} 相同的标准人形动画。
+ */
+public class VanillaZombieGeoAnimatable implements GeoReplacedEntity {
+
+  public static final VanillaZombieGeoAnimatable INSTANCE = new VanillaZombieGeoAnimatable();
 
   private final AnimatableInstanceCache animatableInstanceCache =
       GeckoLibUtil.createInstanceCache(this);
 
-  public ModZombie(EntityType<? extends Zombie> zombie, Level level) {
-    super(zombie, level);
-  }
+  private VanillaZombieGeoAnimatable() {}
 
   @Override
-  protected void registerGoals() {
-    super.registerGoals();
-    // 所有僵尸都会被诱饵弹(Decoy Grenade)吸引，并看向闪光弹
-    this.goalSelector.addGoal(1, new FollowAttractiveGrenadeGoal(this, 1.15F));
+  public EntityType<?> getReplacingEntityType() {
+    return EntityType.ZOMBIE;
   }
 
   @Override
@@ -53,24 +51,5 @@ public class ModZombie extends Zombie implements GeoEntity {
   @Override
   public AnimatableInstanceCache getAnimatableInstanceCache() {
     return this.animatableInstanceCache;
-  }
-
-  @Override
-  public boolean doHurtTarget(Entity target) {
-    boolean hurt = super.doHurtTarget(target);
-    if (hurt && !this.level().isClientSide()) {
-      this.triggerAnim("controller", "attack");
-    }
-    return hurt;
-  }
-
-  @Override
-  public boolean convertsInWater() {
-    return false;
-  }
-
-  @Override
-  public boolean isSunSensitive() {
-    return false;
   }
 }

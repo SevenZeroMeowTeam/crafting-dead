@@ -21,7 +21,6 @@ package com.craftingdead.survival.client;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.client.ClientConfig;
 import com.craftingdead.core.client.renderer.entity.grenade.GrenadeRenderer;
-import com.craftingdead.core.client.renderer.entity.layers.ParachuteLayer;
 import com.craftingdead.core.client.util.RenderUtil;
 import com.craftingdead.core.world.effect.ModMobEffects;
 import com.craftingdead.survival.CraftingDeadSurvival;
@@ -30,9 +29,10 @@ import com.craftingdead.survival.client.gui.MoonHudOverlay;
 import com.craftingdead.survival.client.model.PipeBombModel;
 import com.craftingdead.survival.client.model.SupplyDropModel;
 import com.craftingdead.survival.client.model.geom.SurvivalModelLayers;
-import com.craftingdead.survival.client.renderer.entity.AdvancedZombieRenderer;
-import com.craftingdead.survival.client.renderer.entity.GiantZombieRenderer;
 import com.craftingdead.survival.client.renderer.entity.SupplyDropRenderer;
+import com.craftingdead.survival.client.renderer.entity.VanillaZombieGeoRenderer;
+import com.craftingdead.survival.client.renderer.entity.ZombieGeoRenderer;
+import com.craftingdead.survival.client.renderer.entity.layers.GeoParachuteLayer;
 // import com.craftingdead.survival.client.sound.MovementSoundAmplifier; // TODO: Fix API compatibility
 import com.craftingdead.survival.particles.SurvivalParticleTypes;
 import com.craftingdead.survival.world.entity.SurvivalEntityTypes;
@@ -101,46 +101,48 @@ public class ClientDist implements ModDist {
             context.bakeLayer(SurvivalModelLayers.PIPE_BOMB)));
     event.registerEntityRenderer(SurvivalEntityTypes.SUPPLY_DROP.get(),
         SupplyDropRenderer::new);
+    // 所有僵尸使用 GeckoLib 人形模型渲染器（共享模型+动画，按类型用不同贴图）
+    // 原版僵尸使用 GeoReplacedEntityRenderer 替换渲染
     event.registerEntityRenderer(EntityType.ZOMBIE,
-        AdvancedZombieRenderer::new);
+        VanillaZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.FAST_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.TANK_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.WEAK_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.POLICE_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.DOCTOR_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.GIANT_ZOMBIE.get(),
-        GiantZombieRenderer::new);
+        context -> new ZombieGeoRenderer(context, 6.0F));
     event.registerEntityRenderer(SurvivalEntityTypes.SCOUT_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.SNIPER_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.PILOT_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.SOLDIER_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.NINJA_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.ALFA_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.BOUNTY_HUNTER_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.DESERT_RAIDER_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.FIREFIGHTER_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.HAZMAT_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.JUGGERNAUT_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.MINER_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.SWAT_ZOMBIE.get(),
-        AdvancedZombieRenderer::new);
+        ZombieGeoRenderer::new);
   }
 
   private void handleEntityRenderersAddLayers(EntityRenderersEvent.AddLayers event) {
@@ -151,14 +153,14 @@ public class ClientDist implements ModDist {
     net.minecraft.client.renderer.entity.EntityRenderer<?> scoutZombie =
         event.getEntityRenderer(SurvivalEntityTypes.SCOUT_ZOMBIE.get());
 
-    if (soliderZombie instanceof AdvancedZombieRenderer soldierZombieRenderer) {
-      soldierZombieRenderer.addLayer(new ParachuteLayer<>(soldierZombieRenderer, event.getEntityModels()));
+    if (soliderZombie instanceof ZombieGeoRenderer soldierZombieRenderer) {
+      soldierZombieRenderer.addRenderLayer(new GeoParachuteLayer(soldierZombieRenderer, event.getEntityModels()));
     }
-    if (fastZombie instanceof AdvancedZombieRenderer fastZombieRenderer) {
-      fastZombieRenderer.addLayer(new ParachuteLayer<>(fastZombieRenderer, event.getEntityModels()));
+    if (fastZombie instanceof ZombieGeoRenderer fastZombieRenderer) {
+      fastZombieRenderer.addRenderLayer(new GeoParachuteLayer(fastZombieRenderer, event.getEntityModels()));
     }
-    if (scoutZombie instanceof AdvancedZombieRenderer scoutZombieRenderer) {
-      scoutZombieRenderer.addLayer(new ParachuteLayer<>(scoutZombieRenderer, event.getEntityModels()));
+    if (scoutZombie instanceof ZombieGeoRenderer scoutZombieRenderer) {
+      scoutZombieRenderer.addRenderLayer(new GeoParachuteLayer(scoutZombieRenderer, event.getEntityModels()));
     }
   }
 
