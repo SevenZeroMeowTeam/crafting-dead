@@ -115,6 +115,12 @@
   "target.craftingdead.tool_hoe": "Hoe",
   "target.craftingdead.tool_correct": "Tool: %s (correct)",
   "target.craftingdead.tool_wrong": "Tool: %s (wrong)",
+  "target.craftingdead.mining_time": "Mining time: %ss",
+  "target.craftingdead.chop_time": "Chopping time: %ss",
+  "target.craftingdead.furnace_progress": "Smelting: %s / %s",
+  "target.craftingdead.furnace_remaining": "Remaining: %ss",
+  "target.craftingdead.furnace_idle": "Smelting idle",
+  "target.craftingdead.furnace_done": "Smelting done",
 
   "tool_material.craftingdead.prefix": "Material: ",
   "tool_material.craftingdead.wood": "Wood",
