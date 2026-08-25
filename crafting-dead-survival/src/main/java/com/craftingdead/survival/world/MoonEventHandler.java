@@ -18,6 +18,7 @@
 
 package com.craftingdead.survival.world;
 
+import com.craftingdead.core.quality.QualityHelper;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.network.SurvivalNetworkChannel;
 import com.craftingdead.survival.network.message.SurvivalKillFeedMessage;
@@ -358,10 +359,12 @@ public class MoonEventHandler {
       ResourceLocation weaponId = weapon.isEmpty()
           ? null
           : ForgeRegistries.ITEMS.getKey(weapon.getItem());
+      // TaCZ 枪械：统一物品 tacz:modern_kinetic_gun，按 GunId 解析真实枪名翻译组件
+      Component weaponName = QualityHelper.getTaCZGunDisplayName(weapon);
       SurvivalNetworkChannel.PLAY.getSimpleChannel().send(
           PacketDistributor.ALL.noArg(),
           new SurvivalKillFeedMessage(killerPlayer.getDisplayName(), victim.getDisplayName(),
-              weaponId, weapon.getCount()));
+              weaponId, weapon.getCount(), weaponName));
     }
 
     // 击杀掉落

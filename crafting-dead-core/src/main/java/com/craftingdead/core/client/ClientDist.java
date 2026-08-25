@@ -44,6 +44,7 @@ import com.craftingdead.core.ModDist;
 import com.craftingdead.core.ServerConfig;
 import com.craftingdead.core.client.crosshair.CrosshairManager;
 import com.craftingdead.core.client.gui.IngameGui;
+import com.craftingdead.core.client.gui.BlockOutlineRenderer;
 import com.craftingdead.core.client.gui.TargetOverlay;
 import com.craftingdead.core.client.gui.screen.inventory.EquipmentScreen;
 import com.craftingdead.core.client.gui.screen.inventory.GenericContainerScreen;
@@ -124,6 +125,7 @@ import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -181,6 +183,8 @@ public class ClientDist implements ModDist {
 
   private final TargetOverlay targetOverlay;
 
+  private final BlockOutlineRenderer blockOutlineRenderer;
+
   private final ItemRenderDispatcher itemRenderDispatcher;
 
   private final CameraManager cameraManager;
@@ -231,6 +235,7 @@ public class ClientDist implements ModDist {
     this.ingameGui =
         new IngameGui(this.minecraft, this, new ResourceLocation(clientConfig.crosshair.get()));
     this.targetOverlay = new TargetOverlay(this.minecraft);
+    this.blockOutlineRenderer = new BlockOutlineRenderer(this.minecraft);
     this.cameraManager = new CameraManager();
   }
 
@@ -662,6 +667,14 @@ public class ClientDist implements ModDist {
         window.getGuiScaledWidth(), window.getGuiScaledHeight(),
         event.getPartialTick());
     this.targetOverlay.render(event.getPoseStack(), event.getPartialTick());
+  }
+
+  /**
+   * 渲染准星所指方块的「方框 + 绕一圈范围环」，标出挖掘 / 砍伐范围。
+   */
+  @SubscribeEvent
+  public void handleRenderLevel(RenderLevelStageEvent event) {
+    this.blockOutlineRenderer.render(event);
   }
 
   @SubscribeEvent

@@ -23,6 +23,7 @@ import com.craftingdead.survival.world.moon.MoonEventType;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import javax.annotation.Nullable;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -58,8 +59,9 @@ public final class MoonDataHolder {
     active = msg.active();
   }
 
-  public static void addKillFeed(Component killer, Component victim, ItemStack weapon) {
-    killFeed.addFirst(new KillFeedLine(killer, victim, weapon, Util.getMillis()));
+  public static void addKillFeed(Component killer, Component victim, ItemStack weapon,
+      @Nullable Component weaponName) {
+    killFeed.addFirst(new KillFeedLine(killer, victim, weapon, weaponName, Util.getMillis()));
     while (killFeed.size() > MAX_KILL_FEED) {
       killFeed.removeLast();
     }
@@ -98,5 +100,9 @@ public final class MoonDataHolder {
   /**
    * 一条击杀记录。
    */
-  public record KillFeedLine(Component killer, Component victim, ItemStack weapon, long timeMs) {}
+  /**
+   * 一条击杀记录。{@code weaponName} 为 TaCZ 枪械按 GunId 解析出的真实枪名（可为空）。
+   */
+  public record KillFeedLine(Component killer, Component victim, ItemStack weapon,
+      @Nullable Component weaponName, long timeMs) {}
 }
