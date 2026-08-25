@@ -27,3 +27,10 @@ modId = "forge"
 ordering = "NONE"
 side = "BOTH"
 versionRange = "[47.3.0,)"
+
+[[dependencies.craftingdead]]
+mandatory = true
+modId = "geckolib"
+ordering = "NONE"
+side = "BOTH"
+versionRange = "[4.7.0,)"

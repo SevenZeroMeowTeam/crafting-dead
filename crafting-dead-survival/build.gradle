@@ -2,6 +2,19 @@ plugins {
     id 'crafting-dead'
 }
 
+repositories {
+    maven {
+        name = 'GeckoLib'
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+    }
+}
+
+dependencies {
+    // GeckoLib 4 animation engine - required at runtime, bundled via jarJar
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.7.4')
+    jarJar(group: 'software.bernie.geckolib', name: 'geckolib-forge-1.20.1', version: '[4.7.4,5.0.0)')
+}
+
 mixin {
     add sourceSets.main, 'craftingdeadsurvival.refmap.json'
 }
