@@ -13,7 +13,11 @@ repositories {
 
 dependencies {
     implementation 'cpw.mods:bootstraplauncher:1.0.0'
-    
+
+    // GeckoLib 3 animation engine - required at runtime, bundled via jarJar
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.19:3.1.40')
+    jarJar(group: 'software.bernie.geckolib', name: 'geckolib-forge-1.19', version: '[3.1.40,4.0.0)')
+
     // Sentry for error tracking - available in dev, bundled via jarJar for production
     api('io.sentry:sentry:6.34.0') {
         exclude group: 'com.google.code.gson', module: 'gson'

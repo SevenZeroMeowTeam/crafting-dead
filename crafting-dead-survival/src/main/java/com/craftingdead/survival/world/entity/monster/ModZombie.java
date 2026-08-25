@@ -18,14 +18,36 @@
 
 package com.craftingdead.survival.world.entity.monster;
 
+import com.craftingdead.survival.world.entity.animation.ZombieAnimations;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class ModZombie extends Zombie {
+public class ModZombie extends Zombie implements IAnimatable {
+
+  private final AnimationFactory factory = new AnimationFactory(this);
 
   public ModZombie(EntityType<? extends Zombie> zombie, Level level) {
     super(zombie, level);
+  }
+
+  @Override
+  public void registerControllers(AnimationData data) {
+    data.addAnimationController(ZombieAnimations.createController(this));
+  }
+
+  @Override
+  public AnimationFactory getFactory() {
+    return this.factory;
+  }
+
+  @Override
+  public boolean doHurtTarget(Entity target) {
+    return super.doHurtTarget(target);
   }
 
   @Override
