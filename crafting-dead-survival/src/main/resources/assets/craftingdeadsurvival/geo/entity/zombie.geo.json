@@ -13,8 +13,7 @@
       "bones": [
         {
           "name": "root",
-          "pivot": [0, 0, 0],
-          "parent": ""
+          "pivot": [0, 0, 0]
         },
         {
           "name": "head",
