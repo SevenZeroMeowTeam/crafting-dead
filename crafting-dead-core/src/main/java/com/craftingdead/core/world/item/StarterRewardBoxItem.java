@@ -41,8 +41,9 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>玩家首次进入世界时由系统自动发放。右键使用后开出：
  * <ul>
- *   <li>TaCZ（Timeless and Classics Zero）模组枪械：AK-47（已装填 30 发 7.62x39）</li>
- *   <li>TaCZ 7.62x39 弹药 ×64</li>
+ *   <li>TaCZ（Timeless and Classics Zero）模组随机枪械（预装填弹匣）</li>
+ *   <li>该枪对应的可装配件（瞄具 / 枪口 / 枪托 / 握把 / 激光 / 扩容弹匣，每槽一件）</li>
+ *   <li>TaCZ 全类型创造弹药盒（包含所有弹药类型且无限量）</li>
  *   <li>原版弓：全套附魔（力量 V / 冲击 II / 火矢 / 无限 / 耐久 III / 经验修补）、无耐久</li>
  *   <li>箭 ×1（配合无限附魔使用，一支即可）</li>
  *   <li>随机材质的近战武器（剑）+ 随机品质</li>
@@ -67,10 +68,14 @@ public class StarterRewardBoxItem extends Item {
       return InteractionResultHolder.success(box);
     }
 
-    // 1. TaCZ（其他模组）枪械：AK-47，预装填 30 发；另附 64 发 7.62x39 弹药
-    //    若未安装 TaCZ 则返回空栈，跳过（弓作为兜底远程武器仍然发放）。
-    ItemStack taCzGun = QualityHelper.createTaCZGun("tacz:ak47", 30);
-    ItemStack taCzAmmo = QualityHelper.createTaCZAmmo("tacz:762x39", 64);
+    // 1. TaCZ（其他模组）：随机枪械 + 对应备件（每槽一件配件）
+    //    弹药由全类型创造弹药盒（包含所有弹药类型且无限）替代；
+    //    若未安装 TaCZ 则返回空列表，跳过（弓作为兜底远程武器仍然发放）。
+    List<ItemStack> taCzKit = QualityHelper.createTaCZStarterKit(level.random);
+    ItemStack taCzGun = taCzKit.isEmpty() ? ItemStack.EMPTY : taCzKit.get(0);
+    List<ItemStack> taCzAttachments =
+        taCzKit.size() > 1 ? taCzKit.subList(1, taCzKit.size()) : List.of();
+    ItemStack taCzAmmoBox = QualityHelper.createTaCZAllTypeCreativeAmmoBox();
 
     // 2. 原版弓：全套附魔（含无限）+ 无耐久
     ItemStack bow = new ItemStack(Items.BOW);
@@ -92,8 +97,13 @@ public class StarterRewardBoxItem extends Item {
       if (!taCzGun.isEmpty()) {
         this.give(serverPlayer, taCzGun);
       }
-      if (!taCzAmmo.isEmpty()) {
-        this.give(serverPlayer, taCzAmmo);
+      for (ItemStack attachment : taCzAttachments) {
+        if (!attachment.isEmpty()) {
+          this.give(serverPlayer, attachment);
+        }
+      }
+      if (!taCzAmmoBox.isEmpty()) {
+        this.give(serverPlayer, taCzAmmoBox);
       }
       this.give(serverPlayer, bow);
       this.give(serverPlayer, arrow);

@@ -83,8 +83,8 @@
   "message.switch_fire_mode": "已切换到%s模式",
   "message.low_health": "%1$s的健康状态不佳",
 
-  "message.craftingdead.starter_given": "已发放新人奖励箱（TaCZ AK-47 + 弹药 + 全套附魔弓 + 箭）",
-  "message.craftingdead.reward_box_opened": "已打开新人奖励箱，获得 TaCZ AK-47 / 7.62x39 弹药 / 全套附魔弓 / 箭",
+  "message.craftingdead.starter_given": "已发放新人奖励箱（随机 TaCZ 枪械 + 配件 + 全类型创造弹药盒 + 全套附魔弓 + 箭）",
+  "message.craftingdead.reward_box_opened": "已打开新人奖励箱，获得随机 TaCZ 枪械 / 对应配件 / 全类型创造弹药盒 / 全套附魔弓 / 箭",
 
   "quality.craftingdead.mythic": "神话",
   "quality.craftingdead.mythic_tooltip": "无视游戏规则 · 不可破坏 · 伤害×5",
@@ -103,6 +103,12 @@
   "target.craftingdead.tool_hoe": "锄头",
   "target.craftingdead.tool_correct": "工具：%s（合适）",
   "target.craftingdead.tool_wrong": "工具：%s（不合适）",
+  "target.craftingdead.mining_time": "挖掘时间：%s秒",
+  "target.craftingdead.chop_time": "砍伐时间：%s秒",
+  "target.craftingdead.furnace_progress": "烧制进度：%s / %s",
+  "target.craftingdead.furnace_remaining": "剩余烧制：%s秒",
+  "target.craftingdead.furnace_idle": "烧制待机",
+  "target.craftingdead.furnace_done": "烧制完成",
 
   "tool_material.craftingdead.prefix": "材质：",
   "tool_material.craftingdead.wood": "木质",
@@ -254,7 +260,7 @@
   "item.craftingdead.creative_ammo_box.tooltip": "持有时主手枪械无限弹药",
   "item.craftingdead.starter_reward_box": "新人奖励箱",
   "item.craftingdead.starter_reward_box.tooltip": "右键打开新人奖励箱",
-  "item.craftingdead.starter_reward_box.contents": "内含：TaCZ AK-47 / 7.62x39 弹药x64 / 弓（全套附魔含无限、无耐久）/ 箭x1",
+  "item.craftingdead.starter_reward_box.contents": "内含：随机 TaCZ 枪械 / 对应配件 / 全类型创造弹药盒（无限全类型弹药）/ 弓（全套附魔含无限、无耐久）/ 箭x1",
   "item.craftingdead.katana": "武士刀",
   "item.craftingdead.fire_axe": "消防斧",
   "item.craftingdead.chainsaw": "损坏的链锯",

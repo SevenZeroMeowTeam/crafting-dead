@@ -32,10 +32,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.HoeItem;
@@ -530,6 +533,155 @@ public final class QualityHelper {
     final String id = ammoId.contains(":") ? ammoId : "tacz:" + ammoId;
     stack.getOrCreateTag().putString("AmmoId", id);
     return stack;
+  }
+
+  /**
+   * 创建 TaCZ 配件（{@code tacz:attachment} + NBT 中的 {@code AttachmentId}）。
+   * 未安装 TaCZ 或配件不存在时返回空栈。
+   *
+   * @param attachmentId  配件 id，如 "tacz:scope_standard_8x"（可省略命名空间）
+   */
+  public static ItemStack createTaCZAttachment(String attachmentId) {
+    Item attachmentItem = resolveItem("tacz", "attachment");
+    if (attachmentItem == null) {
+      return ItemStack.EMPTY;
+    }
+    ItemStack stack = new ItemStack(attachmentItem);
+    final String id = attachmentId.contains(":") ? attachmentId : "tacz:" + attachmentId;
+    stack.getOrCreateTag().putString("AttachmentId", id);
+    return stack;
+  }
+
+  /**
+   * 创建 TaCZ 全类型创造弹药盒（{@code tacz:ammo_box} + NBT {@code AllTypeCreative=true}）。
+   *
+   * <p>该弹药盒包含所有弹药类型且无限量，可直接为任意枪械供弹。未安装 TaCZ 时返回空栈。
+   */
+  public static ItemStack createTaCZAllTypeCreativeAmmoBox() {
+    Item boxItem = resolveItem("tacz", "ammo_box");
+    if (boxItem == null) {
+      return ItemStack.EMPTY;
+    }
+    ItemStack stack = new ItemStack(boxItem);
+    stack.getOrCreateTag().putBoolean("AllTypeCreative", true);
+    stack.getOrCreateTag().putBoolean("Creative", true);
+    return stack;
+  }
+
+  /**
+   * 从 TaCZ 默认枪包中随机抽取一把枪械，并按该枪弹匣容量预装填弹药。
+   * 未安装 TaCZ 时返回空栈。
+   */
+  public static ItemStack createRandomTaCZGun(RandomSource random) {
+    java.util.Set<String> gunIds = TaCZGunData.getGunIds();
+    if (gunIds.isEmpty()) {
+      return ItemStack.EMPTY;
+    }
+    List<String> ids = new ArrayList<>(gunIds);
+    String gunId = ids.get(random.nextInt(ids.size()));
+    return createTaCZGun(gunId, TaCZGunData.getAmmoAmount(gunId));
+  }
+
+  /**
+   * 为指定枪械随机生成对应可装配件（备件），每个配件槽位一件：
+   * 瞄具（scope/sight）、枪口（muzzle/刺刀）、枪托（stock）、握把（grip）、激光（laser）、
+   * 扩容弹匣（extended_mag）。未安装 TaCZ 或枪械未知时返回空列表。
+   */
+  public static List<ItemStack> createRandomTaCZAttachments(String gunId, RandomSource random) {
+    List<ItemStack> result = new ArrayList<>();
+    if (gunId == null) {
+      return result;
+    }
+    Map<String, List<String>> bySlot = new HashMap<>();
+    for (String attachmentId : TaCZGunData.getAttachments(gunId)) {
+      String slot = taCzAttachmentSlot(attachmentId);
+      if (slot == null) {
+        continue;
+      }
+      bySlot.computeIfAbsent(slot, s -> new ArrayList<>()).add(attachmentId);
+    }
+    for (List<String> candidates : bySlot.values()) {
+      String pick = candidates.get(random.nextInt(candidates.size()));
+      ItemStack stack = createTaCZAttachment(pick);
+      if (!stack.isEmpty()) {
+        result.add(stack);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * 生成随机 TaCZ 枪械 + 对应备件（可装配件）的完整新手套装。
+   * 第一项为枪械，其余为配件。未安装 TaCZ 时返回空列表。
+   */
+  public static List<ItemStack> createTaCZStarterKit(RandomSource random) {
+    List<ItemStack> kit = new ArrayList<>();
+    ItemStack gun = createRandomTaCZGun(random);
+    if (gun.isEmpty()) {
+      return kit;
+    }
+    kit.add(gun);
+    CompoundTag gunTag = gun.getTag();
+    String gunId = gunTag == null ? null : gunTag.getString("GunId");
+    kit.addAll(createRandomTaCZAttachments(gunId, random));
+    return kit;
+  }
+
+  /**
+   * 按配件 id 判断其所属槽位（用于每槽随机一件备件）。非槽位配件返回 null。
+   */
+  private static String taCzAttachmentSlot(String attachmentId) {
+    if (attachmentId.contains("scope") || attachmentId.contains("sight")) {
+      return "scope";
+    }
+    if (attachmentId.contains("muzzle") || attachmentId.contains("bayonet")) {
+      return "muzzle";
+    }
+    if (attachmentId.contains("stock")) {
+      return "stock";
+    }
+    if (attachmentId.contains("grip")) {
+      return "grip";
+    }
+    if (attachmentId.contains("laser")) {
+      return "laser";
+    }
+    if (attachmentId.contains("mag")) {
+      return "mag";
+    }
+    return null;
+  }
+
+  /**
+   * 是否属于 TaCZ 命名空间下的枪械物品（TaCZ 枪械统一为 {@code tacz:modern_kinetic_gun}）。
+   */
+  public static boolean isTaCZGun(ItemStack stack) {
+    if (stack.isEmpty()) {
+      return false;
+    }
+    ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
+    return key != null && "tacz".equals(key.getNamespace());
+  }
+
+  /**
+   * 从物品 NBT 中的 {@code GunId} 构造 TaCZ 枪械的显示名翻译组件
+   * （{@code {namespace}.gun.{path}.name}，如 {@code tacz.gun.m1014.name}），
+   * 由客户端按本地语言渲染。无法解析 GunId 时返回 {@code null}。
+   */
+  @Nullable
+  public static Component getTaCZGunDisplayName(ItemStack stack) {
+    if (stack.isEmpty()) {
+      return null;
+    }
+    CompoundTag tag = stack.getTag();
+    if (tag == null || !tag.contains("GunId")) {
+      return null;
+    }
+    ResourceLocation gunId = ResourceLocation.tryParse(tag.getString("GunId"));
+    if (gunId == null) {
+      return null;
+    }
+    return Component.translatable(gunId.getNamespace() + ".gun." + gunId.getPath() + ".name");
   }
 
   /**

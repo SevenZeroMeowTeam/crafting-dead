@@ -106,9 +106,12 @@ public class MoonHudOverlay {
       if (!weapon.isEmpty()) {
         guiGraphics.renderItem(weapon, x, y);
       }
+      String weaponName = line.weaponName() != null
+          ? line.weaponName().getString()
+          : (weapon.isEmpty() ? null : weapon.getHoverName().getString());
       String text;
-      if (!weapon.isEmpty()) {
-        text = line.killer().getString() + " 用 " + weapon.getHoverName().getString()
+      if (weaponName != null) {
+        text = line.killer().getString() + " 用 " + weaponName
             + " 击杀了 " + line.victim().getString();
       } else {
         text = line.killer().getString() + " 击杀了 " + line.victim().getString();

@@ -18,12 +18,16 @@
 
 package com.craftingdead.core.client.gui;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.client.ClientDist;
 import com.craftingdead.core.client.util.RenderUtil;
 import com.craftingdead.core.quality.QualityHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
@@ -32,6 +36,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -104,12 +109,89 @@ public class TargetOverlay {
     if (level == null) {
       return;
     }
-    var state = level.getBlockState(blockHit.getBlockPos());
+    var pos = blockHit.getBlockPos();
+    var state = level.getBlockState(pos);
     var name = state.getBlock().getName();
     var modName = Component.literal(this.getModId(
         ForgeRegistries.BLOCKS.getKey(state.getBlock())));
-    var toolInfo = this.getHarvestTool(state);
-    this.renderPanel(guiGraphics, name, modName, toolInfo, null);
+
+    List<Component> extraLines = new ArrayList<>();
+    // 所需工具 + 是否合适
+    extraLines.add(this.getHarvestTool(state));
+
+    // 熔炉 / 高炉 / 烟熏炉：烧制进度与剩余时间
+    if (level.getBlockEntity(pos) instanceof AbstractFurnaceBlockEntity furnace) {
+      this.addFurnaceInfo(extraLines, furnace);
+    } else if (!state.isAir() && state.getDestroySpeed(level, pos) >= 0.0F) {
+      // 砍伐时间（原木 / 菌柄）或挖掘时间
+      if (state.is(BlockTags.LOGS)) {
+        this.addChopTime(extraLines, state, pos);
+      } else {
+        this.addMiningTime(extraLines, state, pos);
+      }
+    }
+
+    this.renderPanel(guiGraphics, name, modName, extraLines, null);
+  }
+
+  /** 挖掘时间：以当前手持工具 / 徒手计算破坏该方块所需秒数。 */
+  private void addMiningTime(List<Component> lines, BlockState state, BlockPos pos) {
+    float progress = this.getDestroyProgress(state, pos);
+    if (progress <= 0.0F) {
+      return;
+    }
+    float seconds = Mth.ceil(1.0F / progress) / 20.0F;
+    lines.add(Component.translatable("target.craftingdead.mining_time",
+        String.format("%.1f", seconds)));
+  }
+
+  /** 砍伐时间：对原木（树木）使用斧类工具时的破坏耗时。 */
+  private void addChopTime(List<Component> lines, BlockState state, BlockPos pos) {
+    float progress = this.getDestroyProgress(state, pos);
+    if (progress <= 0.0F) {
+      return;
+    }
+    float seconds = Mth.ceil(1.0F / progress) / 20.0F;
+    lines.add(Component.translatable("target.craftingdead.chop_time",
+        String.format("%.1f", seconds)));
+  }
+
+  private float getDestroyProgress(BlockState state, BlockPos pos) {
+    var player = this.minecraft.player;
+    var level = this.minecraft.level;
+    if (player == null || level == null) {
+      return 0.0F;
+    }
+    return state.getDestroyProgress(player, level, pos);
+  }
+
+  /** 熔炉烧制进度与剩余时间。 */
+  private void addFurnaceInfo(List<Component> lines, AbstractFurnaceBlockEntity furnace) {
+    int progress = getFurnaceField(furnace, "cookingProgress");
+    int total = getFurnaceField(furnace, "cookingTotalTime");
+    if (total <= 0) {
+      lines.add(Component.translatable("target.craftingdead.furnace_idle"));
+      return;
+    }
+    lines.add(Component.translatable("target.craftingdead.furnace_progress", progress, total));
+    if (progress < total) {
+      float remaining = (total - progress) / 20.0F;
+      lines.add(Component.translatable("target.craftingdead.furnace_remaining",
+          String.format("%.1f", remaining)));
+    } else {
+      lines.add(Component.translatable("target.craftingdead.furnace_done"));
+    }
+  }
+
+  /** 反射读取熔炉私有字段（cookingProgress / cookingTotalTime），跨 1.19.2 / 1.20.1 / 1.21.1 通用。 */
+  private static int getFurnaceField(AbstractFurnaceBlockEntity furnace, String fieldName) {
+    try {
+      Field field = AbstractFurnaceBlockEntity.class.getDeclaredField(fieldName);
+      field.setAccessible(true);
+      return field.getInt(furnace);
+    } catch (Exception ignored) {
+      return 0;
+    }
   }
 
   private void renderEntity(GuiGraphics guiGraphics, Entity entity) {
@@ -158,20 +240,23 @@ public class TargetOverlay {
   }
 
   private void renderPanel(GuiGraphics guiGraphics, Component name, Component modName,
-      @Nullable Component extraLine, @Nullable HealthBar healthBar) {
+      @Nullable List<Component> extraLines, @Nullable HealthBar healthBar) {
     var font = this.minecraft.font;
 
     var nameWidth = font.width(name);
     var modWidth = font.width(modName);
     var contentWidth = Math.max(nameWidth + MOD_NAME_SPACING + modWidth,
         healthBar == null ? 0 : 60);
-    if (extraLine != null) {
-      contentWidth = Math.max(contentWidth, font.width(extraLine));
+    if (extraLines != null) {
+      for (Component line : extraLines) {
+        contentWidth = Math.max(contentWidth, font.width(line));
+      }
     }
 
     var panelWidth = contentWidth + PADDING * 2;
     var lineHeight = font.lineHeight;
-    var extraArea = extraLine == null ? 0 : lineHeight + 2;
+    var extraArea = (extraLines == null || extraLines.isEmpty()) ? 0
+        : extraLines.size() * (lineHeight + 2);
     var barArea = healthBar == null ? 0 : BAR_HEIGHT + 3;
     var panelHeight = PADDING * 2 + lineHeight + extraArea + barArea;
 
@@ -193,11 +278,13 @@ public class TargetOverlay {
     guiGraphics.drawString(font, modName, x + panelWidth - PADDING - modWidth,
         y + PADDING, MOD_COLOR);
 
-    // 破坏工具信息（方块专用）
+    // 额外信息（工具 / 挖掘 / 砍伐 / 熔炉时间）
     var lineY = y + PADDING + lineHeight;
-    if (extraLine != null) {
-      guiGraphics.drawString(font, extraLine, x + PADDING, lineY + 2, MOD_COLOR);
-      lineY += lineHeight + 2;
+    if (extraLines != null) {
+      for (Component line : extraLines) {
+        guiGraphics.drawString(font, line, x + PADDING, lineY + 2, MOD_COLOR);
+        lineY += lineHeight + 2;
+      }
     }
 
     if (healthBar != null) {

@@ -1,16 +1,16 @@
-issueTrackerURL = "https://github.com/nexusnode/crafting-dead/issues"
+issueTrackerURL = "https://github.com/SevenZeroMeowTeam/crafting-dead/issues"
 license = "GPL v3.0"
 loaderVersion = "[27,)"
 modLoader = "javafml"
 
 [[mods]]
 authors = "Sm0keySa1m0n, Arzio"
-credits = "Sm0keySa1m0n, Arzio, F3RULLO14"
+credits = "Sm0keySa1m0n, Arzio, F3RULLO14, SevenZeroMeowTeam, miaoxing"
 description = '''
     The Minecraft zombie survival mod.
     '''
 displayName = "Crafting Dead"
-displayURL = "www.craftingdead.com"
+displayURL = "https://github.com/SevenZeroMeowTeam/crafting-dead"
 modId = "craftingdead"
 version = "${file.jarVersion}"
 

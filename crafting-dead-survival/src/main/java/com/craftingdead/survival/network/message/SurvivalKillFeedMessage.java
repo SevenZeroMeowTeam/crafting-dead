@@ -20,6 +20,7 @@ package com.craftingdead.survival.network.message;
 
 import com.craftingdead.survival.client.MoonDataHolder;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,9 +31,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * 服务端 → 客户端的击杀信息消息（玩家用什么武器击杀了什么）。
+ *
+ * <p>{@code weaponName} 用于 TaCZ 枪械：服务端按 GunId 构造真实枪名的翻译组件
+ * （如 {@code tacz.gun.m1014.name}），避免 HUD 显示原始物品 id {@code item.tacz.modern_kinetic_gun}。
  */
 public record SurvivalKillFeedMessage(Component killerName, Component victimName,
-    ResourceLocation weaponId, int weaponCount) {
+    ResourceLocation weaponId, int weaponCount, @Nullable Component weaponName) {
 
   public void encode(FriendlyByteBuf out) {
     out.writeComponent(this.killerName);
@@ -41,6 +45,10 @@ public record SurvivalKillFeedMessage(Component killerName, Component victimName
     if (this.weaponId != null) {
       out.writeResourceLocation(this.weaponId);
       out.writeVarInt(this.weaponCount);
+    }
+    out.writeBoolean(this.weaponName != null);
+    if (this.weaponName != null) {
+      out.writeComponent(this.weaponName);
     }
   }
 
@@ -53,7 +61,12 @@ public record SurvivalKillFeedMessage(Component killerName, Component victimName
       weaponId = in.readResourceLocation();
       weaponCount = in.readVarInt();
     }
-    return new SurvivalKillFeedMessage(killerName, victimName, weaponId, weaponCount);
+    Component weaponName = null;
+    if (in.readBoolean()) {
+      weaponName = in.readComponent();
+    }
+    return new SurvivalKillFeedMessage(killerName, victimName, weaponId, weaponCount,
+        weaponName);
   }
 
   public boolean handle(Supplier<NetworkEvent.Context> ctx) {
@@ -66,7 +79,7 @@ public record SurvivalKillFeedMessage(Component killerName, Component victimName
             weapon = new ItemStack(item, this.weaponCount);
           }
         }
-        MoonDataHolder.addKillFeed(this.killerName, this.victimName, weapon);
+        MoonDataHolder.addKillFeed(this.killerName, this.victimName, weapon, this.weaponName);
       }
     });
     return true;
