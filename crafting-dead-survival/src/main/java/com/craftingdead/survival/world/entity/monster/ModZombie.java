@@ -18,6 +18,7 @@
 
 package com.craftingdead.survival.world.entity.monster;
 
+import com.craftingdead.core.world.entity.ai.FollowAttractiveGrenadeGoal;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
@@ -26,6 +27,13 @@ public class ModZombie extends Zombie {
 
   public ModZombie(EntityType<? extends Zombie> zombie, Level level) {
     super(zombie, level);
+  }
+
+  @Override
+  protected void registerGoals() {
+    super.registerGoals();
+    // 所有僵尸都会被诱饵弹(Decoy Grenade)吸引，并看向闪光弹
+    this.goalSelector.addGoal(1, new FollowAttractiveGrenadeGoal(this, 1.15F));
   }
 
   @Override

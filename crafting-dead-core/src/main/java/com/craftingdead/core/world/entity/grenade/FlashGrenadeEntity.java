@@ -42,7 +42,8 @@ import net.minecraft.world.level.Level;
 
 public class FlashGrenadeEntity extends Grenade {
 
-  public static final int EFFECT_MAX_DURATION = 110;
+  /** 闪盲效果最大时长（tick），15秒 = 300 tick */
+  public static final int EFFECT_MAX_DURATION = 300;
 
   public FlashGrenadeEntity(EntityType<? extends Grenade> entityIn, Level worldIn) {
     super(entityIn, worldIn);

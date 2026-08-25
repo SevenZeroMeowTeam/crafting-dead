@@ -18,7 +18,6 @@
 
 package com.craftingdead.survival.world.entity.monster;
 
-import com.craftingdead.core.world.entity.ai.FollowAttractiveGrenadeGoal;
 import com.craftingdead.core.world.entity.ai.LookAtEntityGoal;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.core.world.entity.grenade.FlashGrenadeEntity;
@@ -58,7 +57,6 @@ public class GunZombie extends ModZombie implements RangedAttackMob {
       }
     };
     this.goalSelector.addGoal(2, this.rangedAttackGoal);
-    this.goalSelector.addGoal(1, new FollowAttractiveGrenadeGoal(this, 1.15F));
     this.goalSelector.addGoal(4,
         new LookAtEntityGoal<>(this, FlashGrenadeEntity.class, 20.0F, 0.35F));
   }
