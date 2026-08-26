@@ -2,9 +2,9 @@ name: Crafting Dead
 
 on:
   push:
-    branches: [ 1.20.x, 1.18.x ]
+    branches: [ 1.20.x, 1.18.x, kotlin-refactor-1.20.x ]
   pull_request:
-    branches: [ 1.20.x, 1.18.x ]
+    branches: [ 1.20.x, 1.18.x, kotlin-refactor-1.20.x ]
   workflow_dispatch:
 
 permissions:
@@ -43,7 +43,7 @@ jobs:
         if-no-files-found: error
 
     - name: Read mod versions
-      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/1.20.x' || github.ref == 'refs/heads/1.18.x')
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/1.20.x' || github.ref == 'refs/heads/1.18.x' || github.ref == 'refs/heads/kotlin-refactor-1.20.x')
       id: versions
       run: |
         echo "core=$(grep '^mod_version=' crafting-dead-core/gradle.properties | cut -d'=' -f2)" >> "$GITHUB_OUTPUT"
@@ -52,7 +52,7 @@ jobs:
         echo "worldguard=$(grep '^mod_version=' crafting-dead-worldguard/gradle.properties | cut -d'=' -f2)" >> "$GITHUB_OUTPUT"
 
     - name: Publish to GitHub Releases
-      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/1.20.x' || github.ref == 'refs/heads/1.18.x')
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/1.20.x' || github.ref == 'refs/heads/1.18.x' || github.ref == 'refs/heads/kotlin-refactor-1.20.x')
       uses: softprops/action-gh-release@v2
       with:
         tag_name: build-${{ github.ref_name }}-${{ github.run_number }}
