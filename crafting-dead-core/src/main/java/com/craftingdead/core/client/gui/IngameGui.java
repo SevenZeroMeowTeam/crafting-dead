@@ -20,6 +20,7 @@ package com.craftingdead.core.client.gui;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.CraftingDead;
@@ -155,16 +156,29 @@ public class IngameGui {
     });
   }
 
-  public void renderFlashBangOverlay(Player player, PoseStack poseStack, int width, int height,
+  public void renderFlashBangOverlay(Player player, GuiGraphics guiGraphics, int width, int height,
       float partialTick) {
     // Draws Flashbang effect
     var flashEffect = player.getEffect(ModMobEffects.FLASH_BLINDNESS.get());
-    if (flashEffect != null) {
-      int alpha =
-          (int) (255.0F * (Mth.clamp(flashEffect.getDuration() - partialTick, 0, 20) / 20.0F));
-      int color = 0xFFFFFF | (alpha & 255) << 24;
-      RenderUtil.fill(poseStack, 0, 0, width, height, color);
+    if (flashEffect == null) {
+      return;
     }
+    int duration = flashEffect.getDuration();
+    // 时长耗尽：主动移除效果，防止白屏残留
+    if (duration <= 0) {
+      player.removeEffect(flashEffect.getEffect());
+      return;
+    }
+    // 白闪强度：剩余 40 tick（约 2 秒）内线性渐隐，避免长时间全白后突兀消失
+    int alpha = (int) (255.0F * (Mth.clamp(duration - partialTick, 0, 40) / 40.0F));
+    int color = 0xFFFFFF | (alpha & 255) << 24;
+    guiGraphics.fill(0, 0, width, height, color);
+    // 剩余时间倒计时（屏幕中央偏下），解决"闪盲没有时间显示"
+    float seconds = Math.max((duration - partialTick) / 20.0F, 0.0F);
+    String timeText = String.format(Locale.ROOT, "%.1fs", seconds);
+    drawCenteredString(guiGraphics, this.minecraft.font,
+        Component.literal(timeText).withStyle(ChatFormatting.BOLD),
+        width / 2, height / 2 + 20, 0xFFFFFFFF);
   }
 
   public void renderOverlay(PlayerExtension<AbstractClientPlayer> player, ItemStack heldStack,
