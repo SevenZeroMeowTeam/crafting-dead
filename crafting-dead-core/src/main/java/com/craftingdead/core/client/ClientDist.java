@@ -675,6 +675,9 @@ public class ClientDist implements ModDist {
         window.getGuiScaledWidth(), window.getGuiScaledHeight(),
         event.getPartialTick());
     this.targetOverlay.render(event.getPoseStack(), event.getPartialTick());
+    // 闪盲倒计时/渐隐（1.19.2 无 GuiGraphics，用 PoseStack 渲染）
+    this.ingameGui.renderFlashBangOverlay(this.minecraft.player, event.getPoseStack(),
+        window.getGuiScaledWidth(), window.getGuiScaledHeight(), event.getPartialTick());
   }
 
   /**
@@ -739,11 +742,6 @@ public class ClientDist implements ModDist {
       case END -> {
         if (this.minecraft.player != null) {
           this.updateAdrenalineShader(event.renderTickTime);
-          if (this.minecraft.screen == null) {
-            this.ingameGui.renderFlashBangOverlay(this.minecraft.player, new PoseStack(),
-                this.minecraft.getWindow().getGuiScaledWidth(),
-                this.minecraft.getWindow().getGuiScaledHeight(), event.renderTickTime);
-          }
         }
       }
     }
@@ -752,7 +750,7 @@ public class ClientDist implements ModDist {
   @SubscribeEvent
   public void handleRenderScreen(ScreenEvent.Render.Pre event) {
     if (this.minecraft.player != null) {
-      this.ingameGui.renderFlashBangOverlay(this.minecraft.player, new PoseStack(),
+      this.ingameGui.renderFlashBangOverlay(this.minecraft.player, event.getPoseStack(),
           this.minecraft.getWindow().getGuiScaledWidth(),
           this.minecraft.getWindow().getGuiScaledHeight(), event.getPartialTick());
     }
