@@ -30,6 +30,7 @@ import com.craftingdead.survival.client.model.PipeBombModel;
 import com.craftingdead.survival.client.model.SupplyDropModel;
 import com.craftingdead.survival.client.model.geom.SurvivalModelLayers;
 import com.craftingdead.survival.client.renderer.entity.SupplyDropRenderer;
+import com.craftingdead.survival.client.renderer.entity.HomingBigArrowRenderer;
 import com.craftingdead.survival.client.renderer.entity.VanillaZombieGeoRenderer;
 import com.craftingdead.survival.client.renderer.entity.ZombieGeoRenderer;
 import com.craftingdead.survival.client.renderer.entity.layers.GeoParachuteLayer;
@@ -101,6 +102,8 @@ public class ClientDist implements ModDist {
             context.bakeLayer(SurvivalModelLayers.PIPE_BOMB)));
     event.registerEntityRenderer(SurvivalEntityTypes.SUPPLY_DROP.get(),
         SupplyDropRenderer::new);
+    event.registerEntityRenderer(SurvivalEntityTypes.HOMING_BIG_ARROW.get(),
+        HomingBigArrowRenderer::new);
     // 所有僵尸使用 GeckoLib 人形模型渲染器（共享模型+动画，按类型用不同贴图）
     // 原版僵尸使用 GeoReplacedEntityRenderer 替换渲染
     event.registerEntityRenderer(EntityType.ZOMBIE,

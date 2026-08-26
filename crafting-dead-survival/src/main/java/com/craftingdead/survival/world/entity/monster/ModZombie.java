@@ -20,10 +20,17 @@ package com.craftingdead.survival.world.entity.monster;
 
 import com.craftingdead.core.world.entity.ai.FollowAttractiveGrenadeGoal;
 import com.craftingdead.survival.world.entity.animation.ZombieAnimations;
+import javax.annotation.Nullable;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -43,6 +50,19 @@ public class ModZombie extends Zombie implements GeoEntity {
     super.registerGoals();
     // 所有僵尸都会被诱饵弹(Decoy Grenade)吸引，并看向闪光弹
     this.goalSelector.addGoal(1, new FollowAttractiveGrenadeGoal(this, 1.15F));
+  }
+
+  @Override
+  public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
+      MobSpawnType spawnType, @Nullable SpawnGroupData groupData) {
+    groupData = super.finalizeSpawn(level, difficulty, spawnType, groupData);
+    // 僵尸 AI 增强：可以破坏门追击玩家，并扩大追踪范围
+    this.setCanBreakDoors(true);
+    AttributeInstance followRange = this.getAttribute(Attributes.FOLLOW_RANGE);
+    if (followRange != null && followRange.getBaseValue() < 40.0D) {
+      followRange.setBaseValue(40.0D);
+    }
+    return groupData;
   }
 
   @Override
