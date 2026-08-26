@@ -33,6 +33,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 public class RayTraceUtil {
 
@@ -121,7 +122,7 @@ public class RayTraceUtil {
         break;
       }
 
-      var context = new ClipContext(currentPos, endPos, blockMode, fluidMode, (Entity) null);
+      var context = new ClipContext(currentPos, endPos, blockMode, fluidMode, CollisionContext.empty());
       hitResult = level.clip(context);
 
       if (hitResult != null) {

@@ -36,13 +36,14 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
  *
  * <p>用枪命中敌对生物时按命中点判定部位，并产生对应效果：
  * <ul>
- *   <li><b>头部</b>：爆头——有概率一击致命（打爆头及死亡），否则造成高倍伤害；</li>
- *   <li><b>腿部</b>：有概率断裂——断裂后移动速度大幅降低（只能缓慢爬行）；</li>
- *   <li><b>手臂</b>：有概率断裂——断臂后仍可正常攻击（不影响战斗力）；</li>
- *   <li><b>腰部</b>：有概率断裂——断裂后几乎无法移动（瘫痪）。</li>
+ *   <li><b>头部</b>：爆头——每次造成高倍伤害，累计伤害达到阈值或触发幸运一击时打爆头部一击致命；</li>
+ *   <li><b>腿部</b>：断裂——累计伤害达到阈值后腿断，移动速度大幅降低（只能缓慢爬行）；</li>
+ *   <li><b>手臂</b>：断裂——累计伤害达到阈值后臂断，攻击力大幅下降（无法有效攻击）；</li>
+ *   <li><b>腰部</b>：断裂——累计伤害达到阈值后腰断，几乎无法移动（瘫痪）。</li>
  * </ul>
  *
- * <p>断裂状态保存在生物 persistentData 中（存档持久化）。仅对僵尸 / 骷髅等人形
+ * <p>断裂状态与部位累计伤害都保存在生物 persistentData 中（存档持久化），
+ * 命中同一部位会累积伤害，越打越容易断裂（更真实）。仅对僵尸 / 骷髅等人形
  * 敌对生物生效，不影响玩家与其他模组。
  */
 public final class BodyPartHandler {
@@ -53,6 +54,11 @@ public final class BodyPartHandler {
   private static final String TAG_ARM = "arm_broken";
   private static final String TAG_WAIST = "waist_broken";
   private static final String TAG_LEG = "leg_broken";
+  /** persistentData 中各部位累计伤害标签。 */
+  private static final String TAG_HEAD_DMG = "head_dmg";
+  private static final String TAG_ARM_DMG = "arm_dmg";
+  private static final String TAG_WAIST_DMG = "waist_dmg";
+  private static final String TAG_LEG_DMG = "leg_dmg";
 
   /**
    * TaCZ（Timeless and Classics Zero）动能子弹实体类名（软引用，无编译依赖；
@@ -67,17 +73,22 @@ public final class BodyPartHandler {
   /** 腰断移动速度减速 modifier id。 */
   private static final ResourceLocation WAIST_SPEED_MODIFIER =
       ResourceLocation.fromNamespaceAndPath("craftingdeadsurvival", "waist_broken_cripple");
+  /** 手臂断攻击力降低 modifier id。 */
+  private static final ResourceLocation ARM_ATTACK_MODIFIER =
+      ResourceLocation.fromNamespaceAndPath("craftingdeadsurvival", "arm_broken_weak");
 
-  /** 非头部部位断裂概率（每次命中）。 */
-  private static final float BREAK_CHANCE = 0.30F;
-  /** 爆头一击致命概率。 */
-  private static final float HEADSHOT_LETHAL_CHANCE = 0.35F;
-  /** 爆头（非致命）额外伤害倍率。 */
-  private static final float HEADSHOT_BONUS_DAMAGE = 3.0F;
+  /** 部位断裂所需的累计伤害阈值（= 最大生命值 × 该比例）。 */
+  private static final float BREAK_THRESHOLD_RATIO = 0.5F;
+  /** 爆头基础伤害倍率（每次命中头部都生效）。 */
+  private static final float HEADSHOT_DAMAGE_MULTIPLIER = 2.5F;
+  /** 爆头幸运一击（直接打爆头部）概率。 */
+  private static final float HEADSHOT_INSTANT_KILL_CHANCE = 0.25F;
   /** 腿断后移动速度降低比例（爬行）。 */
   private static final double LEG_SPEED_REDUCTION = -0.60D;
   /** 腰断后移动速度降低比例（瘫痪）。 */
   private static final double WAIST_SPEED_REDUCTION = -0.85D;
+  /** 手臂断后攻击力降低比例。 */
+  private static final double ARM_ATTACK_REDUCTION = -0.50D;
 
   private BodyPartHandler() {}
 
@@ -92,6 +103,35 @@ public final class BodyPartHandler {
       case WAIST -> bodyTag.getBoolean(TAG_WAIST);
       case LEG -> bodyTag.getBoolean(TAG_LEG);
     };
+  }
+
+  /**
+   * 读取某部位已累计的伤害。
+   */
+  private static float getPartDamage(LivingEntity entity, BodyPart part) {
+    var bodyTag = entity.getPersistentData().getCompound(TAG_BODY);
+    return switch (part) {
+      case HEAD -> bodyTag.getFloat(TAG_HEAD_DMG);
+      case ARM -> bodyTag.getFloat(TAG_ARM_DMG);
+      case WAIST -> bodyTag.getFloat(TAG_WAIST_DMG);
+      case LEG -> bodyTag.getFloat(TAG_LEG_DMG);
+    };
+  }
+
+  /**
+   * 向某部位累计伤害，返回累计后的总量。
+   */
+  private static float addPartDamage(LivingEntity entity, BodyPart part, float damage) {
+    var bodyTag = entity.getPersistentData().getCompound(TAG_BODY);
+    float total = getPartDamage(entity, part) + damage;
+    switch (part) {
+      case HEAD -> bodyTag.putFloat(TAG_HEAD_DMG, total);
+      case ARM -> bodyTag.putFloat(TAG_ARM_DMG, total);
+      case WAIST -> bodyTag.putFloat(TAG_WAIST_DMG, total);
+      case LEG -> bodyTag.putFloat(TAG_LEG_DMG, total);
+    }
+    entity.getPersistentData().put(TAG_BODY, bodyTag);
+    return total;
   }
 
   /**
@@ -112,20 +152,33 @@ public final class BodyPartHandler {
   }
 
   /**
-   * 应用部位断裂后的效果（腿断爬行、腰断瘫痪；手臂断不影响）。
+   * 应用部位断裂后的效果（腿断爬行、腰断瘫痪、臂断攻击力下降；头部由伤害击杀）。
    */
   private static void applyBrokenEffect(LivingEntity entity, BodyPart part) {
-    AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
-    if (speed == null) {
-      return;
-    }
     switch (part) {
-      case LEG -> speed.addTransientModifier(new AttributeModifier(LEG_SPEED_MODIFIER,
-          LEG_SPEED_REDUCTION, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-      case WAIST -> speed.addTransientModifier(new AttributeModifier(WAIST_SPEED_MODIFIER,
-          WAIST_SPEED_REDUCTION, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-      default -> {
-        // 手臂断：仍可攻击，无速度影响
+      case LEG -> {
+        AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed != null) {
+          speed.addTransientModifier(new AttributeModifier(LEG_SPEED_MODIFIER,
+              LEG_SPEED_REDUCTION, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        }
+      }
+      case WAIST -> {
+        AttributeInstance speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed != null) {
+          speed.addTransientModifier(new AttributeModifier(WAIST_SPEED_MODIFIER,
+              WAIST_SPEED_REDUCTION, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        }
+      }
+      case ARM -> {
+        AttributeInstance attack = entity.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (attack != null) {
+          attack.addTransientModifier(new AttributeModifier(ARM_ATTACK_MODIFIER,
+              ARM_ATTACK_REDUCTION, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        }
+      }
+      case HEAD -> {
+        // 头部打爆由伤害处理直接一击致命
       }
     }
   }
@@ -156,17 +209,27 @@ public final class BodyPartHandler {
 
     switch (part) {
       case HEAD -> {
-        // 爆头：概率一击致命（打爆头及死亡），否则高倍伤害
-        if (random.nextFloat() < HEADSHOT_LETHAL_CHANCE) {
-          damage = living.getMaxHealth() + 20.0F;
+        // 爆头：每次高倍伤害；累计打爆头部或幸运一击则一击致命
+        if (isBroken(living, BodyPart.HEAD)) {
+          damage *= HEADSHOT_DAMAGE_MULTIPLIER;
         } else {
-          damage *= HEADSHOT_BONUS_DAMAGE;
+          float total = addPartDamage(living, BodyPart.HEAD, damage);
+          if (total >= living.getMaxHealth() * BREAK_THRESHOLD_RATIO
+              || random.nextFloat() < HEADSHOT_INSTANT_KILL_CHANCE) {
+            setBroken(living, BodyPart.HEAD, true);
+            damage = living.getMaxHealth() + 20.0F;
+          } else {
+            damage *= HEADSHOT_DAMAGE_MULTIPLIER;
+          }
         }
       }
       case LEG, ARM, WAIST -> {
-        // 断肢：概率使对应部位断裂
-        if (!isBroken(living, part) && random.nextFloat() < BREAK_CHANCE) {
-          setBroken(living, part, true);
+        // 断肢：累计伤害达到阈值即断裂（越打越容易断）
+        if (!isBroken(living, part)) {
+          float total = addPartDamage(living, part, damage);
+          if (total >= living.getMaxHealth() * BREAK_THRESHOLD_RATIO) {
+            setBroken(living, part, true);
+          }
         }
       }
     }
