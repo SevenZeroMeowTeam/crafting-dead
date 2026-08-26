@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.annotation.Nullable;
 import net.minecraft.core.Holder;
@@ -582,8 +583,48 @@ public final class QualityHelper {
     CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
       tag.putString("GunId", id);
       tag.putInt("GunCurrentAmmoCount", Math.max(0, currentAmmo));
+      // 关键：TaCZ 的 getFireMode 在缺少 GunFireMode 字段时返回 FireMode.UNKNOWN，
+      // 开枪会被拒绝（提示"未知开火模式，无法射击"），因此没有枪声。
+      tag.putString("GunFireMode", resolveTaCZFireMode(id));
     });
     return stack;
+  }
+
+  /** TaCZ 获取枪械公共索引的 API 类名（软引用，无需编译依赖）。 */
+  private static final String TACZ_TIMELESS_API = "com.tacz.guns.api.TimelessAPI";
+
+  /**
+   * 解析 TaCZ 枪械的默认开火模式（取自枪械数据 {@code fire_mode} 列表的第一项）。
+   *
+   * <p>TaCZ 的 {@code getFireMode} 在物品缺少 {@code GunFireMode} 字段时返回
+   * {@code FireMode.UNKNOWN}，开枪时会被拒绝（提示"未知开火模式，无法射击"），因此
+   * 发放的 TaCZ 枪械必须显式写入有效的开火模式。这里通过反射从 TaCZ 的
+   * {@code CommonGunIndex}（服务端枪械数据）读取该枪的默认模式；TaCZ 未安装、数据
+   * 未加载或 API 变化时安全回退为 {@code SEMI}（半自动，几乎所有枪械都支持，保证可开火）。
+   *
+   * @param gunId 枪械 id，如 "tacz:ak47"
+   * @return FireMode 枚举名（大写），如 "AUTO" / "SEMI" / "BURST"
+   */
+  public static String resolveTaCZFireMode(String gunId) {
+    try {
+      Class<?> api = Class.forName(TACZ_TIMELESS_API);
+      var getIndex = api.getMethod("getCommonGunIndex", ResourceLocation.class);
+      Optional<?> opt = (Optional<?>) getIndex.invoke(null, ResourceLocation.tryParse(gunId));
+      if (opt != null && opt.isPresent()) {
+        Object index = opt.get();
+        Object gunData = index.getClass().getMethod("getGunData").invoke(index);
+        Object fireModes = gunData.getClass().getMethod("getFireModeSet").invoke(gunData);
+        if (fireModes instanceof List<?> list && !list.isEmpty()) {
+          Object first = list.get(0);
+          if (first instanceof Enum<?> fireMode) {
+            return fireMode.name();
+          }
+        }
+      }
+    } catch (Exception ignored) {
+      // TaCZ 未安装或 API 变化：回退 SEMI
+    }
+    return "SEMI";
   }
 
   /**
