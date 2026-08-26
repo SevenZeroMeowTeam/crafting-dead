@@ -18,6 +18,7 @@
 
 package com.craftingdead.survival.mixin;
 
+import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.world.entity.SurvivalEntityTypes;
 import com.craftingdead.survival.world.entity.projectile.HomingBigArrow;
 import net.minecraft.util.Mth;
@@ -60,13 +61,14 @@ public abstract class SkeletonEnhancementMixin extends Monster implements Ranged
   }
 
   /**
-   * 骷髅 AI 增强：扩大追踪范围。
+   * 骷髅 AI 增强：按配置扩大追踪范围（默认 32 格）。
    */
   @Inject(method = "registerGoals", at = @At("RETURN"))
   private void craftingdead$enhanceSkeletonGoals(CallbackInfo ci) {
+    double followRangeValue = CraftingDeadSurvival.serverConfig.zombieFollowRange.get();
     AttributeInstance followRange = this.getAttribute(Attributes.FOLLOW_RANGE);
-    if (followRange != null && followRange.getBaseValue() < 48.0D) {
-      followRange.setBaseValue(48.0D);
+    if (followRange != null && followRange.getBaseValue() < followRangeValue) {
+      followRange.setBaseValue(followRangeValue);
     }
   }
 

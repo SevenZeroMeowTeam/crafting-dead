@@ -18,6 +18,7 @@
 
 package com.craftingdead.survival.world.entity.monster;
 
+import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.world.entity.animation.ZombieAnimations;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
@@ -72,11 +73,15 @@ public class ModZombie extends Zombie implements IAnimatable {
   public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
       MobSpawnType spawnType, @Nullable SpawnGroupData groupData, @Nullable CompoundTag tag) {
     groupData = super.finalizeSpawn(level, difficulty, spawnType, groupData, tag);
-    // 僵尸 AI 增强：可以破坏门追击玩家，并扩大追踪范围
-    this.setCanBreakDoors(true);
+    var config = CraftingDeadSurvival.serverConfig;
+    // 僵尸 AI 增强：按配置概率可以破坏门追击玩家。破门 AI（BreakDoorGoal）每 tick
+    // 检查路径，大量僵尸全部破门会显著增加服务器开销，因此默认仅约一半僵尸破门。
+    this.setCanBreakDoors(this.random.nextFloat() < config.zombieBreakDoorChance.get().floatValue());
+    // 按配置扩大追踪范围（默认 32 格），避免全部僵尸超远寻路造成卡顿
+    double followRangeValue = config.zombieFollowRange.get();
     AttributeInstance followRange = this.getAttribute(Attributes.FOLLOW_RANGE);
-    if (followRange != null && followRange.getBaseValue() < 40.0D) {
-      followRange.setBaseValue(40.0D);
+    if (followRange != null && followRange.getBaseValue() < followRangeValue) {
+      followRange.setBaseValue(followRangeValue);
     }
     return groupData;
   }
