@@ -2,6 +2,10 @@
 
 > 一个为 Minecraft 带来丧尸末日生存体验的 Forge 模组。
 
+[![GitHub Actions Build](https://github.com/SevenZeroMeowTeam/crafting-dead/actions/workflows/crafting-dead.yml/badge.svg?branch=kotlin-refactor)](https://github.com/SevenZeroMeowTeam/crafting-dead/actions/workflows/crafting-dead.yml)
+
+> 🔨 **GitHub Actions 自动构建**：推送至 `1.21.x` / `1.20.x` / `1.18.x` / `kotlin-refactor` 分支时自动执行 `gradle clean build` 并发布 Release（tag `build-<分支>-<编号>`）。
+
 **Crafting Dead** 是一个综合性 Minecraft Forge 模组，深度融合了丧尸末日生存主题。模组包含完整的枪械系统、医疗系统、感染机制、口渴与温度管理、丰富的装饰方块以及 WorldGuard 服务器联动支持，为玩家打造沉浸式的末日生存体验。
 
 > 💬 **Discord 交流群**：[点击加入](https://discord.com/invite/yMuNQgad4)
@@ -12,7 +16,7 @@
 
 | 分支 | Minecraft 版本 | Forge 版本 | Java | 状态 |
 |------|----------------|------------|------|------|
-| `kotlin-refactor` | **1.21.1** | **52.1.16** | 21 | 🔬 Kotlin + Java 混编重构实验分支 |
+| `kotlin-refactor` | **1.21.1** | **52.1.16** | 21 | 🔬 Kotlin + Java 混编重构实验分支（自动构建） |
 | `1.21.x` | **1.21.1** | **52.1.16** | 21 | ✅ 活跃维护（当前分支） |
 | `1.20.x` | 1.20.1 | 47.4.22 | 17 | ✅ 维护中 |
 | `1.19.x` | 1.19.2 | 43.5.2 | 17 | ✅ 维护中 |
