@@ -23,6 +23,7 @@
     "KeyboardHandlerMixin",
     "InventoryMixin",
     "LocalPlayerTaczCompatMixin",
+    "TaczAnimationSoundChannelMixin",
     "PlayerRendererMixin"
   ],
   "injectors": {
