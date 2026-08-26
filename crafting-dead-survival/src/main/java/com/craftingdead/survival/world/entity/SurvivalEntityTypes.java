@@ -39,6 +39,7 @@ import com.craftingdead.survival.world.entity.monster.SoldierZombieEntity;
 import com.craftingdead.survival.world.entity.monster.SwatZombieEntity;
 import com.craftingdead.survival.world.entity.monster.TankZombie;
 import com.craftingdead.survival.world.entity.monster.WeakZombie;
+import com.craftingdead.survival.world.entity.projectile.HomingBigArrow;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -238,6 +239,16 @@ public class SurvivalEntityTypes {
               .setUpdateInterval(3)
               .sized(0.6F, 1.95F)
               .setShouldReceiveVelocityUpdates(false)));
+
+  /** 骷髅有概率发射的「跟踪大号箭矢」。 */
+  public static final RegistryObject<EntityType<HomingBigArrow>> HOMING_BIG_ARROW =
+      deferredRegister.register("homing_big_arrow", () -> create("homing_big_arrow",
+          EntityType.Builder
+              .<HomingBigArrow>of(HomingBigArrow::new, MobCategory.MISC)
+              .setTrackingRange(64)
+              .setUpdateInterval(4)
+              .sized(0.75F, 0.75F)
+              .setShouldReceiveVelocityUpdates(true)));
 
   private static <T extends Entity> EntityType<T> create(String registryName,
       EntityType.Builder<T> builder) {

@@ -6,7 +6,8 @@
   "refmap": "craftingdeadsurvival.refmap.json",
   "mixins": [
     "ZombieMixin",
-    "SpawnPlacementsMixin"
+    "SpawnPlacementsMixin",
+    "SkeletonEnhancementMixin"
   ],
   "client": [
     "ScoreboardSidebarMixin"
