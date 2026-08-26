@@ -685,6 +685,21 @@ public final class QualityHelper {
   }
 
   /**
+   * 读取物品 NBT 中的 {@code GunId}（如 "tacz:m1014"）。非 TaCZ 枪械或未设置时返回 {@code null}。
+   */
+  @Nullable
+  public static String getTaCZGunId(ItemStack stack) {
+    if (stack.isEmpty()) {
+      return null;
+    }
+    CompoundTag tag = stack.getTag();
+    if (tag == null || !tag.contains("GunId")) {
+      return null;
+    }
+    return tag.getString("GunId");
+  }
+
+  /**
    * 是否是创造弹药箱。
    */
   public static boolean isCreativeAmmoBox(ItemStack stack) {
