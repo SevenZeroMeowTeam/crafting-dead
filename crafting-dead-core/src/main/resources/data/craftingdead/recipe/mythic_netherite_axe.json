@@ -17,7 +17,5 @@
       "item": "minecraft:netherite_axe"
     }
   },
-  "result": {
-    "id": "minecraft:netherite_axe"
-  }
+  "result": "minecraft:netherite_axe"
 }

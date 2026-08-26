@@ -27,6 +27,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
  * 部位伤害 / 断肢系统。
@@ -50,6 +53,13 @@ public final class BodyPartHandler {
   private static final String TAG_ARM = "arm_broken";
   private static final String TAG_WAIST = "waist_broken";
   private static final String TAG_LEG = "leg_broken";
+
+  /**
+   * TaCZ（Timeless and Classics Zero）动能子弹实体类名（软引用，无编译依赖；
+   * TaCZ 未安装或类名变化时安全跳过）。
+   */
+  private static final String TACZ_BULLET_CLASS_NAME =
+      "com.tacz.guns.entity.EntityKineticBullet";
 
   /** 腿断移动速度减速 modifier id。 */
   private static final ResourceLocation LEG_SPEED_MODIFIER =
@@ -128,31 +138,30 @@ public final class BodyPartHandler {
   }
 
   /**
-   * 枪械命中事件处理：判定部位并应用爆头 / 断肢效果。
+   * 通用部位命中入口：按命中点判定部位并应用爆头 / 断肢效果，返回修改后的伤害。
+   * 同时服务于 Crafting Dead 自己的枪械（{@link GunEvent.EntityHit}）与 TaCZ 枪械。
    *
-   * @param event 枪械命中实体事件（可修改伤害）
+   * @param living 被击中的敌对生物（僵尸 / 骷髅）
+   * @param hitPos 弹道命中点（世界坐标）
+   * @param damage 原始伤害
+   * @return 应用部位效果后的伤害
    */
-  public static void handleGunHit(GunEvent.EntityHit event) {
-    if (!(event.target() instanceof LivingEntity living) || living.level().isClientSide()) {
-      return;
-    }
-    if (!isSupportedTarget(living)) {
-      return;
+  public static float applyBodyPartHit(LivingEntity living, Vec3 hitPos, float damage) {
+    if (living.level().isClientSide() || !isSupportedTarget(living)) {
+      return damage;
     }
 
-    BodyPart part = BodyPart.fromHitPosition(living, event.hitPos());
+    BodyPart part = BodyPart.fromHitPosition(living, hitPos);
     RandomSource random = living.getRandom();
 
     switch (part) {
       case HEAD -> {
         // 爆头：概率一击致命（打爆头及死亡），否则高倍伤害
-        float damage = event.damage();
         if (random.nextFloat() < HEADSHOT_LETHAL_CHANCE) {
           damage = living.getMaxHealth() + 20.0F;
         } else {
           damage *= HEADSHOT_BONUS_DAMAGE;
         }
-        event.damage(damage);
       }
       case LEG, ARM, WAIST -> {
         // 断肢：概率使对应部位断裂
@@ -161,5 +170,44 @@ public final class BodyPartHandler {
         }
       }
     }
+    return damage;
+  }
+
+  /**
+   * Crafting Dead 枪械命中事件处理：判定部位并应用爆头 / 断肢效果。
+   *
+   * @param event 枪械命中实体事件（可修改伤害）
+   */
+  public static void handleGunHit(GunEvent.EntityHit event) {
+    if (!(event.target() instanceof LivingEntity living)) {
+      return;
+    }
+    event.damage(applyBodyPartHit(living, event.hitPos(), event.damage()));
+  }
+
+  /**
+   * TaCZ 枪械命中处理：TaCZ 的子弹命中由 {@code LivingHurtEvent} 触发，
+   * 通过子弹实体类名软引用判断伤害来源（无需编译依赖 TaCZ），命中点取子弹当前位置。
+   *
+   * <p>Crafting Dead 自己的枪械伤害的 directEntity 是射手本人，不会进入此分支，
+   * 仍由 {@link #handleGunHit(GunEvent.EntityHit)} 处理，避免重复判定。
+   */
+  @SubscribeEvent
+  public static void handleTaczGunHit(LivingHurtEvent event) {
+    var source = event.getSource();
+    if (source == null) {
+      return;
+    }
+    var direct = source.getDirectEntity();
+    if (direct == null || !TACZ_BULLET_CLASS_NAME.equals(direct.getClass().getName())) {
+      return;
+    }
+    var target = event.getEntity();
+    if (target == null || target.level().isClientSide()) {
+      return;
+    }
+    // 子弹在造成伤害的瞬间仍位于命中点；TaCZ 在 hurt 之后才移除子弹
+    float newDamage = applyBodyPartHit(target, direct.position(), event.getAmount());
+    event.setAmount(newDamage);
   }
 }

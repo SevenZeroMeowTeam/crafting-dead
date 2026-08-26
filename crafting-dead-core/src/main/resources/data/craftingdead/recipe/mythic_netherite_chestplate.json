@@ -17,7 +17,5 @@
       "item": "minecraft:netherite_chestplate"
     }
   },
-  "result": {
-    "id": "minecraft:netherite_chestplate"
-  }
+  "result": "minecraft:netherite_chestplate"
 }

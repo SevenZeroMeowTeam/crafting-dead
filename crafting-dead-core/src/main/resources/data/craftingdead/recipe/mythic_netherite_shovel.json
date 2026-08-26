@@ -17,7 +17,5 @@
       "item": "minecraft:netherite_shovel"
     }
   },
-  "result": {
-    "id": "minecraft:netherite_shovel"
-  }
+  "result": "minecraft:netherite_shovel"
 }

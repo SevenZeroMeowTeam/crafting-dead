@@ -167,6 +167,8 @@ public class CraftingDeadSurvival {
 
     MinecraftForge.EVENT_BUS.register(this);
     MinecraftForge.EVENT_BUS.register(new MoonEventHandler());
+    // 部位伤害/断肢系统：注册静态 @SubscribeEvent（TaCZ 枪命中处理）
+    MinecraftForge.EVENT_BUS.register(BodyPartHandler.class);
 
     SurvivalActionTypes.deferredRegister.register(modEventBus);
     SurvivalItems.deferredRegister.register(modEventBus);
