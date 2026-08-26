@@ -73,6 +73,7 @@ import com.craftingdead.survival.world.entity.monster.GiantZombie;
 import com.craftingdead.survival.world.entity.monster.PoliceZombieEntity;
 import com.craftingdead.survival.world.entity.monster.TankZombie;
 import com.craftingdead.survival.world.entity.monster.WeakZombie;
+import com.craftingdead.survival.world.entity.body.BodyPartHandler;
 import com.craftingdead.survival.world.item.SurvivalItems;
 import com.craftingdead.survival.world.item.enchantment.SurvivalEnchantments;
 import com.craftingdead.survival.world.level.block.SurvivalBlocks;
@@ -435,6 +436,12 @@ public class CraftingDeadSurvival {
                   / (float) SurvivalEnchantments.INFECTION.get().getMaxLevel();
           playerHandler.infect(enchantmentPct);
         });
+  }
+
+  @SubscribeEvent
+  public void handleBodyPartHit(GunEvent.EntityHit event) {
+    // 部位伤害/断肢系统：爆头死亡、腿断爬行、手臂断仍攻击、腰断瘫痪
+    BodyPartHandler.handleGunHit(event);
   }
 
   // TODO: Reimplement zombie spawn modification via data-driven BiomeModifier
