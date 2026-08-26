@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -754,9 +755,12 @@ public class ClientDist implements ModDist {
           var partialTick = event.getTimer().getGameTimeDeltaPartialTick(false);
           this.updateAdrenalineShader(partialTick);
           if (this.minecraft.screen == null) {
-            this.ingameGui.renderFlashBangOverlay(this.minecraft.player, new PoseStack(),
+            var guiGraphics = new GuiGraphics(this.minecraft,
+                this.minecraft.renderBuffers().bufferSource());
+            this.ingameGui.renderFlashBangOverlay(this.minecraft.player, guiGraphics,
                 this.minecraft.getWindow().getGuiScaledWidth(),
                 this.minecraft.getWindow().getGuiScaledHeight(), partialTick);
+            guiGraphics.flush();
           }
         }
       }
@@ -766,7 +770,7 @@ public class ClientDist implements ModDist {
   @SubscribeEvent
   public void handleRenderScreen(ScreenEvent.Render.Pre event) {
     if (this.minecraft.player != null) {
-      this.ingameGui.renderFlashBangOverlay(this.minecraft.player, new PoseStack(),
+      this.ingameGui.renderFlashBangOverlay(this.minecraft.player, event.getGuiGraphics(),
           this.minecraft.getWindow().getGuiScaledWidth(),
           this.minecraft.getWindow().getGuiScaledHeight(), event.getPartialTick());
     }

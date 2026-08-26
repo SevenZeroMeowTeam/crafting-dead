@@ -18,8 +18,15 @@
 
 package com.craftingdead.core.client;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.Sound;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.client.sounds.SoundEventListener;
+import net.minecraft.client.sounds.WeighedSoundEvents;
+import com.mojang.logging.LogUtils;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.slf4j.Logger;
 
 /**
  * TaCZ（Timeless and Classics Guns）声音兼容补丁。
@@ -34,9 +41,16 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * <p>修复：进入世界（单人 / 服务器）后延迟约 3 秒，反射调用 TaCZ 的
  * {@code SoundPlayManager.clearSoundResourceCache()} 清空该缓存，让枪声资源被重新检查。
  * 未安装 TaCZ 时自动无操作。
+ *
+ * <p>诊断：{@link #registerSoundDiag()} 注册一个 {@link SoundEventListener}，
+ * 每次 SoundEngine 播放 TaCZ 声音实例时输出该声音的类名 / 位置 / 音量 / 音高 / 实际文件路径，
+ * 用于定位"能开火但无声"的问题。
  */
 @OnlyIn(Dist.CLIENT)
 public final class TaczSoundCompat {
+
+  /** 诊断日志名。 */
+  private static final Logger LOGGER = LogUtils.getLogger();
 
   /** TaCZ 声音播放管理器类名（软引用，无需编译依赖）。 */
   private static final String TACZ_SOUND_PLAY_MANAGER =
@@ -44,6 +58,9 @@ public final class TaczSoundCompat {
 
   /** 进入世界后延迟刷新缓存的客户端 tick 数（3 秒）。 */
   private static int ticksUntilRefresh = -1;
+
+  /** 声音诊断监听器是否已注册（避免重复注册）。 */
+  private static boolean soundDiagRegistered = false;
 
   private TaczSoundCompat() {}
 
@@ -60,10 +77,49 @@ public final class TaczSoundCompat {
   }
 
   /**
-   * 进入世界（单人 / 服务器）后调用：安排一次延迟刷新。
+   * 进入世界（单人 / 服务器）后调用：安排一次延迟刷新，并注册声音诊断监听器。
    */
   public static void refreshAfterJoin() {
     ticksUntilRefresh = 60;
+    registerSoundDiag();
+  }
+
+  /**
+   * 注册一个 {@link SoundEventListener}，打印所有进入 SoundEngine 的 TaCZ 声音实例。
+   *
+   * <p>诊断用途：开一枪后，若日志出现 {@code [SoundDiag] TACZ play ...}，说明枪声已进入
+   * SoundEngine（问题在 OpenAL 输出端）；若完全没有，说明枪声在 TaCZ 调用链上被跳过。
+   */
+  public static void registerSoundDiag() {
+    if (soundDiagRegistered) {
+      return;
+    }
+    Minecraft mc = Minecraft.getInstance();
+    if (mc == null || mc.getSoundManager() == null) {
+      return;
+    }
+    soundDiagRegistered = true;
+    mc.getSoundManager().addListener(new SoundEventListener() {
+      @Override
+      public void onPlaySound(SoundInstance sound, WeighedSoundEvents events, float range) {
+        if (!sound.getClass().getName().startsWith("com.tacz.guns.client.sound.")) {
+          return;
+        }
+        String path = "null";
+        try {
+          Sound s = sound.getSound();
+          if (s != null) {
+            path = s.getPath().toString();
+          }
+        } catch (Throwable ignored) {
+          // 忽略解析异常
+        }
+        LOGGER.info("[SoundDiag] TACZ play {} cls={} vol={} pitch={} canPlay={} path={}",
+            sound.getLocation(), sound.getClass().getSimpleName(),
+            sound.getVolume(), sound.getPitch(), sound.canPlaySound(), path);
+      }
+    });
+    LOGGER.info("[SoundDiag] listener registered");
   }
 
   /**

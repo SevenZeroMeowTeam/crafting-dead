@@ -86,6 +86,11 @@ minecraft {
 dependencies {
     implementation project(':crafting-dead-core')
 
+    // Physics Mod Ragdoll API (net.diebuddies.physics.ragdoll) - compile only.
+    // 运行时不打包：Physics Mod 由玩家自行安装到 mods 目录。
+    // 客户端代码通过 ModList.isLoaded("physicsmod") 判断后再使用，缺失时安全降级。
+    compileOnly fg.deobf(files('libs/physics-mod-3.0.31-mc-1.21.1-forge.jar'))
+
     // NOTE: brad.ac maven repository is currently unreachable.
     // Re-enable when https://dl.brad.ac is back online.
     // minecraftLibrary group: 'net.rocketpowered', name: 'rocket-sdk', version: '0.0.10'

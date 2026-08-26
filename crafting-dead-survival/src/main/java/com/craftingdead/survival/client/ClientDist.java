@@ -21,6 +21,7 @@ package com.craftingdead.survival.client;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.client.ClientConfig;
 import com.craftingdead.core.client.renderer.entity.grenade.GrenadeRenderer;
+import com.craftingdead.core.client.renderer.entity.layers.ParachuteLayer;
 import com.craftingdead.core.client.util.RenderUtil;
 import com.craftingdead.core.world.effect.ModMobEffects;
 import com.craftingdead.survival.CraftingDeadSurvival;
@@ -29,11 +30,11 @@ import com.craftingdead.survival.client.gui.MoonHudOverlay;
 import com.craftingdead.survival.client.model.PipeBombModel;
 import com.craftingdead.survival.client.model.SupplyDropModel;
 import com.craftingdead.survival.client.model.geom.SurvivalModelLayers;
-import com.craftingdead.survival.client.renderer.entity.SupplyDropRenderer;
+import com.craftingdead.survival.client.renderer.entity.AdvancedZombieRenderer;
+import com.craftingdead.survival.client.renderer.entity.GiantZombieRenderer;
 import com.craftingdead.survival.client.renderer.entity.HomingBigArrowRenderer;
-import com.craftingdead.survival.client.renderer.entity.VanillaZombieGeoRenderer;
-import com.craftingdead.survival.client.renderer.entity.ZombieGeoRenderer;
-import com.craftingdead.survival.client.renderer.entity.layers.GeoParachuteLayer;
+import com.craftingdead.survival.client.renderer.entity.SupplyDropRenderer;
+import com.craftingdead.survival.client.renderer.entity.ZombieRagdollHook;
 // import com.craftingdead.survival.client.sound.MovementSoundAmplifier; // TODO: Fix API compatibility
 import com.craftingdead.survival.particles.SurvivalParticleTypes;
 import com.craftingdead.survival.world.entity.SurvivalEntityTypes;
@@ -91,6 +92,9 @@ public class ClientDist implements ModDist {
     MinecraftForge.EVENT_BUS.register(this);
     // Register item frame gun interaction handler for shop displays
     MinecraftForge.EVENT_BUS.register(new ItemFrameGunInteractionHandler());
+    // Physics Mod 死亡布娃娃：僵尸已切换为 ModelPart 渲染，注册断肢联动 hook
+    // （未安装 Physics Mod 时安全跳过）
+    ZombieRagdollHook.registerIfPresent();
     // TODO: Re-enable once MovementSoundAmplifier is fixed for Forge 1.18.2 API
     // Register CSGO-style movement sound amplifier for tactical awareness gameplay
     // MinecraftForge.EVENT_BUS.register(new MovementSoundAmplifier());
@@ -104,48 +108,49 @@ public class ClientDist implements ModDist {
         SupplyDropRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.HOMING_BIG_ARROW.get(),
         HomingBigArrowRenderer::new);
-    // 所有僵尸使用 GeckoLib 人形模型渲染器（共享模型+动画，按类型用不同贴图）
-    // 原版僵尸使用 GeoReplacedEntityRenderer 替换渲染
+    // 所有僵尸使用原版 ModelPart 渲染器（AdvancedZombieRenderer 系列），
+    // 使 Physics Mod 能为僵尸生成死亡布娃娃（ragdoll），并与断肢系统联动。
+    // （GeckoLib 模型不满足 Physics Mod 的 ModelPart 要求，因此此处弃用 Geo 渲染器）
     event.registerEntityRenderer(EntityType.ZOMBIE,
-        VanillaZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.FAST_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.TANK_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.WEAK_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.POLICE_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.DOCTOR_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.GIANT_ZOMBIE.get(),
-        context -> new ZombieGeoRenderer(context, 6.0F));
+        GiantZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.SCOUT_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.SNIPER_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.PILOT_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.SOLDIER_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.NINJA_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.ALFA_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.BOUNTY_HUNTER_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.DESERT_RAIDER_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.FIREFIGHTER_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.HAZMAT_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.JUGGERNAUT_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.MINER_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
     event.registerEntityRenderer(SurvivalEntityTypes.SWAT_ZOMBIE.get(),
-        ZombieGeoRenderer::new);
+        AdvancedZombieRenderer::new);
   }
 
   private void handleEntityRenderersAddLayers(EntityRenderersEvent.AddLayers event) {
@@ -156,14 +161,17 @@ public class ClientDist implements ModDist {
     net.minecraft.client.renderer.entity.EntityRenderer<?> scoutZombie =
         event.getEntityRenderer(SurvivalEntityTypes.SCOUT_ZOMBIE.get());
 
-    if (soliderZombie instanceof ZombieGeoRenderer soldierZombieRenderer) {
-      soldierZombieRenderer.addRenderLayer(new GeoParachuteLayer(soldierZombieRenderer, event.getEntityModels()));
+    if (soliderZombie instanceof AdvancedZombieRenderer soldierZombieRenderer) {
+      soldierZombieRenderer.addLayer(
+          new ParachuteLayer<>(soldierZombieRenderer, event.getEntityModels()));
     }
-    if (fastZombie instanceof ZombieGeoRenderer fastZombieRenderer) {
-      fastZombieRenderer.addRenderLayer(new GeoParachuteLayer(fastZombieRenderer, event.getEntityModels()));
+    if (fastZombie instanceof AdvancedZombieRenderer fastZombieRenderer) {
+      fastZombieRenderer.addLayer(
+          new ParachuteLayer<>(fastZombieRenderer, event.getEntityModels()));
     }
-    if (scoutZombie instanceof ZombieGeoRenderer scoutZombieRenderer) {
-      scoutZombieRenderer.addRenderLayer(new GeoParachuteLayer(scoutZombieRenderer, event.getEntityModels()));
+    if (scoutZombie instanceof AdvancedZombieRenderer scoutZombieRenderer) {
+      scoutZombieRenderer.addLayer(
+          new ParachuteLayer<>(scoutZombieRenderer, event.getEntityModels()));
     }
   }
 

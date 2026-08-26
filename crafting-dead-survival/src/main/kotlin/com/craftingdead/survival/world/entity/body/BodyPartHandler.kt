@@ -17,7 +17,10 @@
 package com.craftingdead.survival.world.entity.body
 
 import com.craftingdead.core.event.GunEvent
+import com.craftingdead.survival.world.entity.monster.ModZombie
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.attributes.AttributeInstance
 import net.minecraft.world.entity.ai.attributes.AttributeModifier
@@ -77,7 +80,7 @@ object BodyPartHandler {
 
     /** 调试开关：是否打印每次 TaCZ 命中的判定日志（默认关闭）。 */
     @Volatile
-    var debugLogEnabled: Boolean = false
+    var debugLogEnabled: Boolean = true
 
     /** 判断某部位是否已断裂。 */
     @JvmStatic
@@ -129,6 +132,16 @@ object BodyPartHandler {
         entity.persistentData.put(TAG_BODY, bodyTag)
         if (broken) {
             applyBrokenEffect(entity, part)
+        }
+        // 将断肢状态同步到客户端（SynchedEntityData），
+        // 供客户端 Physics Mod 死亡布娃娃联动：对应部位不连接、直接掉落。
+        if (broken && entity is ModZombie) {
+            when (part) {
+                BodyPart.HEAD -> entity.setHeadBroken(true)
+                BodyPart.ARM -> entity.setArmBroken(true)
+                BodyPart.WAIST -> entity.setWaistBroken(true)
+                BodyPart.LEG -> entity.setLegBroken(true)
+            }
         }
     }
 
@@ -263,7 +276,39 @@ object BodyPartHandler {
         if (target.level().isClientSide) {
             return
         }
-        // 子弹在造成伤害的瞬间仍位于命中点；TaCZ 在 hurt 之后才移除子弹
-        event.amount = applyBodyPartHit(target, direct.position(), event.amount)
+        // 注意：TaCZ 子弹实体的 position() 是子弹飞行高度（≈射手眼睛高度），并非命中点。
+        // 射手与目标地面高度不同时会误判部位（例如打腿被判为头部，ratio≈1.3）。
+        // 因此用射手视线方向与目标碰撞箱求交，得到真实命中高度。
+        val hitPos = resolveTaczHitPoint(target, source, direct)
+        event.amount = applyBodyPartHit(target, hitPos, event.amount)
+    }
+
+    /**
+     * 计算 TaCZ 子弹的真实命中点：从射手眼睛沿视线方向与目标碰撞箱求交。
+     * 无射手或射线未命中时回退到子弹当前位置。
+     */
+    private fun resolveTaczHitPoint(
+        target: LivingEntity,
+        source: DamageSource,
+        direct: Entity
+    ): Vec3 {
+        val attacker = source.entity
+        if (attacker is LivingEntity) {
+            val eye = attacker.getEyePosition(1.0F)
+            val end = eye.add(attacker.lookAngle.scale(target.bbHeight * 2 + 4.0))
+            val clipped = target.boundingBox.clip(eye, end)
+            if (clipped.isPresent) {
+                val hit = clipped.get()
+                if (debugLogEnabled) {
+                    LOGGER.info(
+                        "[BodyPart] raycast hit={} clipY={} eyeY={} targetFeet={} ratio={}",
+                        target.javaClass.simpleName, hit.y, eye.y, target.y,
+                        (hit.y - target.y) / target.bbHeight
+                    )
+                }
+                return hit
+            }
+        }
+        return direct.position()
     }
 }

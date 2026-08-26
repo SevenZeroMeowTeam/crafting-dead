@@ -22,6 +22,9 @@ import com.craftingdead.core.world.entity.ai.FollowAttractiveGrenadeGoal;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.world.entity.animation.ZombieAnimations;
 import javax.annotation.Nullable;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -39,11 +42,65 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class ModZombie extends Zombie implements GeoEntity {
 
+  /**
+   * 断肢状态同步（服务端 → 客户端），供 Physics Mod 死亡布娃娃联动使用：
+   * 对应部位已在战斗中断裂时，死亡布娃娃上该部位不会连接（直接掉落）。
+   */
+  private static final EntityDataAccessor<Boolean> DATA_HEAD_BROKEN =
+      SynchedEntityData.defineId(ModZombie.class, EntityDataSerializers.BOOLEAN);
+  private static final EntityDataAccessor<Boolean> DATA_ARM_BROKEN =
+      SynchedEntityData.defineId(ModZombie.class, EntityDataSerializers.BOOLEAN);
+  private static final EntityDataAccessor<Boolean> DATA_WAIST_BROKEN =
+      SynchedEntityData.defineId(ModZombie.class, EntityDataSerializers.BOOLEAN);
+  private static final EntityDataAccessor<Boolean> DATA_LEG_BROKEN =
+      SynchedEntityData.defineId(ModZombie.class, EntityDataSerializers.BOOLEAN);
+
   private final AnimatableInstanceCache animatableInstanceCache =
       GeckoLibUtil.createInstanceCache(this);
 
   public ModZombie(EntityType<? extends Zombie> zombie, Level level) {
     super(zombie, level);
+  }
+
+  @Override
+  protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    super.defineSynchedData(builder);
+    builder.define(DATA_HEAD_BROKEN, false);
+    builder.define(DATA_ARM_BROKEN, false);
+    builder.define(DATA_WAIST_BROKEN, false);
+    builder.define(DATA_LEG_BROKEN, false);
+  }
+
+  public boolean isHeadBroken() {
+    return this.entityData.get(DATA_HEAD_BROKEN);
+  }
+
+  public void setHeadBroken(boolean broken) {
+    this.entityData.set(DATA_HEAD_BROKEN, broken);
+  }
+
+  public boolean isArmBroken() {
+    return this.entityData.get(DATA_ARM_BROKEN);
+  }
+
+  public void setArmBroken(boolean broken) {
+    this.entityData.set(DATA_ARM_BROKEN, broken);
+  }
+
+  public boolean isWaistBroken() {
+    return this.entityData.get(DATA_WAIST_BROKEN);
+  }
+
+  public void setWaistBroken(boolean broken) {
+    this.entityData.set(DATA_WAIST_BROKEN, broken);
+  }
+
+  public boolean isLegBroken() {
+    return this.entityData.get(DATA_LEG_BROKEN);
+  }
+
+  public void setLegBroken(boolean broken) {
+    this.entityData.set(DATA_LEG_BROKEN, broken);
   }
 
   @Override
