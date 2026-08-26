@@ -27,6 +27,13 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    # libs/ 被 .gitignore 忽略，CI 需要先下载 Physics Mod 依赖 jar 才能编译
+    - name: Download Physics Mod dependency
+      run: |
+        mkdir -p crafting-dead-survival/libs
+        curl -L --retry 3 --fail -o crafting-dead-survival/libs/physics-mod-3.0.20-mc-1.20.1-forge.jar \
+          https://cdn.modrinth.com/data/Xy8aRQKS/versions/binwAk5d/physics-mod-3.0.20-mc-1.20.1-forge.jar
+
     - name: Build with Gradle
       run: ./gradlew clean build --no-daemon
 
