@@ -9,7 +9,8 @@ plugins {
 }
 
 group = 'com.craftingdead'
-version = "${minecraft_version}-${mod_version}." + (System.env.GITHUB_RUN_NUMBER ?: "homebaked")
+// Kotlin 混编重构分支：jar 文件名与 mod 版本添加 -kotlin 标记
+version = "${minecraft_version}-${mod_version}-kotlin." + (System.env.GITHUB_RUN_NUMBER ?: "homebaked")
 
 // Kotlin 配置：与 Java 21 工具链一致，Kotlin 源码放在 src/main/kotlin
 kotlin {

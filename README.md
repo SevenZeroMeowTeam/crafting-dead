@@ -21,6 +21,10 @@
 | `1.20.x` | 1.20.1 | 47.4.22 | 17 | ✅ 维护中 |
 | `1.19.x` | 1.19.2 | 43.5.2 | 17 | ✅ 维护中 |
 
+> 🧩 **Kotlin 构建标记**：`kotlin-refactor` 分支产出的 jar 文件名带 `-kotlin` 后缀
+> （如 `crafting-dead-core-1.21.1-1.9.5-kotlin.homebaked.jar`），游戏内 Mod 列表
+> 显示名带 `[Kotlin]` 标记（如 `Crafting Dead [Kotlin]`），便于与普通构建区分。
+
 ---
 
 ## 更新日志
