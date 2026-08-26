@@ -282,6 +282,14 @@ public class ServerConfig {
   public final ForgeConfigSpec.IntValue killDropMin;
   public final ForgeConfigSpec.IntValue killDropMax;
 
+  // Zombie Performance / AI Values
+  // ================================================================================
+
+  /** 僵尸可破门的概率（0 = 全部不破门，1 = 全部破门）。破门 AI 开销大，大量僵尸时应降低。 */
+  public final ForgeConfigSpec.DoubleValue zombieBreakDoorChance;
+  /** 僵尸追踪距离（格）。越大寻路越频繁，服务器开销越大。 */
+  public final ForgeConfigSpec.DoubleValue zombieFollowRange;
+
   public ServerConfig(ForgeConfigSpec.Builder builder) {
     // Game-Settings configuration
     builder
@@ -1195,6 +1203,15 @@ public class ServerConfig {
       this.killDropsEnabled = builder
           .comment("击杀时概率掉落原版 / 其他模组物品")
           .define("killDropsEnabled", true);
+      this.zombieBreakDoorChance = builder
+          .comment("僵尸可破门的概率（0 = 全部不破门，1 = 全部破门）。")
+          .comment("破门 AI（BreakDoorGoal）每 tick 检查路径，大量僵尸时开销大；")
+          .comment("降低该值可显著减少服务器卡顿，推荐 0.5")
+          .defineInRange("zombieBreakDoorChance", 0.5D, 0.0D, 1.0D);
+      this.zombieFollowRange = builder
+          .comment("僵尸追踪距离（格）。追踪范围越大寻路越频繁、服务器开销越大，")
+          .comment("推荐 32（原版为 16，破门追击场景 32 已足够）")
+          .defineInRange("zombieFollowRange", 32.0D, 8.0D, 128.0D);
       this.killDropChance = builder
           .comment("每次击杀掉落物品的概率（0.15 = 15%）")
           .defineInRange("killDropChance", 0.15D, 0.0D, 1.0D);

@@ -4,7 +4,7 @@
 	"textures": {
 		"0": "craftingdeaddecoration:block/traffic_signs/traffic_signs_pipe",
 		"1": "craftingdeaddecoration:block/traffic_signs/traffic_signs_stop",
-		"particle": "traffic_signs_pipe"
+		"particle": "craftingdeaddecoration:block/traffic_signs/traffic_signs_pipe"
 	},
 	"elements": [
 		{
