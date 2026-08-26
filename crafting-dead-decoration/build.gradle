@@ -54,6 +54,7 @@ minecraft {
 }
 
 jar {
+    archiveFileName = "crafting-dead-decoration-${project.property('minecraft_version')}-kotlin.jar"
     manifest {
         attributes([
             'Implementation-Title': project.name,

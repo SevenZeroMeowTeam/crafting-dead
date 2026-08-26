@@ -34,6 +34,7 @@ mixin {
 jarJar.enable()
 
 jar {
+    archiveFileName = "crafting-dead-${project.property('minecraft_version')}-kotlin.jar"
     manifest {
         attributes([
             "Implementation-Title": project.name,
