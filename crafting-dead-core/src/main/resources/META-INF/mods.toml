@@ -9,7 +9,7 @@ credits = "Sm0keySa1m0n, Arzio, F3RULLO14, SevenZeroMeowTeam, miaoxing"
 description = '''
     The Minecraft zombie survival mod.
     '''
-displayName = "Crafting Dead [Kotlin]"
+displayName = "Crafting Dead [Kotlin] [1.19.2]"
 displayURL = "https://github.com/SevenZeroMeowTeam/crafting-dead"
 modId = "craftingdead"
 version = "${file.jarVersion}"
