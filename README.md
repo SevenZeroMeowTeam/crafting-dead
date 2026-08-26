@@ -20,6 +20,53 @@
 
 ## 更新日志
 
+### v1.9.7 / v1.2.9 / v1.0.9 / v0.0.9（日志反馈修复：TaCZ 枪声 / 断肢支持 TaCZ 枪 / 僵尸 AI 性能优化）
+
+**关键修复：TaCZ 枪械开火 / 换弹无声（基于运行日志定位）**
+
+- 症状：使用 TaCZ 枪械（新人奖励箱 / 随机枪发放）时开枪 / 换弹没有声音，
+  日志反复出现 `[TACZ Sound] Missing gun sound resource, skipped`
+- 根因：`tacz_default_gun` 枪包被裁剪，**AK47 缺少 4 个主声音文件**
+  （`ak47_reload_tactical` / `ak47_reload_empty` / `ak47_inspect` / `ak47_inspect_empty`）；
+  且 `ak47.animation.json` 的拔枪动画误引用了另一把枪 `ar_akilo` 的声音（资源不存在）
+- 修复：从枪包内 RPK（同为 7.62×39 AK 系）复制补齐同名声音；
+  修正动画引用为 `tacz:ak47/ak47_draw` / `tacz:ak47/ak47_reload_raise_shoulder`
+- 说明：枪包资源修复位于游戏目录 `tacz/tacz_default_gun`，重启游戏或 F3+T 重载资源即可生效
+
+**关键修复：断肢 / 部位伤害系统对 TaCZ 枪械生效**
+
+- 症状：部位伤害 / 断肢系统（爆头、腿断爬行、腰断瘫痪）用 TaCZ 枪时完全不触发
+- 根因：原实现只监听 Crafting Dead 自身枪械的 `GunEvent.EntityHit`，
+  TaCZ 枪的命中 / 伤害完全由 TaCZ 处理，不走该事件
+- 修复：`BodyPartHandler` 抽出通用入口 `applyBodyPartHit(living, hitPos, damage)`，
+  新增监听 `LivingHurtEvent`：通过子弹实体类名反射识别 TaCZ 的
+  `EntityKineticBullet`（无编译依赖，TaCZ 未安装自动跳过），命中点取子弹当前位置，
+  对僵尸 / 骷髅应用爆头（35% 一击致命，否则 3 倍伤害）与断肢效果
+- 现在 Crafting Dead 枪与 TaCZ 枪都能触发部位伤害 / 断肢
+
+**关键修复：mythic 神话配方解析错误**
+
+- 症状：启动 / 进世界时 `RecipeManager` 反复报
+  `Parsing error loading recipe craftingdead:mythic_netherite_*` + `Not a string`
+- 根因：9 个 `mythic_netherite_*.json` 的 `result` 使用了 `{"id": ...}` 对象格式，
+  而 1.21.1 的 `ItemStack.SIMPLE_ITEM_CODEC` 要求**字符串**形式
+- 修复：`result` 全部改为 `"minecraft:netherite_xxx"` 字符串格式
+
+**性能优化：僵尸 AI 破门 / 追踪范围可配置（降低服务器卡顿）**
+
+- 症状：服务器负载高（大量僵尸时 TPS 下降）
+- 根因：所有僵尸强制 `setCanBreakDoors(true)` + 40 格追踪范围，
+  破门 AI（BreakDoorGoal）每 tick 检查路径，大量僵尸时开销巨大
+- 修复：新增服务器配置（`serverconfig/craftingdeadsurvival-server.toml`）：
+  - `zombieBreakDoorChance`：僵尸可破门的概率（默认 0.5，0 = 全部不破门）
+  - `zombieFollowRange`：僵尸 / 骷髅追踪距离（默认 32 格）
+- 骷髅的追踪范围同样改为读取该配置（原硬编码 48 格）
+
+**其他修复**
+
+- decoration 交通标志模型（`traffic_signs_02`）的 `particle` 纹理引用补上命名空间，
+  消除缺失纹理警告
+
 ### v1.9.6 / v1.2.8 / v1.0.8 / v0.0.8（随机 TaCZ 武器 + 对应备件 / 全类型创造弹药盒 / Jade 挖掘·砍伐·熔炉时间 / 方块范围框）
 
 **新功能：新人奖励箱改为随机 TaCZ 武器 + 对应备件**
