@@ -25,3 +25,6 @@
 # 参考源码目录（不纳入构建）
 /crafting-dead-1.18.x-guns/
 /crafting-dead-Medical/
+
+# Physics Mod 本地依赖 jar（体积大，不入库；构建前需手动放入 survival/libs/）
+/crafting-dead-survival/libs/

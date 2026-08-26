@@ -16,13 +16,18 @@
 package com.craftingdead.survival.world.entity.body
 
 import com.craftingdead.core.event.GunEvent
+import com.craftingdead.survival.world.entity.monster.ModZombie
+import java.util.Optional
 import java.util.UUID
+import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.attributes.AttributeInstance
 import net.minecraft.world.entity.ai.attributes.AttributeModifier
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.monster.AbstractSkeleton
 import net.minecraft.world.entity.monster.Zombie
+import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.event.entity.living.LivingHurtEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -85,6 +90,15 @@ object BodyPartHandler {
         entity.persistentData.put(TAG_BODY, bodyTag)
         if (broken) {
             applyBrokenEffect(entity, part)
+        }
+        // 将断肢状态同步到客户端（SynchedEntityData），供 Physics Mod 死亡布娃娃联动
+        if (broken && entity is ModZombie) {
+            when (part) {
+                BodyPart.HEAD -> entity.setHeadBroken(true)
+                BodyPart.ARM -> entity.setArmBroken(true)
+                BodyPart.WAIST -> entity.setWaistBroken(true)
+                BodyPart.LEG -> entity.setLegBroken(true)
+            }
         }
     }
 
@@ -172,7 +186,48 @@ object BodyPartHandler {
         if (target.getLevel().isClientSide) {
             return
         }
-        // 子弹在造成伤害的瞬间仍位于命中点；TaCZ 在 hurt 之后才移除子弹
-        event.amount = applyBodyPartHit(target, direct.position(), event.amount)
+        // 注意：TaCZ 子弹实体的 position() 是子弹飞行高度（≈射手眼睛高度），并非命中点。
+        // 射手与目标地面高度不同时会误判部位（例如打腿被判为头部）。
+        // 因此用射手视线方向与目标碰撞箱求交，得到真实命中高度。
+        val hitPos = resolveTaczHitPoint(target, source, direct)
+        event.amount = applyBodyPartHit(target, hitPos, event.amount)
+    }
+
+    /**
+     * 计算 TaCZ 子弹的真实命中点：从射手眼睛沿视线方向与目标碰撞箱求交。
+     * 无射手或射线未命中时回退到子弹当前位置。
+     */
+    private fun resolveTaczHitPoint(
+        target: LivingEntity,
+        source: DamageSource,
+        direct: Entity
+    ): Vec3 {
+        val attacker = source.entity
+        if (attacker is LivingEntity) {
+            val eye = attacker.getEyePosition(1.0F)
+            val end = eye.add(attacker.lookAngle.scale(target.bbHeight * 2 + 4.0))
+            val clipped = clipAabb(target.boundingBox, eye, end)
+            if (clipped != null) {
+                return clipped
+            }
+        }
+        return direct.position()
+    }
+
+    /**
+     * 跨版本安全地执行 AABB#clip：1.19.2 返回 @Nullable Vec3，1.20+ 返回 Optional<Vec3>，
+     * 这里通过反射兼容两种签名。
+     */
+    private fun clipAabb(box: AABB, from: Vec3, to: Vec3): Vec3? = try {
+        val result = AABB::class.java
+            .getMethod("clip", Vec3::class.java, Vec3::class.java)
+            .invoke(box, from, to)
+        when (result) {
+            is Optional<*> -> result.orElse(null) as? Vec3
+            is Vec3 -> result
+            else -> null
+        }
+    } catch (e: ReflectiveOperationException) {
+        null
     }
 }

@@ -90,6 +90,8 @@ dependencies {
     compileOnly files('../libs/ToughAsNails-forge-1.20.1-9.2.0.171.jar')
     // Thirst was Taken (optional runtime dependency for thirst compatibility)
     compileOnly files('../libs/ThirstWasTaken-1.20.1-1.4.0.jar')
+    // Physics Mod (optional runtime dependency for zombie death ragdolls)
+    compileOnly fg.deobf(files('libs/physics-mod-2.12.5-mc-1.19.2-forge.jar'))
 
     // NOTE: brad.ac maven repository is currently unreachable.
     // Re-enable when https://dl.brad.ac is back online.
