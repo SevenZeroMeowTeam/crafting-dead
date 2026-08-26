@@ -19,8 +19,12 @@
 package com.craftingdead.survival.world.entity.body;
 
 import com.craftingdead.core.event.GunEvent;
+import com.craftingdead.survival.world.entity.monster.ModZombie;
+import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -108,6 +112,15 @@ public final class BodyPartHandler {
     entity.getPersistentData().put(TAG_BODY, bodyTag);
     if (broken) {
       applyBrokenEffect(entity, part);
+    }
+    // 将断肢状态同步到客户端（SynchedEntityData），供 Physics Mod 死亡布娃娃联动
+    if (broken && entity instanceof ModZombie modZombie) {
+      switch (part) {
+        case HEAD -> modZombie.setHeadBroken(true);
+        case ARM -> modZombie.setArmBroken(true);
+        case WAIST -> modZombie.setWaistBroken(true);
+        case LEG -> modZombie.setLegBroken(true);
+      }
     }
   }
 
@@ -209,7 +222,25 @@ public final class BodyPartHandler {
       return;
     }
     // 子弹在造成伤害的瞬间仍位于命中点；TaCZ 在 hurt 之后才移除子弹
-    float newDamage = applyBodyPartHit(target, direct.position(), event.getAmount());
+    Vec3 hitPos = resolveTaczHitPoint(target, source, direct);
+    float newDamage = applyBodyPartHit(target, hitPos, event.getAmount());
     event.setAmount(newDamage);
+  }
+
+  /**
+   * 计算 TaCZ 子弹的真实命中点：从射手眼睛沿视线方向与目标碰撞箱求交。
+   * 无射手或射线未命中时回退到子弹当前位置。
+   */
+  private static Vec3 resolveTaczHitPoint(LivingEntity target, DamageSource source,
+      Entity direct) {
+    if (source.getEntity() instanceof LivingEntity attacker) {
+      Vec3 eye = attacker.getEyePosition(1.0F);
+      Vec3 end = eye.add(attacker.getLookAngle().scale(target.getBbHeight() * 2 + 4.0));
+      Optional<Vec3> clipped = target.getBoundingBox().clip(eye, end);
+      if (clipped.isPresent()) {
+        return clipped.get();
+      }
+    }
+    return direct.position();
   }
 }
