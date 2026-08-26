@@ -124,6 +124,7 @@ import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
@@ -489,6 +490,9 @@ public class ClientDist implements ModDist {
       return;
     }
 
+    // 到点后清空 TaCZ 声音资源缓存，让枪声资源被重新检查（修复本地枪声丢失）
+    TaczSoundCompat.onClientTick();
+
     if (this.minecraft.player == null || this.minecraft.getConnection() == null) {
       return;
     }
@@ -687,6 +691,14 @@ public class ClientDist implements ModDist {
   @SubscribeEvent
   public void handleRenderLevel(RenderLevelStageEvent event) {
     this.blockOutlineRenderer.render(event);
+  }
+
+  /**
+   * 进入世界（单人 / 服务器）后，安排刷新 TaCZ 声音资源缓存（修复本地枪声丢失）。
+   */
+  @SubscribeEvent
+  public void handleClientLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
+    TaczSoundCompat.refreshAfterJoin();
   }
 
   @SubscribeEvent

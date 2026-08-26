@@ -20,12 +20,14 @@ package com.craftingdead.survival.network.message;
 
 import com.craftingdead.survival.client.MoonDataHolder;
 import javax.annotation.Nullable;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
@@ -34,9 +36,11 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
  *
  * <p>{@code weaponName} 用于 TaCZ 枪械：服务端按 GunId 构造真实枪名的翻译组件
  * （如 {@code tacz.gun.m1014.name}），避免 HUD 显示原始物品 id {@code item.tacz.modern_kinetic_gun}。
+ * {@code gunId} 用于客户端写回枪械 NBT，使击杀图标按真实枪械模型渲染（避免紫黑方块）。
  */
 public record SurvivalKillFeedMessage(Component killerName, Component victimName,
-    ResourceLocation weaponId, int weaponCount, @Nullable Component weaponName) {
+    ResourceLocation weaponId, int weaponCount, @Nullable Component weaponName,
+    @Nullable String gunId) {
 
   public void encode(FriendlyByteBuf out) {
     ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.encode(out, this.killerName);
@@ -49,6 +53,10 @@ public record SurvivalKillFeedMessage(Component killerName, Component victimName
     out.writeBoolean(this.weaponName != null);
     if (this.weaponName != null) {
       ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.encode(out, this.weaponName);
+    }
+    out.writeBoolean(this.gunId != null);
+    if (this.gunId != null) {
+      out.writeUtf(this.gunId);
     }
   }
 
@@ -65,8 +73,12 @@ public record SurvivalKillFeedMessage(Component killerName, Component victimName
     if (in.readBoolean()) {
       weaponName = ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.decode(in);
     }
+    String gunId = null;
+    if (in.readBoolean()) {
+      gunId = in.readUtf();
+    }
     return new SurvivalKillFeedMessage(killerName, victimName, weaponId, weaponCount,
-        weaponName);
+        weaponName, gunId);
   }
 
   public static void handle(SurvivalKillFeedMessage msg, CustomPayloadEvent.Context ctx) {
@@ -76,6 +88,11 @@ public record SurvivalKillFeedMessage(Component killerName, Component victimName
         if (msg.weaponId() != null) {
           var item = BuiltInRegistries.ITEM.get(msg.weaponId());
           weapon = new ItemStack(item, msg.weaponCount());
+          // 写回 GunId，让 TaCZ 按真实枪械渲染击杀图标（避免紫黑方块）
+          if (msg.gunId() != null) {
+            CustomData.update(DataComponents.CUSTOM_DATA, weapon,
+                tag -> tag.putString("GunId", msg.gunId()));
+          }
         }
         MoonDataHolder.addKillFeed(msg.killerName(), msg.victimName(), weapon,
             msg.weaponName());
