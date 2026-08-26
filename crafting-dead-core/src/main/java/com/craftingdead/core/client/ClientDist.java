@@ -337,6 +337,10 @@ public class ClientDist implements ModDist {
   private void handleRegisterClientReloadListeners(RegisterClientReloadListenersEvent event) {
     event.registerReloadListener(this.crosshairManager);
     event.registerReloadListener(this.itemRenderDispatcher);
+    // 客户端资源重载后清空 TaCZ 声音资源缓存，让枪声资源被重新检查（自动兼容 TaCZ，不影响其他模组）
+    event.registerReloadListener((barrier, resourceManager, preparationsProfiler, reloadProfiler,
+        backgroundExecutor, gameExecutor) -> barrier.wait(backgroundExecutor)
+            .thenRun(TaczSoundCompat::clearTaczSoundResourceCache));
   }
 
   private void handleConfigReloading(ModConfigEvent.Reloading event) {
