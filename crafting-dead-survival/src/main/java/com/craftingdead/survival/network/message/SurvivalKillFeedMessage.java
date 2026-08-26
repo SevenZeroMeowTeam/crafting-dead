@@ -34,9 +34,11 @@ import net.minecraftforge.registries.ForgeRegistries;
  *
  * <p>{@code weaponName} 用于 TaCZ 枪械：服务端按 GunId 构造真实枪名的翻译组件
  * （如 {@code tacz.gun.m1014.name}），避免 HUD 显示原始物品 id {@code item.tacz.modern_kinetic_gun}。
+ * {@code gunId} 用于客户端写回枪械 NBT，使击杀图标按真实枪械模型渲染（避免紫黑方块）。
  */
 public record SurvivalKillFeedMessage(Component killerName, Component victimName,
-    ResourceLocation weaponId, int weaponCount, @Nullable Component weaponName) {
+    ResourceLocation weaponId, int weaponCount, @Nullable Component weaponName,
+    @Nullable String gunId) {
 
   public void encode(FriendlyByteBuf out) {
     out.writeComponent(this.killerName);
@@ -49,6 +51,10 @@ public record SurvivalKillFeedMessage(Component killerName, Component victimName
     out.writeBoolean(this.weaponName != null);
     if (this.weaponName != null) {
       out.writeComponent(this.weaponName);
+    }
+    out.writeBoolean(this.gunId != null);
+    if (this.gunId != null) {
+      out.writeUtf(this.gunId);
     }
   }
 
@@ -65,8 +71,12 @@ public record SurvivalKillFeedMessage(Component killerName, Component victimName
     if (in.readBoolean()) {
       weaponName = in.readComponent();
     }
+    String gunId = null;
+    if (in.readBoolean()) {
+      gunId = in.readUtf();
+    }
     return new SurvivalKillFeedMessage(killerName, victimName, weaponId, weaponCount,
-        weaponName);
+        weaponName, gunId);
   }
 
   public boolean handle(Supplier<NetworkEvent.Context> ctx) {
@@ -77,6 +87,10 @@ public record SurvivalKillFeedMessage(Component killerName, Component victimName
           var item = ForgeRegistries.ITEMS.getValue(this.weaponId);
           if (item != null) {
             weapon = new ItemStack(item, this.weaponCount);
+            // 写回 GunId，让 TaCZ 按真实枪械渲染击杀图标（避免紫黑方块）
+            if (this.gunId != null) {
+              weapon.getOrCreateTag().putString("GunId", this.gunId);
+            }
           }
         }
         MoonDataHolder.addKillFeed(this.killerName, this.victimName, weapon, this.weaponName);
