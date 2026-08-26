@@ -6,7 +6,7 @@ modLoader = "javafml"
 [[mods]]
 authors = "Sm0keySa1m0n, Hallzmine"
 credits = "Sm0keySa1m0n, Hallzmine, SevenZeroMeowTeam, miaoxing"
-displayName = "Crafting Dead Survival [Kotlin]"
+displayName = "Crafting Dead Survival [Kotlin] [1.21.1]"
 displayURL = "https://github.com/SevenZeroMeowTeam/crafting-dead"
 modId = "craftingdeadsurvival"
 version = "${file.jarVersion}"
