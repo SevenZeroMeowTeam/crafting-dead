@@ -62,6 +62,7 @@ import com.craftingdead.survival.world.action.SurvivalActionTypes;
 import com.craftingdead.survival.world.effect.SurvivalMobEffects;
 import com.craftingdead.survival.world.entity.SurvivalEntityTypes;
 import com.craftingdead.survival.world.entity.SurvivalPlayerHandler;
+import com.craftingdead.survival.world.entity.body.BodyPartHandler;
 import com.craftingdead.survival.world.entity.extension.DoctorZombieHandler;
 import com.craftingdead.survival.world.entity.extension.GiantZombieHandler;
 import com.craftingdead.survival.world.entity.extension.PoliceZombieHandler;
@@ -431,6 +432,12 @@ public class CraftingDeadSurvival {
         .resolve()
         .flatMap(living -> living.getHandler(SurvivalPlayerHandler.TYPE))
         .ifPresent(playerHandler -> playerHandler.infect(0.5F));
+  }
+
+  @SubscribeEvent
+  public void handleBodyPartHit(GunEvent.EntityHit event) {
+    // 部位伤害/断肢系统：爆头死亡、腿断爬行、手臂断仍攻击、腰断瘫痪
+    BodyPartHandler.handleGunHit(event);
   }
 
   // TODO: Reimplement zombie spawn modification via data-driven BiomeModifier
