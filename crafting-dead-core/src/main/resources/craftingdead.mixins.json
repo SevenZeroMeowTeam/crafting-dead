@@ -23,6 +23,7 @@
     "MouseHandlerMixin",
     "KeyboardHandlerMixin",
     "InventoryMixin",
+    "TaczAnimationSoundChannelMixin",
     "PlayerRendererMixin"
   ],
   "injectors": {
