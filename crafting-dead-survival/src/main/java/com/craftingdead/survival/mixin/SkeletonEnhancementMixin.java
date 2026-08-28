@@ -37,6 +37,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * 增强骷髅 AI 的兼容补丁（作用于所有原版/模组骷髅）。
@@ -70,6 +71,19 @@ public abstract class SkeletonEnhancementMixin extends Monster implements Ranged
     AttributeInstance followRange = this.getAttribute(Attributes.FOLLOW_RANGE);
     if (followRange != null && followRange.getBaseValue() < followRangeValue) {
       followRange.setBaseValue(followRangeValue);
+    }
+  }
+
+  /**
+   * 骷髅白天不燃烧：覆盖 {@code isSunBurnTick} 返回 false，避免骷髅在日光下进入燃烧/头盔熔化状态。
+   * 注意：{@code isSunSensitive} 仅存在于僵尸类，骷髅类链中没有该方法。
+   * {@code isSunBurnTick} 声明于 {@code Mob}、被骷髅继承，Mixin 会把它注入到 {@code Mob.isSunBurnTick}
+   * 而影响所有生物，因此这里用 {@code instanceof AbstractSkeleton} 守卫，仅对骷髅生效。
+   */
+  @Inject(method = "isSunBurnTick", at = @At("RETURN"), cancellable = true)
+  private void craftingdead$skeletonNotSunSensitive(CallbackInfoReturnable<Boolean> ci) {
+    if ((Object) this instanceof AbstractSkeleton) {
+      ci.setReturnValue(false);
     }
   }
 
