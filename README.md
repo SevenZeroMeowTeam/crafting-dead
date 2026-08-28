@@ -29,6 +29,21 @@
 
 ## 更新日志
 
+### v1.9.8 / v1.2.10 / v1.0.10 / v0.0.10（骷髅日光燃烧 Mixin 崩溃修复）
+
+**关键修复：骷髅白天燃烧 Mixin 运行时崩溃（启动 FATAL）**
+
+- 症状：游戏启动时 FATAL 崩溃
+  `Mixin apply failed craftingdeadsurvival.mixins.json:SkeletonEnhancementMixin -> net.minecraft.world.entity.monster.AbstractSkeleton`，
+  伴随 `InvalidInjectionException: @Inject annotation on craftingdead$skeletonNotSunSensitive could not find any targets matching 'isSunBurnTick' in ...AbstractSkeleton. No refMap loaded.`
+- 根因：`SkeletonEnhancementMixin` 用 `@Inject` 注入**继承而来**的 `isSunBurnTick()`，
+  但该方法声明于父类 `Mob`（`net.minecraft.world.entity.Mob`），并未声明在 `AbstractSkeleton`；
+  同时构建出的 jar 里没有打包 `craftingdeadsurvival.refmap.json`，
+  导致 Mixin 无法解析目标方法、整个 mixin 应用失败，游戏无法启动
+- 修复：改为在 `AbstractSkeleton` **自身声明的** `aiStep()`（`m_8107_`）里用 `@Redirect`
+  把对 `isSunBurnTick()` 的调用点重定向为返回 `false`，仅对骷髅生效，不再依赖 refmap
+- 效果：骷髅白天不再燃烧 / 烧毁头盔（修复此前的回归）
+
 ### v1.9.7 / v1.2.9 / v1.0.9 / v0.0.9（日志反馈修复：TaCZ 枪声 / 断肢支持 TaCZ 枪 / 僵尸 AI 性能优化）
 
 > 📌 本版本修复已同步至全部分支：
@@ -417,7 +432,7 @@ crafting-dead
 ├── crafting-dead-survival      # 生存扩展
 │   ├── 口渴系统 (Thirst)
 │   ├── 温度系统 (Temperature)
-│   ├── 丧尸增强 (ZombieMixin, SurvivalLivingEntityMixin)
+│   ├── 丧尸增强 (ZombieMixin, SurvivalLivingEntityMixin, SkeletonEnhancementMixin)
 │   ├── 末日生存系统 (MoonEventType, ApocalypseManager, MoonEventHandler)
 │   ├── 月亮事件 HUD (MoonHudOverlay)
 │   └── 生存网络同步 (SurvivalNetworkChannel)
@@ -611,6 +626,7 @@ git checkout 1.21.x
 - `ExplosionMixin` — 自定义爆炸伤害倍率
 - `AbstractContainerMenuMixin` — 物品槽同步优化
 - `ZombieMixin` — 丧尸装备生成增强
+- `SkeletonEnhancementMixin` — 骷髅 AI 增强（更大追踪范围 / 概率射出跟踪大号箭矢 / 白天不燃烧）
 
 ---
 
