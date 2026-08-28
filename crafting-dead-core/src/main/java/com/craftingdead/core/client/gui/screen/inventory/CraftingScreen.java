@@ -117,15 +117,12 @@ public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu>
    */
   private void renderPlayerEntity(GuiGraphics guiGraphics) {
     if (this.minecraft != null && this.minecraft.player != null) {
-      InventoryScreen.renderEntityInInventory(guiGraphics,
-          this.leftPos + 35, this.topPos + 72, 30,
-          new org.joml.Vector3f(0.0F, 1.0F, 0.0F),
-          new org.joml.Quaternionf().rotationY(
-              (float) ((this.leftPos + 35) - this.oldMouseX) * 0.1F),
-          new org.joml.Quaternionf().rotationX(
-              (float) ((this.topPos + 75 - 50) - this.oldMouseY) * 0.1F),
-          this.minecraft.player
-      );
+      int centerX = this.leftPos + 35;
+      int centerY = this.topPos + 72;
+      InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics,
+          centerX - 37, centerY - 39, centerX + 37, centerY + 39,
+          30, 0.0625F, this.oldMouseX, this.oldMouseY,
+          this.minecraft.player);
     }
   }
 
