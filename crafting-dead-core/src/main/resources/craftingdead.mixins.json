@@ -24,6 +24,10 @@
     "InventoryMixin",
     "LocalPlayerTaczCompatMixin",
     "TaczAnimationSoundChannelMixin",
+    "SoundManagerTaczSoundMixin",
+    "TaczGunSoundRelativeMixin",
+    "SoundBufferLibraryTaczProviderMixin",
+    "InternalAssetLoaderMixin",
     "PlayerRendererMixin"
   ],
   "injectors": {

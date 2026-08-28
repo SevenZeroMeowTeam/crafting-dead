@@ -62,6 +62,13 @@ public final class TaczSoundCompat {
   /** 声音诊断监听器是否已注册（避免重复注册）。 */
   private static boolean soundDiagRegistered = false;
 
+  /**
+   * 声音诊断开关：默认关闭（诊断已确认枪声正常，避免每次开枪刷屏 / 影响性能）。
+   * 需要时可 {@code -Dcraftingdead.taczSoundDiag=true} 重新开启。
+   */
+  private static final boolean SOUND_DIAG_ENABLED =
+      Boolean.parseBoolean(System.getProperty("craftingdead.taczSoundDiag", "false"));
+
   private TaczSoundCompat() {}
 
   /**
@@ -91,7 +98,7 @@ public final class TaczSoundCompat {
    * SoundEngine（问题在 OpenAL 输出端）；若完全没有，说明枪声在 TaCZ 调用链上被跳过。
    */
   public static void registerSoundDiag() {
-    if (soundDiagRegistered) {
+    if (!SOUND_DIAG_ENABLED || soundDiagRegistered) {
       return;
     }
     Minecraft mc = Minecraft.getInstance();
@@ -106,17 +113,35 @@ public final class TaczSoundCompat {
           return;
         }
         String path = "null";
+        String type = "null";
+        float soundVol = -1.0F;
+        float soundPitch = -1.0F;
+        int weight = -1;
+        boolean streaming = false;
+        boolean preload = false;
         try {
           Sound s = sound.getSound();
           if (s != null) {
             path = s.getPath().toString();
+            type = String.valueOf(s.getType());
+            soundVol = s.getVolume().sample(net.minecraft.util.RandomSource.create());
+            soundPitch = s.getPitch().sample(net.minecraft.util.RandomSource.create());
+            weight = s.getWeight();
+            streaming = s.shouldStream();
+            preload = s.shouldPreload();
           }
         } catch (Throwable ignored) {
           // 忽略解析异常
         }
-        LOGGER.info("[SoundDiag] TACZ play {} cls={} vol={} pitch={} canPlay={} path={}",
-            sound.getLocation(), sound.getClass().getSimpleName(),
-            sound.getVolume(), sound.getPitch(), sound.canPlaySound(), path);
+        LOGGER.info("[SoundDiag] TACZ play {} cls={} source={} pos=({},{},{}) rel={} atten={} "
+            + "instVol={} instPitch={} canPlay={} type={} sndVol={} sndPitch={} weight={} "
+            + "streaming={} preload={} effVol={} path={}",
+            sound.getLocation(), sound.getClass().getSimpleName(), sound.getSource(),
+            sound.getX(), sound.getY(), sound.getZ(),
+            sound.isRelative(), sound.getAttenuation(), 
+            sound.getVolume(), sound.getPitch(), sound.canPlaySound(),
+            type, soundVol, soundPitch, weight, streaming, preload,
+            sound.getVolume() * soundVol, path);
       }
     });
     LOGGER.info("[SoundDiag] listener registered");

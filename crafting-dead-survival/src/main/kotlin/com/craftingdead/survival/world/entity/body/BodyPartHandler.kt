@@ -78,6 +78,13 @@ object BodyPartHandler {
      */
     private const val TACZ_BULLET_CLASS_NAME = "com.tacz.guns.entity.EntityKineticBullet"
 
+    /**
+     * TaCZ 子弹伤害类型的 message_id（data/tacz/damage_type/bullet.json 统一为 "tacz.bullet"）。
+     * 用消息 id 识别 TaCZ 子弹比依赖 source.directEntity 更可靠，
+     * 因为部分情况下 directEntity 为 null（导致旧逻辑误判为非子弹、跳过断肢/爆头）。
+     */
+    private const val TACZ_BULLET_MSG_ID = "tacz.bullet"
+
     /** 调试开关：是否打印每次 TaCZ 命中的判定日志（默认关闭）。 */
     @Volatile
     var debugLogEnabled: Boolean = true
@@ -249,8 +256,17 @@ object BodyPartHandler {
     }
 
     /**
-     * TaCZ 枪械命中处理：TaCZ 的子弹命中由 [LivingHurtEvent] 触发，
-     * 通过子弹实体类名软引用判断伤害来源（无需编译依赖 TaCZ），命中点取子弹当前位置。
+     * TaCZ 枪械命中处理：TaCZ 的子弹命中由 [LivingHurtEvent] 触发。
+     *
+     * 识别 TaCZ 子弹的两种途径（任一命中即判定为 TaCZ 子弹）：
+     * 1. 伤害来源的 message_id 为 "tacz.bullet"（TaCZ 所有子弹伤害类型统一该 id）；
+     * 2. directEntity 是 com.tacz.guns.entity.EntityKineticBullet。
+     *
+     * 用 message_id 识别比只依赖 directEntity 更可靠——部分情况下（如左轮等手枪弹）
+     * directEntity 为 null，旧逻辑会误判为普通伤害而跳过断肢/爆头，导致打不死。
+     *
+     * 命中点从射手视线方向与目标碰撞箱求交；无法求交（无射手 / 未命中）时回退到
+     * 子弹位置，子弹也为 null 时回退到目标中心。
      */
     @JvmStatic
     @SubscribeEvent
@@ -259,43 +275,67 @@ object BodyPartHandler {
             if (debugLogEnabled) LOGGER.info("[BodyPart] handleTaczGunHit: no source")
             return
         }
-        val direct = source.directEntity ?: run {
-            if (debugLogEnabled) LOGGER.info("[BodyPart] handleTaczGunHit: no directEntity")
-            return
-        }
-        if (!TACZ_BULLET_CLASS_NAME.equals(direct.javaClass.name)) {
-            if (debugLogEnabled) {
-                LOGGER.info("[BodyPart] handleTaczGunHit: direct={} NOT bullet, skipped", direct.javaClass.name)
-            }
-            return
-        }
         val target = event.entity ?: run {
             if (debugLogEnabled) LOGGER.info("[BodyPart] handleTaczGunHit: no target entity")
             return
         }
+        val msgId = source.getMsgId()
+        val direct = source.directEntity
+        val attacker = source.entity
+        val isTaczBulletMsg = msgId == TACZ_BULLET_MSG_ID
+        val isTaczBulletEntity =
+            direct != null && TACZ_BULLET_CLASS_NAME.equals(direct.javaClass.name)
+
+        // 无条件诊断：记录所有命中僵尸/骷髅的伤害事件（msgId 揭示是否 TaCZ 子弹 / 环境伤害）。
+        if (debugLogEnabled && (target is Zombie || target is AbstractSkeleton)) {
+            LOGGER.info(
+                "[BodyPart] HURT target={} msgId={} direct={} attacker={} amount={}",
+                target.javaClass.simpleName, msgId, direct?.javaClass?.name ?: "null",
+                attacker?.javaClass?.name ?: "null", event.amount)
+        }
+
+        if (debugLogEnabled && (isTaczBulletMsg || isTaczBulletEntity)) {
+            LOGGER.info(
+                "[BodyPart] TACZ hurt msgId={} direct={} attacker={} target={} amount={}",
+                msgId, direct?.javaClass?.name ?: "null",
+                attacker?.javaClass?.name ?: "null", target.javaClass.simpleName, event.amount)
+        }
+
+        // 非 TaCZ 子弹（环境伤害 / 近战 / 箭等）：跳过，不增强。
+        if (!isTaczBulletMsg && !isTaczBulletEntity) {
+            if (debugLogEnabled && !msgId.startsWith("inFire") && !msgId.startsWith("onFire")
+                && !msgId.startsWith("fall") && !msgId.startsWith("lava")
+                && !msgId.startsWith("cramming") && !msgId.startsWith("flyIntoWall")
+                && !msgId.startsWith("drown")) {
+                LOGGER.info("[BodyPart] skip msgId={} direct={}",
+                    msgId, direct?.javaClass?.name ?: "null")
+            }
+            return
+        }
+
         if (target.level().isClientSide) {
             return
         }
-        // 注意：TaCZ 子弹实体的 position() 是子弹飞行高度（≈射手眼睛高度），并非命中点。
-        // 射手与目标地面高度不同时会误判部位（例如打腿被判为头部，ratio≈1.3）。
-        // 因此用射手视线方向与目标碰撞箱求交，得到真实命中高度。
-        val hitPos = resolveTaczHitPoint(target, source, direct)
+        val hitPos = resolveTaczHitPoint(target, direct, attacker)
         event.amount = applyBodyPartHit(target, hitPos, event.amount)
     }
 
     /**
      * 计算 TaCZ 子弹的真实命中点：从射手眼睛沿视线方向与目标碰撞箱求交。
-     * 无射手或射线未命中时回退到子弹当前位置。
+     * 无射手或射线未命中时回退到子弹位置；子弹为 null 时回退到目标中心。
      */
     private fun resolveTaczHitPoint(
         target: LivingEntity,
-        source: DamageSource,
-        direct: Entity
+        direct: Entity?,
+        attacker: Entity?
     ): Vec3 {
-        val attacker = source.entity
+        // 优先用射手视线与目标碰撞箱求交（最接近真实命中点）。
         if (attacker is LivingEntity) {
             val eye = attacker.getEyePosition(1.0F)
-            val end = eye.add(attacker.lookAngle.scale(target.bbHeight * 2 + 4.0))
+            // 原射线长度(bbHeight*2+4≈8格)太短，远距射击求交会失败导致回退到子弹位置；
+            // 改为覆盖目标距离 + 目标身高，确保命中较远处的目标。
+            val distance = eye.distanceTo(target.getEyePosition(1.0F)) + target.bbHeight * 2.0
+            val end = eye.add(attacker.lookAngle.scale(distance))
             val clipped = target.boundingBox.clip(eye, end)
             if (clipped.isPresent) {
                 val hit = clipped.get()
@@ -306,9 +346,21 @@ object BodyPartHandler {
                         (hit.y - target.y) / target.bbHeight
                     )
                 }
-                return hit
+                return clampHitPoint(target, hit)
             }
         }
-        return direct.position()
+        // 回退：子弹实时位置 / 目标中心，并夹取到目标碰撞箱内，保证 ratio 落在 [0,1]，
+        // 避免命中点低于脚底/高于头顶导致爆头、断肢误判。
+        val fallback = direct?.position()
+            ?: target.position().add(0.0, target.bbHeight / 2.0, 0.0)
+        return clampHitPoint(target, fallback)
+    }
+
+    /** 把命中点 Y 夹取到目标碰撞箱 [脚底, 头顶] 范围内，保证高度比例合法。 */
+    private fun clampHitPoint(target: LivingEntity, hit: Vec3): Vec3 {
+        val minY = target.y
+        val maxY = target.y + target.bbHeight
+        val y = hit.y.coerceIn(minY, maxY)
+        return Vec3(hit.x, y, hit.z)
     }
 }

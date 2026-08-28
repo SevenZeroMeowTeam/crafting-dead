@@ -20,6 +20,8 @@ package com.craftingdead.core.world.item.gun.ammoprovider;
 
 import com.craftingdead.core.world.action.ActionTypes;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
 import com.craftingdead.core.world.item.gun.magazine.Magazine;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -28,6 +30,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
 public class MagazineAmmoProvider implements AmmoProvider {
+
+  private static final Logger LOGGER = LogUtils.getLogger();
 
   private ItemStack magazineStack;
   private boolean stackChanged;
@@ -83,6 +87,8 @@ public class MagazineAmmoProvider implements AmmoProvider {
 
   @Override
   public void reload(LivingExtension<?, ?> living) {
+    LOGGER.info("[ReloadDiag] MagazineAmmoProvider.reload called, currentMagSize={}",
+        this.getMagazine().map(Magazine::getSize).orElse(-1));
     living.performAction(ActionTypes.MAGAZINE_RELOAD.get().decode(living, null), true);
   }
 

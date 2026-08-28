@@ -54,9 +54,14 @@ public record SyncGunContainerSlotMessage(int entityId, int slot, FriendlyByteBu
   }
 
   public static void handle(SyncGunContainerSlotMessage msg, CustomPayloadEvent.Context ctx) {
-    ctx.enqueueWork(() -> NetworkUtil.getEntity(
-        ctx, msg.entityId, Player.class).inventoryMenu.getSlot(msg.slot).getItem()
-            .getCapability(Gun.CAPABILITY)
-            .ifPresent(gun -> gun.decode(msg.data)));
+    ctx.enqueueWork(() -> {
+      var player = NetworkUtil.getEntity(ctx, msg.entityId, Player.class);
+      // 1.21.1：ItemStack.OPTIONAL_STREAM_CODEC 需要 RegistryFriendlyByteBuf，
+      // 网络解码拿到的是普通 FriendlyByteBuf，必须包一层 registryAccess 才能 decode。
+      player.inventoryMenu.getSlot(msg.slot).getItem()
+          .getCapability(Gun.CAPABILITY)
+          .ifPresent(gun -> gun.decode(
+              new RegistryFriendlyByteBuf(msg.data, player.level().registryAccess())));
+    });
   }
 }

@@ -86,6 +86,7 @@ import com.craftingdead.core.world.item.RegisterGunColor;
 import com.craftingdead.core.world.item.equipment.Clothing;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.core.world.item.gun.Gun;
+import com.craftingdead.core.world.item.gun.magazine.Magazine;
 import com.craftingdead.core.world.item.gun.skin.Paint;
 import com.craftingdead.core.world.item.gun.skin.Skins;
 import com.craftingdead.core.world.item.scope.Scope;
@@ -555,6 +556,10 @@ public class ClientDist implements ModDist {
           gun.toggleFireMode(player, true);
         }
         while (RELOAD.consumeClick()) {
+          com.mojang.logging.LogUtils.getLogger()
+              .info("[ReloadDiag] R key pressed, calling reload; ammoType={} magSize={}",
+                  gun.getAmmoProvider().getType(),
+                  gun.getAmmoProvider().getMagazine().map(Magazine::getSize).orElse(-1));
           gun.getAmmoProvider().reload(player);
         }
         while (REMOVE_MAGAZINE.consumeClick()) {

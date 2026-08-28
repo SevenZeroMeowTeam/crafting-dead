@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import com.craftingdead.core.ServerConfig;
 import com.craftingdead.core.event.CollectMagazineItemHandlers;
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
 import com.craftingdead.core.world.action.ActionType;
 import com.craftingdead.core.world.action.ActionTypes;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
@@ -38,6 +40,8 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class MagazineReloadAction extends AbstractReloadAction {
+
+  private static final Logger LOGGER = LogUtils.getLogger();
 
   private final MagazineAmmoProvider ammoProvider;
 
@@ -62,6 +66,18 @@ public class MagazineReloadAction extends AbstractReloadAction {
   @Override
   public boolean start(boolean simulate) {
     var result = this.findMagazine(this.performer());
+    LOGGER.info("[ReloadDiag] start simulate={} sprinting={} magazineFound={}", simulate,
+        this.performer.entity().isSprinting(), result.isPresent());
+    if (result.isPresent() && !this.performer.entity().isSprinting()) {
+      LOGGER.info("[ReloadDiag]   found magazine at handler={} slot={}",
+          result.get().itemHandler, result.get().slot);
+      var stack = result.get().itemHandler.getStackInSlot(result.get().slot);
+      LOGGER.info("[ReloadDiag]   magazine={} size={} max={}",
+          stack.getItem(), stack.getCapability(Magazine.CAPABILITY)
+              .map(Magazine::getSize).orElse(-1),
+          stack.getCapability(Magazine.CAPABILITY)
+              .map(Magazine::getMaxSize).orElse(-1));
+    }
     if (this.performer.entity().isSprinting() || result.isEmpty()) {
       return false;
     }
@@ -70,6 +86,10 @@ public class MagazineReloadAction extends AbstractReloadAction {
       this.magazineLocation = result.get();
       this.newMagazineStack =
           this.magazineLocation.itemHandler.extractItem(this.magazineLocation.slot, 1, false);
+      LOGGER.info("[ReloadDiag] newMagazineStack={} size={}",
+          this.newMagazineStack.getItem(),
+          this.newMagazineStack.getCapability(Magazine.CAPABILITY)
+              .map(Magazine::getSize).orElse(-1));
     }
 
     return super.start(simulate);
@@ -78,6 +98,11 @@ public class MagazineReloadAction extends AbstractReloadAction {
   @Override
   protected void loadNewMagazineStack(boolean displayOnly) {
     this.ammoProvider.setMagazineStack(this.newMagazineStack);
+    LOGGER.info("[ReloadDiag] loadNewMagazineStack displayOnly={} newMagStackSize={} oldMagEmpty={}",
+        displayOnly,
+        this.newMagazineStack.getCapability(Magazine.CAPABILITY).map(Magazine::getSize).orElse(-1),
+        this.oldMagazineStack.getCapability(Magazine.CAPABILITY).map(Magazine::isEmpty)
+            .orElse(true));
     if (!displayOnly
         && !this.oldMagazineStack.isEmpty()
         && this.performer().entity() instanceof Player

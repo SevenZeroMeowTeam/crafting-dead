@@ -55,9 +55,14 @@ public record SyncGunEquipmentSlotMessage(int entityId, EquipmentSlot slot, Frie
   }
 
   public static void handle(SyncGunEquipmentSlotMessage msg, CustomPayloadEvent.Context ctx) {
-    ctx.enqueueWork(() -> NetworkUtil.getEntity(ctx, msg.entityId, LivingEntity.class)
-        .getItemBySlot(msg.slot)
-        .getCapability(Gun.CAPABILITY)
-        .ifPresent(gun -> gun.decode(msg.data)));
+    ctx.enqueueWork(() -> {
+      var living = NetworkUtil.getEntity(ctx, msg.entityId, LivingEntity.class);
+      // 1.21.1：ItemStack.OPTIONAL_STREAM_CODEC 需要 RegistryFriendlyByteBuf，
+      // 网络解码拿到的是普通 FriendlyByteBuf，必须包一层 registryAccess 才能 decode。
+      living.getItemBySlot(msg.slot)
+          .getCapability(Gun.CAPABILITY)
+          .ifPresent(gun -> gun.decode(
+              new RegistryFriendlyByteBuf(msg.data, living.level().registryAccess())));
+    });
   }
 }

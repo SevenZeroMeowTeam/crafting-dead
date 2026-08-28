@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:hats/chief_fireman_hat",
+	"particle": "craftingdead:hats/chief_fireman_hat"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/chief_fireman_hat.obj",
 	"flip-v":true,

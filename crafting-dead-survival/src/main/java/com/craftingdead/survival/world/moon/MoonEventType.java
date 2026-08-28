@@ -25,8 +25,10 @@ import net.minecraft.network.chat.MutableComponent;
  * 月亮事件类型。以 28 天为一个完整周期：
  * <ul>
  *   <li>第 6 天  → 蓝月（玩家获得幸运效果）</li>
+ *   <li>第 7 天  → 超级蓝月（幸运效果加强）</li>
  *   <li>第 13 天 → 血月（怪物增多、禁止睡觉、僵尸有概率额外进化、禁止苦力怕/蜘蛛/洞穴蜘蛛/女巫），每 14 天一次</li>
  *   <li>第 20 天 → 黄月（农作物生长加速）</li>
+ *   <li>第 21 天 → 超级黄月（农作物生长加速加强）</li>
  *   <li>第 27 天 → 超级血月（血月加强版，每 28 天一次）</li>
  * </ul>
  */
@@ -35,7 +37,9 @@ public enum MoonEventType {
   BLOOD_MOON("血月", 0xFF5555),
   BLUE_MOON("蓝月", 0x55AAFF),
   YELLOW_MOON("黄月", 0xFFE055),
-  SUPER_BLOOD_MOON("超级血月", 0xCC44FF);
+  SUPER_BLOOD_MOON("超级血月", 0xCC44FF),
+  SUPER_BLUE_MOON("超级蓝月", 0x88CCFF),
+  SUPER_YELLOW_MOON("超级黄月", 0xFFCC55);
 
   private final String displayName;
   private final int color;
@@ -67,11 +71,17 @@ public enum MoonEventType {
     if (m == 27) {
       return SUPER_BLOOD_MOON;
     }
+    if (m == 21) {
+      return SUPER_YELLOW_MOON;
+    }
     if (m == 20) {
       return YELLOW_MOON;
     }
     if (m == 13) {
       return BLOOD_MOON;
+    }
+    if (m == 7) {
+      return SUPER_BLUE_MOON;
     }
     if (m == 6) {
       return BLUE_MOON;

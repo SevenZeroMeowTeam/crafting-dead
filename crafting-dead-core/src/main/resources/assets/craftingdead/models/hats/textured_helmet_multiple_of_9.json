@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:hats/camo_helmet",
+	"particle": "craftingdead:hats/camo_helmet"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/textured_helmet_multiple_of_9.obj",
 	"flip-v":true,

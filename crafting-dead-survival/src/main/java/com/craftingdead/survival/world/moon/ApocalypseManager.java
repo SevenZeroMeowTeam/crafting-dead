@@ -79,17 +79,33 @@ public final class ApocalypseManager {
   }
 
   /**
-   * 是否是蓝月日（幸运效果全天生效）。
+   * 是否是蓝月日（幸运效果全天生效，含超级蓝月）。
    */
   public static boolean isBlueMoon(Level level) {
-    return getMoonEvent(level) == MoonEventType.BLUE_MOON;
+    MoonEventType event = getMoonEvent(level);
+    return event == MoonEventType.BLUE_MOON || event == MoonEventType.SUPER_BLUE_MOON;
   }
 
   /**
-   * 是否是黄月日（农作物生长全天加速）。
+   * 是否是超级蓝月日。
+   */
+  public static boolean isSuperBlueMoon(Level level) {
+    return getMoonEvent(level) == MoonEventType.SUPER_BLUE_MOON;
+  }
+
+  /**
+   * 是否是黄月日（农作物生长全天加速，含超级黄月）。
    */
   public static boolean isYellowMoon(Level level) {
-    return getMoonEvent(level) == MoonEventType.YELLOW_MOON;
+    MoonEventType event = getMoonEvent(level);
+    return event == MoonEventType.YELLOW_MOON || event == MoonEventType.SUPER_YELLOW_MOON;
+  }
+
+  /**
+   * 是否是超级黄月日。
+   */
+  public static boolean isSuperYellowMoon(Level level) {
+    return getMoonEvent(level) == MoonEventType.SUPER_YELLOW_MOON;
   }
 
   /**

@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:hats/blue_hard_hat",
+	"particle": "craftingdead:hats/blue_hard_hat"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/hard_hat.obj",
 	"flip-v":true,
