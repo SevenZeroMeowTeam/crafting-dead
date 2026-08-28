@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:hats/nv_goggles_hat",
+	"particle": "craftingdead:hats/nv_goggles_hat"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/nv_goggles_hat.obj",
 	"flip-v":true,

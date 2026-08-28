@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:hats/knight_hat",
+	"particle": "craftingdead:hats/knight_hat"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/knight_hat.obj",
 	"flip-v":true,

@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:hats/scuba_mask",
+	"particle": "craftingdead:hats/scuba_mask"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/scuba_mask.obj",
 	"flip-v":true,

@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:vest/black_tactical_vest",
+	"particle": "craftingdead:vest/black_tactical_vest"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/vest/tactical_vest.obj",
 	"flip-v":true,

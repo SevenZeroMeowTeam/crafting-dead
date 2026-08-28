@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:hats/bunny_hat",
+	"particle": "craftingdead:hats/bunny_hat"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/bunny_hat.obj",
 	"flip-v":true,

@@ -21,6 +21,7 @@ package com.craftingdead.survival.world.entity.body;
 import com.craftingdead.core.event.GunEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -66,6 +67,12 @@ public final class BodyPartHandler {
    */
   private static final String TACZ_BULLET_CLASS_NAME =
       "com.tacz.guns.entity.EntityKineticBullet";
+
+  /**
+   * TaCZ 子弹伤害类型的 message_id（data/tacz/damage_type/bullet.json 统一为 "tacz.bullet"）。
+   * 用消息 id 识别比只依赖 directEntity 更可靠——部分情况下（如左轮等手枪弹）directEntity 为 null。
+   */
+  private static final String TACZ_BULLET_MSG_ID = "tacz.bullet";
 
   /** 腿断移动速度减速 modifier id。 */
   private static final ResourceLocation LEG_SPEED_MODIFIER =
@@ -261,16 +268,60 @@ public final class BodyPartHandler {
     if (source == null) {
       return;
     }
-    var direct = source.getDirectEntity();
-    if (direct == null || !TACZ_BULLET_CLASS_NAME.equals(direct.getClass().getName())) {
-      return;
-    }
     var target = event.getEntity();
     if (target == null || target.level().isClientSide()) {
       return;
     }
-    // 子弹在造成伤害的瞬间仍位于命中点；TaCZ 在 hurt 之后才移除子弹
-    float newDamage = applyBodyPartHit(target, direct.position(), event.getAmount());
-    event.setAmount(newDamage);
+
+    // 识别 TaCZ 子弹的两种途径（任一命中即判定为 TaCZ 子弹）：
+    // 1. 伤害来源的 message_id 为 "tacz.bullet"（TaCZ 所有子弹伤害类型统一该 id）；
+    // 2. directEntity 是 com.tacz.guns.entity.EntityKineticBullet。
+    // 用 message_id 识别比只依赖 directEntity 更可靠——部分情况下（如左轮等手枪弹）
+    // directEntity 为 null，旧逻辑会误判为普通伤害而跳过断肢/爆头，导致打不死。
+    String msgId = source.getMsgId();
+    Entity direct = source.getDirectEntity();
+    Entity attacker = source.getEntity();
+    boolean isTaczBulletMsg = TACZ_BULLET_MSG_ID.equals(msgId);
+    boolean isTaczBulletEntity =
+        direct != null && TACZ_BULLET_CLASS_NAME.equals(direct.getClass().getName());
+    if (!isTaczBulletMsg && !isTaczBulletEntity) {
+      return;
+    }
+
+    Vec3 hitPos = resolveTaczHitPoint(target, direct, attacker);
+    event.setAmount(applyBodyPartHit(target, hitPos, event.getAmount()));
+  }
+
+  /**
+   * 计算 TaCZ 子弹的真实命中点：从射手眼睛沿视线方向与目标碰撞箱求交。
+   * 无射手或射线未命中时回退到子弹位置；子弹为 null 时回退到目标中心。
+   * 结果夹取到目标碰撞箱内，保证高度比例合法、爆头/断肢分类准确。
+   */
+  private static Vec3 resolveTaczHitPoint(
+      LivingEntity target, Entity direct, Entity attacker) {
+    if (attacker instanceof LivingEntity shooter) {
+      Vec3 eye = shooter.getEyePosition(1.0F);
+      // 原射线长度(bbHeight*2+4≈8格)太短，远距射击求交会失败导致回退到子弹位置；
+      // 改为覆盖到目标距离 + 目标身高，确保命中较远处的目标。
+      double distance =
+          eye.distanceTo(target.getEyePosition(1.0F)) + target.getBbHeight() * 2.0;
+      Vec3 end = eye.add(shooter.getLookAngle().scale(distance));
+      var clipped = target.getBoundingBox().clip(eye, end);
+      if (clipped.isPresent()) {
+        return clampHitPoint(target, clipped.get());
+      }
+    }
+    // 回退：子弹实时位置 / 目标中心，并夹取到目标碰撞箱内，保证 ratio 落在 [0,1]。
+    Vec3 fallback = direct != null ? direct.position()
+        : target.position().add(0.0, target.getBbHeight() / 2.0, 0.0);
+    return clampHitPoint(target, fallback);
+  }
+
+  /** 把命中点 Y 夹取到目标碰撞箱 [脚底, 头顶] 范围内，保证高度比例合法。 */
+  private static Vec3 clampHitPoint(LivingEntity target, Vec3 hit) {
+    double minY = target.getY();
+    double maxY = target.getY() + target.getBbHeight();
+    double y = Math.max(minY, Math.min(maxY, hit.y));
+    return new Vec3(hit.x, y, hit.z);
   }
 }

@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:hats/hacker_mask",
+	"particle": "craftingdead:hats/hacker_mask"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/mask.obj",
 	"flip-v":true,

@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:hats/black_ballistic_hat",
+	"particle": "craftingdead:hats/black_ballistic_hat"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/ballistic_helmet.obj",
 	"flip-v":true,

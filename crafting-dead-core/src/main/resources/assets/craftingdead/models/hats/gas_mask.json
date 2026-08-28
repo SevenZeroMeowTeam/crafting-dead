@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:hats/gas_mask",
+	"particle": "craftingdead:hats/gas_mask"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/gas_mask.obj",
 	"flip-v":true,

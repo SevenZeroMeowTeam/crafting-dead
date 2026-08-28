@@ -1,4 +1,9 @@
 {
+"textures": {
+	"base": "craftingdead:hats/army_helmet",
+	"particle": "craftingdead:hats/army_helmet"
+},
+
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/textured_helmet_multiple_of_8.obj",
 	"flip-v":true,
