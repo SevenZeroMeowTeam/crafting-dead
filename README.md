@@ -20,6 +20,21 @@
 
 ## 更新日志
 
+### 月相颜色 / 月相强度 / 进化僵尸手持物品（参考 Zombie Apocalypse 系列）
+
+**新功能：月相对应颜色 + 月相决定僵尸强度 + 进化僵尸手持物品**
+
+- **月相对应颜色**：8 种月相（满月 / 亏凸月 / 下弦月 / 残月 / 新月 / 娥眉月 / 上弦月 / 盈凸月）各有对应颜色
+  - 计分板「月相」行与 `/moon info` 按对应颜色显示
+- **月相决定僵尸强度**：满月僵尸更强（+25%），新月更弱（-20%），与「按天数进化」叠加；
+  可用 `moonPhaseZombieStrengthEnabled` 开关、`moonPhaseZombieStrengthFactor` 调系数
+- **进化僵尸手持物品**：进化等级 ≥ LV.1 的僵尸有概率手持物品（取自 `zombie_hand_loot` 标签），
+  进化等级越高、月相越强、血月夜晚概率越高；可用 `evolvedZombieHeldItemChance` /
+  `evolvedZombieHeldItemPerTier` 调整
+- 涉及：`ApocalypseManager`（月相颜色 / 强度 / 手持逻辑）、`ServerConfig`、
+  `CraftingDeadSurvival`（生成钩子）、`MoonEventHandler`（计分板）、`MoonCommand`
+- 注：1.19.2 使用 GeckoLib 3.x（无 `Color` 类），本条分支不含客户端僵尸月相染色。
+
 ### 超级蓝月 / 超级黄月 + `/moon` 切换月相命令
 
 **新功能：补全超级月亮体系（超级血月 / 超级蓝月 / 超级黄月）**

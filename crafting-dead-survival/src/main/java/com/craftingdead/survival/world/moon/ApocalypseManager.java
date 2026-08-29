@@ -19,12 +19,18 @@
 package com.craftingdead.survival.world.moon;
 
 import com.craftingdead.survival.CraftingDeadSurvival;
+import com.craftingdead.survival.tags.SurvivalItemTags;
 import javax.annotation.Nullable;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
@@ -224,6 +230,101 @@ public final class ApocalypseManager {
       scaleAttribute(zombie, Attributes.MOVEMENT_SPEED, speedMultiplier);
       zombie.setHealth(zombie.getMaxHealth());
     }
+  }
+
+  // ================================================================================
+  // 月相颜色 / 月相强度 / 进化僵尸手持物品（参考 Zombie Apocalypse 系列：月相决定僵尸强度）
+  // ================================================================================
+
+  public static int getMoonPhaseColor(int phase) {
+    return switch (phase) {
+      case 0 -> 0xFFE8C860;
+      case 1 -> 0xFFC8A0E8;
+      case 2 -> 0xFFA0C8E8;
+      case 3 -> 0xFFE8A060;
+      case 4 -> 0xFF8080A0;
+      case 5 -> 0xFFA0B0E8;
+      case 6 -> 0xFFE8D080;
+      case 7 -> 0xFFD0E8A0;
+      default -> 0xFFFFFFFF;
+    };
+  }
+
+  public static String getMoonPhaseColorCode(int phase) {
+    int color = getMoonPhaseColor(phase);
+    int r = (color >> 16) & 0xFF;
+    int g = (color >> 8) & 0xFF;
+    int b = color & 0xFF;
+    String hex = String.format("%02x%02x%02x", r, g, b);
+    StringBuilder builder = new StringBuilder("§x");
+    for (char c : hex.toCharArray()) {
+      builder.append('§').append(c);
+    }
+    return builder.toString();
+  }
+
+  public static float getMoonPhaseStrength(int phase) {
+    return switch (phase) {
+      case 0 -> 1.25F;
+      case 1 -> 1.10F;
+      case 2 -> 0.90F;
+      case 3 -> 0.85F;
+      case 4 -> 0.80F;
+      case 5 -> 0.95F;
+      case 6 -> 1.05F;
+      case 7 -> 1.18F;
+      default -> 1.0F;
+    };
+  }
+
+  public static String getMoonPhaseStrengthName(int phase) {
+    float strength = getMoonPhaseStrength(phase);
+    if (strength >= 1.2F) return "狂暴";
+    if (strength >= 1.1F) return "强";
+    if (strength >= 1.0F) return "偏高";
+    if (strength >= 0.9F) return "普通";
+    if (strength >= 0.85F) return "偏弱";
+    return "衰弱";
+  }
+
+  public static void applyMoonPhaseEffects(Zombie zombie, Level level) {
+    var config = CraftingDeadSurvival.serverConfig;
+    if (!config.moonPhaseZombieStrengthEnabled.get()) return;
+    int phase = getMoonPhase(level);
+    float strength = getMoonPhaseStrength(phase);
+    double factor = 1.0D + (strength - 1.0D) * config.moonPhaseZombieStrengthFactor.get();
+    if (Math.abs(factor - 1.0D) < 1.0E-6D) return;
+    scaleAttribute(zombie, Attributes.MAX_HEALTH, factor);
+    scaleAttribute(zombie, Attributes.ATTACK_DAMAGE, factor);
+    scaleAttribute(zombie, Attributes.MOVEMENT_SPEED, factor);
+    zombie.setHealth(zombie.getMaxHealth());
+  }
+
+  public static void equipEvolvedHeldItem(Zombie zombie, Level level) {
+    var config = CraftingDeadSurvival.serverConfig;
+    int tier = getEvolutionTier(level);
+    if (tier <= 0) return;
+    double chance = config.evolvedZombieHeldItemChance.get()
+        + tier * config.evolvedZombieHeldItemPerTier.get();
+    if (isBloodMoon(level)) chance += config.evolvedZombieHeldItemPerTier.get();
+    chance *= Math.pow(getMoonPhaseStrength(getMoonPhase(level)), 2.0D);
+    chance = Math.min(1.0D, Math.max(0.0D, chance));
+    if (chance <= 0.0D) return;
+    if (level.getRandom().nextFloat() < chance) {
+      getRandomHandLoot(level).ifPresent(item ->
+          zombie.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(item)));
+    }
+    if (level.getRandom().nextFloat() < chance * 0.5D) {
+      getRandomHandLoot(level).ifPresent(item ->
+          zombie.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(item)));
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  private static java.util.Optional<Item> getRandomHandLoot(Level level) {
+    return Registry.ITEM.getTag(SurvivalItemTags.ZOMBIE_HAND_LOOT)
+        .flatMap(tag -> tag.getRandomElement(level.getRandom()))
+        .map(Holder::value);
   }
 
   private static void scaleAttribute(Zombie zombie, Attribute attribute, double multiplier) {
