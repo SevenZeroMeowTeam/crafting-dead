@@ -173,7 +173,9 @@ public class CraftingDeadSurvival {
     modEventBus.addListener(this::handleGatherData);
 
     context.registerConfig(ModConfig.Type.SERVER, serverConfigSpec);
-    context.registerConfig(ModConfig.Type.SERVER, qlmConfigSpec);
+    // QLM 兼容层配置：使用独立文件名，避免与 serverConfigSpec 生成同名的
+    // craftingdeadsurvival-server.toml（Forge 对同名 config 会抛 Config conflict 导致启动崩溃）
+    context.registerConfig(ModConfig.Type.SERVER, qlmConfigSpec, "qlmzombie-server.toml");
 
     MinecraftForge.EVENT_BUS.register(this);
     MinecraftForge.EVENT_BUS.register(new MoonEventHandler());
