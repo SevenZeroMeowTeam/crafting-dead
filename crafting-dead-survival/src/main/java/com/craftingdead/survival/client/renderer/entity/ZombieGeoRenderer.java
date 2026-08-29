@@ -20,6 +20,7 @@ package com.craftingdead.survival.client.renderer.entity;
 
 import javax.annotation.Nullable;
 import com.craftingdead.core.world.item.equipment.Equipment;
+import com.craftingdead.survival.client.MoonPhaseTint;
 import com.craftingdead.survival.client.model.ZombieGeoModel;
 import com.craftingdead.survival.client.renderer.entity.layers.GeoClothingLayer;
 import com.craftingdead.survival.client.renderer.entity.layers.GeoEquipmentLayer;
@@ -27,10 +28,10 @@ import com.craftingdead.survival.world.entity.monster.ModZombie;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
+import software.bernie.geckolib.util.Color;
 
 /**
  * GeckoLib 渲染器 - 所有僵尸使用同一人形 Geo 模型与动画，
@@ -82,5 +83,19 @@ public class ZombieGeoRenderer extends GeoEntityRenderer<ModZombie> {
     this.scaleHeight = entityScale;
     super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender,
         partialTick, packedLight, packedOverlay, colour);
+  }
+
+  /**
+   * 根据当前月相给僵尸模型染色（满月暖金、新月石板灰等）。
+   */
+  @Override
+  public Color getRenderColor(ModZombie animatable, float partialTick, int packedLight) {
+    Color base = super.getRenderColor(animatable, partialTick, packedLight);
+    Color tint = MoonPhaseTint.getZombieTint();
+    int r = (int) (base.getRed() * tint.getRedFloat());
+    int g = (int) (base.getGreen() * tint.getGreenFloat());
+    int b = (int) (base.getBlue() * tint.getBlueFloat());
+    int a = base.getAlpha();
+    return Color.ofARGB(a, r, g, b);
   }
 }

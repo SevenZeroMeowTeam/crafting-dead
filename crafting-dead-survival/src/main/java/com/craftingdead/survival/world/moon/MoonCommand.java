@@ -111,10 +111,13 @@ public final class MoonCommand {
     boolean active = ApocalypseManager.isMoonEventActive(level);
     String manualEvent = ApocalypseManager.isManualEventSet() ? "§r | §d[已手动覆盖事件]" : "";
     String manualPhase = ApocalypseManager.isManualPhaseSet() ? "§r | §d[已手动覆盖月相]" : "";
+    int phase = ApocalypseManager.getMoonPhase(level);
     source.sendSuccess(() -> Component.literal(
         "§6[月相]§r 天数: §b" + ApocalypseManager.getDay(level)
         + "§r | 时间: §b" + formatTime((int) (level.getDayTime() % DAY_TICKS))
-        + "§r | 月相: §b" + ApocalypseManager.getMoonPhaseName(ApocalypseManager.getMoonPhase(level))
+        + "§r | 月相: " + ApocalypseManager.getMoonPhaseColorCode(phase)
+        + ApocalypseManager.getMoonPhaseName(phase)
+        + "(" + ApocalypseManager.getMoonPhaseStrengthName(phase) + ")"
         + "§r | 事件: " + eventColor(event) + event.getDisplayName()
         + "§r | 状态: " + (active ? "§c● 进行中" : "§7○ 未发生")
         + "§r | 进化: §eLV." + ApocalypseManager.getEvolutionTier(level)

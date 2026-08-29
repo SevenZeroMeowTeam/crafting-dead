@@ -21,13 +21,18 @@ package com.craftingdead.survival.world.moon;
 import javax.annotation.Nullable;
 
 import com.craftingdead.survival.CraftingDeadSurvival;
+import com.craftingdead.survival.tags.SurvivalItemTags;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
@@ -227,6 +232,161 @@ public final class ApocalypseManager {
       scaleAttribute(zombie, Attributes.MOVEMENT_SPEED, speedMultiplier);
       zombie.setHealth(zombie.getMaxHealth());
     }
+  }
+
+  // ================================================================================
+  // 月相颜色 / 月相强度 / 进化僵尸手持物品（参考 Zombie Apocalypse 系列：月相决定僵尸强度）
+  // ================================================================================
+
+  /**
+   * 返回当前月相（0-7）对应的颜色（ARGB）。用于计分板 / 命令显示，以及客户端僵尸染色。
+   *
+   * <p>越接近满月颜色越亮、越接近新月越暗淡：</p>
+   * <ul>
+   *   <li>0 满月 → 暖金</li>
+   *   <li>1 亏凸月 → 淡紫</li>
+   *   <li>2 下弦月 → 钢蓝</li>
+   *   <li>3 残月 → 暮橙</li>
+   *   <li>4 新月 → 石板灰</li>
+   *   <li>5 娥眉月 → 蓝紫</li>
+   *   <li>6 上弦月 → 淡金</li>
+   *   <li>7 盈凸月 → 淡绿</li>
+   * </ul>
+   */
+  public static int getMoonPhaseColor(int phase) {
+    return switch (phase) {
+      case 0 -> 0xFFE8C860;
+      case 1 -> 0xFFC8A0E8;
+      case 2 -> 0xFFA0C8E8;
+      case 3 -> 0xFFE8A060;
+      case 4 -> 0xFF8080A0;
+      case 5 -> 0xFFA0B0E8;
+      case 6 -> 0xFFE8D080;
+      case 7 -> 0xFFD0E8A0;
+      default -> 0xFFFFFFFF;
+    };
+  }
+
+  /**
+   * 返回当前月相（0-7）对应的文本颜色代码（形如 {@code §x§f§f§e§8§c§6}，用于聊天 / 计分板）。
+   */
+  public static String getMoonPhaseColorCode(int phase) {
+    int color = getMoonPhaseColor(phase);
+    int r = (color >> 16) & 0xFF;
+    int g = (color >> 8) & 0xFF;
+    int b = color & 0xFF;
+    String hex = String.format("%02x%02x%02x", r, g, b);
+    StringBuilder builder = new StringBuilder("§x");
+    for (char c : hex.toCharArray()) {
+      builder.append('§').append(c);
+    }
+    return builder.toString();
+  }
+
+  /**
+   * 返回当前月相（0-7）对应的僵尸强度倍率。
+   *
+   * <p>满月最强（1.25），新月最弱（0.8），类似 Zombie Apocalypse 系列中「月相决定僵尸强度」的设定。</p>
+   */
+  public static float getMoonPhaseStrength(int phase) {
+    return switch (phase) {
+      case 0 -> 1.25F;
+      case 1 -> 1.10F;
+      case 2 -> 0.90F;
+      case 3 -> 0.85F;
+      case 4 -> 0.80F;
+      case 5 -> 0.95F;
+      case 6 -> 1.05F;
+      case 7 -> 1.18F;
+      default -> 1.0F;
+    };
+  }
+
+  /**
+   * 返回当前月相强度的中文描述，用于计分板 / 命令显示。
+   */
+  public static String getMoonPhaseStrengthName(int phase) {
+    float strength = getMoonPhaseStrength(phase);
+    if (strength >= 1.2F) {
+      return "狂暴";
+    }
+    if (strength >= 1.1F) {
+      return "强";
+    }
+    if (strength >= 1.0F) {
+      return "偏高";
+    }
+    if (strength >= 0.9F) {
+      return "普通";
+    }
+    if (strength >= 0.85F) {
+      return "偏弱";
+    }
+    return "衰弱";
+  }
+
+  /**
+   * 根据当前月相强度调整僵尸属性（血量 / 攻击 / 速度）。
+   *
+   * <p>满月之夜僵尸更强，新月之夜僵尸更弱。这是「月相决定僵尸强度」的核心逻辑，
+   * 与「按天数进化」叠加：进化等级越高、月相越强，僵尸越危险。</p>
+   */
+  public static void applyMoonPhaseEffects(Zombie zombie, Level level) {
+    var config = CraftingDeadSurvival.serverConfig;
+    if (!config.moonPhaseZombieStrengthEnabled.get()) {
+      return;
+    }
+    int phase = getMoonPhase(level);
+    float strength = getMoonPhaseStrength(phase);
+    // factor = 1.0 + (strength - 1.0) * 配置系数
+    double factor = 1.0D + (strength - 1.0D) * config.moonPhaseZombieStrengthFactor.get();
+    if (Math.abs(factor - 1.0D) < 1.0E-6D) {
+      return;
+    }
+    scaleAttribute(zombie, Attributes.MAX_HEALTH, factor);
+    scaleAttribute(zombie, Attributes.ATTACK_DAMAGE, factor);
+    scaleAttribute(zombie, Attributes.MOVEMENT_SPEED, factor);
+    zombie.setHealth(zombie.getMaxHealth());
+  }
+
+  /**
+   * 进化僵尸有概率手持物品。
+   *
+   * <p>根据进化等级与月相强度决定概率，从 {@code zombie_hand_loot} 物品标签中随机取一件
+   * 放入主手（副手概率减半）。进化等级越高、月相越强，手持物品的概率越高。</p>
+   */
+  public static void equipEvolvedHeldItem(Zombie zombie, Level level) {
+    var config = CraftingDeadSurvival.serverConfig;
+    int tier = getEvolutionTier(level);
+    if (tier <= 0) {
+      return;
+    }
+    double chance = config.evolvedZombieHeldItemChance.get()
+        + tier * config.evolvedZombieHeldItemPerTier.get();
+    // 血月 / 超级血月夜晚额外提升手持概率
+    if (isBloodMoon(level)) {
+      chance += config.evolvedZombieHeldItemPerTier.get();
+    }
+    // 月相越强，越可能手持物品
+    chance *= Math.pow(getMoonPhaseStrength(getMoonPhase(level)), 2.0D);
+    chance = Math.min(1.0D, Math.max(0.0D, chance));
+    if (chance <= 0.0D) {
+      return;
+    }
+    if (level.getRandom().nextFloat() < chance) {
+      getRandomHandLoot(level).ifPresent(item ->
+          zombie.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(item)));
+    }
+    if (level.getRandom().nextFloat() < chance * 0.5D) {
+      getRandomHandLoot(level).ifPresent(item ->
+          zombie.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(item)));
+    }
+  }
+
+  private static java.util.Optional<Item> getRandomHandLoot(Level level) {
+    return BuiltInRegistries.ITEM.getTag(SurvivalItemTags.ZOMBIE_HAND_LOOT)
+        .flatMap(tag -> tag.getRandomElement(level.getRandom()))
+        .map(Holder::value);
   }
 
   private static void scaleAttribute(Zombie zombie, Holder<Attribute> attribute,

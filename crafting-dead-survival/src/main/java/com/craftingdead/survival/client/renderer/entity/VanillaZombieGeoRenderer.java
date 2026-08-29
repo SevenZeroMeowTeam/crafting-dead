@@ -18,11 +18,13 @@
 
 package com.craftingdead.survival.client.renderer.entity;
 
+import com.craftingdead.survival.client.MoonPhaseTint;
 import com.craftingdead.survival.client.model.VanillaZombieGeoModel;
 import com.craftingdead.survival.world.entity.animation.VanillaZombieGeoAnimatable;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.entity.monster.Zombie;
 import software.bernie.geckolib.renderer.GeoReplacedEntityRenderer;
+import software.bernie.geckolib.util.Color;
 
 /**
  * 原版僵尸的 GeckoLib 替换渲染器。
@@ -33,5 +35,20 @@ public class VanillaZombieGeoRenderer
   public VanillaZombieGeoRenderer(EntityRendererProvider.Context context) {
     super(context, new VanillaZombieGeoModel(), VanillaZombieGeoAnimatable.INSTANCE);
     this.shadowRadius = 0.5F;
+  }
+
+  /**
+   * 根据当前月相给原版僵尸模型染色（满月暖金、新月石板灰等）。
+   */
+  @Override
+  public Color getRenderColor(VanillaZombieGeoAnimatable animatable, float partialTick,
+      int packedLight) {
+    Color base = super.getRenderColor(animatable, partialTick, packedLight);
+    Color tint = MoonPhaseTint.getZombieTint();
+    int r = (int) (base.getRed() * tint.getRedFloat());
+    int g = (int) (base.getGreen() * tint.getGreenFloat());
+    int b = (int) (base.getBlue() * tint.getBlueFloat());
+    int a = base.getAlpha();
+    return Color.ofARGB(a, r, g, b);
   }
 }

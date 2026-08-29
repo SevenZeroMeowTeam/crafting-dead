@@ -269,6 +269,10 @@ public class ServerConfig {
   public final ForgeConfigSpec.DoubleValue evolutionHealthPerTier;
   public final ForgeConfigSpec.DoubleValue evolutionDamagePerTier;
   public final ForgeConfigSpec.DoubleValue evolutionSpeedPerTier;
+  public final ForgeConfigSpec.BooleanValue moonPhaseZombieStrengthEnabled;
+  public final ForgeConfigSpec.DoubleValue moonPhaseZombieStrengthFactor;
+  public final ForgeConfigSpec.DoubleValue evolvedZombieHeldItemChance;
+  public final ForgeConfigSpec.DoubleValue evolvedZombieHeldItemPerTier;
   public final ForgeConfigSpec.IntValue bloodMoonSpawnIntervalTicks;
   public final ForgeConfigSpec.IntValue bloodMoonSpawnCount;
   public final ForgeConfigSpec.IntValue bloodMoonMaxZombiesNear;
@@ -1176,6 +1180,18 @@ public class ServerConfig {
       this.evolutionSpeedPerTier = builder
           .comment("每级进化提升的速度倍率（0.05 = 每级 +5% 速度）")
           .defineInRange("evolutionSpeedPerTier", 0.05D, 0.0D, 10.0D);
+      this.moonPhaseZombieStrengthEnabled = builder
+          .comment("启用月相强度：月相决定僵尸强弱（满月最强、新月最弱，参考 Zombie Apocalypse 系列）")
+          .define("moonPhaseZombieStrengthEnabled", true);
+      this.moonPhaseZombieStrengthFactor = builder
+          .comment("月相强度影响僵尸属性的系数（1.0 = 满月 25% 更强，新月 20% 更弱）")
+          .defineInRange("moonPhaseZombieStrengthFactor", 1.0D, 0.0D, 10.0D);
+      this.evolvedZombieHeldItemChance = builder
+          .comment("进化僵尸（LV.1 起）手持物品的基础概率（0 = 从不，1 = 必持）")
+          .defineInRange("evolvedZombieHeldItemChance", 0.25D, 0.0D, 1.0D);
+      this.evolvedZombieHeldItemPerTier = builder
+          .comment("每级进化额外增加的手持概率（0.05 = 每级 +5%），血月夜晚也会额外增加") 
+          .defineInRange("evolvedZombieHeldItemPerTier", 0.05D, 0.0D, 1.0D);
       this.bloodMoonSpawnIntervalTicks = builder
           .comment("血月额外生成僵尸的间隔（tick，20 tick = 1 秒）")
           .defineInRange("bloodMoonSpawnIntervalTicks", 100, 1, Integer.MAX_VALUE);
