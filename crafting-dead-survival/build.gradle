@@ -7,6 +7,14 @@ repositories {
         name = 'GeckoLib'
         url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
     }
+    maven {
+        name = 'WTHIT'
+        url = 'https://maven2.bai.lol'
+        content {
+            includeGroup 'mcp.mobius.waila'
+            includeGroup 'lol.bai'
+        }
+    }
 }
 
 dependencies {
@@ -85,6 +93,11 @@ minecraft {
 
 dependencies {
     implementation project(':crafting-dead-core')
+
+    // WTHIT (What The Hell Is That?) plugin API - optional/custom integration.
+    // compileOnly: not bundled. The wthit_plugins.json entry is only read by WTHIT,
+    // so the plugin class (mcp.mobius.waila.api.*) is loaded only when WTHIT is installed.
+    compileOnly fg.deobf('mcp.mobius.waila:wthit-api:forge-5.36.1')
 
     // Tough As Nails (optional runtime dependency for thirst compatibility)
     compileOnly files('../libs/ToughAsNails-forge-1.20.1-9.2.0.171.jar')
