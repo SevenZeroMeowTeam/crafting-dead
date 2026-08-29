@@ -18,6 +18,11 @@
 
 package com.craftingdead.survival.world;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.craftingdead.core.quality.QualityHelper;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.network.SurvivalNetworkChannel;
@@ -26,9 +31,7 @@ import com.craftingdead.survival.network.message.SyncMoonDataMessage;
 import com.craftingdead.survival.world.entity.SurvivalEntityTypes;
 import com.craftingdead.survival.world.moon.ApocalypseManager;
 import com.craftingdead.survival.world.moon.MoonEventType;
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -121,7 +124,7 @@ public class MoonEventHandler {
         new SyncMoonDataMessage(
             ApocalypseManager.getDay(level),
             (int) (level.getDayTime() % 24000L),
-            level.getMoonPhase(),
+            ApocalypseManager.getMoonPhase(level),
             ApocalypseManager.getEvolutionTier(level),
             ApocalypseManager.getMoonEvent(level),
             ApocalypseManager.isMoonEventActive(level)),
@@ -159,7 +162,7 @@ public class MoonEventHandler {
     addRow(scoreboard, objective, "§f 天数: §b" + day, 6);
     addRow(scoreboard, objective, "§f 时间: §b" + formatTime(timeOfDay), 5);
     addRow(scoreboard, objective,
-        "§f 月相: §b" + ApocalypseManager.getMoonPhaseName(level.getMoonPhase()), 4);
+        "§f 月相: §b" + ApocalypseManager.getMoonPhaseName(ApocalypseManager.getMoonPhase(level)), 4);
     addRow(scoreboard, objective,
         "§f 今日: " + eventColor(event) + event.getDisplayName(), 3);
     addRow(scoreboard, objective,
