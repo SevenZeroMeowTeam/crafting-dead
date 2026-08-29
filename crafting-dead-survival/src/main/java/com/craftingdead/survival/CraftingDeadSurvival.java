@@ -81,6 +81,8 @@ import com.craftingdead.survival.network.SurvivalNetworkChannel;
 import com.craftingdead.survival.world.MoonEventHandler;
 import com.craftingdead.survival.world.moon.ApocalypseManager;
 import com.craftingdead.survival.world.moon.MoonCommand;
+import com.qlm.zombie.config.QLMConfig;
+import com.qlm.zombie.moon.MoonHelper;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -139,10 +141,14 @@ public class CraftingDeadSurvival {
   public static final ServerConfig serverConfig;
   public static final ForgeConfigSpec serverConfigSpec;
 
+  public static final ForgeConfigSpec qlmConfigSpec;
+
   static {
     var pair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
     serverConfigSpec = pair.getRight();
     serverConfig = pair.getLeft();
+
+    qlmConfigSpec = QLMConfig.SPEC;
   }
 
   private static CraftingDeadSurvival instance;
@@ -167,11 +173,14 @@ public class CraftingDeadSurvival {
     modEventBus.addListener(this::handleGatherData);
 
     context.registerConfig(ModConfig.Type.SERVER, serverConfigSpec);
+    context.registerConfig(ModConfig.Type.SERVER, qlmConfigSpec);
 
     MinecraftForge.EVENT_BUS.register(this);
     MinecraftForge.EVENT_BUS.register(new MoonEventHandler());
     // /moon 手动切换月相 / 事件命令
     MinecraftForge.EVENT_BUS.register(MoonCommand.class);
+    // QLM 兼容：MoonHelper 在跨天时自动清理桥接强制事件
+    MinecraftForge.EVENT_BUS.register(MoonHelper.class);
     // 部位伤害/断肢系统：注册静态 @SubscribeEvent（TaCZ 枪命中处理）
     MinecraftForge.EVENT_BUS.register(BodyPartHandler.class);
 
