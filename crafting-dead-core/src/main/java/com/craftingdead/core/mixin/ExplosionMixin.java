@@ -22,9 +22,8 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import com.craftingdead.core.world.entity.ExplosionSource;
@@ -32,17 +31,24 @@ import com.craftingdead.core.world.entity.ExplosionSource;
 @Mixin(Explosion.class)
 public class ExplosionMixin {
 
-  @Shadow
-  @Final
   @Nullable
-  private Entity source;
+  @SuppressWarnings("unchecked")
+  private Entity getSource() {
+    try {
+      return (Entity) (Object) ObfuscationReflectionHelper.getPrivateValue(
+          Explosion.class, (Explosion) (Object) this, "f_46016_");
+    } catch (ObfuscationReflectionHelper.UnableToAccessFieldException e) {
+      // f_46016_ is the SRG name of Explosion.source. If we can't reach it, treat it as null.
+      return null;
+    }
+  }
 
   @Redirect(at = @At(value = "INVOKE",
       target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"),
       method = "explode")
   public boolean entityHurtProxy(Entity instance, DamageSource damageSource, float damage) {
     var damageMultiplier =
-        (this.source instanceof ExplosionSource source) ? source.getDamageMultiplier() : 1.0F;
+        (this.getSource() instanceof ExplosionSource source) ? source.getDamageMultiplier() : 1.0F;
     return instance.hurt(damageSource, damage * damageMultiplier);
   }
 }
