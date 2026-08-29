@@ -156,10 +156,14 @@ public class MoonEventHandler {
     boolean active = ApocalypseManager.isMoonEventActive(level);
     int tier = ApocalypseManager.getEvolutionTier(level);
 
-    addRow(scoreboard, objective, "§f 天数: §b" + day, 6);
-    addRow(scoreboard, objective, "§f 时间: §b" + formatTime(timeOfDay), 5);
+    addRow(scoreboard, objective, "§f 天数: §b" + day, 7);
+    addRow(scoreboard, objective, "§f 时间: §b" + formatTime(timeOfDay), 6);
+    int moonPhase = ApocalypseManager.getMoonPhase(level);
     addRow(scoreboard, objective,
-        "§f 月相: §b" + ApocalypseManager.getMoonPhaseName(ApocalypseManager.getMoonPhase(level)), 4);
+        "§f 月相: " + ApocalypseManager.getMoonPhaseColorCode(moonPhase)
+        + ApocalypseManager.getMoonPhaseName(moonPhase), 5);
+    addRow(scoreboard, objective,
+        "§f 强度: §b" + ApocalypseManager.getMoonPhaseStrengthName(moonPhase), 4);
     addRow(scoreboard, objective,
         "§f 今日: " + eventColor(event) + event.getDisplayName(), 3);
     addRow(scoreboard, objective,
