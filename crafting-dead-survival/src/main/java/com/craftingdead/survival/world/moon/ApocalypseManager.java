@@ -19,6 +19,7 @@
 package com.craftingdead.survival.world.moon;
 
 import com.craftingdead.survival.CraftingDeadSurvival;
+import javax.annotation.Nullable;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -47,10 +48,57 @@ public final class ApocalypseManager {
     return getDay(level) / CraftingDeadSurvival.serverConfig.evolutionIntervalDays.get();
   }
 
+  // ================================================================================
+  // 手动覆盖（/moon 命令）：可强制切换月亮事件 / 月相，null 表示按天数推算
+  // ================================================================================
+
+  /** 手动覆盖的月亮事件（由 {@code /moon set} 设置），{@code null} 表示未覆盖，按天数推算。 */
+  @Nullable
+  private static MoonEventType manualEvent;
+
+  /** 手动覆盖的月相（0-7），{@code -1} 表示未覆盖，使用世界真实月相。 */
+  private static int manualPhase = -1;
+
+  public static boolean isManualEventSet() {
+    return manualEvent != null;
+  }
+
+  @Nullable
+  public static MoonEventType getManualEvent() {
+    return manualEvent;
+  }
+
+  public static void setManualEvent(MoonEventType event) {
+    manualEvent = event;
+  }
+
+  public static void clearManualEvent() {
+    manualEvent = null;
+  }
+
+  public static boolean isManualPhaseSet() {
+    return manualPhase >= 0;
+  }
+
+  public static int getManualPhase() {
+    return manualPhase;
+  }
+
+  public static void setManualPhase(int phase) {
+    manualPhase = Math.floorMod(phase, 8);
+  }
+
+  public static void clearManualPhase() {
+    manualPhase = -1;
+  }
+
   /**
-   * 获取今天对应的月亮事件（无论白天黑夜）。
+   * 获取今天对应的月亮事件（无论白天黑夜）。若通过 {@code /moon set} 设置了手动覆盖，则返回覆盖值。
    */
   public static MoonEventType getMoonEvent(Level level) {
+    if (manualEvent != null) {
+      return manualEvent;
+    }
     return MoonEventType.forDay(getDay(level));
   }
 
@@ -78,17 +126,40 @@ public final class ApocalypseManager {
   }
 
   /**
-   * 是否是蓝月日（幸运效果全天生效）。
+   * 是否是蓝月日（幸运效果全天生效，含超级蓝月）。
    */
   public static boolean isBlueMoon(Level level) {
-    return getMoonEvent(level) == MoonEventType.BLUE_MOON;
+    MoonEventType event = getMoonEvent(level);
+    return event == MoonEventType.BLUE_MOON || event == MoonEventType.SUPER_BLUE_MOON;
   }
 
   /**
-   * 是否是黄月日（农作物生长全天加速）。
+   * 是否是超级蓝月日。
+   */
+  public static boolean isSuperBlueMoon(Level level) {
+    return getMoonEvent(level) == MoonEventType.SUPER_BLUE_MOON;
+  }
+
+  /**
+   * 是否是黄月日（农作物生长全天加速，含超级黄月）。
    */
   public static boolean isYellowMoon(Level level) {
-    return getMoonEvent(level) == MoonEventType.YELLOW_MOON;
+    MoonEventType event = getMoonEvent(level);
+    return event == MoonEventType.YELLOW_MOON || event == MoonEventType.SUPER_YELLOW_MOON;
+  }
+
+  /**
+   * 是否是超级黄月日。
+   */
+  public static boolean isSuperYellowMoon(Level level) {
+    return getMoonEvent(level) == MoonEventType.SUPER_YELLOW_MOON;
+  }
+
+  /**
+   * 返回当前月相（0-7）。若通过 {@code /moon phase} 设置了手动覆盖，则返回覆盖值。
+   */
+  public static int getMoonPhase(Level level) {
+    return manualPhase >= 0 ? manualPhase : level.getMoonPhase();
   }
 
   /**
