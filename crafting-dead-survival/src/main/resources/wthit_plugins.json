@@ -1,0 +1,6 @@
+{
+  "craftingdeadsurvival:zombie_info": {
+    "initializer": "com.craftingdead.survival.client.waila.CraftingDeadWailaPlugin",
+    "side": "client"
+  }
+}

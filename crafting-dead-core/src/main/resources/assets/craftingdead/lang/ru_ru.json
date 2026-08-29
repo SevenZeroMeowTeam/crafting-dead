@@ -1,64 +1,50 @@
 {
   "container.equipment": "Снаряжение",
   "enchantment.craftingdead.armor_penetration": "Бронепробиваемость",
-
   "key.reload": "Перезарядка",
   "key.remove_magazine": "Снять магазин",
   "key.toggle_fire_mode": "Переключить на режим: Огонь",
-  "key.equipment_menu":"Открыть / закрыть меню снаряжения",
-
-  "tutorial.open_equipment_menu.title":"Открыть меню снаряжения",
+  "key.equipment_menu": "Открыть / закрыть меню снаряжения",
+  "tutorial.open_equipment_menu.title": "Открыть меню снаряжения",
   "tutorial.open_equipment_menu.description": "Нажми %s",
-
   "death.attack.bullet": "%1$s был застрелен",
   "death.attack.bullet.headshot": "%1$s был застрелен в голову",
-
   "options.craftingdead.server.hit_marker_mode": "Режим отметки: Попадание",
   "options.craftingdead.server.kill_sound_enabled": "Включить звук убийства",
   "options.craftingdead.client.crosshair": "Перекрестие",
   "options.craftingdead.client.kill_sound": "Звук убийства",
-
-  "effect.craftingdead.adrenaline":"Адреналин",
-  "effect.craftingdead.bleeding":"Кровотечение",
-  "effect.craftingdead.flash_blindness":"Световое ослепление",
+  "effect.craftingdead.adrenaline": "Адреналин",
+  "effect.craftingdead.bleeding": "Кровотечение",
+  "effect.craftingdead.flash_blindness": "Световое ослепление",
   "effect.craftingdead.parachute": "Парашют",
-
   "entity.craftingdead.c4_explosive": "C4",
   "entity.craftingdead.decoy_grenade": "Ложная граната",
   "entity.craftingdead.fire_grenade": "Огненная граната",
   "entity.craftingdead.flash_grenade": "Световая граната",
   "entity.craftingdead.flag_grenade": "Сколочная граната",
   "entity.craftingdead.smoke_grenade": "Дымовая граната",
-
   "message.switch_fire_mode": "Переключено на %s",
   "message.low_health": "%1$s's здоровье слишком низкое",
-
-  "fire_mode.auto":"АВТО",
-  "fire_mode.semi":"ПОЛУ",
-  "fire_mode.burst":"ВЗРЫВ",
-
-  "hud.empty_magazine":"ПУСТОЙ",
-
-  "action.target":"Цель: %1$s",
-  "action.performer":"Performer: %1$s",
-
-  "action.craftingdead.magazine_reload.message":"Перезарядка",
-  "action.craftingdead.refillable_reload.message":"Перезарядка",
-  "action.craftingdead.remove_magazine.message":"Снятие магазина",
-
-  "action.craftingdead.use_syringe.message":"Вывод жидкости",
-  "action.craftingdead.use_first_aid_kit.message":"Исцеление",
-  "action.craftingdead.use_clean_rag.message":"Прочищение раны",
-  "action.craftingdead.wash_rag.message":"Промывка тряпки",
-  "action.craftingdead.use_adrenaline_syringe.message":"Введение инъекции Адреналина",
-  "action.craftingdead.use_blood_syringe.message":"Введение инъекции Крови",
-  "action.craftingdead.use_bandage.message":"Наложение повязки",
-  "action.craftingdead.shred_clothing.message":"Рвение ткани",
-
+  "fire_mode.auto": "АВТО",
+  "fire_mode.semi": "ПОЛУ",
+  "fire_mode.burst": "ВЗРЫВ",
+  "hud.empty_magazine": "ПУСТОЙ",
+  "action.target": "Цель: %1$s",
+  "action.performer": "Performer: %1$s",
+  "action.craftingdead.magazine_reload.message": "Перезарядка",
+  "action.craftingdead.refillable_reload.message": "Перезарядка",
+  "action.craftingdead.remove_magazine.message": "Снятие магазина",
+  "action.craftingdead.use_syringe.message": "Вывод жидкости",
+  "action.craftingdead.use_first_aid_kit.message": "Исцеление",
+  "action.craftingdead.use_clean_rag.message": "Прочищение раны",
+  "action.craftingdead.wash_rag.message": "Промывка тряпки",
+  "action.craftingdead.use_adrenaline_syringe.message": "Введение инъекции Адреналина",
+  "action.craftingdead.use_blood_syringe.message": "Введение инъекции Крови",
+  "action.craftingdead.use_bandage.message": "Наложение повязки",
+  "action.craftingdead.shred_clothing.message": "Рвение ткани",
   "itemGroup.craftingdead.cosmetics": "Crafting Dead: Одежда",
   "itemGroup.craftingdead.medical": "Crafting Dead: Медицина",
   "itemGroup.craftingdead.combat": "Crafting Dead: Бой",
-
   "item.craftingdead.vulcan_paint": "Рисунок: Вулкан",
   "item.craftingdead.asmo_paint": "Рисунок: Асмо",
   "item.craftingdead.candy_apple_paint": "Рисунок: Карамельное яблоко",
@@ -79,13 +65,12 @@
   "item.craftingdead.nuclear_winter_paint": "Рисунок: Ядерная зима",
   "item.craftingdead.monarch_paint": "Рисунок: Монархия",
   "item.craftingdead.lovelace_paint": "Рисунок: Любовное кружево",
-
   "item.craftingdead.stanag_20_round_magazine": "Магазин СТАНАГ 20птр",
   "item.craftingdead.stanag_30_round_magazine": "Магазин СТАНАГ 30птр",
   "item.craftingdead.stanag_drum_magazine": "Магазин СТАНАГ барабанный",
   "item.craftingdead.stanag_box_magazine": "Магазин СТАНАГ коробковый",
   "item.craftingdead.mpt55_magazine": "Магазин MPT-55",
-  "item.craftingdead.ak47_30_round_magazine":"Магазин AK47 30 патронов",
+  "item.craftingdead.ak47_30_round_magazine": "Магазин AK47 30 патронов",
   "item.craftingdead.fnfal_magazine": "Магазин FN FAL",
   "item.craftingdead.acr_magazine": "Магазин ACR",
   "item.craftingdead.g36c_magazine": "Магазин G36C",
@@ -117,7 +102,6 @@
   "item.craftingdead.rpk_drum_magazine": "Магазин RPK барабан",
   "item.craftingdead.minigun_magazine": "Магазин миниган",
   "item.craftingdead.mk48mod_magazine": "Магазин MK48MOD",
-
   "attachment.craftingdead.red_dot_sight": "Оптический прицел с красной точкой",
   "attachment.craftingdead.acog_sight": "Продвинутый боевой оптический прицел",
   "attachment.craftingdead.lp_scope": "LP Оптический прицел",
@@ -132,7 +116,6 @@
   "attachment.craftingdead.pistol_iron_sight": "Пистолетный железный оптический прицел",
   "attachment.craftingdead.akm_iron_sight": "AKM железный оптический прицел",
   "attachment.craftingdead.scarl_iron_sight": "SCAR-L железный оптический прицел",
-
   "item.craftingdead.m4a1": "M4A1",
   "item.craftingdead.scarl": "SCAR-L",
   "item.craftingdead.ak47": "AK47",
@@ -165,7 +148,6 @@
   "item.craftingdead.minigun": "Миниган",
   "item.craftingdead.mossberg": "Моссберг",
   "item.craftingdead.mk48mod": "MK48 MOD",
-
   "item.craftingdead.crowbar": "Лом",
   "item.craftingdead.katana": "Катана",
   "item.craftingdead.fire_axe": "Топор пожарного",
@@ -201,7 +183,6 @@
   "item.craftingdead.blood_syringe": "Окровавленный шприц",
   "item.craftingdead.bandage": "Повязка",
   "item.craftingdead.syringe": "Пустой шприц",
-
   "item.craftingdead.contractor_clothing": "Обмундирование: Поставщика",
   "item.craftingdead.ddpat_clothing": "Обмундирование: Нави DDPAT",
   "item.craftingdead.scuba_clothing": "Обмундирование: Подводное плавание",
@@ -296,8 +277,8 @@
   "item.craftingdead.black_ballistic_hat": "Чёрный баллистический шлем",
   "item.craftingdead.beanie_hat": "Бини шапка",
   "item.craftingdead.army_helmet": "Военные шлем",
-  "item.craftingdead.scrap_metal":"Металлолом",
-  "item.craftingdead.molten_scrap_metal":"Расплавленный металлолом",
+  "item.craftingdead.scrap_metal": "Металлолом",
+  "item.craftingdead.molten_scrap_metal": "Расплавленный металлолом",
   "item.craftingdead.binoculars": "Бинокль",
   "item.craftingdead.small_barrel": "Маленький бочонок",
   "item.craftingdead.medium_barrel": "Средний бочонок",
@@ -312,18 +293,14 @@
   "item.craftingdead.medium_stock": "Средний запас",
   "item.craftingdead.medium_bolt": "Средний затвор",
   "item.craftingdead.heavy_bolt": "Тяжёлый затвор",
-
   "item.craftingdead.black_tactical_vest": "Чёрный тактический бронежилет",
   "item.craftingdead.ghillie_tactical_vest": "Маскировочный тактический бронежилет",
   "item.craftingdead.green_tactical_vest": "Зелёный тактический бронежилет",
   "item.craftingdead.grey_tactical_vest": "Серый тактический бронежилет",
   "item.craftingdead.riot_vest": "Бунт бронежилет",
   "item.craftingdead.tan_tactical_vest": "Разгрузочный тактический бронежилет",
-
   "item.craftingdead.parachute": "Парашют",
-
-  "item.modifiers.clothing":"Когда одето:",
-
+  "item.modifiers.clothing": "Когда одето:",
   "hat.headshot_reduction": "Защита от выстрелов в голову: ",
   "hat.immune_to_flashes": "Невосприимчив к Световым",
   "hat.immune_to_gas": "Невосприимчив к Газу",
@@ -346,8 +323,8 @@
   "gun.range": "Радиус: ",
   "clothing_item.water_breathing": "Даёт способность подводного дыхания",
   "clothing_item.water_speed": "Увеличивает скорость плавания",
-
   "attachment_multiplier_type.damage": "Повреждение",
   "attachment_multiplier_type.accuracy": "Точность",
-  "attachment_multiplier_type.zoom": "Увеличенность"
+  "attachment_multiplier_type.zoom": "Увеличенность",
+  "options.craftingdead.client.defer_target_info_to_wthit": "Отображать цель через WTHIT (если установлен)"
 }
