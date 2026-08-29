@@ -7,6 +7,14 @@ repositories {
         name = 'GeckoLib'
         url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
     }
+    maven {
+        name = 'WTHIT'
+        url = 'https://maven2.bai.lol'
+        content {
+            includeGroup 'mcp.mobius.waila'
+            includeGroup 'lol.bai'
+        }
+    }
 }
 
 dependencies {
@@ -85,6 +93,12 @@ minecraft {
 
 dependencies {
     implementation project(':crafting-dead-core')
+
+    // WTHIT (What The Hell Is That?) plugin API - optional/custom integration.
+    // compileOnly: we DO NOT bundle it. The wthit_plugins.json entry is only read by WTHIT,
+    // so the plugin class (which references mcp.mobius.waila.api.*) is only loaded when WTHIT
+    // is installed; otherwise it is never touched and the mod runs without it.
+    compileOnly fg.deobf('mcp.mobius.waila:wthit-api:forge-12.10.2')
 
     // Physics Mod Ragdoll API (net.diebuddies.physics.ragdoll) - compile only.
     // 运行时不打包：Physics Mod 由玩家自行安装到 mods 目录。

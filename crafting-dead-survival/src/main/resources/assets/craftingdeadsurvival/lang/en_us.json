@@ -313,5 +313,10 @@
   "open_canned_custard.information": "+4 Food, +3 Thirst • Dessert",
   "open_canned_pickles.information": "+4 Food • Vinegar brined",
   "open_canned_dog_food.information": "+2 Food • Not for humans",
-  "open_canned_tomato_soup.information": "+4 Food, +2 Thirst • Soup"
+  "open_canned_tomato_soup.information": "+4 Food, +2 Thirst • Soup",
+
+  "waila.craftingdeadsurvival.moon_phase": "Moon: %s (%s)",
+  "waila.craftingdeadsurvival.moon_event": "Event: %s",
+  "waila.craftingdeadsurvival.evolution_tier": "Evolution: Tier %s",
+  "waila.craftingdeadsurvival.horde_wave": "Horde: Wave %s"
 }

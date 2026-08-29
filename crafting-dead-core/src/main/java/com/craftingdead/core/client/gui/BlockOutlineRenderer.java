@@ -70,6 +70,10 @@ public class BlockOutlineRenderer {
     if (!ClientDist.clientConfig.displayTargetInfo.get()) {
       return;
     }
+    // 安装了 WTHIT 且允许时，交给 WTHIT 渲染，不再画本方框/范围环。
+    if (TargetOverlay.shouldDeferToWthit()) {
+      return;
+    }
     var level = this.minecraft.level;
     if (level == null) {
       return;

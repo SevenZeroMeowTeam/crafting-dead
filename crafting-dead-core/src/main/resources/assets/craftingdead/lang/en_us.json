@@ -20,6 +20,8 @@
 
   "options.craftingdead.client.crosshair": "Crosshair",
   "options.craftingdead.client.kill_sound": "Kill Sound",
+  "options.craftingdead.client.display_target_info": "Display Target Info",
+  "options.craftingdead.client.defer_target_info_to_wthit": "Defer target info to WTHIT (when installed)",
 
   "options.craftingdead.server.handcuff_damage_chance": "Handcuff Damage Chance",
 

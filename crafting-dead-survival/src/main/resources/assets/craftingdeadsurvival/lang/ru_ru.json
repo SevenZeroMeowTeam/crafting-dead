@@ -53,5 +53,10 @@
   "item.craftingdeadsurvival.tank_zombie_spawn_egg": "Яйцо зомби-танк",
   "item.craftingdeadsurvival.weak_zombie_spawn_egg": "Яйцо слабый зомби",
   "item.craftingdeadsurvival.police_zombie_spawn_egg": "Яйцо зомби-полицейский",
-  "item.craftingdeadsurvival.doctor_zombie_spawn_egg": "Яйцо зомби-доктор"
+  "item.craftingdeadsurvival.doctor_zombie_spawn_egg": "Яйцо зомби-доктор",
+
+  "waila.craftingdeadsurvival.moon_phase": "Луна: %s (%s)",
+  "waila.craftingdeadsurvival.moon_event": "Событие: %s",
+  "waila.craftingdeadsurvival.evolution_tier": "Эволюция: уровень %s",
+  "waila.craftingdeadsurvival.horde_wave": "Полчище: волна %s"
 }

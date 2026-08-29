@@ -32,5 +32,10 @@
   "item.craftingdeadsurvival.tank_zombie_spawn_egg": "Ovo gerador de Zumbi Tanque",
   "item.craftingdeadsurvival.weak_zombie_spawn_egg": "Ovo gerador de Zumbi Fraco",
   "item.craftingdeadsurvival.police_zombie_spawn_egg": "Ovo gerador de Zumbi Policial",
-  "item.craftingdeadsurvival.doctor_zombie_spawn_egg": "Ovo gerador de Zumbi Médico"
+  "item.craftingdeadsurvival.doctor_zombie_spawn_egg": "Ovo gerador de Zumbi M茅dico",
+
+  "waila.craftingdeadsurvival.moon_phase": "Lua: %s (%s)",
+  "waila.craftingdeadsurvival.moon_event": "Evento: %s",
+  "waila.craftingdeadsurvival.evolution_tier": "Evolu莽茫o: N铆vel %s",
+  "waila.craftingdeadsurvival.horde_wave": "Horda: Onda %s"
 }

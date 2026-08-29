@@ -42,6 +42,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
@@ -51,8 +52,8 @@ public class TargetOverlay {
 
   private static final double RANGE = 4.5D;
 
-  // 面板样式（模仿 Jade/HWYLA）
-  private static final int PANEL_BACKGROUND = 0xC8101010;
+  // 面板样式（模仿 Jade / WTHIT / HWYLA）
+  private static final int PANEL_BACKGROUND = 0x80101010;
   private static final int PANEL_BORDER = 0xFF555555;
   private static final int NAME_COLOR = 0xFFFFFFFF;
   private static final int MOD_COLOR = 0xFF8A8A8A;
@@ -76,6 +77,10 @@ public class TargetOverlay {
       return;
     }
     if (!ClientDist.clientConfig.displayTargetInfo.get()) {
+      return;
+    }
+    // 安装了 WTHIT 且允许时，交给 WTHIT 渲染，避免两套面板重叠。
+    if (shouldDeferToWthit()) {
       return;
     }
 
@@ -313,6 +318,12 @@ public class TargetOverlay {
     var red = Mth.clamp((int) ((1.0F - healthPct) * 255.0F), 0, 255);
     var green = Mth.clamp((int) (healthPct * 255.0F), 0, 255);
     return 0xFF000000 | (red << 16) | (green << 8);
+  }
+
+  /** 是否把目标信息渲染交给 WTHIT（已安装且配置允许时）。 */
+  static boolean shouldDeferToWthit() {
+    return ClientDist.clientConfig.deferTargetInfoToWthit.get()
+        && ModList.get().isLoaded("wthit");
   }
 
   private record HealthBar(float healthPct, Component healthText) {}

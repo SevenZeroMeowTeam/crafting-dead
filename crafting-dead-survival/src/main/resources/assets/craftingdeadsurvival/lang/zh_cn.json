@@ -190,5 +190,10 @@
   "item.craftingdeadsurvival.screwdriver": "螺丝刀",
   "item.craftingdeadsurvival.multi_tool": "多功能工具",
 
-  "can_opener.information": "打开罐头"
+  "can_opener.information": "打开罐头",
+
+  "waila.craftingdeadsurvival.moon_phase": "月相: %s (%s)",
+  "waila.craftingdeadsurvival.moon_event": "事件: %s",
+  "waila.craftingdeadsurvival.evolution_tier": "进化: 第 %s 阶",
+  "waila.craftingdeadsurvival.horde_wave": "尸潮: 第 %s 波"
 }

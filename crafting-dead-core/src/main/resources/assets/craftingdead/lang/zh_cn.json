@@ -18,6 +18,8 @@
 
   "options.craftingdead.client.crosshair": "准星",
   "options.craftingdead.client.kill_sound": "击杀音效",
+  "options.craftingdead.client.display_target_info": "显示目标信息",
+  "options.craftingdead.client.defer_target_info_to_wthit": "安装 WTHIT 时交给 WTHIT 显示目标信息",
 
   "options.craftingdead.server.hit_marker_mode": "命中标记模式",
   "options.craftingdead.server.kill_sound_enabled": "开启击杀音效",

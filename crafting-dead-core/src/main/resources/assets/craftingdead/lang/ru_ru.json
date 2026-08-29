@@ -17,6 +17,7 @@
   "options.craftingdead.server.kill_sound_enabled": "Включить звук убийства",
   "options.craftingdead.client.crosshair": "Перекрестие",
   "options.craftingdead.client.kill_sound": "Звук убийства",
+  "options.craftingdead.client.defer_target_info_to_wthit": "Отображать цель через WTHIT (если установлен)",
 
   "effect.craftingdead.adrenaline":"Адреналин",
   "effect.craftingdead.bleeding":"Кровотечение",
