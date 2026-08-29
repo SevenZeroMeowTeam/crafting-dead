@@ -121,7 +121,7 @@ public class MoonEventHandler {
         new SyncMoonDataMessage(
             ApocalypseManager.getDay(level),
             (int) (level.getDayTime() % 24000L),
-            level.getMoonPhase(),
+            ApocalypseManager.getMoonPhase(level),
             ApocalypseManager.getEvolutionTier(level),
             ApocalypseManager.getMoonEvent(level),
             ApocalypseManager.isMoonEventActive(level)),
@@ -159,7 +159,7 @@ public class MoonEventHandler {
     addRow(scoreboard, objective, "§f 天数: §b" + day, 6);
     addRow(scoreboard, objective, "§f 时间: §b" + formatTime(timeOfDay), 5);
     addRow(scoreboard, objective,
-        "§f 月相: §b" + ApocalypseManager.getMoonPhaseName(level.getMoonPhase()), 4);
+        "§f 月相: §b" + ApocalypseManager.getMoonPhaseName(ApocalypseManager.getMoonPhase(level)), 4);
     addRow(scoreboard, objective,
         "§f 今日: " + eventColor(event) + event.getDisplayName(), 3);
     addRow(scoreboard, objective,

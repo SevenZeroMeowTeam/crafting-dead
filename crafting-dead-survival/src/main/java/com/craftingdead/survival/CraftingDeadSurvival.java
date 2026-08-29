@@ -78,6 +78,7 @@ import com.craftingdead.survival.world.level.block.SurvivalBlocks;
 import com.craftingdead.survival.network.SurvivalNetworkChannel;
 import com.craftingdead.survival.world.MoonEventHandler;
 import com.craftingdead.survival.world.moon.ApocalypseManager;
+import com.craftingdead.survival.world.moon.MoonCommand;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -167,6 +168,8 @@ public class CraftingDeadSurvival {
 
     MinecraftForge.EVENT_BUS.register(this);
     MinecraftForge.EVENT_BUS.register(new MoonEventHandler());
+    // /moon 手动切换月相 / 事件命令
+    MinecraftForge.EVENT_BUS.register(MoonCommand.class);
     // 部位伤害/断肢系统：注册静态 @SubscribeEvent（TaCZ 枪命中处理）
     MinecraftForge.EVENT_BUS.register(BodyPartHandler.class);
 
