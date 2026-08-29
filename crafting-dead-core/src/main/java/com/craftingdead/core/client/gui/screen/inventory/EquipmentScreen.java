@@ -216,9 +216,10 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
    */
   private void renderPlayerEntity(GuiGraphics guiGraphics) {
     if (this.minecraft != null && this.minecraft.player != null) {
-      InventoryScreen.renderEntityInInventory(guiGraphics, this.leftPos + 51, this.topPos + 72, 30,
-          Axis.YP.rotationDegrees((float) ((this.leftPos + 51) - this.oldMouseX)),
-          Axis.XP.rotationDegrees((float) ((this.topPos + 75 - 50) - this.oldMouseY)),
+      InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics,
+          this.leftPos + 51, this.topPos + 45, 30,
+          (float) ((this.leftPos + 51) - this.oldMouseX),
+          (float) ((this.topPos + 45) - this.oldMouseY),
           this.minecraft.player
       );
     }
