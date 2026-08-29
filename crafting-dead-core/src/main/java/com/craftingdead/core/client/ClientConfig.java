@@ -30,6 +30,8 @@ public class ClientConfig {
 
   public final ForgeConfigSpec.BooleanValue displayTargetInfo;
 
+  public final ForgeConfigSpec.BooleanValue deferTargetInfoToWthit;
+
   public final ForgeConfigSpec.BooleanValue displayPlantGrowth;
 
   public final ForgeConfigSpec.ConfigValue<String> killSound;
@@ -48,6 +50,11 @@ public class ClientConfig {
           .translation("options.craftingdead.client.display_target_info")
           .comment("Display Jade-like target info overlay (block/entity name, mod and health)")
           .define("displayTargetInfo", true);
+      this.deferTargetInfoToWthit = builder
+          .translation("options.craftingdead.client.defer_target_info_to_wthit")
+          .comment("If WTHIT (What The Hell Is That?) is installed, hide the built-in target info"
+              + " panel and BlockOutline so WTHIT renders the tooltip instead (avoids duplicates).")
+          .define("deferTargetInfoToWthit", true);
       this.displayPlantGrowth = builder
           .translation("options.craftingdead.client.display_plant_growth")
           .comment("瞄准农作物时显示其生长阶段 / 进度")
