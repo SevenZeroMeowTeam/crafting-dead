@@ -1,6 +1,5 @@
 {
   "options.craftingdeadsurvival.client.display_blood": "Display Blood",
-
   "options.craftingdeadsurvival.server.show_subtitles": "Show Subtitles",
   "options.craftingdeadsurvival.server.allow_supply_drop_break": "Allow Supply Drop Break",
   "options.craftingdeadsurvival.server.supply_drop_duration": "Supply Drop Duration (in Seconds)",
@@ -64,9 +63,7 @@
   "options.craftingdeadsurvival.server.explosives.pipe_bomb.knockback": "Pipe Bomb Knockback (Multiplier)",
   "options.craftingdeadsurvival.server.explosives.pipe_bomb.damage": "Pipe Bomb Damage (Multiplier)",
   "options.craftingdeadsurvival.server.explosives.pipe_bomb.activation_tick": "Pipe Bomb Activation Delay (Ticks)",
-
   "enchantment.craftingdeadsurvival.infection": "Infection",
-
   "block.craftingdeadsurvival.military_loot_gen": "Military Loot Generator",
   "block.craftingdeadsurvival.military_loot": "Military Loot",
   "block.craftingdeadsurvival.police_loot_gen": "Police Loot Generator",
@@ -77,7 +74,6 @@
   "block.craftingdeadsurvival.civilian_loot": "Civilian Loot",
   "block.craftingdeadsurvival.civilian_rare_loot_gen": "Rare Civilian Loot Generator",
   "block.craftingdeadsurvival.civilian_rare_loot": "Rare Civilian Loot",
-
   "military_loot.information": "⚔ Military gear and weapons",
   "military_loot_gen.information": "⚙ Spawns military loot",
   "police_loot.information": "👮 Law enforcement equipment",
@@ -88,10 +84,8 @@
   "civilian_loot_gen.information": "⚙ Spawns civilian loot",
   "civilian_rare_loot.information": "✨ Rare civilian valuables",
   "civilian_rare_loot_gen.information": "⚙ Spawns rare civilian loot",
-
-  "effect.craftingdeadsurvival.infection":"Infected",
+  "effect.craftingdeadsurvival.infection": "Infected",
   "effect.craftingdeadsurvival.broken_leg": "Broken Leg",
-
   "entity.craftingdeadsurvival.supply_drop": "Supply Drop",
   "entity.craftingdeadsurvival.pipe_bomb": "Pipe Bomb",
   "entity.craftingdeadsurvival.fast_zombie": "Fast Zombie",
@@ -113,33 +107,27 @@
   "entity.craftingdeadsurvival.juggernaut_zombie": "Juggernaut Zombie",
   "entity.craftingdeadsurvival.miner_zombie": "Miner Zombie",
   "entity.craftingdeadsurvival.swat_zombie": "SWAT Zombie",
-
   "message.infected": "You've been infected with RBI.",
   "message.broken_leg": "Ouch! You broke your leg.",
   "message.bleeding": "You're bleeding out!",
-
-  "death.attack.infection":"%1$s died from RBI",
-  "death.attack.bleeding":"%1$s bled to death",
-
-  "action.craftingdeadsurvival.use_splint.message":"Applying Splint",
-  "action.craftingdeadsurvival.use_morphine_syringe.message":"Injecting Morphine",
-  "action.craftingdeadsurvival.use_syringe_on_zombie.message":"Withdrawing RBI Infection",
-  "action.craftingdeadsurvival.use_cure_syringe.message":"Injecting Cure",
-  "action.craftingdeadsurvival.use_rbi_syringe.message":"Injecting RBI",
+  "death.attack.infection": "%1$s died from RBI",
+  "death.attack.bleeding": "%1$s bled to death",
+  "action.craftingdeadsurvival.use_splint.message": "Applying Splint",
+  "action.craftingdeadsurvival.use_morphine_syringe.message": "Injecting Morphine",
+  "action.craftingdeadsurvival.use_syringe_on_zombie.message": "Withdrawing RBI Infection",
+  "action.craftingdeadsurvival.use_cure_syringe.message": "Injecting Cure",
+  "action.craftingdeadsurvival.use_rbi_syringe.message": "Injecting RBI",
   "action.craftingdeadsurvival.fill_water_canteen.message": "Filling Water Canteen",
   "action.craftingdeadsurvival.fill_flask.message": "Filling Flask",
   "action.craftingdeadsurvival.fill_water_bottle.message": "Filling Water Bottle",
   "action.craftingdeadsurvival.fill_water_canteen_from_pump.message": "Filling Water Canteen",
   "action.craftingdeadsurvival.fill_flask_from_pump.message": "Filling Flask",
   "action.craftingdeadsurvival.fill_water_bottle_from_pump.message": "Filling Water Bottle",
-
   "itemGroup.craftingdeadsurvival": "Crafting Dead Survival",
-
   "item.craftingdeadsurvival.rbi_syringe": "RBI Syringe",
   "item.craftingdeadsurvival.cure_syringe": "RBI Cure Syringe",
   "item.craftingdeadsurvival.morphine_syringe": "Morphine Syringe",
   "item.craftingdeadsurvival.splint": "Makeshift Splint",
-
   "item.craftingdeadsurvival.pipe_bomb": "Pipe Bomb",
   "item.craftingdeadsurvival.military_drop_radio": "Military Supply Drop Radio",
   "item.craftingdeadsurvival.medical_drop_radio": "Medical Supply Drop Radio",
@@ -162,7 +150,6 @@
   "item.craftingdeadsurvival.juggernaut_zombie_spawn_egg": "Juggernaut Zombie Spawn Egg",
   "item.craftingdeadsurvival.miner_zombie_spawn_egg": "Miner Zombie Spawn Egg",
   "item.craftingdeadsurvival.swat_zombie_spawn_egg": "SWAT Zombie Spawn Egg",
-  
   "item.craftingdeadsurvival.canned_sweetcorn": "Canned Sweetcorn",
   "item.craftingdeadsurvival.open_canned_sweetcorn": "Open Canned Sweetcorn",
   "item.craftingdeadsurvival.canned_beans": "Canned Beans",
@@ -250,7 +237,6 @@
   "item.craftingdeadsurvival.rope": "Rope",
   "item.craftingdeadsurvival.consumable.food_info": "Food",
   "item.craftingdeadsurvival.consumable.water_info": "Water",
-
   "can_opener.information": "Opens canned goods",
   "canned_food.information": "Open it using the right tool",
   "empty_canteen_flask.information": "Can be refilled with water",
@@ -262,7 +248,6 @@
   "pipe_bomb.information": "💣 Improvised explosive • High damage",
   "medical_drop_radio.information": "📻 Calls medical supply drop",
   "military_drop_radio.information": "📻 Calls military supply drop",
-
   "water_bottle.information": "+8 Thirst",
   "water_canteen.information": "+9 Thirst",
   "flask.information": "+7 Thirst",
@@ -276,7 +261,6 @@
   "sprite.information": "+6 Thirst",
   "cola.information": "+6 Thirst",
   "zombie_energy.information": "+4 Thirst • Energy boost",
-  
   "power_bar.information": "+4 Food • Quick energy",
   "candy_bar.information": "+6 Food • Sweet treat",
   "cereal.information": "+10 Food • Breakfast staple",
@@ -290,7 +274,6 @@
   "popcorn.information": "+3 Food • Light snack",
   "rice_bag.information": "+8 Food • Filling carbs",
   "noodles.information": "+6 Food, +3 Thirst • Instant meal",
-  
   "orange.information": "+5 Food, +2 Thirst • Vitamin C",
   "rotten_orange.information": "+2 Food, +1 Thirst • Spoiled",
   "pear.information": "+4 Food, +2 Thirst • Fresh fruit",
@@ -301,9 +284,7 @@
   "raspberry.information": "+3 Food, +3 Thirst • Tangy",
   "rotten_raspberry.information": "+1 Food, +1 Thirst • Spoiled",
   "rotten_melon_slice.information": "+3 Food, +1 Thirst • Spoiled",
-  
   "mre.information": "+16 Food, +7 Thirst • Military ration",
-  
   "open_canned_sweetcorn.information": "+6 Food • Whole kernel corn",
   "open_canned_beans.information": "+8 Food • Protein rich",
   "open_canned_tuna.information": "+6 Food • High protein",
@@ -313,5 +294,9 @@
   "open_canned_custard.information": "+4 Food, +3 Thirst • Dessert",
   "open_canned_pickles.information": "+4 Food • Vinegar brined",
   "open_canned_dog_food.information": "+2 Food • Not for humans",
-  "open_canned_tomato_soup.information": "+4 Food, +2 Thirst • Soup"
+  "open_canned_tomato_soup.information": "+4 Food, +2 Thirst • Soup",
+  "waila.craftingdeadsurvival.moon_phase": "Moon: %s (%s)",
+  "waila.craftingdeadsurvival.moon_event": "Event: %s",
+  "waila.craftingdeadsurvival.evolution_tier": "Evolution: Tier %s",
+  "waila.craftingdeadsurvival.horde_wave": "Horde: Wave %s"
 }
