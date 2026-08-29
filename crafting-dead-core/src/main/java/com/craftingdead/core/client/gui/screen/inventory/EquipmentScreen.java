@@ -218,8 +218,11 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
    */
   private void renderPlayerEntity(GuiGraphics guiGraphics) {
     if (this.minecraft != null && this.minecraft.player != null) {
+      // 模型窗口位于左侧武器列（x=26 结束）与装备列（x=77 开始）之间的空隙，
+      // 垂直方向在顶部（y=8）与下方背包格（y=84）之间。居中于 (leftPos+51, topPos+45)，
+      // 避免模型过低而与背包格重叠。
       int centerX = this.leftPos + 51;
-      int centerY = this.topPos + 72;
+      int centerY = this.topPos + 45;
       InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics,
           centerX - 37, centerY - 39, centerX + 37, centerY + 39,
           30, 0.0625F, this.oldMouseX, this.oldMouseY,

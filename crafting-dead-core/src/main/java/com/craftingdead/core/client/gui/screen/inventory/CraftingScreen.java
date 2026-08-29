@@ -117,8 +117,10 @@ public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu>
    */
   private void renderPlayerEntity(GuiGraphics guiGraphics) {
     if (this.minecraft != null && this.minecraft.player != null) {
+      // 模型窗口位于左侧（合成格 x=83 开始），垂直方向在顶部与背包格（y=84）之间。
+      // 居中于 (leftPos+35, topPos+45)，避免模型过低而与背包格重叠。
       int centerX = this.leftPos + 35;
-      int centerY = this.topPos + 72;
+      int centerY = this.topPos + 45;
       InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics,
           centerX - 37, centerY - 39, centerX + 37, centerY + 39,
           30, 0.0625F, this.oldMouseX, this.oldMouseY,
