@@ -45,6 +45,7 @@ public final class MoonDataHolder {
   private static int evolutionTier;
   private static MoonEventType eventType = MoonEventType.NONE;
   private static boolean active;
+  private static int hordeWave;
 
   private static final Deque<KillFeedLine> killFeed = new ArrayDeque<>();
 
@@ -57,6 +58,7 @@ public final class MoonDataHolder {
     evolutionTier = msg.evolutionTier();
     eventType = msg.eventType();
     active = msg.active();
+    hordeWave = msg.hordeWave();
   }
 
   public static void addKillFeed(Component killer, Component victim, ItemStack weapon,
@@ -95,6 +97,11 @@ public final class MoonDataHolder {
 
   public static boolean isActive() {
     return active;
+  }
+
+  /** 当前尸潮波数（0 = 无尸潮，1..N = 第几波）。 */
+  public static int getHordeWave() {
+    return hordeWave;
   }
 
   /**
