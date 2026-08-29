@@ -30,6 +30,8 @@ public class ClientConfig {
 
   public final ForgeConfigSpec.BooleanValue displayTargetInfo;
 
+  public final ForgeConfigSpec.BooleanValue moonPhaseZombieTintEnabled;
+
   public final ForgeConfigSpec.ConfigValue<String> killSound;
 
   public final ForgeConfigSpec.ConfigValue<String> crosshair;
@@ -46,6 +48,10 @@ public class ClientConfig {
           .translation("options.craftingdead.client.display_target_info")
           .comment("Display Jade-like target info overlay (block/entity name, mod and health)")
           .define("displayTargetInfo", true);
+      this.moonPhaseZombieTintEnabled = builder
+          .translation("options.craftingdead.client.moon_phase_zombie_tint_enabled")
+          .comment("根据当前月相给僵尸模型染上对应的颜色（满月暖金、新月石板灰等）")
+          .define("moonPhaseZombieTintEnabled", true);
       this.killSound = builder
           .translation("options.craftingdead.client.kill_sound")
           .define("killSound", SoundEvents.TRIDENT_RETURN.getLocation().toString(),

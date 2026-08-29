@@ -45,6 +45,7 @@ public final class MoonDataHolder {
   private static int evolutionTier;
   private static MoonEventType eventType = MoonEventType.NONE;
   private static boolean active;
+  private static boolean synced;
 
   private static final Deque<KillFeedLine> killFeed = new ArrayDeque<>();
 
@@ -57,6 +58,11 @@ public final class MoonDataHolder {
     evolutionTier = msg.evolutionTier();
     eventType = msg.eventType();
     active = msg.active();
+    synced = true;
+  }
+
+  public static boolean isSynced() {
+    return synced;
   }
 
   public static void addKillFeed(Component killer, Component victim, ItemStack weapon,

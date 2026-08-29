@@ -360,6 +360,14 @@ public class CraftingDeadSurvival {
           && ApocalypseManager.isBloodMoon(level)) {
         ApocalypseManager.applyBloodMoonEvolution(zombie, level);
       }
+      // 月相强度：月相决定僵尸强弱（满月更强、新月更弱）
+      if (serverConfig.moonEventsEnabled.get()) {
+        ApocalypseManager.applyMoonPhaseEffects(zombie, level);
+      }
+      // 进化僵尸：有概率手持物品（进化等级越高、月相越强越容易手持）
+      if (serverConfig.zombieEvolutionEnabled.get()) {
+        ApocalypseManager.equipEvolvedHeldItem(zombie, level);
+      }
     }
   }
 
