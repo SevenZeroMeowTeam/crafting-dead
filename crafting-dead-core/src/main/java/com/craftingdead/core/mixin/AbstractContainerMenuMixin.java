@@ -22,7 +22,6 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import com.craftingdead.core.network.NetworkChannel;
@@ -43,9 +42,19 @@ public class AbstractContainerMenuMixin {
 
   private static final Logger logger = LogUtils.getLogger();
 
-  @Shadow
   @Nullable
-  private ContainerSynchronizer synchronizer;
+  @SuppressWarnings("unchecked")
+  private ContainerSynchronizer getSynchronizer() {
+    try {
+      return (ContainerSynchronizer) (Object) ObfuscationReflectionHelper.getPrivateValue(
+          AbstractContainerMenu.class, (AbstractContainerMenu) (Object) this, "f_150397_");
+    } catch (ObfuscationReflectionHelper.UnableToAccessFieldException e) {
+      // f_150397_ is the SRG name of AbstractContainerMenu.synchronizer. If we can't reach it
+      // (e.g. mismatched mappings), fall back to the vanilla behaviour.
+      logger.error("Failed to access AbstractContainerMenu.synchronizer", e);
+      return null;
+    }
+  }
 
   @SuppressWarnings("unchecked")
   @Redirect(at = @At(value = "INVOKE",
@@ -54,17 +63,18 @@ public class AbstractContainerMenuMixin {
   private boolean matches(ItemStack lastStack, ItemStack currentStack, int slotIndex,
       ItemStack __, Supplier<ItemStack> coppiedStack) {
 
-    if (this.synchronizer == null) {
+    ContainerSynchronizer synchronizer = this.getSynchronizer();
+    if (synchronizer == null) {
       return ItemStack.matches(lastStack, currentStack);
     }
 
-    var clazz = this.synchronizer.getClass();
+    var clazz = synchronizer.getClass();
     if (clazz.isAnonymousClass() && clazz.getEnclosingClass() == ServerPlayer.class) {
       Object parent;
       try {
         // this$0
         parent = ObfuscationReflectionHelper.getPrivateValue(
-            (Class<ContainerSynchronizer>) this.synchronizer.getClass(), this.synchronizer,
+            (Class<ContainerSynchronizer>) synchronizer.getClass(), synchronizer,
             "f_143433_");
       } catch (ObfuscationReflectionHelper.UnableToAccessFieldException e) {
         logger.error("Failed to reflect", e);
