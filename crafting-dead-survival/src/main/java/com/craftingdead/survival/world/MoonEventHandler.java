@@ -125,7 +125,7 @@ public class MoonEventHandler {
         new SyncMoonDataMessage(
             ApocalypseManager.getDay(level),
             (int) (level.getDayTime() % 24000L),
-            level.getMoonPhase(),
+            ApocalypseManager.getMoonPhase(level),
             ApocalypseManager.getEvolutionTier(level),
             ApocalypseManager.getMoonEvent(level),
             ApocalypseManager.isMoonEventActive(level)));
@@ -162,7 +162,7 @@ public class MoonEventHandler {
     addRow(scoreboard, objective, "§f 天数: §b" + day, 6);
     addRow(scoreboard, objective, "§f 时间: §b" + formatTime(timeOfDay), 5);
     addRow(scoreboard, objective,
-        "§f 月相: §b" + ApocalypseManager.getMoonPhaseName(level.getMoonPhase()), 4);
+        "§f 月相: §b" + ApocalypseManager.getMoonPhaseName(ApocalypseManager.getMoonPhase(level)), 4);
     addRow(scoreboard, objective,
         "§f 今日: " + eventColor(event) + event.getDisplayName(), 3);
     addRow(scoreboard, objective,
@@ -181,6 +181,8 @@ public class MoonEventHandler {
       case BLUE_MOON -> "§9";
       case YELLOW_MOON -> "§e";
       case SUPER_BLOOD_MOON -> "§d";
+      case SUPER_BLUE_MOON -> "§b";
+      case SUPER_YELLOW_MOON -> "§6";
       default -> "§7";
     };
   }
@@ -197,14 +199,18 @@ public class MoonEventHandler {
 
   private void applyBlueMoonLuck(MinecraftServer server, ServerLevel level) {
     var config = CraftingDeadSurvival.serverConfig;
-    int amplifier = config.blueMoonLuckAmplifier.get();
+    // 超级蓝月：幸运等级 +1（更强）
+    int amplifier = config.blueMoonLuckAmplifier.get()
+        + (ApocalypseManager.isSuperBlueMoon(level) ? 1 : 0);
+    // 超级蓝月：持续时长加倍
+    int duration = ApocalypseManager.isSuperBlueMoon(level) ? 2400 : 1200;
     for (ServerPlayer player : server.getPlayerList().getPlayers()) {
       if (player.level().dimension() != Level.OVERWORLD) {
         continue;
       }
       var instance = player.getEffect(MobEffects.LUCK);
       if (instance == null || instance.getDuration() < 600) {
-        player.addEffect(new MobEffectInstance(MobEffects.LUCK, 1200, amplifier, false, false));
+        player.addEffect(new MobEffectInstance(MobEffects.LUCK, duration, amplifier, false, false));
       }
     }
   }
@@ -332,6 +338,10 @@ public class MoonEventHandler {
       return;
     }
     double chance = CraftingDeadSurvival.serverConfig.yellowMoonGrowthBoostChance.get();
+    // 超级黄月：生长加速概率翻倍
+    if (ApocalypseManager.isSuperYellowMoon(serverLevel)) {
+      chance = Math.min(1.0D, chance * 2.0D);
+    }
     if (chance > 0.0D && serverLevel.random.nextFloat() < chance) {
       BlockState state = event.getState();
       state.getBlock().randomTick(state, serverLevel, event.getPos(), serverLevel.random);
