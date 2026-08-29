@@ -20,6 +20,23 @@
 
 ## 更新日志
 
+### WTHIT 工具提示集成（What The Hell Is That?）
+
+**新功能：为 WTHIT（What The Hell Is That?）提供本模组僵尸的末世生存信息（可选依赖）**
+
+- **WTHIT 插件**：安装 WTHIT（Forge）后，准星对准本模组僵尸时，WTHIT 工具提示会额外显示：
+  - 当前**月相**与**强度**（满月最强、新月最弱，按月相上色）
+  - 激活中的**月亮事件**（血月 / 蓝月 / 黄月 / 超级…）
+  - 僵尸**进化等级**
+  - **尸潮波数**
+- **可选依赖**：WTHIT API 为 `compileOnly`，不打包；未安装 WTHIT 时模组照常运行，插件类不会被加载
+- **自研面板让位**：新增客户端配置 `deferTargetInfoToWthit`（默认开启）——
+  检测到 WTHIT 已安装时，隐藏自研的准星信息面板（`TargetOverlay`）与方块范围框
+  （`BlockOutlineRenderer`），交给 WTHIT 渲染，避免两套显示重叠；关闭该配置或未装 WTHIT
+  时仍使用自研面板（背景已调整为更接近 WTHIT 的半透明风格）
+- 涉及：`CraftingDeadWailaPlugin` / `ZombieWailaProvider`（survival）、`wthit_plugins.json`、
+  `core ClientConfig`、`TargetOverlay` / `BlockOutlineRenderer`（defer 逻辑）
+
 ### 月相颜色 / 月相强度 / 进化僵尸手持物品（参考 Zombie Apocalypse 系列）
 
 **新功能：月相对应颜色 + 月相决定僵尸强度 + 进化僵尸手持物品**
