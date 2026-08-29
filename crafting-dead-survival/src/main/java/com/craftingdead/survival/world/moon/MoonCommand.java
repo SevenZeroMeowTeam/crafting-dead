@@ -90,7 +90,7 @@ public final class MoonCommand {
             .executes(MoonCommand::night))
         .then(Commands.literal("day")
             .requires(MoonCommand::isOp)
-            .then(Commands.argument("day", IntegerArgumentType.integer(0))
+            .then(Commands.argument("day", IntegerArgumentType.integer(1))
                 .executes(MoonCommand::setDay))));
   }
 
@@ -112,7 +112,7 @@ public final class MoonCommand {
     int phase = ApocalypseManager.getMoonPhase(level);
     source.sendSuccess(() -> Component.literal(
         "§6[月相]§r 天数: §b" + ApocalypseManager.getDay(level)
-        + "§r | 时间: §b" + formatTime((int) (level.getDayTime() % DAY_TICKS))
+        + "§r | 时间: §b" + formatTime(ApocalypseManager.getTimeOfDay(level))
         + "§r | 月相: " + ApocalypseManager.getMoonPhaseColorCode(phase)
         + ApocalypseManager.getMoonPhaseName(phase)
         + "(" + ApocalypseManager.getMoonPhaseStrengthName(phase) + ")"
@@ -174,7 +174,7 @@ public final class MoonCommand {
       source.sendFailure(Component.literal("主世界不存在。"));
       return 0;
     }
-    level.setDayTime(level.getDayTime() - (level.getDayTime() % DAY_TICKS) + NIGHT_TIME);
+    level.setDayTime(level.getDayTime() - Math.floorMod(level.getDayTime(), DAY_TICKS) + NIGHT_TIME);
     source.sendSuccess(() -> Component.literal("§6[月相]§r 已把主世界时间切换到夜晚。"), true);
     return 1;
   }
@@ -187,8 +187,9 @@ public final class MoonCommand {
       return 0;
     }
     int day = IntegerArgumentType.getInteger(ctx, "day");
-    long currentTimeOfDay = level.getDayTime() % DAY_TICKS;
-    level.setDayTime(day * DAY_TICKS + currentTimeOfDay);
+    long currentTimeOfDay = ApocalypseManager.getTimeOfDay(level);
+    // 天数为 1 起始（首日 = 第 1 天），(day - 1) * DAY_TICKS 使 getDay() 返回 day。
+    level.setDayTime((day - 1L) * DAY_TICKS + currentTimeOfDay);
     source.sendSuccess(() -> Component.literal(
         "§6[月相]§r 已设置天数: §b" + day
         + "§r (若未手动覆盖事件，今日月亮事件将按新天数推算)"), true);

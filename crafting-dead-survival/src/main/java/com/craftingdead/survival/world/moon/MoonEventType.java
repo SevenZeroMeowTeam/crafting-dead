@@ -55,7 +55,7 @@ public enum MoonEventType {
   /**
    * 根据天数返回对应的月亮事件。
    *
-   * @param day 世界天数（getDayTime() / 24000）
+   * @param day 世界天数（1 起始，首日 = getDayTime() / 24000 + 1）
    */
   public static MoonEventType forDay(long day) {
     long m = Math.floorMod(day, 28L);
