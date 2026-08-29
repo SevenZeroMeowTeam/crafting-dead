@@ -118,7 +118,7 @@ public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu>
   private void renderPlayerEntity(GuiGraphics guiGraphics) {
     if (this.minecraft != null && this.minecraft.player != null) {
       int centerX = this.leftPos + 35;
-      int centerY = this.topPos + 72;
+      int centerY = this.topPos + 45;
       InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics,
           centerX - 37, centerY - 39, centerX + 37, centerY + 39,
           30, 0.0625F, this.oldMouseX, this.oldMouseY,
