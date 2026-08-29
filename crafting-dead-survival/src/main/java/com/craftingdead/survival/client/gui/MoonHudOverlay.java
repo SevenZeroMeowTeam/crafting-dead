@@ -139,7 +139,9 @@ public class MoonHudOverlay {
       case BLOOD_MOON -> "怪物增多 · 无法入睡 · 僵尸进化";
       case SUPER_BLOOD_MOON -> "怪物暴增 · 无法入睡 · 僵尸大量进化";
       case BLUE_MOON -> "幸运降临";
+      case SUPER_BLUE_MOON -> "幸运降临（更强）";
       case YELLOW_MOON -> "农作物加速生长";
+      case SUPER_YELLOW_MOON -> "农作物加速生长（更强）";
       default -> "";
     };
   }

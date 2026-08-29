@@ -32,7 +32,9 @@ public enum MoonEventType {
   BLOOD_MOON("血月", 0xFF5555),
   BLUE_MOON("蓝月", 0x55AAFF),
   YELLOW_MOON("黄月", 0xFFE055),
-  SUPER_BLOOD_MOON("超级血月", 0xCC44FF);
+  SUPER_BLOOD_MOON("超级血月", 0xCC44FF),
+  SUPER_BLUE_MOON("超级蓝月", 0x88CCFF),
+  SUPER_YELLOW_MOON("超级黄月", 0xFFCC55);
 
   private final String displayName;
   private final int color;
@@ -60,11 +62,17 @@ public enum MoonEventType {
     if (m == 27) {
       return SUPER_BLOOD_MOON;
     }
+    if (m == 21) {
+      return SUPER_YELLOW_MOON;
+    }
     if (m == 20) {
       return YELLOW_MOON;
     }
     if (m == 13) {
       return BLOOD_MOON;
+    }
+    if (m == 7) {
+      return SUPER_BLUE_MOON;
     }
     if (m == 6) {
       return BLUE_MOON;
