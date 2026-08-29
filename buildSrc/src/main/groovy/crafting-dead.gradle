@@ -24,6 +24,12 @@ repositories {
     maven {
         name 'sponge'
         url 'https://repo.spongepowered.org/repository/maven-public/'
+        // 仅用 sponge 仓库解析 org.spongepowered 组（mixin / mixingradle）的构件，
+        // 其余（如 log4j-api 的动态版本 2.11.+）交由 mavenCentral / Forge 解析，
+        // 避免依赖已不可达的 sponge 仓库导致构建失败（曾出现 HTTP 522）。
+        content {
+            includeGroup 'org.spongepowered'
+        }
     }
     maven {
         name 'GeckoLib'
