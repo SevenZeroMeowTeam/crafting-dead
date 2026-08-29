@@ -36,6 +36,7 @@ import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -75,16 +76,18 @@ public abstract class SkeletonEnhancementMixin extends Monster implements Ranged
   }
 
   /**
-   * 骷髅白天不燃烧：覆盖 {@code isSunBurnTick} 返回 false，避免骷髅在日光下进入燃烧/头盔熔化状态。
-   * 注意：{@code isSunSensitive} 仅存在于僵尸类，骷髅类链中没有该方法。
-   * {@code isSunBurnTick} 声明于 {@code Mob}、被骷髅继承，Mixin 会把它注入到 {@code Mob.isSunBurnTick}
-   * 而影响所有生物，因此这里用 {@code instanceof AbstractSkeleton} 守卫，仅对骷髅生效。
+   * 骷髅白天不燃烧：用 {@code @Redirect} 将 {@code AbstractSkeleton.aiStep()} 里对
+   * {@code isSunBurnTick()} 的调用点强制返回 {@code false}，从而避免骷髅在日光下点燃/烧毁头盔。
+   *
+   * <p>注意：不能再对 {@code isSunBurnTick} 做 {@code @Inject}，因为该方法并未声明在
+   * {@code AbstractSkeleton}（它声明于父类 {@code Mob}），且运行时 refmap 未被打包，导致
+   * 「could not find any targets matching 'isSunBurnTick'」的 {@code InvalidInjectionException}。
+   * 改为 {@code @Redirect} 目标类自身声明的 {@code aiStep} 里的调用点即可，且只作用于骷髅。
    */
-  @Inject(method = "isSunBurnTick", at = @At("RETURN"), cancellable = true)
-  private void craftingdead$skeletonNotSunSensitive(CallbackInfoReturnable<Boolean> ci) {
-    if ((Object) this instanceof AbstractSkeleton) {
-      ci.setReturnValue(false);
-    }
+  @Redirect(method = "aiStep",
+      at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/monster/AbstractSkeleton;isSunBurnTick()Z"))
+  private boolean craftingdead$skeletonNotSunSensitive(AbstractSkeleton skeleton) {
+    return false;
   }
 
   /**
