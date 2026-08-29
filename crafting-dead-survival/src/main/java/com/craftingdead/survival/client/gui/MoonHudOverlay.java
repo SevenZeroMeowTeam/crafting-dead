@@ -18,6 +18,7 @@
 
 package com.craftingdead.survival.client.gui;
 
+import com.craftingdead.survival.client.ClientDist;
 import com.craftingdead.survival.client.MoonDataHolder;
 import com.craftingdead.survival.world.moon.MoonEventType;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -25,6 +26,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -53,6 +58,7 @@ public class MoonHudOverlay {
     }
 
     renderMoonBanner(poseStack, width);
+    renderHordeBanner(poseStack, width);
 
     int x = 4;
     int y = 4;
@@ -69,9 +75,71 @@ public class MoonHudOverlay {
       y += 18;
     }
 
+    // 植物生长时间显示（瞄准农作物时）
+    y = renderPlantGrowth(poseStack, x, y);
+
     // 击杀信息
     renderKillFeed(poseStack, x, y);
   }
+
+  private void renderHordeBanner(PoseStack poseStack, int width) {
+    int wave = MoonDataHolder.getHordeWave();
+    if (wave <= 0) {
+      return;
+    }
+    String banner = "☠ 尸潮 第 " + wave + " 波";
+    int bannerX = (width - this.minecraft.font.width(banner)) / 2;
+    this.minecraft.font.draw(poseStack, banner, bannerX, 28, 0xFF6B6B);
+  }
+
+  /**
+   * 在玩家瞄准的作物下方显示当前生长阶段 / 进度，黄月夜间额外提示「生长加速」。
+   *
+   * @return 下一行可用的 y 坐标
+   */
+  private int renderPlantGrowth(PoseStack poseStack, int x, int y) {
+    if (!ClientDist.clientConfig.displayPlantGrowth.get()) {
+      return y;
+    }
+    var hitResult = this.minecraft.hitResult;
+    var level = this.minecraft.level;
+    if (hitResult == null || !(hitResult instanceof BlockHitResult blockHit) || level == null) {
+      return y;
+    }
+    BlockState state = level.getBlockState(blockHit.getBlockPos());
+    CropProgress progress = getCropProgress(state);
+    if (progress == null) {
+      return y;
+    }
+
+    boolean accelerated = MoonDataHolder.isActive()
+        && (MoonDataHolder.getEventType() == MoonEventType.YELLOW_MOON
+            || MoonDataHolder.getEventType() == MoonEventType.SUPER_YELLOW_MOON);
+    String stage = String.format("植物生长: %d/%d (%.0f%%)",
+        progress.current(), progress.max(), progress.percent() * 100.0F);
+    String suffix = accelerated ? " §e加速中" : "";
+    int boxWidth = this.minecraft.font.width(stage + suffix) + 12;
+    GuiComponent.fill(poseStack, x - 2, y - 2, x + boxWidth, y + 18, BG_COLOR);
+    GuiComponent.drawString(poseStack, this.minecraft.font, stage + suffix, x, y + 4, TEXT_COLOR);
+    return y + 18;
+  }
+
+  private static CropProgress getCropProgress(BlockState state) {
+    for (Property<?> prop : state.getProperties()) {
+      if (prop instanceof IntegerProperty intProp && intProp.getName().equals("age")) {
+        int current = state.getValue(intProp);
+        int max = intProp.getPossibleValues().stream()
+            .mapToInt(Integer::intValue).max().orElse(current);
+        if (max <= 0) {
+          return null;
+        }
+        return new CropProgress(current, max, (float) current / max);
+      }
+    }
+    return null;
+  }
+
+  private record CropProgress(int current, int max, float percent) {}
 
   private void renderMoonBanner(PoseStack poseStack, int width) {
     if (!MoonDataHolder.isActive()) {
@@ -138,10 +206,10 @@ public class MoonHudOverlay {
     return switch (event) {
       case BLOOD_MOON -> "怪物增多 · 无法入睡 · 僵尸进化";
       case SUPER_BLOOD_MOON -> "怪物暴增 · 无法入睡 · 僵尸大量进化";
-      case BLUE_MOON -> "幸运降临";
-      case SUPER_BLUE_MOON -> "幸运降临（更强）";
-      case YELLOW_MOON -> "农作物加速生长";
-      case SUPER_YELLOW_MOON -> "农作物加速生长（更强）";
+      case BLUE_MOON -> "幸运降临 · 直到天亮";
+      case SUPER_BLUE_MOON -> "幸运降临（更强）· 直到天亮";
+      case YELLOW_MOON -> "农作物加速生长 · 直到天亮";
+      case SUPER_YELLOW_MOON -> "农作物加速生长（更强）· 直到天亮";
       default -> "";
     };
   }

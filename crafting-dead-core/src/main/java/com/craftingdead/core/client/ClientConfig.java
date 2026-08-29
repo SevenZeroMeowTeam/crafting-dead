@@ -30,6 +30,8 @@ public class ClientConfig {
 
   public final ForgeConfigSpec.BooleanValue displayTargetInfo;
 
+  public final ForgeConfigSpec.BooleanValue displayPlantGrowth;
+
   public final ForgeConfigSpec.ConfigValue<String> killSound;
 
   public final ForgeConfigSpec.ConfigValue<String> crosshair;
@@ -46,6 +48,10 @@ public class ClientConfig {
           .translation("options.craftingdead.client.display_target_info")
           .comment("Display Jade-like target info overlay (block/entity name, mod and health)")
           .define("displayTargetInfo", true);
+      this.displayPlantGrowth = builder
+          .translation("options.craftingdead.client.display_plant_growth")
+          .comment("瞄准农作物时显示其生长阶段 / 进度")
+          .define("displayPlantGrowth", true);
       this.killSound = builder
           .translation("options.craftingdead.client.kill_sound")
           .define("killSound", SoundEvents.TRIDENT_RETURN.getLocation().toString(),
