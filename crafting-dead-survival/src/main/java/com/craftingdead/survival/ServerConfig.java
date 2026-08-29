@@ -280,6 +280,14 @@ public class ServerConfig {
   public final ForgeConfigSpec.DoubleValue superBloodMoonExtraEvolutionChance;
   public final ForgeConfigSpec.IntValue blueMoonLuckAmplifier;
   public final ForgeConfigSpec.DoubleValue yellowMoonGrowthBoostChance;
+  public final ForgeConfigSpec.BooleanValue hordeEnabled;
+  public final ForgeConfigSpec.IntValue hordeIntervalDays;
+  public final ForgeConfigSpec.IntValue hordeDayOffset;
+  public final ForgeConfigSpec.IntValue hordeWaveCount;
+  public final ForgeConfigSpec.IntValue hordeWaveIntervalTicks;
+  public final ForgeConfigSpec.IntValue hordeSpawnPerWave;
+  public final ForgeConfigSpec.IntValue hordeMaxZombiesNear;
+  public final ForgeConfigSpec.IntValue hordeInitialWaveDelayTicks;
   public final ForgeConfigSpec.BooleanValue killFeedEnabled;
   public final ForgeConfigSpec.BooleanValue killDropsEnabled;
   public final ForgeConfigSpec.DoubleValue killDropChance;
@@ -1211,8 +1219,32 @@ public class ServerConfig {
           .comment("蓝月时玩家获得的幸运效果等级（0 = 幸运 I）")
           .defineInRange("blueMoonLuckAmplifier", 0, 0, 255);
       this.yellowMoonGrowthBoostChance = builder
-          .comment("黄月时农作物额外生长一次的概率（0.3 = 30%）")
+          .comment("黄月时农作物额外生长一次的概率（0.3 = 30%），仅在夜间至天亮生效")
           .defineInRange("yellowMoonGrowthBoostChance", 0.3D, 0.0D, 1.0D);
+      this.hordeEnabled = builder
+          .comment("是否启用尸潮（每隔一定天数在夜间触发，共多波，每波敌人不同）")
+          .define("hordeEnabled", true);
+      this.hordeIntervalDays = builder
+          .comment("尸潮触发间隔（天）")
+          .defineInRange("hordeIntervalDays", 14, 1, 1000);
+      this.hordeDayOffset = builder
+          .comment("尸潮在触发周期内第几天开始（0 起，默认 13 与血月同夜）")
+          .defineInRange("hordeDayOffset", 13, 0, 1000);
+      this.hordeWaveCount = builder
+          .comment("尸潮总波数")
+          .defineInRange("hordeWaveCount", 5, 1, 20);
+      this.hordeWaveIntervalTicks = builder
+          .comment("每波之间的间隔（tick，20 tick = 1 秒）")
+          .defineInRange("hordeWaveIntervalTicks", 2400, 40, 24000);
+      this.hordeSpawnPerWave = builder
+          .comment("尸潮每波在玩家周围生成的僵尸数量")
+          .defineInRange("hordeSpawnPerWave", 6, 1, 100);
+      this.hordeMaxZombiesNear = builder
+          .comment("尸潮时玩家周围允许存在的最大僵尸数量（防止卡顿）")
+          .defineInRange("hordeMaxZombiesNear", 60, 1, 500);
+      this.hordeInitialWaveDelayTicks = builder
+          .comment("尸潮第一波生成的延迟（tick）")
+          .defineInRange("hordeInitialWaveDelayTicks", 200, 0, 12000);
       this.killFeedEnabled = builder
           .comment("在左上角显示击杀信息（玩家用什么武器击杀了什么）")
           .define("killFeedEnabled", true);

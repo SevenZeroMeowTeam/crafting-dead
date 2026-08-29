@@ -169,6 +169,34 @@ public final class ApocalypseManager {
   }
 
   /**
+   * 当前是否属于尸潮触发日（每隔 {@code hordeIntervalDays} 天的第 {@code hordeDayOffset} 天）。
+   *
+   * <p>尸潮与月亮事件相互独立，由 {@link com.craftingdead.survival.world.MoonEventHandler}
+   * 在夜间触发。默认 14 天一次，与血月同夜。</p>
+   */
+  public static boolean isHordeDay(Level level) {
+    var config = CraftingDeadSurvival.serverConfig;
+    int interval = config.hordeIntervalDays.get();
+    int offset = config.hordeDayOffset.get();
+    return Math.floorMod(getDay(level), interval) == offset % interval;
+  }
+
+  /**
+   * 当前是否处于尸潮触发日且为夜晚。
+   */
+  public static boolean isHordeNight(Level level) {
+    return level.isNight() && isHordeDay(level);
+  }
+
+  /**
+   * 距离下一次日出（天亮）剩余的 tick 数。仅在夜间有意义。
+   */
+  public static int getTicksUntilDawn(Level level) {
+    long timeOfDay = Math.floorMod(level.getDayTime(), 24000L);
+    return (int) (24000L - timeOfDay);
+  }
+
+  /**
    * 返回当前月相的中文名称（0-7）。
    */
   public static String getMoonPhaseName(int phase) {

@@ -88,6 +88,19 @@ public class MoonEventHandler {
   private final List<String> lastScoreboardRows = new ArrayList<>();
 
   // ================================================================================
+  // 尸潮状态（服务端）
+  // ================================================================================
+
+  /** 尸潮是否正在进行。 */
+  private boolean hordeActive;
+  /** 当前尸潮波数（0 = 未开始，1..N = 第几波）。 */
+  private int hordeCurrentWave;
+  /** 下一波生成的服务器 tick。 */
+  private long hordeNextWaveTick;
+  /** 本次尸潮绑定的天数（避免同一天重复触发）。 */
+  private long hordeBoundDay = -1L;
+
+  // ================================================================================
   // Server Tick：计分板 / 数据同步 / 蓝月幸运 / 血月生成
   // ================================================================================
 
@@ -111,11 +124,12 @@ public class MoonEventHandler {
     }
     if (CraftingDeadSurvival.serverConfig.moonEventsEnabled.get()) {
       if (ApocalypseManager.isBlueMoon(level)) {
-        this.applyBlueMoonLuck(server, level);
+        this.handleBlueMoon(server, level);
       }
       if (ApocalypseManager.isBloodMoon(level)) {
         this.bloodMoonTick(server, level);
       }
+      this.hordeTick(server, level);
     }
   }
 
@@ -128,7 +142,8 @@ public class MoonEventHandler {
             ApocalypseManager.getMoonPhase(level),
             ApocalypseManager.getEvolutionTier(level),
             ApocalypseManager.getMoonEvent(level),
-            ApocalypseManager.isMoonEventActive(level)));
+            ApocalypseManager.isMoonEventActive(level),
+            this.hordeCurrentWave));
   }
 
   // ================================================================================
@@ -171,7 +186,11 @@ public class MoonEventHandler {
         "§f 今日: " + eventColor(event) + event.getDisplayName(), 3);
     addRow(scoreboard, objective,
         "§f 状态: " + (active ? "§c● 进行中" : "§7○ 未发生"), 2);
-    addRow(scoreboard, objective, "§f 进化: §eLV." + tier, 1);
+    if (this.hordeActive && this.hordeCurrentWave > 0) {
+      addRow(scoreboard, objective,
+          "§f 尸潮: §c第 " + this.hordeCurrentWave + " 波", 1);
+    }
+    addRow(scoreboard, objective, "§f 进化: §eLV." + tier, 0);
   }
 
   private void addRow(Scoreboard scoreboard, Objective objective, String text, int score) {
@@ -201,20 +220,33 @@ public class MoonEventHandler {
   // 蓝月：幸运效果
   // ================================================================================
 
-  private void applyBlueMoonLuck(MinecraftServer server, ServerLevel level) {
+  private void handleBlueMoon(MinecraftServer server, ServerLevel level) {
+    // 天亮则清除幸运，结束「直到天亮」的效果
+    if (!level.isNight()) {
+      this.clearBlueMoonLuck(server, level);
+      return;
+    }
     var config = CraftingDeadSurvival.serverConfig;
     // 超级蓝月：幸运等级 +1（更强）
     int amplifier = config.blueMoonLuckAmplifier.get()
         + (ApocalypseManager.isSuperBlueMoon(level) ? 1 : 0);
-    // 超级蓝月：持续时长加倍
-    int duration = ApocalypseManager.isSuperBlueMoon(level) ? 2400 : 1200;
+    // 持续时长覆盖到天亮（刷新期间避免断档）
+    int duration = Math.max(2400, ApocalypseManager.getTicksUntilDawn(level));
     for (ServerPlayer player : server.getPlayerList().getPlayers()) {
       if (player.level().dimension() != Level.OVERWORLD) {
         continue;
       }
       var instance = player.getEffect(MobEffects.LUCK);
-      if (instance == null || instance.getDuration() < 600) {
+      if (instance == null || instance.getDuration() < 1200) {
         player.addEffect(new MobEffectInstance(MobEffects.LUCK, duration, amplifier, false, false));
+      }
+    }
+  }
+
+  private void clearBlueMoonLuck(MinecraftServer server, ServerLevel level) {
+    for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+      if (player.level().dimension() == Level.OVERWORLD) {
+        player.removeEffect(MobEffects.LUCK);
       }
     }
   }
@@ -293,6 +325,164 @@ public class MoonEventHandler {
   }
 
   // ================================================================================
+  // 尸潮：每隔 HORDE_INTERVAL_DAYS 天（默认 14）在夜间触发，共 N 波，每波敌人不同
+  // ================================================================================
+
+  private void hordeTick(MinecraftServer server, ServerLevel level) {
+    var config = CraftingDeadSurvival.serverConfig;
+    if (!config.hordeEnabled.get()) {
+      return;
+    }
+    long day = ApocalypseManager.getDay(level);
+    if (!this.hordeActive) {
+      // 尸潮触发日夜间开始
+      if (ApocalypseManager.isHordeNight(level) && this.hordeBoundDay != day) {
+        this.startHorde(server, level, day);
+      }
+      return;
+    }
+    // 天亮结束尸潮
+    if (!level.isNight()) {
+      this.endHorde(server, level);
+      return;
+    }
+    // 到达下一波生成时间
+    if (server.getTickCount() >= this.hordeNextWaveTick) {
+      if (this.hordeCurrentWave >= config.hordeWaveCount.get()) {
+        // 所有波次已放完，等待天亮结束
+        return;
+      }
+      this.hordeCurrentWave++;
+      int count = config.hordeSpawnPerWave.get();
+      boolean spawned = false;
+      for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+        if (player.level().dimension() != Level.OVERWORLD) {
+          continue;
+        }
+        int near = level.getEntitiesOfClass(Zombie.class,
+            player.getBoundingBox().inflate(48.0D)).size();
+        if (near >= config.hordeMaxZombiesNear.get()) {
+          continue;
+        }
+        int amount = Math.min(count, config.hordeMaxZombiesNear.get() - near);
+        for (int i = 0; i < amount; i++) {
+          if (this.trySpawnHordeZombie(level, player, this.hordeCurrentWave)) {
+            spawned = true;
+          }
+        }
+      }
+      if (spawned || this.hordeCurrentWave == 1) {
+        this.broadcastHordeWave(server, this.hordeCurrentWave);
+      }
+      this.hordeNextWaveTick = server.getTickCount() + config.hordeWaveIntervalTicks.get();
+    }
+  }
+
+  private void startHorde(MinecraftServer server, ServerLevel level, long day) {
+    var config = CraftingDeadSurvival.serverConfig;
+    this.hordeActive = true;
+    this.hordeCurrentWave = 0;
+    this.hordeBoundDay = day;
+    this.hordeNextWaveTick = server.getTickCount() + config.hordeInitialWaveDelayTicks.get();
+    for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+      player.displayClientMessage(Component.literal("§4☠ 尸潮来袭！夜幕降临，共 "
+          + config.hordeWaveCount.get() + " 波敌人…"), true);
+    }
+  }
+
+  private void endHorde(MinecraftServer server, ServerLevel level) {
+    if (!this.hordeActive) {
+      return;
+    }
+    this.hordeActive = false;
+    this.hordeCurrentWave = 0;
+    this.hordeNextWaveTick = 0L;
+    for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+      player.displayClientMessage(Component.literal("§f尸潮退去，黎明到来。"), true);
+    }
+  }
+
+  private void broadcastHordeWave(MinecraftServer server, int wave) {
+    var config = CraftingDeadSurvival.serverConfig;
+    int total = config.hordeWaveCount.get();
+    for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+      player.displayClientMessage(
+          Component.literal("§6☠ 尸潮 §c第 " + wave + " / " + total + " 波§6 来袭！"),
+          true);
+    }
+  }
+
+  private boolean trySpawnHordeZombie(ServerLevel level, Player player, int wave) {
+    var random = level.random;
+    double angle = random.nextDouble() * Math.PI * 2.0D;
+    double dist = 28.0D + random.nextDouble() * 22.0D;
+    int x = player.getBlockX() + (int) (Math.cos(angle) * dist);
+    int z = player.getBlockZ() + (int) (Math.sin(angle) * dist);
+    BlockPos ground = findGroundPos(level, new BlockPos(x, player.getBlockY(), z));
+    if (ground == null) {
+      return false;
+    }
+    EntityType<? extends Zombie> type = pickHordeZombieType(level.random, wave);
+    var zombie = type.create(level);
+    if (zombie != null) {
+      zombie.moveTo(ground.getX() + 0.5D, ground.getY(), ground.getZ() + 0.5D,
+          random.nextFloat() * 360.0F, 0.0F);
+      Mob mob = (Mob) zombie;
+      mob.finalizeSpawn(level, level.getCurrentDifficultyAt(ground),
+          MobSpawnType.EVENT, null, null);
+      mob.setPersistenceRequired();
+      level.addFreshEntity(zombie);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 根据波数返回该波会出现的僵尸类型（每波敌人不同）：
+   * <ul>
+   *   <li>第 1 波：普通 + 弱 + 快僵尸</li>
+   *   <li>第 2 波：警察 + 士兵 + 侦察</li>
+   *   <li>第 3 波：坦克 + 医生 + 矿工</li>
+   *   <li>第 4 波：狙击 + 飞行员 + 忍者 + SWAT</li>
+   *   <li>第 5 波（最终）：巨人 + 重装 + 阿尔法 + 赏金猎人 + 沙漠掠夺者</li>
+   * </ul>
+   */
+  private static EntityType<? extends Zombie> pickHordeZombieType(
+      net.minecraft.util.RandomSource random, int wave) {
+    return switch (Math.max(1, wave)) {
+      case 1 -> pick(random, new EntityType<?>[]{
+          SurvivalEntityTypes.FAST_ZOMBIE.get(),
+          SurvivalEntityTypes.WEAK_ZOMBIE.get(),
+          EntityType.ZOMBIE});
+      case 2 -> pick(random, new EntityType<?>[]{
+          SurvivalEntityTypes.POLICE_ZOMBIE.get(),
+          SurvivalEntityTypes.SOLDIER_ZOMBIE.get(),
+          SurvivalEntityTypes.SCOUT_ZOMBIE.get()});
+      case 3 -> pick(random, new EntityType<?>[]{
+          SurvivalEntityTypes.TANK_ZOMBIE.get(),
+          SurvivalEntityTypes.DOCTOR_ZOMBIE.get(),
+          SurvivalEntityTypes.MINER_ZOMBIE.get()});
+      case 4 -> pick(random, new EntityType<?>[]{
+          SurvivalEntityTypes.SNIPER_ZOMBIE.get(),
+          SurvivalEntityTypes.PILOT_ZOMBIE.get(),
+          SurvivalEntityTypes.NINJA_ZOMBIE.get(),
+          SurvivalEntityTypes.SWAT_ZOMBIE.get()});
+      default -> pick(random, new EntityType<?>[]{
+          SurvivalEntityTypes.GIANT_ZOMBIE.get(),
+          SurvivalEntityTypes.JUGGERNAUT_ZOMBIE.get(),
+          SurvivalEntityTypes.ALFA_ZOMBIE.get(),
+          SurvivalEntityTypes.BOUNTY_HUNTER_ZOMBIE.get(),
+          SurvivalEntityTypes.DESERT_RAIDER_ZOMBIE.get()});
+    };
+  }
+
+  @SuppressWarnings("unchecked")
+  private static EntityType<? extends Zombie> pick(net.minecraft.util.RandomSource random,
+      EntityType<?>[] types) {
+    return (EntityType<? extends Zombie>) types[random.nextInt(types.length)];
+  }
+
+  // ================================================================================
   // 血月：禁止苦力怕 / 蜘蛛 / 洞穴蜘蛛 / 女巫生成
   // ================================================================================
 
@@ -338,7 +528,9 @@ public class MoonEventHandler {
       return;
     }
     if (!(event.getLevel() instanceof ServerLevel serverLevel)
-        || !ApocalypseManager.isYellowMoon(serverLevel)) {
+        || !ApocalypseManager.isYellowMoon(serverLevel)
+        // 黄月只在夜间（直到天亮）加速作物生长
+        || !serverLevel.isNight()) {
       return;
     }
     double chance = CraftingDeadSurvival.serverConfig.yellowMoonGrowthBoostChance.get();
