@@ -28,7 +28,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
  * 服务端 → 客户端的月亮 / 天数同步消息。
  */
 public record SyncMoonDataMessage(int day, int timeOfDay, int moonPhase, int evolutionTier,
-    MoonEventType eventType, boolean active) {
+    MoonEventType eventType, boolean active, int hordeWave) {
 
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.day);
@@ -37,6 +37,7 @@ public record SyncMoonDataMessage(int day, int timeOfDay, int moonPhase, int evo
     out.writeVarInt(this.evolutionTier);
     out.writeEnum(this.eventType);
     out.writeBoolean(this.active);
+    out.writeVarInt(this.hordeWave);
   }
 
   public static SyncMoonDataMessage decode(FriendlyByteBuf in) {
@@ -46,7 +47,8 @@ public record SyncMoonDataMessage(int day, int timeOfDay, int moonPhase, int evo
         in.readVarInt(),
         in.readVarInt(),
         in.readEnum(MoonEventType.class),
-        in.readBoolean());
+        in.readBoolean(),
+        in.readVarInt());
   }
 
   public static void handle(SyncMoonDataMessage msg, CustomPayloadEvent.Context ctx) {
