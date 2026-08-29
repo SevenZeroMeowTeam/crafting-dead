@@ -41,10 +41,23 @@ public final class ApocalypseManager {
   private ApocalypseManager() {}
 
   /**
-   * 获取当前世界天数（从世界创建时开始计算）。
+   * 获取当前世界天数（第 1 天 = 世界创建后的第一个 24000 tick，自 6:00 AM 起算）。
+   *
+   * <p>使用 1 起始计数，使计分板「天数」与实际第 N 天一致（首日即「天数: 1」），
+   * 并与 {@link #getTimeOfDay(Level)} 的 0-23999 时间周期保持同步。</p>
    */
   public static int getDay(Level level) {
-    return (int) (level.getDayTime() / 24000L);
+    return (int) (level.getDayTime() / 24000L) + 1;
+  }
+
+  /**
+   * 获取当前昼夜时间（0-23999，其中 0 = 6:00 AM，6000 = 正午，12000 = 18:00，18000 = 午夜）。
+   *
+   * <p>使用 {@link Math#floorMod} 归一化，避免 {@code getDayTime()} 为负数时
+   * （例如某些非主世界维度）得到负的时间值，造成计分板显示错误的小时数。</p>
+   */
+  public static int getTimeOfDay(Level level) {
+    return (int) Math.floorMod(level.getDayTime(), 24000L);
   }
 
   /**

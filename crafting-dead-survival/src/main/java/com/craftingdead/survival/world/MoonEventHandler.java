@@ -118,8 +118,9 @@ public class MoonEventHandler {
     if (server.getTickCount() % 20 != 0) {
       return;
     }
+    // 计分板是服务端共享对象：每个周期只重建一次，避免对每个玩家重复重置造成的闪烁/跳变。
+    this.updateScoreboard(server, level);
     for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-      this.updateScoreboard(player, level);
       this.sendMoonData(player, level);
     }
     if (CraftingDeadSurvival.serverConfig.moonEventsEnabled.get()) {
@@ -138,7 +139,7 @@ public class MoonEventHandler {
         PacketDistributor.PLAYER.with(() -> player),
         new SyncMoonDataMessage(
             ApocalypseManager.getDay(level),
-            (int) (level.getDayTime() % 24000L),
+            ApocalypseManager.getTimeOfDay(level),
             ApocalypseManager.getMoonPhase(level),
             ApocalypseManager.getEvolutionTier(level),
             ApocalypseManager.getMoonEvent(level),
@@ -150,11 +151,11 @@ public class MoonEventHandler {
   // 计分板
   // ================================================================================
 
-  private void updateScoreboard(ServerPlayer player, ServerLevel level) {
+  private void updateScoreboard(MinecraftServer server, ServerLevel level) {
     if (!CraftingDeadSurvival.serverConfig.scoreboardEnabled.get()) {
       return;
     }
-    Scoreboard scoreboard = player.getScoreboard();
+    Scoreboard scoreboard = server.getScoreboard();
     Objective objective = scoreboard.getObjective(SCOREBOARD_OBJECTIVE);
     if (objective == null) {
       objective = scoreboard.addObjective(SCOREBOARD_OBJECTIVE, ObjectiveCriteria.DUMMY,
@@ -169,7 +170,7 @@ public class MoonEventHandler {
     this.lastScoreboardRows.clear();
 
     int day = ApocalypseManager.getDay(level);
-    int timeOfDay = (int) (level.getDayTime() % 24000L);
+    int timeOfDay = ApocalypseManager.getTimeOfDay(level);
     MoonEventType event = ApocalypseManager.getMoonEvent(level);
     boolean active = ApocalypseManager.isMoonEventActive(level);
     int tier = ApocalypseManager.getEvolutionTier(level);
@@ -645,8 +646,10 @@ public class MoonEventHandler {
   @SubscribeEvent
   public void handlePlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
     if (event.getEntity() instanceof ServerPlayer player) {
-      ServerLevel level = player.serverLevel();
-      this.updateScoreboard(player, level);
+      MinecraftServer server = player.server;
+      // 无论玩家在哪个维度，计分板始终用主世界的时间/天数，避免下界/末地冻结时间导致时间卡住、天数为 0。
+      ServerLevel level = server.overworld();
+      this.updateScoreboard(server, level);
       this.sendMoonData(player, level);
     }
   }
