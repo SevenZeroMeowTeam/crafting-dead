@@ -25,11 +25,11 @@
 
 **新功能：一键整理（容器 + 玩家背包）**
 
-- 在背包 / 背心 / 枪袋等容器界面的返回按钮左侧新增「整理」图标按钮
+- 在背包 / 背心 / 枪袋等容器界面的返回按钮左侧，以及**装备界面（主物品栏）**合成区右上角新增「整理」图标按钮
 - 点击后服务端执行整理：**合并同类可堆叠物品**（同物品同组件堆叠到上限），再**按物品名称排序**堆放
 - 同时整理容器内容与玩家下方 36 格背包（不影响盔甲与副手）；整理尊重容器槽位校验
   （背心不会放入枪械 / 储物类物品）
-- 涉及：`InventorySorter`、`SortInventoryMessage`、`GenericContainerScreen`、新图标 `sort_button.png`
+- 涉及：`InventorySorter`、`SortInventoryMessage`、`GenericContainerScreen`、`EquipmentScreen`、新图标 `sort_button.png`
 
 **新功能：WTHIT 兼容（自动隐藏内置目标信息叠加层）**
 

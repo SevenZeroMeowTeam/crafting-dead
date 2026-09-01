@@ -26,6 +26,7 @@ import com.craftingdead.core.client.gui.widget.button.CompositeButton;
 import com.craftingdead.core.network.NetworkChannel;
 import com.craftingdead.core.network.message.play.OpenCraftingMenuMessage;
 import com.craftingdead.core.network.message.play.OpenStorageMessage;
+import com.craftingdead.core.network.message.play.SortInventoryMessage;
 import com.craftingdead.core.world.inventory.EquipmentMenu;
 import com.craftingdead.core.world.item.ModItems;
 import com.craftingdead.core.world.item.equipment.Equipment;
@@ -49,11 +50,15 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
   private static final ResourceLocation BACKGROUND =
       ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/container/equipment.png");
 
+  private static final ResourceLocation SORT_BUTTON_TEXTURE =
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/sort_button.png");
+
   private int oldMouseX;
   private int oldMouseY;
 
   private Button backpackButton;
   private Button vestButton;
+  private Button sortButton;
 
   private boolean transitioning = false;
 
@@ -84,12 +89,27 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
           this.transitioning = true;
         }).build();
     this.addRenderableWidget(this.backpackButton);
+
+    // 一键整理按钮：整理玩家下方 36 格背包（合成区右上角）
+    this.sortButton = CompositeButton.button(this.leftPos + 155, this.topPos + 6, 12, 16,
+            SORT_BUTTON_TEXTURE)
+        .setAtlasPos(0, 0)
+        .setHoverAtlasPos(0, 16)
+        .setInactiveAtlasPos(0, 32)
+        .setAction((button) -> PacketDistributor.sendToServer(new SortInventoryMessage()))
+        .build();
+    this.addRenderableWidget(this.sortButton);
+
     this.refreshButtonStatus();
   }
 
   @Override
   public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
     super.render(guiGraphics, mouseX, mouseY, partialTicks);
+    if (this.sortButton != null && this.sortButton.isHoveredOrFocused()) {
+      guiGraphics.renderTooltip(this.font, Component.translatable("gui.craftingdead.sort"),
+          mouseX, mouseY);
+    }
     this.renderTooltip(guiGraphics, mouseX, mouseY);
     this.oldMouseX = mouseX;
     this.oldMouseY = mouseY;
