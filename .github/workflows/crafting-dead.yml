@@ -12,6 +12,8 @@ permissions:
 
 jobs:
   build:
+    # 提交信息含 [skip ci] / [ci skip] 时跳过本次构建（用于纯文档改动，如 README）
+    if: "!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]')"
     runs-on: ubuntu-latest
 
     steps:
