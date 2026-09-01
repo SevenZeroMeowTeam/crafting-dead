@@ -21,24 +21,33 @@ package com.craftingdead.core.mixin;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Defensive fix for crashes caused by mods that register a BucketItem whose
- * {@code getFluid()} returns null (e.g. when the Thirst mod renders fluid
- * containers in the creative inventory). A null fluid makes Forge's
- * FluidStack constructor throw IllegalArgumentException and crashes the game.
+ * Defensive fix for crashes caused by mods that register a BucketItem with a null
+ * fluid. Since 1.21 {@link BucketItem} no longer exposes {@code getFluid()}; the fluid
+ * is stored in the public final {@code content} field. A null {@code content} makes
+ * callers such as the fluid stack constructors throw IllegalArgumentException and
+ * crashes the game (e.g. when the Thirst mod renders fluid containers in the creative
+ * inventory). This mixin replaces a null {@code content} with {@link Fluids#EMPTY}
+ * right after the constructor runs.
  */
 @Mixin(BucketItem.class)
 public abstract class BucketItemMixin {
 
-  @Inject(method = "getFluid", at = @At("RETURN"), cancellable = true, remap = false)
-  private void craftingdead$ensureNonNullFluid(CallbackInfoReturnable<Fluid> cir) {
-    if (cir.getReturnValue() == null) {
-      cir.setReturnValue(Fluids.EMPTY);
+  @Shadow
+  @Final
+  private Fluid content;
+
+  @Inject(method = "<init>", at = @At("TAIL"), remap = false)
+  private void craftingdead$ensureNonNullFluid(CallbackInfo ci) {
+    if (this.content == null) {
+      this.content = Fluids.EMPTY;
     }
   }
 }
