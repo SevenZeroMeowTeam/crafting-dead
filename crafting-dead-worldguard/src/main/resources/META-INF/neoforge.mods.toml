@@ -1,0 +1,46 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "GPL v3.0"
+issueTrackerURL = "https://github.com/SevenZeroMeowTeam/crafting-dead/issues"
+
+[[mods]]
+modId = "craftingdeadworldguard"
+version = "${file.jarVersion}"
+displayName = "Crafting Dead WorldGuard"
+displayURL = "https://github.com/SevenZeroMeowTeam/crafting-dead"
+authors = "Sm0keySa1m0n, Arzio"
+credits = "SevenZeroMeowTeam"
+description = '''
+    WorldGuard region flags for Crafting Dead (infection / broken-legs / bleeding /
+    thirst / shooting / grenade-throwing / clear-equipment-on-exit).
+    Only active on hybrid servers (Arclight / Mohist) that provide both NeoForge
+    and Bukkit WorldGuard; disabled gracefully on pure NeoForge environments.
+    '''
+
+[[dependencies.craftingdeadworldguard]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.0,22)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.craftingdeadworldguard]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21,1.22)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.craftingdeadworldguard]]
+modId = "craftingdead"
+type = "required"
+versionRange = "[1.21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.craftingdeadworldguard]]
+modId = "craftingdeadsurvival"
+type = "required"
+versionRange = "[1.21.1,)"
+ordering = "NONE"
+side = "BOTH"
