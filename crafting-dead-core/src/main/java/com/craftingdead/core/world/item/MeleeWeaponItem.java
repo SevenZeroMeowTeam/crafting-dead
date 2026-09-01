@@ -39,9 +39,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
 
 public class MeleeWeaponItem extends ToolItem {
 
@@ -65,11 +62,8 @@ public class MeleeWeaponItem extends ToolItem {
   }
 
   @Override
-  public ItemAttributeModifiers getAttributeModifiers(
-      EquipmentSlot equipmentSlot, ItemStack itemStack) {
-    return equipmentSlot == EquipmentSlot.MAINHAND
-        ? this.attributeModifiers
-        : super.getAttributeModifiers(equipmentSlot, itemStack);
+  public ItemAttributeModifiers getDefaultAttributeModifiers() {
+    return this.attributeModifiers;
   }
 
   @Override
@@ -86,25 +80,5 @@ public class MeleeWeaponItem extends ToolItem {
         .withStyle(style -> style.withColor(ChatFormatting.GRAY)));
   }
 
-  @Override
-  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
-    var combatSlotProvider = LazyOptional.of(() -> CombatSlot.MELEE);
-    var equipment = LazyOptional.of(() -> Equipment.forSlot(Equipment.Slot.MELEE));
-    return new ICapabilityProvider() {
-
-      @Override
-      public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap,
-          Direction side) {
-        if (cap == CombatSlotProvider.CAPABILITY) {
-          return combatSlotProvider.cast();
-        }
-
-        if (cap == Equipment.CAPABILITY) {
-          return equipment.cast();
-        }
-
-        return LazyOptional.empty();
-      }
-    };
-  }
+  
 }

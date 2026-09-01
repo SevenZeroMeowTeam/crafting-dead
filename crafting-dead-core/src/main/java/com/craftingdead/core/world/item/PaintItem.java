@@ -23,7 +23,6 @@ import java.util.Objects;
 import java.util.OptionalInt;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.Nullable;
-import com.craftingdead.core.capability.CapabilityUtil;
 import com.craftingdead.core.world.item.gun.skin.Paint;
 import com.craftingdead.core.world.item.gun.skin.Skin;
 import com.craftingdead.core.world.item.gun.skin.Skins;
@@ -36,8 +35,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 
 public class PaintItem extends Item {
 
@@ -56,14 +55,9 @@ public class PaintItem extends Item {
     this.skin = skin;
   }
 
-  @Override
-  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
-    return CapabilityUtil.provider(() -> Paint.of(this.skin, this.multipaint
-            ? OptionalInt.of(
-            DyeColor.values()[ThreadLocalRandom.current().nextInt(DyeColor.values().length)]
-                .getTextColor())
-            : OptionalInt.empty()),
-        Paint.CAPABILITY);
+  @Nullable
+  public ResourceKey<Skin> getSkin() {
+    return this.skin;
   }
 
   @Override
@@ -78,7 +72,7 @@ public class PaintItem extends Item {
     lines.add(Component.translatable("paint.accepted_guns")
         .withStyle(ChatFormatting.GRAY));
     skins.stream()
-        .map(ForgeRegistries.ITEMS::getValue)
+        .map(BuiltInRegistries.ITEM::get)
         .filter(Objects::nonNull)
         .map(Item::getDescription)
         .map(text -> text.copy().withStyle(ChatFormatting.RED))

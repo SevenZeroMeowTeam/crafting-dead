@@ -37,7 +37,6 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.craftingdead.core.capability.CapabilityUtil;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.core.world.item.equipment.SimpleClothing;
 import com.google.common.collect.ImmutableMultimap;
@@ -53,8 +52,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 
 public class ClothingItem extends EquipmentItem {
 
@@ -92,6 +91,18 @@ public class ClothingItem extends EquipmentItem {
     return this.clothingType;
   }
 
+  public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers() {
+    return this.attributeModifiers;
+  }
+
+  public boolean isFireImmune() {
+    return this.fireImmunity;
+  }
+
+  public boolean enhancesSwimming() {
+    return this.enhancesSwimming;
+  }
+
   @Override
   public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext world, List<Component> lines, TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, world, lines, tooltipFlag);
@@ -118,16 +129,7 @@ public class ClothingItem extends EquipmentItem {
     }
   }
 
-  @Override
-  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
-    return CapabilityUtil.provider(
-        () -> new SimpleClothing(this.attributeModifiers, this.fireImmunity, this.enhancesSwimming,
-            ResourceLocation.fromNamespaceAndPath(
-                Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this)).getNamespace(),
-                "textures/clothing/"
-                    + Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this)).getPath() + "_" + "default" + ".png")),
-        Equipment.CAPABILITY);
-  }
+  
 
   @Override
   public @NotNull InteractionResult useOn(UseOnContext context) {

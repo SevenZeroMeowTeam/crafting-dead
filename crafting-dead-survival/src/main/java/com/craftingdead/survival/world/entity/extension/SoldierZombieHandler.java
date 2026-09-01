@@ -45,7 +45,9 @@ public class SoldierZombieHandler extends ZombieHandler {
   protected ItemStack createHeldItem() {
     var random = new Random();
     var gunStack = ModItems.SCARL.get().getDefaultInstance().copy();
-    gunStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> {
+    var gun = gunStack.getCapability(Gun.CAPABILITY);
+if (gun != null) {
+
       var magazineStack = ModItems.STANAG_30_ROUND_MAGAZINE.get().getDefaultInstance();
       gun.setAmmoProvider(new RefillableAmmoProvider(magazineStack, 2, false));
       Map<GunCraftSlotType, Supplier<Attachment>> possibleAttachments = Map.of(
@@ -59,7 +61,8 @@ public class SoldierZombieHandler extends ZombieHandler {
         }
       }
       gun.setAttachments(attachments);
-    });
+    
+}
     return gunStack;
   }
 

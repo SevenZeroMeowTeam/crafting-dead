@@ -65,7 +65,10 @@ public class MagazineAmmoProvider implements AmmoProvider {
     } else {
       out.writeBoolean(false);
     }
-    this.getMagazine().ifPresent(magazine -> magazine.encode(out, writeAll));
+    var magazine = this.getMagazine();
+    if (magazine != null) {
+      magazine.encode(out, writeAll);
+    }
   }
 
   @Override
@@ -73,12 +76,16 @@ public class MagazineAmmoProvider implements AmmoProvider {
     if (in.readBoolean()) {
       this.magazineStack = ItemStack.OPTIONAL_STREAM_CODEC.decode((RegistryFriendlyByteBuf) in);
     }
-    this.getMagazine().ifPresent(magazine -> magazine.decode(in));
+    var magazine = this.getMagazine();
+    if (magazine != null) {
+      magazine.decode(in);
+    }
   }
 
   @Override
   public boolean requiresSync() {
-    return this.getMagazine().map(Magazine::requiresSync).orElse(false) || this.stackChanged;
+    var magazine = this.getMagazine();
+    return (magazine != null && magazine.requiresSync()) || this.stackChanged;
   }
 
   @Override

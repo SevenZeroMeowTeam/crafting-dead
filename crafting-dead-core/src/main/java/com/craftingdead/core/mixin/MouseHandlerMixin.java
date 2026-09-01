@@ -35,10 +35,13 @@ public class MouseHandlerMixin {
       method = "turnPlayer")
   public boolean isScoping(LocalPlayer player) {
     var vanillaScoping = player.isUsingItem() && player.getUseItem().is(Items.SPYGLASS);
-    return vanillaScoping || player.getCapability(LivingExtension.CAPABILITY)
-        .resolve()
-        .flatMap(living -> player.getMainHandItem().getCapability(Scope.CAPABILITY)
-            .map(scope -> scope.isScoping(living) && scope.shouldReduceMouseSensitivity(living)))
-        .orElse(false);
+    var living = player.getCapability(LivingExtension.CAPABILITY);
+    if (living != null) {
+      var scope = player.getMainHandItem().getCapability(Scope.CAPABILITY);
+      if (scope != null && scope.isScoping(living) && scope.shouldReduceMouseSensitivity(living)) {
+        return true;
+      }
+    }
+    return vanillaScoping;
   }
 }

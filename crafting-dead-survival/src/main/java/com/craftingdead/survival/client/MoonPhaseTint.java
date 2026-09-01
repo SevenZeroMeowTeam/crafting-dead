@@ -19,8 +19,8 @@
 package com.craftingdead.survival.client;
 
 import com.craftingdead.survival.world.moon.ApocalypseManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import software.bernie.geckolib.util.Color;
 
 /**

@@ -101,32 +101,36 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.data.ForgeBlockTagsProvider;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.data.internal.NeoForgeBlockTagsProvider;
 // RegistryEvent was removed in 1.19+
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.entity.living.LivingPackSizeEvent;
-import net.minecraftforge.event.entity.living.MobSpawnEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 // NOTE: BiomeLoadingEvent was removed in 1.19.4+. Zombie spawn modification
 // needs to be reimplemented via data-driven BiomeModifier JSON files.
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.loading.JarVersionLookupHandler;
-import net.minecraftforge.data.event.GatherDataEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 @Mod(CraftingDeadSurvival.ID)
 public class CraftingDeadSurvival {
 
   public static final String ID = "craftingdeadsurvival";
-  public static final String VERSION = JarVersionLookupHandler
-      .getImplementationVersion(CraftingDeadSurvival.class)
+  public static final String VERSION = ModList.get()
+      .getModContainerById(ID)
+      .map(container -> container.getModInfo().getVersion().toString())
       .orElse("[version]");
 
   private static final String H_CD_SERVER_CORE_ID = "hcdservercore";
@@ -134,10 +138,10 @@ public class CraftingDeadSurvival {
   private static final Logger logger = LogUtils.getLogger();
 
   public static final ServerConfig serverConfig;
-  public static final ForgeConfigSpec serverConfigSpec;
+  public static final ModConfigSpec serverConfigSpec;
 
   static {
-    var pair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
+    var pair = new ModConfigSpec.Builder().configure(ServerConfig::new);
     serverConfigSpec = pair.getRight();
     serverConfig = pair.getLeft();
   }
@@ -148,13 +152,11 @@ public class CraftingDeadSurvival {
 
   private final boolean immerseLoaded = ModList.get().isLoaded("craftingdeadimmerse");
 
-  public CraftingDeadSurvival(FMLJavaModLoadingContext context) {
+  public CraftingDeadSurvival(IEventBus modEventBus) {
     instance = this;
 
-    final var modEventBus = context.getModEventBus();
-
     if (FMLEnvironment.dist.isClient()) {
-      this.modDist = new ClientDist(context);
+      this.modDist = new ClientDist(modEventBus);
     } else {
       this.modDist = new ServerDist();
     }
@@ -163,15 +165,16 @@ public class CraftingDeadSurvival {
     modEventBus.addListener(this::handleEntityAttributeCreation);
     modEventBus.addListener(this::handleGatherData);
     modEventBus.addListener(this::handleSpawnPlacementRegister);
+    modEventBus.addListener(this::handleRegisterPayloads);
 
-    context.registerConfig(ModConfig.Type.SERVER, serverConfigSpec);
+    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.SERVER, serverConfigSpec);
 
-    MinecraftForge.EVENT_BUS.register(this);
-    MinecraftForge.EVENT_BUS.register(new MoonEventHandler());
+    NeoForge.EVENT_BUS.register(this);
+    NeoForge.EVENT_BUS.register(new MoonEventHandler());
     // /moon 手动切换月相 / 事件命令
-    MinecraftForge.EVENT_BUS.register(MoonCommand.class);
+    NeoForge.EVENT_BUS.register(MoonCommand.class);
     // 部位伤害/断肢系统：注册静态 @SubscribeEvent（TaCZ 枪命中处理）
-    MinecraftForge.EVENT_BUS.register(BodyPartHandler.class);
+    NeoForge.EVENT_BUS.register(BodyPartHandler.class);
 
     SurvivalActionTypes.deferredRegister.register(modEventBus);
     SurvivalItems.deferredRegister.register(modEventBus);
@@ -200,7 +203,6 @@ public class CraftingDeadSurvival {
   // ================================================================================
 
   private void handleCommonSetup(FMLCommonSetupEvent event) {
-    SurvivalNetworkChannel.loadChannels();
     // TelemetryManager.initialize(ID, VERSION, Optional::empty, scope -> {
     //   scope.setTag("survival.version", VERSION);
     //   scope.setTag("survival.immerseLoaded", String.valueOf(this.isImmerseLoaded()));
@@ -208,17 +210,35 @@ public class CraftingDeadSurvival {
     // Sentry telemetry disabled - dependency not bundled
   }
 
-  @SubscribeEvent
-  public void handleBrewingRecipeRegister(net.minecraftforge.event.brewing.BrewingRecipeRegisterEvent event) {
-    event.addRecipe(new net.minecraftforge.common.brewing.BrewingRecipe(
-        Ingredient.of(ModItems.SYRINGE.get()),
-        Ingredient.of(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE),
-        new ItemStack(SurvivalItems.CURE_SYRINGE.get())));
+  private void handleRegisterPayloads(RegisterPayloadHandlersEvent event) {
+    SurvivalNetworkChannel.register(event);
   }
 
-  private void handleSpawnPlacementRegister(
-      net.minecraftforge.event.entity.SpawnPlacementRegisterEvent event) {
-    var operation = net.minecraftforge.event.entity.SpawnPlacementRegisterEvent.Operation.REPLACE;
+  @SubscribeEvent
+  public void handleBrewingRecipeRegister(RegisterBrewingRecipesEvent event) {
+    final ItemStack syringe = ModItems.SYRINGE.get().getDefaultInstance();
+    final ItemStack cure = SurvivalItems.CURE_SYRINGE.get().getDefaultInstance();
+    final Ingredient goldenApple = Ingredient.of(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
+    event.getBuilder().addRecipe(new net.neoforged.neoforge.common.brewing.IBrewingRecipe() {
+      @Override
+      public boolean isInput(ItemStack input) {
+        return ItemStack.isSameItemSameComponents(input, syringe);
+      }
+
+      @Override
+      public boolean isIngredient(ItemStack ingredient) {
+        return goldenApple.test(ingredient);
+      }
+
+      @Override
+      public ItemStack getOutput(ItemStack input, ItemStack ingredient) {
+        return isInput(input) && isIngredient(ingredient) ? cure.copy() : ItemStack.EMPTY;
+      }
+    });
+  }
+
+  private void handleSpawnPlacementRegister(RegisterSpawnPlacementsEvent event) {
+    var operation = RegisterSpawnPlacementsEvent.Operation.REPLACE;
     event.register(SurvivalEntityTypes.FAST_ZOMBIE.get(),
         net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND,
         Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
@@ -282,7 +302,7 @@ public class CraftingDeadSurvival {
     var lookupProvider = event.getLookupProvider();
     var existingFileHelper = event.getExistingFileHelper();
     if (event.includeServer()) {
-      var blockTagsProvider = new ForgeBlockTagsProvider(packOutput, lookupProvider,
+      var blockTagsProvider = new NeoForgeBlockTagsProvider(packOutput, lookupProvider,
           existingFileHelper);
       generator.addProvider(true, new SurvivalItemTagsProvider(packOutput, lookupProvider,
           blockTagsProvider.contentsGetter(), existingFileHelper));
@@ -300,22 +320,14 @@ public class CraftingDeadSurvival {
   // ================================================================================
 
   @SubscribeEvent
-  public void handleLivingPackSize(LivingPackSizeEvent event) {
-    if (event.getEntity() instanceof Zombie) {
-      event.setMaxPackSize(12);
-      event.setResult(Event.Result.ALLOW);
-    }
-  }
-
-  @SubscribeEvent
-  public void handleServerAboutToStart(net.minecraftforge.event.server.ServerAboutToStartEvent event) {
+  public void handleServerAboutToStart(net.neoforged.neoforge.event.server.ServerAboutToStartEvent event) {
     // Load consumable config overrides on server start
     ConsumableConfigOverrides.loadOverrides();
     logger.info("Loaded consumable configuration overrides");
   }
 
   @SubscribeEvent
-  public void handleSpecialSpawn(MobSpawnEvent.FinalizeSpawn event) {
+  public void handleSpecialSpawn(FinalizeSpawnEvent event) {
     var level = event.getEntity().level();
     if (!level.isClientSide() && event.getEntity() instanceof Zombie zombie) {
 
@@ -441,10 +453,11 @@ public class CraftingDeadSurvival {
 
   @SubscribeEvent
   public void handleGunHitEntity(GunEvent.EntityHit event) {
-    event.target().getCapability(LivingExtension.CAPABILITY)
-        .resolve()
-        .flatMap(living -> living.getHandler(SurvivalPlayerHandler.TYPE))
-        .ifPresent(playerHandler -> playerHandler.infect(0.5F));
+    var living = event.target().getCapability(LivingExtension.CAPABILITY);
+    if (living != null) {
+      living.getHandler(SurvivalPlayerHandler.TYPE)
+          .ifPresent(playerHandler -> playerHandler.infect(0.5F));
+    }
   }
 
   @SubscribeEvent

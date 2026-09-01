@@ -158,7 +158,7 @@ public class IngameGui {
   public void renderFlashBangOverlay(Player player, PoseStack poseStack, int width, int height,
       float partialTick) {
     // Draws Flashbang effect
-    var flashEffect = player.getEffect(ModMobEffects.FLASH_BLINDNESS.getHolder().orElseThrow());
+    var flashEffect = player.getEffect(ModMobEffects.FLASH_BLINDNESS);
     if (flashEffect != null) {
       int alpha =
           (int) (255.0F * (Mth.clamp(flashEffect.getDuration() - partialTick, 0, 20) / 20.0F));
@@ -177,9 +177,10 @@ public class IngameGui {
 
     this.renderKillFeed(guiGraphics, partialTick);
 
-    heldStack.getCapability(Scope.CAPABILITY)
-        .filter(scope -> scope.isScoping(player))
-        .ifPresent(scope -> renderScopeOverlay(player, scope, width, height));
+    var scope = heldStack.getCapability(Scope.CAPABILITY);
+    if (scope != null && scope.isScoping(player)) {
+      renderScopeOverlay(player, scope, width, height);
+    }
 
     player.getActionObserver()
         .flatMap(ActionObserver::getProgressBar)
@@ -364,7 +365,8 @@ public class IngameGui {
     RenderUtil.fill(guiGraphics.pose(), x + 30, height - boxHeight, x + 30 + 90, height, 0x55000000);
 
     AmmoProvider ammoProvider = gun.getAmmoProvider();
-    int ammoCount = ammoProvider.getMagazine().map(Magazine::getSize).orElse(0);
+    var magazine = ammoProvider.getMagazine();
+    int ammoCount = magazine == null ? 0 : magazine.getSize();
     int reserveSize = ammoProvider.getReserveSize();
     var empty = ammoCount == 0 && reserveSize == 0;
 

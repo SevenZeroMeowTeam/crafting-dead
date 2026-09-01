@@ -89,7 +89,9 @@ public enum CombatSlot implements CombatSlotProvider, StringRepresentable {
   }
 
   public static Optional<CombatSlot> getSlotType(ItemStack itemStack) {
-    return itemStack.getCapability(CAPABILITY).map(CombatSlotProvider::getCombatSlot);
+    var provider = itemStack.getCapability(CAPABILITY);
+    return provider == null ? Optional.empty()
+        : Optional.ofNullable(provider.getCombatSlot());
   }
 
   public boolean isItemValid(ItemStack itemStack) {

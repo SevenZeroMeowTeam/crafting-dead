@@ -18,15 +18,29 @@
 
 package com.craftingdead.core.network.message.play;
 
-import java.util.function.Supplier;
+import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncLivingMessage(int entityId, FriendlyByteBuf data) {
+public record SyncLivingMessage(int entityId, FriendlyByteBuf data) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<SyncLivingMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "sync_living"));
+
+  public static final StreamCodec<FriendlyByteBuf, SyncLivingMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, SyncLivingMessage msg) -> msg.encode(buf), SyncLivingMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
 
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.entityId);
@@ -39,12 +53,13 @@ public record SyncLivingMessage(int entityId, FriendlyByteBuf data) {
         new FriendlyByteBuf(Unpooled.wrappedBuffer(in.readBytes(in.readVarInt()))));
   }
 
-  public static void handle(SyncLivingMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(SyncLivingMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(() -> {
       var entity = NetworkUtil.getEntity(ctx, msg.entityId);
-      entity.getCapability(LivingExtension.CAPABILITY)
-          .ifPresent(living -> living.decode(
-              new RegistryFriendlyByteBuf(msg.data, entity.level().registryAccess())));
+      var living = entity.getCapability(LivingExtension.CAPABILITY);
+      if (living != null) {
+        living.decode(new RegistryFriendlyByteBuf(msg.data, entity.level().registryAccess()));
+      }
     });
   }
 }

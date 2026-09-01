@@ -18,13 +18,13 @@
 
 package com.craftingdead.survival.client;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ClientConfig {
 
-  public final ForgeConfigSpec.BooleanValue displayBlood;
+  public final ModConfigSpec.BooleanValue displayBlood;
 
-  public ClientConfig(ForgeConfigSpec.Builder builder) {
+  public ClientConfig(ModConfigSpec.Builder builder) {
     builder.push("client");
     {
       this.displayBlood = builder

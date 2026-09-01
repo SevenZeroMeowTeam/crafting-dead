@@ -17,6 +17,11 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.Collection;
 import java.util.Map;
@@ -29,9 +34,22 @@ import com.craftingdead.core.world.item.gun.PendingHit;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record ValidatePendingHitMessage(Map<Integer, Collection<PendingHit>> hits) {
+public record ValidatePendingHitMessage(Map<Integer, Collection<PendingHit>> hits) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<ValidatePendingHitMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "validate_pending_hit_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, ValidatePendingHitMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, ValidatePendingHitMessage msg) -> msg.encode(buf), ValidatePendingHitMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.hits.size());
@@ -64,20 +82,22 @@ public record ValidatePendingHitMessage(Map<Integer, Collection<PendingHit>> hit
     return new ValidatePendingHitMessage(hits);
   }
 
-  public static void handle(ValidatePendingHitMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(ValidatePendingHitMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(() -> {
-      var player = PlayerExtension.getOrThrow(ctx.getSender());
-      player.mainHandGun().ifPresent(gun -> {
+      var player = PlayerExtension.getOrThrow((ServerPlayer) ctx.player());
+      var gun = player.mainHandGun();
+      if (gun != null) {
         for (var hit : msg.hits.entrySet()) {
-          Optional.ofNullable(player.level().getEntity(hit.getKey()))
-              .flatMap(entity -> entity.getCapability(LivingExtension.CAPABILITY).resolve())
-              .ifPresent(hitLiving -> {
-                for (var value : hit.getValue()) {
-                  gun.validatePendingHit(player, hitLiving, value);
-                }
-              });
+          var hitEntity = player.level().getEntity(hit.getKey());
+          var hitLiving = hitEntity != null
+              ? hitEntity.getCapability(LivingExtension.CAPABILITY) : null;
+          if (hitLiving != null) {
+            for (var value : hit.getValue()) {
+              gun.validatePendingHit(player, hitLiving, value);
+            }
+          }
         }
-      });
+      }
     });
   }
 }

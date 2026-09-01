@@ -17,26 +17,43 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record RightClickStateMessage(boolean isDown, int ticks) {
+public record RightClickStateMessage(boolean isDown, int ticks) implements CustomPacketPayload {
 
-  public static void encode(RightClickStateMessage msg, FriendlyByteBuf buf) {
-    buf.writeBoolean(msg.isDown());
-    buf.writeInt(msg.ticks());
+  public static final CustomPacketPayload.Type<RightClickStateMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "right_click_state_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, RightClickStateMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, RightClickStateMessage msg) -> msg.encode(buf), RightClickStateMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
+
+  public void encode(FriendlyByteBuf buf) {
+    buf.writeBoolean(this.isDown());
+    buf.writeInt(this.ticks());
   }
 
   public static RightClickStateMessage decode(FriendlyByteBuf buf) {
     return new RightClickStateMessage(buf.readBoolean(), buf.readInt());
   }
 
-  public static void handle(RightClickStateMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(RightClickStateMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(() -> {
-      var player = ctx.getSender();
+      var player = ctx.player();
       if (player == null || !player.isAlive()) {
         return;
       }
@@ -50,7 +67,7 @@ public record RightClickStateMessage(boolean isDown, int ticks) {
         extension.setRightClickTicks(0);
       }
     });
-    ctx.setPacketHandled(true);
+    
   }
 }
 

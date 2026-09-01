@@ -64,10 +64,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.BlockSnapshot;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.BlockSnapshot;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     implements LivingExtension<E, H> {
@@ -137,7 +137,7 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
 
   @Override
   public void load() {
-    MinecraftForge.EVENT_BUS.post(new LivingExtensionEvent.Load(this));
+    NeoForge.EVENT_BUS.post(new LivingExtensionEvent.Load(this));
   }
 
   @Override
@@ -176,7 +176,8 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
   @SuppressWarnings("unchecked")
   @Override
   public <T extends Action> boolean performAction(T action, boolean force, boolean sendUpdate) {
-    if (MinecraftForge.EVENT_BUS.post(new LivingExtensionEvent.PerformAction<>(this, action))) {
+    if (NeoForge.EVENT_BUS.post(new LivingExtensionEvent.PerformAction<>(this, action))
+        .isCanceled()) {
       return false;
     }
 
@@ -196,13 +197,14 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     action.target().ifPresent(target -> target.setActionObserver(action.createTargetObserver()));
 
     if (sendUpdate) {
-      var target = this.level().isClientSide()
-          ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY_AND_SELF.with(this.entity());
       var buf = new FriendlyByteBuf(Unpooled.buffer());
       ((ActionType<T>) action.type()).encode(action, buf);
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          new PerformActionMessage(action.type(), this.entity().getId(), buf), target);
+      var payload = new PerformActionMessage(action.type(), this.entity().getId(), buf);
+      if (this.level().isClientSide()) {
+        PacketDistributor.sendToServer(payload);
+      } else {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(this.entity(), payload);
+      }
     }
     return true;
   }
@@ -214,11 +216,12 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     }
     this.stopAction(Action.StopReason.CANCELLED);
     if (sendUpdate) {
-      var target = this.level().isClientSide()
-          ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY_AND_SELF.with(this.entity());
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          new CancelActionMessage(this.entity().getId()), target);
+      var payload = new CancelActionMessage(this.entity().getId());
+      if (this.level().isClientSide()) {
+        PacketDistributor.sendToServer(payload);
+      } else {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(this.entity(), payload);
+      }
     }
   }
 
@@ -261,11 +264,13 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     var heldStack = this.mainHandItem();
     if (heldStack != this.lastHeldStack) {
       if (this.lastHeldStack != null) {
-        this.lastHeldStack.getCapability(Gun.CAPABILITY)
-            .ifPresent(gun -> gun.reset(this));
+        var gun = this.lastHeldStack.getCapability(Gun.CAPABILITY);
+        if (gun != null) {
+          gun.reset(this);
+        }
       }
       if ((this.lastHeldStack == null || !heldStack.is(this.lastHeldStack.getItem()))
-          && heldStack.getCapability(Gun.CAPABILITY).isPresent()) {
+          && heldStack.getCapability(Gun.CAPABILITY) != null) {
         this.entity.playSound(ModSoundEvents.GUN_EQUIP.get(), 0.25F, 1.0F);
       }
       this.lastHeldStack = heldStack;
@@ -281,7 +286,10 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
       }
     }
 
-    heldStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> gun.tick(this));
+    var heldGun = heldStack.getCapability(Gun.CAPABILITY);
+    if (heldGun != null) {
+      heldGun.tick(this);
+    }
 
     this.getEquipmentInSlot(Equipment.Slot.CLOTHING, Clothing.class)
         .ifPresent(this::tickClothing);
@@ -486,11 +494,12 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     }
     this.crouching = crouching;
     if (sendUpdate) {
-      var target = this.level().isClientSide()
-          ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY_AND_SELF.with(this.entity());
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          new CrouchMessage(this.entity().getId(), crouching), target);
+      var payload = new CrouchMessage(this.entity().getId(), crouching);
+      if (this.level().isClientSide()) {
+        PacketDistributor.sendToServer(payload);
+      } else {
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(this.entity(), payload);
+      }
     }
   }
 
@@ -519,9 +528,10 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
     var attributes = this.entity.getAttributes();
 
     var oldStack = this.getItemInSlot(slot);
-    oldStack.getCapability(Equipment.CAPABILITY)
-        .map(Equipment::attributeModifiers)
-        .ifPresent(attributes::removeAttributeModifiers);
+    var oldEquipment = oldStack.getCapability(Equipment.CAPABILITY);
+    if (oldEquipment != null) {
+      attributes.removeAttributeModifiers(oldEquipment.attributeModifiers());
+    }
 
     this.applyEquipmentModifiers(itemStack);
 
@@ -531,9 +541,10 @@ class BaseLivingExtension<E extends LivingEntity, H extends LivingHandler>
 
   private void applyEquipmentModifiers(ItemStack itemStack) {
     var attributes = this.entity.getAttributes();
-    itemStack.getCapability(Equipment.CAPABILITY)
-        .map(Equipment::attributeModifiers)
-        .ifPresent(attributes::addTransientAttributeModifiers);
+    var equipment = itemStack.getCapability(Equipment.CAPABILITY);
+    if (equipment != null) {
+      attributes.addTransientAttributeModifiers(equipment.attributeModifiers());
+    }
   }
 
   @Override

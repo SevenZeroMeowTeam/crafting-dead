@@ -18,15 +18,15 @@
 
 package com.craftingdead.survival.client;
 
-import com.craftingdead.core.network.NetworkChannel;
 import com.craftingdead.core.network.message.play.OpenEquipmentMenuMessage;
 import com.craftingdead.core.world.item.GunItem;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
  * Handles right-click interactions with guns displayed in item frames.
@@ -57,8 +57,7 @@ public class ItemFrameGunInteractionHandler {
           
           // Open the equipment/inspection menu for the gun
           // This will show gun stats, attachments, and allow inspection
-          NetworkChannel.PLAY.getSimpleChannel().send(new OpenEquipmentMenuMessage(),
-              net.minecraftforge.network.PacketDistributor.SERVER.noArg());
+          PacketDistributor.sendToServer(new OpenEquipmentMenuMessage());
           
           // Note: The gun remains in the item frame and cannot be fired or reloaded
           // from this interaction. This is purely for display and inspection purposes.

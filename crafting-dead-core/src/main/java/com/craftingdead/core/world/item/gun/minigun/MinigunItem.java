@@ -18,7 +18,6 @@
 
 package com.craftingdead.core.world.item.gun.minigun;
 
-import com.craftingdead.core.capability.CapabilityUtil;
 import com.craftingdead.core.world.item.GunItem;
 import com.craftingdead.core.world.item.combatslot.CombatSlotProvider;
 import com.craftingdead.core.world.item.gun.Gun;
@@ -26,7 +25,6 @@ import com.craftingdead.core.world.item.gun.GunConfiguration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class MinigunItem extends GunItem {
 
@@ -34,11 +32,7 @@ public class MinigunItem extends GunItem {
     super(builder);
   }
 
-  @Override
-  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
-    return CapabilityUtil.serializableProvider(() -> new Minigun(itemStack, this),
-        Gun.CAPABILITY, CombatSlotProvider.CAPABILITY);
-  }
+  
 
   @Override
   protected void shootProjectile(net.minecraft.world.entity.LivingEntity shooter,

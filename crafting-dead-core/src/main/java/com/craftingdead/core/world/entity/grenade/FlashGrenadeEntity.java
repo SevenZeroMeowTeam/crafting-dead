@@ -105,8 +105,7 @@ public class FlashGrenadeEntity extends Grenade {
             if (duration > 0) {
               boolean wasFlashApplied = ModMobEffects
                   .applyOrOverrideIfLonger(livingEntity,
-                      new MobEffectInstance(ModMobEffects.FLASH_BLINDNESS.getHolder()
-                          .orElseThrow(), duration));
+                      new MobEffectInstance(ModMobEffects.FLASH_BLINDNESS, duration));
               if (wasFlashApplied && livingEntity instanceof Mob) {
                 Mob mobEntity = (Mob) livingEntity;
                 // Removes the attack target
@@ -129,12 +128,12 @@ public class FlashGrenadeEntity extends Grenade {
       return 0;
     }
 
-    var immuneToFlashes = viewerEntity
-        .getCapability(LivingExtension.CAPABILITY)
-        .resolve()
-        .flatMap(living -> living.getEquipmentInSlot(Equipment.Slot.HAT, Hat.class))
-        .map(Hat::immuneToFlashes)
-        .orElse(false);
+    var living = viewerEntity.getCapability(LivingExtension.CAPABILITY);
+    var immuneToFlashes = living != null
+        ? living.getEquipmentInSlot(Equipment.Slot.HAT, Hat.class)
+            .map(Hat::immuneToFlashes)
+            .orElse(false)
+        : false;
 
     var flashRange = ServerConfig.instance.explosivesFlashRadius.get();
     if (visible && !immuneToFlashes) {

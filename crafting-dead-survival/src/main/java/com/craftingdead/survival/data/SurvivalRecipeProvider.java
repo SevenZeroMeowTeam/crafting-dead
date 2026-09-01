@@ -30,7 +30,7 @@ import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 public class SurvivalRecipeProvider extends RecipeProvider {
 
@@ -52,7 +52,7 @@ public class SurvivalRecipeProvider extends RecipeProvider {
         .pattern("bib")
         .define('i', Tags.Items.INGOTS_IRON)
         .define('b', ModItems.BLOODY_RAG.get())
-        .define('g', Tags.Items.GUNPOWDER)
+        .define('g', Tags.Items.GUNPOWDERS)
         .unlockedBy("has_bloody_rag", has(ModItems.BLOODY_RAG.get()))
         .save(consumer);
     ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CLEAN_RAG.get())

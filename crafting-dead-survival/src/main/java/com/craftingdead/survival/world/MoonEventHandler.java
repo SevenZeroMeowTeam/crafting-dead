@@ -55,15 +55,15 @@ import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.MobSpawnEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.block.CropGrowEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 /**
  * 末日生存事件处理器：
@@ -102,8 +102,8 @@ public class MoonEventHandler {
   // ================================================================================
 
   @SubscribeEvent
-  public void handleServerTick(TickEvent.ServerTickEvent event) {
-    if (event.phase != TickEvent.Phase.END) {
+  public void handleServerTick(ServerTickEvent event) {
+    if (!(event instanceof ServerTickEvent.Post)) {
       return;
     }
     MinecraftServer server = event.getServer();
@@ -131,7 +131,7 @@ public class MoonEventHandler {
   }
 
   private void sendMoonData(ServerPlayer player, ServerLevel level) {
-    SurvivalNetworkChannel.PLAY.getSimpleChannel().send(
+    PacketDistributor.sendToPlayer(player,
         new SyncMoonDataMessage(
             ApocalypseManager.getDay(level),
             (int) (level.getDayTime() % 24000L),
@@ -139,8 +139,7 @@ public class MoonEventHandler {
             ApocalypseManager.getEvolutionTier(level),
             ApocalypseManager.getMoonEvent(level),
             ApocalypseManager.isMoonEventActive(level),
-            this.hordeCurrentWave),
-        PacketDistributor.PLAYER.with(player));
+            this.hordeCurrentWave));
   }
 
   // ================================================================================
@@ -472,8 +471,8 @@ public class MoonEventHandler {
   // 血月：禁止苦力怕 / 蜘蛛 / 洞穴蜘蛛 / 女巫生成
   // ================================================================================
 
-  @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
-  public void handleMobSpawnFinalize(MobSpawnEvent.FinalizeSpawn event) {
+  @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST)
+  public void handleMobSpawnFinalize(FinalizeSpawnEvent event) {
     var level = event.getLevel();
     if (level.isClientSide() || !CraftingDeadSurvival.serverConfig.moonEventsEnabled.get()) {
       return;
@@ -490,14 +489,14 @@ public class MoonEventHandler {
   // 血月：禁止睡觉
   // ================================================================================
 
-  @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
-  public void handlePlayerSleep(PlayerSleepInBedEvent event) {
+  @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST)
+  public void handlePlayerSleep(CanPlayerSleepEvent event) {
     if (!CraftingDeadSurvival.serverConfig.moonEventsEnabled.get()) {
       return;
     }
     Player player = event.getEntity();
     if (ApocalypseManager.isBloodMoon(player.level())) {
-      event.setResult(Player.BedSleepingProblem.NOT_POSSIBLE_NOW);
+      event.setProblem(Player.BedSleepingProblem.NOT_POSSIBLE_NOW);
       player.displayClientMessage(Component.literal("§c血月降临，无法入睡！"), true);
     }
   }
@@ -506,8 +505,8 @@ public class MoonEventHandler {
   // 黄月：农作物生长加速
   // ================================================================================
 
-  @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOW)
-  public void handleCropGrow(BlockEvent.CropGrowEvent.Post event) {
+  @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOW)
+  public void handleCropGrow(CropGrowEvent.Post event) {
     if (!CraftingDeadSurvival.serverConfig.moonEventsEnabled.get()) {
       return;
     }
@@ -531,7 +530,7 @@ public class MoonEventHandler {
   // 击杀：击杀信息广播 + 概率掉落原版 / 其他模组物品
   // ================================================================================
 
-  @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOW)
+  @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOW)
   public void handleLivingDeath(LivingDeathEvent event) {
     var victim = event.getEntity();
     var level = victim.level();
@@ -551,10 +550,9 @@ public class MoonEventHandler {
       // TaCZ 枪械：统一物品 tacz:modern_kinetic_gun，按 GunId 解析真实枪名翻译组件
       Component weaponName = QualityHelper.getTaCZGunDisplayName(weapon);
       String gunId = QualityHelper.getTaCZGunId(weapon);
-      SurvivalNetworkChannel.PLAY.getSimpleChannel().send(
+      PacketDistributor.sendToAllPlayers(
           new SurvivalKillFeedMessage(killerPlayer.getDisplayName(), victim.getDisplayName(),
-              weaponId, weapon.getCount(), weaponName, gunId),
-          PacketDistributor.ALL.noArg());
+              weaponId, weapon.getCount(), weaponName, gunId));
     }
 
     // 击杀掉落
@@ -604,11 +602,11 @@ public class MoonEventHandler {
         Items.FLINT, Items.FLINT_AND_STEEL, Items.SNOWBALL, Items.TORCH,
         Items.GOLDEN_CARROT, Items.POTION));
     // 其他模组物品（crafting dead 与其他模组注册的物品）
-    for (Item item : ForgeRegistries.ITEMS) {
+    for (Item item : BuiltInRegistries.ITEM) {
       if (item == Items.AIR) {
         continue;
       }
-      ResourceLocation key = ForgeRegistries.ITEMS.getKey(item);
+      ResourceLocation key = BuiltInRegistries.ITEM.getKey(item);
       if (key == null || key.getNamespace().equals("minecraft")) {
         continue;
       }

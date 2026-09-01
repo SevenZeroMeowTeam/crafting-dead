@@ -25,10 +25,9 @@ import com.craftingdead.core.world.item.ModItems;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegistryBuilder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class Attachments {
 
@@ -38,10 +37,9 @@ public class Attachments {
   public static final DeferredRegister<Attachment> deferredRegister =
       DeferredRegister.create(REGISTRY_KEY, CraftingDead.ID);
 
-  public static final Supplier<IForgeRegistry<Attachment>> registry =
-      deferredRegister.makeRegistry(() -> new RegistryBuilder<Attachment>().hasTags());
+  public static final Registry<Attachment> registry = deferredRegister.makeRegistry(builder -> builder.sync(true));
 
-  public static final RegistryObject<Attachment> RED_DOT_SIGHT =
+  public static final DeferredHolder<Attachment, Attachment> RED_DOT_SIGHT =
       deferredRegister.register("red_dot_sight",
           () -> Attachment.builder()
               .addMultiplier(Attachment.MultiplierType.ZOOM, 2.5F)
@@ -49,7 +47,7 @@ public class Attachments {
               .setItem(ModItems.RED_DOT_SIGHT)
               .build());
 
-  public static final RegistryObject<Attachment> ACOG_SIGHT =
+  public static final DeferredHolder<Attachment, Attachment> ACOG_SIGHT =
       deferredRegister.register("acog_sight",
           () -> Attachment.builder()
               .addMultiplier(Attachment.MultiplierType.ZOOM, 3.25F)
@@ -57,7 +55,7 @@ public class Attachments {
               .setItem(ModItems.ACOG_SIGHT)
               .build());
 
-  public static final RegistryObject<Attachment> LP_SCOPE =
+  public static final DeferredHolder<Attachment, Attachment> LP_SCOPE =
       deferredRegister.register("lp_scope",
           () -> Attachment.builder()
               .addMultiplier(Attachment.MultiplierType.ZOOM, 5.0F)
@@ -66,7 +64,7 @@ public class Attachments {
               .setItem(ModItems.LP_SCOPE)
               .build());
 
-  public static final RegistryObject<Attachment> HP_SCOPE =
+  public static final DeferredHolder<Attachment, Attachment> HP_SCOPE =
       deferredRegister.register("hp_scope",
           () -> Attachment.builder()
               .addMultiplier(Attachment.MultiplierType.ZOOM, 8.0F)
@@ -75,7 +73,7 @@ public class Attachments {
               .setItem(ModItems.HP_SCOPE)
               .build());
 
-  public static final RegistryObject<Attachment> SUPPRESSOR =
+  public static final DeferredHolder<Attachment, Attachment> SUPPRESSOR =
       deferredRegister.register("suppressor",
           () -> Attachment.builder()
               .setInventorySlot(GunCraftSlotType.MUZZLE_ATTACHMENT)
@@ -83,7 +81,7 @@ public class Attachments {
               .setItem(ModItems.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<Attachment> TACTICAL_GRIP =
+  public static final DeferredHolder<Attachment, Attachment> TACTICAL_GRIP =
       deferredRegister.register("tactical_grip",
           () -> Attachment.builder()
               .addMultiplier(Attachment.MultiplierType.ACCURACY, 1.15F)
@@ -91,7 +89,7 @@ public class Attachments {
               .setItem(ModItems.TACTICAL_GRIP)
               .build());
 
-  public static final RegistryObject<Attachment> BIPOD =
+  public static final DeferredHolder<Attachment, Attachment> BIPOD =
       deferredRegister.register("bipod",
           () -> Attachment.builder()
               .addMultiplier(Attachment.MultiplierType.ACCURACY, 1.05F)
@@ -99,7 +97,7 @@ public class Attachments {
               .setItem(ModItems.BIPOD)
               .build());
 
-  public static final RegistryObject<Attachment> EOTECH_SIGHT =
+  public static final DeferredHolder<Attachment, Attachment> EOTECH_SIGHT =
       deferredRegister.register("eotech_sight",
           () -> Attachment.builder()
               .addMultiplier(Attachment.MultiplierType.ZOOM, 2.5F)
@@ -108,7 +106,7 @@ public class Attachments {
               .build());
 
   // Kar98k 专用倍镜（6 倍镜，仅 98k 使用）
-  public static final RegistryObject<Attachment> KAR98K_SCOPE =
+  public static final DeferredHolder<Attachment, Attachment> KAR98K_SCOPE =
       deferredRegister.register("kar98k_scope",
           () -> Attachment.builder()
               .addMultiplier(Attachment.MultiplierType.ZOOM, 6.0F)

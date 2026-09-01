@@ -17,14 +17,31 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SecondaryActionMessage(int entityId, boolean performing) {
+public record SecondaryActionMessage(int entityId, boolean performing) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<SecondaryActionMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "secondary_action_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, SecondaryActionMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, SecondaryActionMessage msg) -> msg.encode(buf), SecondaryActionMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.entityId);
@@ -35,11 +52,16 @@ public record SecondaryActionMessage(int entityId, boolean performing) {
     return new SecondaryActionMessage(in.readVarInt(), in.readBoolean());
   }
 
-  public static void handle(SecondaryActionMessage msg, CustomPayloadEvent.Context ctx) {
-    ctx.enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx, msg.entityId)
-        .getCapability(LivingExtension.CAPABILITY)
-        .ifPresent(living -> living.mainHandGun()
-            .ifPresent(gun -> gun.setPerformingSecondaryAction(living, msg.performing,
-                ctx.isServerSide()))));
+  public static void handle(SecondaryActionMessage msg, IPayloadContext ctx) {
+    ctx.enqueueWork(() -> {
+      var living = NetworkUtil.getEntityOrSender(ctx, msg.entityId)
+          .getCapability(LivingExtension.CAPABILITY);
+      if (living != null) {
+        var gun = living.mainHandGun();
+        if (gun != null) {
+          gun.setPerformingSecondaryAction(living, msg.performing, ctx.flow().isServerbound());
+        }
+      }
+    });
   }
 }

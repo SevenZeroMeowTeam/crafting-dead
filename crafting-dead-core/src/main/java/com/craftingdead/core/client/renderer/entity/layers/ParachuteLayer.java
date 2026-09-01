@@ -56,7 +56,7 @@ public class ParachuteLayer<T extends LivingEntity, M extends EntityModel<T>>
   public void render(@NotNull PoseStack poseStack, @NotNull MultiBufferSource renderTypeBuffer, int packedLight,
       T livingEntity, float limbSwing, float limbSwingAmount, float partialTicks, float ageTicks,
       float headYaw, float headPitch) {
-    if (livingEntity.hasEffect(ModMobEffects.PARACHUTE.getHolder().orElseThrow())) {
+    if (livingEntity.hasEffect(ModMobEffects.PARACHUTE)) {
       poseStack.pushPose();
       {
         poseStack.translate(0.0D, 0.0D, 0.125D);

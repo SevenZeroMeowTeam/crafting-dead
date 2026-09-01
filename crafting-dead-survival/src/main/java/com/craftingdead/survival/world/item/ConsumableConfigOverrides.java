@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.FMLPaths;
 
 /**
  * Manages consumable (food/drink) value overrides from config/craftingdead/items/consumables.toml.

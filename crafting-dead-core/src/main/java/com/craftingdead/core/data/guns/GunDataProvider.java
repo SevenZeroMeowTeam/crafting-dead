@@ -53,7 +53,7 @@ public class GunDataProvider implements DataProvider {
 
   @Override
   public CompletableFuture<?> run(CachedOutput cache) {
-    for (GunConfiguration gunType : GunConfigurations.registry.get()) {
+    for (GunConfiguration gunType : GunConfigurations.registry) {
       encodeGun(gunType, GunConfigurations.REGISTRY_KEY.location(), cache);
     }
     return CompletableFuture.allOf();
@@ -61,7 +61,7 @@ public class GunDataProvider implements DataProvider {
 
   private void encodeGun(GunConfiguration gun, ResourceLocation registryLocation, CachedOutput cache) {
     Path outputFolder = output.getOutputFolder();
-    var gunId = Objects.requireNonNull(GunConfigurations.registry.get().getKey(gun));
+    var gunId = Objects.requireNonNull(GunConfigurations.registry.getKey(gun));
     final String pathString = String.join("/", PackType.SERVER_DATA.getDirectory(),
         gunId.getNamespace(), gunId.getNamespace(), registryLocation.getPath(),
         gunId.getPath() + ".json");

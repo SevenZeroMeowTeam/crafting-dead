@@ -18,10 +18,8 @@
 
 package com.craftingdead.survival.world.item;
 
-import com.craftingdead.core.capability.CapabilityUtil;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.immerse.game.survival.SurvivalPlayerHandler;
-import com.craftingdead.immerse.world.item.hydration.Hydration;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import java.util.List;
 import java.util.function.Supplier;
@@ -44,7 +42,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.jetbrains.annotations.NotNull;
 
 public class ConsumableItem extends Item {
@@ -52,12 +49,12 @@ public class ConsumableItem extends Item {
   public enum Type {ONLY_FOOD, ONLY_DRINK, FOOD_AND_DRINK}
 
   private final int water;
-  private final Supplier<Item> emptyItem;
+  private final Supplier<? extends Item> emptyItem;
   private final FoodProperties foodProperties;
   private final Type type;
 
   public ConsumableItem(Properties properties, int nutrition, float saturation, int water,
-      Supplier<Item> emptyItem, Type type) {
+      Supplier<? extends Item> emptyItem, Type type) {
     super(properties);
     this.water = (type != Type.ONLY_FOOD) ? water : 0;
     this.emptyItem = emptyItem;
@@ -66,16 +63,6 @@ public class ConsumableItem extends Item {
             java.util.List.of())
         : null;
     this.type = type;
-  }
-
-  @Override
-  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
-    return (this.type != Type.ONLY_FOOD && CraftingDeadSurvival.instance().isImmerseLoaded())
-        ? createHydrationProvider(this.water) : null;
-  }
-
-  private static ICapabilityProvider createHydrationProvider(int water) {
-    return CapabilityUtil.provider(() -> Hydration.fixed(water), Hydration.CAPABILITY);
   }
 
   @Override

@@ -21,11 +21,11 @@ package com.craftingdead.core.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
  * Provides a resilient way to assign translation keys on
- * {@link ForgeConfigSpec.Builder}
+ * {@link ModConfigSpec.Builder}
  * instances without depending on stable MCP or official field names.
  */
 public final class ConfigTranslationHelper {
@@ -39,18 +39,18 @@ public final class ConfigTranslationHelper {
     private ConfigTranslationHelper() {
     }
 
-    public static ForgeConfigSpec.Builder translation(ForgeConfigSpec.Builder builder, String key) {
+    public static ModConfigSpec.Builder translation(ModConfigSpec.Builder builder, String key) {
         applyTranslation(builder, key);
         return builder;
     }
 
-    public static void applyTranslation(ForgeConfigSpec.Builder builder, String key) {
+    public static void applyTranslation(ModConfigSpec.Builder builder, String key) {
         if (builderTranslationMethod != null && builderTranslationField != null) {
             try {
                 builderTranslationMethod.invoke(builder, key);
                 return;
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new IllegalStateException("Unable to invoke translation on ForgeConfigSpec.Builder", e);
+                throw new IllegalStateException("Unable to invoke translation on ModConfigSpec.Builder", e);
             }
         }
 
@@ -70,21 +70,21 @@ public final class ConfigTranslationHelper {
             try {
                 builderTranslationField.set(builder, key);
             } catch (IllegalAccessException e) {
-                throw new IllegalStateException("Unable to set translation on ForgeConfigSpec.Builder", e);
+                throw new IllegalStateException("Unable to set translation on ModConfigSpec.Builder", e);
             }
         }
     }
 
     private static Method locateTranslationMethod() {
         try {
-            Method method = ForgeConfigSpec.Builder.class.getMethod("translation", String.class);
+            Method method = ModConfigSpec.Builder.class.getMethod("translation", String.class);
             method.setAccessible(true);
             return method;
         } catch (NoSuchMethodException ignored) {
-            for (Method candidate : ForgeConfigSpec.Builder.class.getDeclaredMethods()) {
+            for (Method candidate : ModConfigSpec.Builder.class.getDeclaredMethods()) {
                 if (candidate.getParameterCount() == 1
                         && candidate.getParameterTypes()[0] == String.class
-                        && candidate.getReturnType() == ForgeConfigSpec.Builder.class) {
+                        && candidate.getReturnType() == ModConfigSpec.Builder.class) {
                     candidate.setAccessible(true);
                     return candidate;
                 }
@@ -94,7 +94,7 @@ public final class ConfigTranslationHelper {
     }
 
     private static Field locateBuilderContextField() {
-        for (Field field : ForgeConfigSpec.Builder.class.getDeclaredFields()) {
+        for (Field field : ModConfigSpec.Builder.class.getDeclaredFields()) {
             if (field.getType().getName().contains("BuilderContext")) {
                 field.setAccessible(true);
                 return field;
@@ -120,12 +120,12 @@ public final class ConfigTranslationHelper {
 
     private static Field locateTranslationField() {
         try {
-            Field field = ForgeConfigSpec.Builder.class.getDeclaredField("translation");
+            Field field = ModConfigSpec.Builder.class.getDeclaredField("translation");
             field.setAccessible(true);
             return field;
         } catch (NoSuchFieldException firstFailure) {
             try {
-                Field field = ForgeConfigSpec.Builder.class.getDeclaredField("f_12516_");
+                Field field = ModConfigSpec.Builder.class.getDeclaredField("f_12516_");
                 field.setAccessible(true);
                 return field;
             } catch (NoSuchFieldException ignored) {

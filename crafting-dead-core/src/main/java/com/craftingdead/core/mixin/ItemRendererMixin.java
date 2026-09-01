@@ -67,7 +67,7 @@ public abstract class ItemRendererMixin {
       CallbackInfo callbackInfo) {
 
     final var living = livingEntity == null ? null
-        : livingEntity.getCapability(LivingExtension.CAPABILITY).orElse(null);
+        : livingEntity.getCapability(LivingExtension.CAPABILITY);
 
     if (living instanceof PlayerExtension<?> player && player.isHandcuffed()
         || CraftingDead.getInstance().getClientDist().getItemRendererManager().renderItem(itemStack,

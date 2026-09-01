@@ -42,7 +42,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 
 /**
  * Jade 风格的目标信息叠加层：显示准星所指方块/实体的名称、模组来源与实体血量。
@@ -195,7 +196,7 @@ public class TargetOverlay {
 
   private void renderEntity(GuiGraphics guiGraphics, Entity entity) {
     var name = entity.getDisplayName();
-    var entityKey = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
+    var entityKey = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
     var modName = Component.literal(
         QualityHelper.getModDisplayName(entityKey == null ? "?" : entityKey.getNamespace()));
 
@@ -211,7 +212,7 @@ public class TargetOverlay {
   }
 
   private Component getModName(BlockState state) {
-    var key = ForgeRegistries.BLOCKS.getKey(state.getBlock());
+    var key = BuiltInRegistries.BLOCK.getKey(state.getBlock());
     return Component.literal(
         QualityHelper.getModDisplayName(key == null ? "?" : key.getNamespace()));
   }

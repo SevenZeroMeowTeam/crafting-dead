@@ -26,10 +26,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegistryBuilder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class GunTriggerPredicates {
 
@@ -39,17 +38,16 @@ public class GunTriggerPredicates {
   public static final DeferredRegister<PredicateRegistryEntry<Gun>> deferredRegister =
       DeferredRegister.create(REGISTRY_KEY, CraftingDead.ID);
 
-  @SuppressWarnings("unchecked")
-  public static final Supplier<IForgeRegistry<PredicateRegistryEntry<Gun>>> registry =
-      deferredRegister.makeRegistry(() -> new RegistryBuilder<PredicateRegistryEntry<Gun>>().hasTags());
+  public static final Registry<PredicateRegistryEntry<Gun>> registry =
+      deferredRegister.makeRegistry(builder -> builder.sync(true));
 
   public static final Codec<PredicateRegistryEntry<Gun>> CODEC =
-      Codec.lazyInitialized(() -> registry.get().getCodec());
+      Codec.lazyInitialized(() -> registry.byNameCodec());
 
-  public static final RegistryObject<PredicateRegistryEntry<Gun>> PERFORMING_SECONDARY_ACTION =
+  public static final DeferredHolder<PredicateRegistryEntry<Gun>, PredicateRegistryEntry<Gun>> PERFORMING_SECONDARY_ACTION =
       deferredRegister.register("performing_secondary_action",
           () -> PredicateRegistryEntry.of(Gun::isPerformingSecondaryAction));
 
-  public static final RegistryObject<PredicateRegistryEntry<Gun>> NONE =
+  public static final DeferredHolder<PredicateRegistryEntry<Gun>, PredicateRegistryEntry<Gun>> NONE =
       deferredRegister.register("none", () -> PredicateRegistryEntry.of(gun -> true));
 }

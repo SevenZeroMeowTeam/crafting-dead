@@ -17,14 +17,30 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.world.damagesource.KillFeedEntry;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record AddKillFeedEntryMessage(KillFeedEntry entry) {
+public record AddKillFeedEntryMessage(KillFeedEntry entry) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<AddKillFeedEntryMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "add_kill_feed_entry_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, AddKillFeedEntryMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, AddKillFeedEntryMessage msg) -> msg.encode(buf), AddKillFeedEntryMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     this.entry.encode(out);
@@ -34,7 +50,7 @@ public record AddKillFeedEntryMessage(KillFeedEntry entry) {
     return new AddKillFeedEntryMessage(KillFeedEntry.decode(in));
   }
 
-  public static void handle(AddKillFeedEntryMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(AddKillFeedEntryMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(() -> CraftingDead.getInstance().getClientDist().getIngameGui()
         .addKillFeedEntry(msg.entry));
   }

@@ -60,7 +60,7 @@ public class BlockItemActionType extends ItemActionType<BlockItemAction> {
   @Override
   public void encode(BlockItemAction action, FriendlyByteBuf out) {
     out.writeEnum(action.getHand());
-    out.writeBlockHitResult(action.getContext().getHitResult());
+    out.writeBlockHitResult(action.getHitResult());
   }
 
   @Override

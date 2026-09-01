@@ -43,7 +43,7 @@ import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.FMLPaths;
 import org.slf4j.Logger;
 
 /**
@@ -261,27 +261,27 @@ public final class ProtectionConfig {
     private final Set<ResourceLocation> helmetCosmetics = new HashSet<>();
     private final Set<ResourceLocation> vestCosmetics = new HashSet<>();
 
-    public Builder helmet(net.minecraftforge.registries.RegistryObject<? extends Item> item,
+    public Builder helmet(net.neoforged.neoforge.registries.DeferredHolder<Item, ? extends Item> item,
         String profileId) {
       ResourceLocation id = Objects.requireNonNull(item.getId(), "Unregistered item");
       this.helmetAssignments.put(id, profileId);
       return this;
     }
 
-    public Builder vest(net.minecraftforge.registries.RegistryObject<? extends Item> item,
+    public Builder vest(net.neoforged.neoforge.registries.DeferredHolder<Item, ? extends Item> item,
         String profileId) {
       ResourceLocation id = Objects.requireNonNull(item.getId(), "Unregistered item");
       this.vestAssignments.put(id, profileId);
       return this;
     }
 
-    public Builder cosmeticHelmet(net.minecraftforge.registries.RegistryObject<? extends Item> item) {
+    public Builder cosmeticHelmet(net.neoforged.neoforge.registries.DeferredHolder<Item, ? extends Item> item) {
       ResourceLocation id = Objects.requireNonNull(item.getId(), "Unregistered item");
       this.helmetCosmetics.add(id);
       return this;
     }
 
-    public Builder cosmeticVest(net.minecraftforge.registries.RegistryObject<? extends Item> item) {
+    public Builder cosmeticVest(net.neoforged.neoforge.registries.DeferredHolder<Item, ? extends Item> item) {
       ResourceLocation id = Objects.requireNonNull(item.getId(), "Unregistered item");
       this.vestCosmetics.add(id);
       return this;

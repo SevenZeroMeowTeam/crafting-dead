@@ -24,7 +24,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class DecorationBlockLoot extends BlockLootSubProvider {
 
@@ -42,7 +42,7 @@ public class DecorationBlockLoot extends BlockLootSubProvider {
   @Override
   protected Iterable<Block> getKnownBlocks() {
     return DecorationBlocks.deferredRegister.getEntries().stream()
-        .map(RegistryObject::get)
+        .map(holder -> (Block) holder.get())
         .toList();
   }
 }

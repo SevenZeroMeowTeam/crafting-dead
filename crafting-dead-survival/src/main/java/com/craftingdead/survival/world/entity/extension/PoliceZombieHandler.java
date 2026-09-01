@@ -37,8 +37,11 @@ public class PoliceZombieHandler extends ZombieHandler {
   @Override
   protected ItemStack createHeldItem() {
     var gunStack = ModItems.G18.get().getDefaultInstance();
-    gunStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> gun.setAmmoProvider(
-        new RefillableAmmoProvider(ModItems.G18_MAGAZINE.get().getDefaultInstance(), 2, false)));
+    var gun = gunStack.getCapability(Gun.CAPABILITY);
+    if (gun != null) {
+      gun.setAmmoProvider(
+          new RefillableAmmoProvider(ModItems.G18_MAGAZINE.get().getDefaultInstance(), 2, false));
+    }
     return gunStack;
   }
 

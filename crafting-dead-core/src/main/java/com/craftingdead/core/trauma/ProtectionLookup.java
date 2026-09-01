@@ -32,7 +32,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 
 public final class ProtectionLookup {
 
@@ -146,7 +147,7 @@ public final class ProtectionLookup {
   }
 
   private static ResourceLocation idForItem(Item item) {
-    return ForgeRegistries.ITEMS.getKey(item);
+    return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item);
   }
 
   public record HeadshotResult(TraumaSeverity severity,

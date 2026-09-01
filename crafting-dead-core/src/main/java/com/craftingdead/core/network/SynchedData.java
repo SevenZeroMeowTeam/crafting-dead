@@ -65,7 +65,7 @@ public class SynchedData {
       throw new IllegalArgumentException(
           "Unregistered serializer " + parameter.serializer() + " for " + id + "!");
     } else {
-      this.createEntry(parameter, value);
+      this.<T>createEntry(parameter, value);
     }
   }
 
@@ -96,7 +96,7 @@ public class SynchedData {
   }
 
   public <T> void set(EntityDataAccessor<T> parameter, T value) {
-    DataEntry<T> entry = this.getEntry(parameter);
+    DataEntry<T> entry = this.<T>getEntry(parameter);
     if (ObjectUtils.notEqual(value, entry.getValue())) {
       entry.setValue(value);
       entry.setDirty(true);
@@ -105,7 +105,7 @@ public class SynchedData {
   }
 
   public <T> T compute(EntityDataAccessor<T> parameter, Function<T, T> remappingFunction) {
-    DataEntry<T> entry = this.getEntry(parameter);
+    DataEntry<T> entry = this.<T>getEntry(parameter);
     T newValue = remappingFunction.apply(entry.getValue());
     if (ObjectUtils.notEqual(newValue, entry.getValue())) {
       entry.setValue(newValue);

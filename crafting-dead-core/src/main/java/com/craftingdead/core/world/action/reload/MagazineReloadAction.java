@@ -32,10 +32,10 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 public class MagazineReloadAction extends AbstractReloadAction {
 
@@ -68,8 +68,8 @@ public class MagazineReloadAction extends AbstractReloadAction {
 
     if (!simulate) {
       this.magazineLocation = result.get();
-      this.newMagazineStack =
-          this.magazineLocation.itemHandler.extractItem(this.magazineLocation.slot, 1, false);
+      this.newMagazineStack = this.magazineLocation.itemHandler()
+          .extractItem(this.magazineLocation.slot(), 1, false);
     }
 
     return super.start(simulate);
@@ -78,11 +78,11 @@ public class MagazineReloadAction extends AbstractReloadAction {
   @Override
   protected void loadNewMagazineStack(boolean displayOnly) {
     this.ammoProvider.setMagazineStack(this.newMagazineStack);
+    var magazine = this.oldMagazineStack.getCapability(Magazine.CAPABILITY);
     if (!displayOnly
         && !this.oldMagazineStack.isEmpty()
         && this.performer().entity() instanceof Player
-        && !(this.oldMagazineStack.getCapability(Magazine.CAPABILITY).map(Magazine::isEmpty)
-            .orElse(true)
+        && !(magazine != null && magazine.isEmpty()
             && ServerConfig.instance.reloadDestroyMagWhenEmpty.get())) {
       ((Player) this.performer().entity()).addItem(this.oldMagazineStack);
     }
@@ -100,22 +100,28 @@ public class MagazineReloadAction extends AbstractReloadAction {
     var builder = ImmutableList.<IItemHandler>builder();
 
     var event = new CollectMagazineItemHandlers(living);
-    MinecraftForge.EVENT_BUS.post(event);
+    NeoForge.EVENT_BUS.post(event);
     builder.addAll(event.getItemHandlers());
 
     // Vest - first
-    living.getItemInSlot(Equipment.Slot.VEST)
-        .getCapability(ForgeCapabilities.ITEM_HANDLER)
-        .ifPresent(builder::add);
+    var vestHandler = living.getItemInSlot(Equipment.Slot.VEST)
+        .getCapability(Capabilities.ItemHandler.ITEM);
+    if (vestHandler != null) {
+      builder.add(vestHandler);
+    }
 
     // Backpack - second
-    living.getItemInSlot(Equipment.Slot.BACKPACK)
-        .getCapability(ForgeCapabilities.ITEM_HANDLER)
-        .ifPresent(builder::add);
+    var backpackHandler = living.getItemInSlot(Equipment.Slot.BACKPACK)
+        .getCapability(Capabilities.ItemHandler.ITEM);
+    if (backpackHandler != null) {
+      builder.add(backpackHandler);
+    }
 
     // Inventory - third
-    living.entity().getCapability(ForgeCapabilities.ITEM_HANDLER)
-        .ifPresent(builder::add);
+    var inventoryHandler = living.entity().getCapability(Capabilities.ItemHandler.ENTITY);
+    if (inventoryHandler != null) {
+      builder.add(inventoryHandler);
+    }
 
     // Creative Inventory if the player is in creative mode - fourth
     if (living.entity() instanceof Player player && player.getAbilities().instabuild) {
@@ -130,10 +136,10 @@ public class MagazineReloadAction extends AbstractReloadAction {
     for (var itemHandler : this.collectItemHandlers(living)) {
       for (int i = 0; i < itemHandler.getSlots(); ++i) {
         var itemStack = itemHandler.getStackInSlot(i);
+        var magazine = itemStack.getCapability(Magazine.CAPABILITY);
         if (this.gun.getAcceptedMagazines().contains(itemStack.getItem())
-            && !itemStack.getCapability(Magazine.CAPABILITY)
-                .map(Magazine::isEmpty)
-                .orElse(true)) {
+            && magazine != null
+            && !magazine.isEmpty()) {
           return Optional.of(new MagazineLocation(itemHandler, i));
         }
       }

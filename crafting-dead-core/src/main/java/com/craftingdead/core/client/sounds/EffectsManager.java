@@ -18,6 +18,7 @@
 
 package com.craftingdead.core.client.sounds;
 
+import com.mojang.blaze3d.audio.Channel;
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 import org.lwjgl.openal.AL10;
@@ -28,6 +29,37 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundEngine;
 
 public class EffectsManager {
+
+  private static final java.lang.reflect.Field INSTANCE_TO_CHANNEL_FIELD;
+  private static final java.lang.reflect.Field SOURCE_FIELD;
+
+  static {
+    try {
+      INSTANCE_TO_CHANNEL_FIELD = SoundEngine.class.getDeclaredField("instanceToChannel");
+      INSTANCE_TO_CHANNEL_FIELD.setAccessible(true);
+      SOURCE_FIELD = Channel.class.getDeclaredField("source");
+      SOURCE_FIELD.setAccessible(true);
+    } catch (NoSuchFieldException e) {
+      throw new ExceptionInInitializerError(e);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private java.util.Map<SoundInstance, ChannelAccess.ChannelHandle> channels() {
+    try {
+      return (java.util.Map<SoundInstance, ChannelAccess.ChannelHandle>) INSTANCE_TO_CHANNEL_FIELD.get(this.soundEngine);
+    } catch (IllegalAccessException e) {
+      return java.util.Map.of();
+    }
+  }
+
+  private int channelSource(Channel channel) {
+    try {
+      return (int) SOURCE_FIELD.get(channel);
+    } catch (IllegalAccessException e) {
+      return 0;
+    }
+  }
 
   private static final Logger logger = LogUtils.getLogger();
 
@@ -70,15 +102,15 @@ public class EffectsManager {
   }
 
   public void setDirectHighpassForAll() {
-    for (ChannelAccess.ChannelHandle entry : this.soundEngine.instanceToChannel.values()) {
-      entry.execute(source -> this.setDirectHighpass(source.source));
+    for (ChannelAccess.ChannelHandle entry : this.channels().values()) {
+      entry.execute(source -> this.setDirectHighpass(this.channelSource(source)));
     }
   }
 
   public void setDirectHighpass(SoundInstance sound) {
-    ChannelAccess.ChannelHandle entry = this.soundEngine.instanceToChannel.get(sound);
+    ChannelAccess.ChannelHandle entry = this.channels().get(sound);
     if (entry != null) {
-      entry.execute(source -> this.setDirectHighpass(source.source));
+      entry.execute(source -> this.setDirectHighpass(this.channelSource(source)));
     }
   }
 
@@ -87,8 +119,8 @@ public class EffectsManager {
   }
 
   public void removeFilterForAll() {
-    for (ChannelAccess.ChannelHandle entry : this.soundEngine.instanceToChannel.values()) {
-      entry.execute(source -> this.removeFilter(source.source));
+    for (ChannelAccess.ChannelHandle entry : this.channels().values()) {
+      entry.execute(source -> this.removeFilter(this.channelSource(source)));
     }
   }
 

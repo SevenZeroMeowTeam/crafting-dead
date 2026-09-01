@@ -95,11 +95,11 @@ public final class PlayerAnimationHelper {
       return false;
     }
     // Crafting Dead 自己的枪械
-    if (stack.getCapability(Gun.CAPABILITY).isPresent()) {
+    if (stack.getCapability(Gun.CAPABILITY) != null) {
       return true;
     }
     // TaCZ（Timeless and Classics Zero）枪械：统一使用 tacz 命名空间下的物品
-    final ResourceLocation key = BuiltInRegistries.ITEM.getKey(stack.getItem());
+    final ResourceLocation key = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
     if ("tacz".equals(key.getNamespace())) {
       return true;
     }
@@ -127,7 +127,8 @@ public final class PlayerAnimationHelper {
     if (extension == null) {
       return false;
     }
-    return extension.mainHandGun().map(Gun::isPerformingSecondaryAction).orElse(false);
+    var gun = extension.mainHandGun();
+    return gun != null && gun.isPerformingSecondaryAction();
   }
 
   /**

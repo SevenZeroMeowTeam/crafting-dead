@@ -27,9 +27,9 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 /**
  * 世界中的方块范围框：准星对准方块时，渲染一个「方框」（目标方块线框）并绕其画一圈
@@ -74,7 +74,7 @@ public class BlockOutlineRenderer {
     if (level == null) {
       return;
     }
-    var hit = player.pick(RANGE, event.getPartialTick(), false);
+    var hit = player.pick(RANGE, event.getPartialTick().getGameTimeDeltaPartialTick(false), false);
     if (hit.getType() != HitResult.Type.BLOCK) {
       return;
     }
@@ -85,7 +85,7 @@ public class BlockOutlineRenderer {
 
     // Forge 1.21.1 的事件直接提供模型视图矩阵（已含相机平移），构造 PoseStack 后按世界坐标绘制
     PoseStack poseStack = new PoseStack();
-    poseStack.last().pose().set(event.getPoseStack());
+    poseStack.last().pose().set(event.getPoseStack().last().pose());
 
     var buffers = this.minecraft.renderBuffers().bufferSource();
     VertexConsumer lines = buffers.getBuffer(RenderType.lines());

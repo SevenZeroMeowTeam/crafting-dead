@@ -19,7 +19,7 @@
 package com.craftingdead.core.client.gui.screen.inventory;
 
 
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.client.gui.widget.button.CompositeButton;
 import com.craftingdead.core.network.NetworkChannel;
@@ -44,8 +44,7 @@ public class GenericContainerScreen extends AbstractContainerScreen<GenericMenu>
   private static final int TITLE_TEXT_COLOUR = 0x000000;
   // Implementations may change this field to another action for the return button
   @Nullable
-  protected Consumer<Button> returnButtonAction = (button) -> NetworkChannel.PLAY.getSimpleChannel()
-      .send(new OpenEquipmentMenuMessage(), PacketDistributor.SERVER.noArg());
+  protected Consumer<Button> returnButtonAction = (button) -> PacketDistributor.sendToServer(new OpenEquipmentMenuMessage());
   private CompositeButton returnButton;
 
   public GenericContainerScreen(GenericMenu menu, Inventory playerInventory,

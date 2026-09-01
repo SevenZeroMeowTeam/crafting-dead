@@ -45,7 +45,9 @@ public class SniperZombieHandler extends ZombieHandler {
   protected ItemStack createHeldItem() {
     var random = new Random();
     var gunStack = ModItems.DMR.get().getDefaultInstance();
-    gunStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> {
+    var gun = gunStack.getCapability(Gun.CAPABILITY);
+if (gun != null) {
+
       var magazineStack = ModItems.DMR_MAGAZINE.get().getDefaultInstance();
       gun.setAmmoProvider(new RefillableAmmoProvider(magazineStack, 1, false));
       Map<GunCraftSlotType, Supplier<Attachment>> possibleAttachments = Map.of(
@@ -59,7 +61,8 @@ public class SniperZombieHandler extends ZombieHandler {
         }
       }
       gun.setAttachments(attachments);
-    });
+    
+}
     return gunStack;
   }
 

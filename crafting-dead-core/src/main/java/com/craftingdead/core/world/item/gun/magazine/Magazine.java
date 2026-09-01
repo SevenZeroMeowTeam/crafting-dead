@@ -18,16 +18,17 @@
 
 package com.craftingdead.core.world.item.gun.magazine;
 
+import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.network.Synched;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 public interface Magazine extends INBTSerializable<CompoundTag>, Synched {
-  
-  Capability<Magazine> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+
+  ItemCapability<Magazine, Void> CAPABILITY = ItemCapability.createVoid(
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "magazine"), Magazine.class);
 
   float getArmorPenetration();
 

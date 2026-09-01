@@ -42,8 +42,8 @@ public class RefillableAmmoProvider implements AmmoProvider {
   public RefillableAmmoProvider(ItemStack magazineStack, int reserveMagazineCount,
       boolean infiniteAmmo) {
     this.magazineStack = magazineStack;
-    this.reserveSize =
-        this.getMagazine().map(Magazine::getMaxSize).orElse(0) * reserveMagazineCount;
+    var magazine = this.getMagazine();
+    this.reserveSize = (magazine == null ? 0 : magazine.getMaxSize()) * reserveMagazineCount;
     this.infiniteAmmo = infiniteAmmo;
   }
 
@@ -144,7 +144,8 @@ public class RefillableAmmoProvider implements AmmoProvider {
 
   @Override
   public boolean requiresSync() {
-    return this.reserveSizeChanged || this.getMagazine().map(Magazine::requiresSync).orElse(false);
+    var magazine = this.getMagazine();
+    return this.reserveSizeChanged || (magazine != null && magazine.requiresSync());
   }
 
   @Override

@@ -17,14 +17,31 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record OpenStorageMessage(Equipment.Slot slot) {
+public record OpenStorageMessage(Equipment.Slot slot) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<OpenStorageMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "open_storage_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, OpenStorageMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, OpenStorageMessage msg) -> msg.encode(buf), OpenStorageMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeEnum(this.slot);
@@ -34,8 +51,8 @@ public record OpenStorageMessage(Equipment.Slot slot) {
     return new OpenStorageMessage(in.readEnum(Equipment.Slot.class));
   }
 
-  public static void handle(OpenStorageMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(OpenStorageMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(
-        () -> PlayerExtension.getOrThrow(ctx.getSender()).openMenu(msg.slot));
+        () -> PlayerExtension.getOrThrow(ctx.player()).openMenu(msg.slot));
   }
 }

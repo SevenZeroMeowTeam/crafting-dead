@@ -18,13 +18,12 @@
 
 package com.craftingdead.decoration.client;
 
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class ClientDist {
 
-  public ClientDist(FMLJavaModLoadingContext context) {
-    var modEventBus = context.getModEventBus();
+  public ClientDist(IEventBus modEventBus) {
     modEventBus.addListener(this::handleClientSetup);
   }
 

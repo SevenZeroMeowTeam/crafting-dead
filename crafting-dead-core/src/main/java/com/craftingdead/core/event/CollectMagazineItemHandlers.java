@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class CollectMagazineItemHandlers extends Event {
 

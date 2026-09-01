@@ -109,13 +109,14 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.common.util.LogicalSidedProvider;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.common.util.LogicalSidedProvider;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> {
 
@@ -211,7 +212,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     var event = new GunEvent.Initialize(this, this.itemStack,
         this.attachments == null ? Map.of() : this.attachments,
         this.ammoProvider == null ? this.createAmmoProvider() : this.ammoProvider);
-    MinecraftForge.EVENT_BUS.post(event);
+    NeoForge.EVENT_BUS.post(event);
 
     this.setAmmoProvider(event.getAmmoProvider());
     this.attachments = Map.copyOf(event.getAttachments());
@@ -222,7 +223,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     this.fireMode = this.fireModeInfiniteIterator.next();
 
     this.client = FMLEnvironment.dist.isClient()
-        ? Lazy.concurrentOf(() -> this.createClient())
+        ? Lazy.of(() -> this.createClient())
         : Lazy.of(() -> {
           throw new IllegalStateException("Cannot access gun client on server.");
         });
@@ -264,8 +265,8 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
   public void setTriggerPressed(LivingExtension<?, ?> living, boolean triggerPressed,
       boolean sendUpdate) {
     if (triggerPressed == this.isTriggerPressed() || (triggerPressed && (!this.canShoot(living)
-        || MinecraftForge.EVENT_BUS.post(
-            new GunEvent.TriggerPressed(this, this.itemStack, living))))) {
+        || NeoForge.EVENT_BUS.post(
+            new GunEvent.TriggerPressed(this, this.itemStack, living)).isCanceled()))) {
       return;
     }
 
@@ -277,11 +278,12 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     }
 
     if (sendUpdate) {
-      var target = living.level().isClientSide()
-          ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY.with(living.entity());
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          new TriggerPressedMessage(living.entity().getId(), triggerPressed), target);
+      var payload = new TriggerPressedMessage(living.entity().getId(), triggerPressed);
+      if (living.level().isClientSide()) {
+        PacketDistributor.sendToServer(payload);
+      } else {
+        PacketDistributor.sendToPlayersTrackingEntity(living.entity(), payload);
+      }
     }
   }
 
@@ -289,8 +291,8 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
   public void setNPCTriggerPressed(LivingExtension<?, ?> living, boolean triggerPressed,
       boolean sendUpdate, float accuracy) {
     if (triggerPressed == this.isTriggerPressed() || (triggerPressed && (!this.canShoot(living)
-        || MinecraftForge.EVENT_BUS.post(
-        new GunEvent.NPCTriggerPressed(this, this.itemStack, living))))) {
+        || NeoForge.EVENT_BUS.post(
+        new GunEvent.NPCTriggerPressed(this, this.itemStack, living)).isCanceled()))) {
       return;
     }
 
@@ -302,11 +304,12 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     }
 
     if (sendUpdate) {
-      var target = living.level().isClientSide()
-          ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY.with(living.entity());
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          new NPCTriggerPressedMessage(living.entity().getId(), triggerPressed), target);
+      var payload = new NPCTriggerPressedMessage(living.entity().getId(), triggerPressed);
+      if (living.level().isClientSide()) {
+        PacketDistributor.sendToServer(payload);
+      } else {
+        PacketDistributor.sendToPlayersTrackingEntity(living.entity(), payload);
+      }
     }
   }
 
@@ -412,7 +415,8 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     LogicalSide side = living.level().isClientSide() ? LogicalSide.CLIENT : LogicalSide.SERVER;
     BlockableEventLoop<?> executor = LogicalSidedProvider.WORKQUEUE.get(side);
 
-    if (this.ammoProvider.getMagazine().map(Magazine::getSize).orElse(0) <= 0) {
+    var magazine = this.ammoProvider.getMagazine();
+    if (magazine == null || magazine.getSize() <= 0) {
       if (side.isServer() || side.isClient()) {
         executor.execute(() -> {
           living.entity().playSound(ModSoundEvents.DRY_FIRE.get(), 1.0F, 1.0F);
@@ -458,7 +462,8 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     LogicalSide side = living.level().isClientSide() ? LogicalSide.CLIENT : LogicalSide.SERVER;
     BlockableEventLoop<?> executor = LogicalSidedProvider.WORKQUEUE.get(side);
 
-    if (this.ammoProvider.getMagazine().map(Magazine::getSize).orElse(0) <= 0) {
+    var magazine = this.ammoProvider.getMagazine();
+    if (magazine == null || magazine.getSize() <= 0) {
       if (side.isServer() || side.isClient()) {
         executor.execute(() -> {
           living.entity().playSound(ModSoundEvents.DRY_FIRE.get(), 1.0F, 1.0F);
@@ -499,7 +504,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     var level = living.level();
     var random = entity.getRandom();
 
-    MinecraftForge.EVENT_BUS.post(new GunEvent.Shoot(this, this.itemStack, living));
+    NeoForge.EVENT_BUS.post(new GunEvent.Shoot(this, this.itemStack, living));
 
     // Magazine size will be synced to clients so only decrement this on the server.
     if (!level.isClientSide()
@@ -568,7 +573,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     var level = living.level();
     var random = entity.getRandom();
 
-    MinecraftForge.EVENT_BUS.post(new GunEvent.Shoot(this, this.itemStack, living));
+    NeoForge.EVENT_BUS.post(new GunEvent.Shoot(this, this.itemStack, living));
 
     // Magazine size will be synced to clients so only decrement this on the server.
     if (!level.isClientSide()
@@ -684,11 +689,9 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
               || hitEntity instanceof WanderingTrader)
           && hitPos.y >= chinHeight;
       if (headshot) {
-        var headshotDamagePercent = 1.0F - hitLiving.getEquipmentInSlot(Equipment.Slot.HAT)
-            .filter(Hat.class::isInstance)
-            .map(Hat.class::cast)
-            .map(Hat::headshotReductionPercentage)
-            .orElse(0.0F);
+        var hat = hitLiving.getEquipmentInSlot(Equipment.Slot.HAT);
+        var headshotDamagePercent = 1.0F - (hat instanceof Hat hatItem
+            ? hatItem.headshotReductionPercentage() : 0.0F);
         damage *= (float) (headshotDamagePercent * ServerConfig.instance.headshotBonusDamage.get());
         if (entity instanceof ServerPlayer player) {
           player.playNotifySound(SoundEvents.ITEM_BREAK, player.getSoundSource(), 0.65F, 1.5F);
@@ -701,7 +704,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     // Post gun hit entity event
     var event =
         new GunEvent.EntityHit(this, this.itemStack, living, hitEntity, damage, hitPos, headshot);
-    if (MinecraftForge.EVENT_BUS.post(event)) {
+    if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
       return;
     }
 
@@ -729,15 +732,14 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
       hitEntity.igniteForSeconds(100.0F);
     }
 
-    MinecraftForge.EVENT_BUS
+    NeoForge.EVENT_BUS
         .post(new GunEvent.EntityDamaged(this, this.itemStack, living, hitEntity,
             damage, hitPos, headshot));
 
     if (hitEntity instanceof LivingEntity hitLivingEntity
         && entity instanceof ServerPlayer player) {
       // Alert client of hit (real hit as opposed to client prediction)
-      NetworkChannel.PLAY.getSimpleChannel().send(new HitMessage(hitPos, hitLivingEntity.isDeadOrDying()),
-          PacketDistributor.PLAYER.with(player));
+      PacketDistributor.sendToPlayer(player, new HitMessage(hitPos, hitLivingEntity.isDeadOrDying()));
     }
   }
 
@@ -772,11 +774,9 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (hitEntity instanceof LivingEntity) {
       var hitLiving = LivingExtension.getOrThrow((LivingEntity) hitEntity);
       if (headshot) {
-        var headshotDamagePercent = 1.0F - hitLiving.getEquipmentInSlot(Equipment.Slot.HAT)
-            .filter(Hat.class::isInstance)
-            .map(Hat.class::cast)
-            .map(Hat::headshotReductionPercentage)
-            .orElse(0.0F);
+        var hat = hitLiving.getEquipmentInSlot(Equipment.Slot.HAT);
+        var headshotDamagePercent = 1.0F - (hat instanceof Hat hatItem
+            ? hatItem.headshotReductionPercentage() : 0.0F);
         damage *= (float) (headshotDamagePercent * ServerConfig.instance.headshotBonusDamage.get());
         hitEntity.level().playSound(null, hitEntity.getX(), hitEntity.getY(), hitEntity.getZ(),
             SoundEvents.ITEM_BREAK, hitEntity.getSoundSource(), 0.65F, 1.5F);
@@ -786,7 +786,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     // Post gun hit entity event
     var event =
         new GunEvent.EntityHit(this, this.itemStack, living, hitEntity, damage, hitPos, headshot);
-    if (MinecraftForge.EVENT_BUS.post(event)) {
+    if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
       return;
     }
 
@@ -814,15 +814,14 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
       hitEntity.igniteForSeconds(100.0F);
     }
 
-    MinecraftForge.EVENT_BUS
+    NeoForge.EVENT_BUS
         .post(new GunEvent.EntityDamaged(this, this.itemStack, living, hitEntity,
             damage, hitPos, headshot));
 
     if (hitEntity instanceof LivingEntity hitLivingEntity
         && entity instanceof ServerPlayer player) {
       // Alert client of hit (real hit as opposed to client prediction)
-      NetworkChannel.PLAY.getSimpleChannel().send(new HitMessage(hitPos, hitLivingEntity.isDeadOrDying()),
-          PacketDistributor.PLAYER.with(player));
+      PacketDistributor.sendToPlayer(player, new HitMessage(hitPos, hitLivingEntity.isDeadOrDying()));
     }
   }
 
@@ -836,7 +835,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     // Post gun hit block event
     var event =
         new GunEvent.BlockHit(this, itemStack, result, blockState, living, level);
-    if (MinecraftForge.EVENT_BUS.post(event)) {
+    if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
       return;
     }
 
@@ -889,9 +888,8 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
   @Override
   public void setPaintStack(ItemStack paintStack) {
     this.dataManager.set(PAINT_STACK, paintStack);
-    this.setSkin(paintStack.getCapability(Paint.CAPABILITY)
-        .map(Paint::getSkin)
-        .orElse(null));
+    var paint = paintStack.getCapability(Paint.CAPABILITY);
+    this.setSkin(paint == null ? null : paint.getSkin());
   }
 
   @Override
@@ -923,12 +921,12 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     }
 
     if (sendUpdate) {
-      var target = living.level().isClientSide()
-          ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY.with(living.entity());
-      NetworkChannel.PLAY
-          .getSimpleChannel()
-          .send(new SetFireModeMessage(living.entity().getId(), this.fireMode), target);
+      var payload = new SetFireModeMessage(living.entity().getId(), this.fireMode);
+      if (living.level().isClientSide()) {
+        PacketDistributor.sendToServer(payload);
+      } else {
+        PacketDistributor.sendToPlayersTrackingEntity(living.entity(), payload);
+      }
     }
   }
 
@@ -957,13 +955,13 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     }
 
     if (sendUpdate) {
-      var target = living.level().isClientSide()
-          ? PacketDistributor.SERVER.noArg()
-          : PacketDistributor.TRACKING_ENTITY.with(living.entity());
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          new SecondaryActionMessage(living.entity().getId(),
-              this.isPerformingSecondaryAction()),
-          target);
+      var payload = new SecondaryActionMessage(living.entity().getId(),
+          this.isPerformingSecondaryAction());
+      if (living.level().isClientSide()) {
+        PacketDistributor.sendToServer(payload);
+      } else {
+        PacketDistributor.sendToPlayersTrackingEntity(living.entity(), payload);
+      }
     }
   }
 
@@ -1003,10 +1001,10 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (!this.initialized) {
       return tag;
     }
-    tag.putString("ammoProviderType", AmmoProviderTypes.registry.get().getKey(this.ammoProvider.getType()).toString());
+    tag.putString("ammoProviderType", AmmoProviderTypes.registry.getKey(this.ammoProvider.getType()).toString());
     tag.put("ammoProvider", this.ammoProvider.serializeNBT(provider));
     var attachmentsTag = this.attachments.values().stream()
-        .map(a -> Attachments.registry.get().getKey(a))
+        .map(a -> Attachments.registry.getKey(a))
         .map(ResourceLocation::toString)
         .map(StringTag::valueOf)
         .collect(ListTag::new, ListTag::add, List::addAll);
@@ -1022,7 +1020,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
   @Override
   public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag tag) {
     if (tag.contains("ammoProviderType", Tag.TAG_STRING)) {
-      this.setAmmoProvider(AmmoProviderTypes.registry.get().getValue(
+      this.setAmmoProvider(AmmoProviderTypes.registry.get(
           ResourceLocation.parse(tag.getString("ammoProviderType"))).create());
       this.ammoProvider.deserializeNBT(provider, tag.getCompound("ammoProvider"));
       this.ammoProviderChanged = true;
@@ -1031,7 +1029,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
         .stream()
         .map(Tag::getAsString)
         .map(ResourceLocation::parse)
-        .map(Attachments.registry.get()::getValue)
+        .map(Attachments.registry::get)
         .collect(Collectors.toMap(Attachment::getInventorySlot, v -> v)));
     this.setPaintStack(ItemStack.parse(provider, tag.getCompound("paintStack"))
         .orElse(ItemStack.EMPTY));
@@ -1045,7 +1043,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
         : this.dataManager.packDirty(), out);
     if (writeAll || this.attachmentsDirty) {
       out.writeVarInt(this.attachments.size());
-      this.attachments.values().forEach(a -> out.writeResourceLocation(Attachments.registry.get().getKey(a)));
+      this.attachments.values().forEach(a -> out.writeResourceLocation(Attachments.registry.getKey(a)));
     } else {
       out.writeVarInt(-1);
     }
@@ -1053,7 +1051,7 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
 
     if (this.ammoProviderChanged || writeAll) {
       out.writeBoolean(true);
-      out.writeResourceLocation(AmmoProviderTypes.registry.get().getKey(this.ammoProvider.getType()));
+      out.writeResourceLocation(AmmoProviderTypes.registry.getKey(this.ammoProvider.getType()));
     } else {
       out.writeBoolean(false);
     }
@@ -1082,14 +1080,14 @@ public abstract class AbstractGun implements Gun, INBTSerializable<CompoundTag> 
     if (size > -1) {
       var builder = ImmutableMap.<GunCraftSlotType, Attachment>builderWithExpectedSize(size);
       for (int i = 0; i < size; i++) {
-        var attachment = Attachments.registry.get().getValue(in.readResourceLocation());
+        var attachment = Attachments.registry.get(in.readResourceLocation());
         builder.put(attachment.getInventorySlot(), attachment);
       }
       this.attachments = builder.build();
     }
 
     if (in.readBoolean()) {
-      this.ammoProvider = AmmoProviderTypes.registry.get().getValue(in.readResourceLocation()).create();
+      this.ammoProvider = AmmoProviderTypes.registry.get(in.readResourceLocation()).create();
     }
     this.ammoProvider.decode(in);
 

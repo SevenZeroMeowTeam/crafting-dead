@@ -17,13 +17,30 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record EnableCombatModeMessage(boolean enabled) {
+public record EnableCombatModeMessage(boolean enabled) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<EnableCombatModeMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "enable_combat_mode_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, EnableCombatModeMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, EnableCombatModeMessage msg) -> msg.encode(buf), EnableCombatModeMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeBoolean(this.enabled);
@@ -33,8 +50,8 @@ public record EnableCombatModeMessage(boolean enabled) {
     return new EnableCombatModeMessage(in.readBoolean());
   }
 
-  public static void handle(EnableCombatModeMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(EnableCombatModeMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(
-        () -> PlayerExtension.getOrThrow(ctx.getSender()).setCombatModeEnabled(msg.enabled));
+        () -> PlayerExtension.getOrThrow(ctx.player()).setCombatModeEnabled(msg.enabled));
   }
 }

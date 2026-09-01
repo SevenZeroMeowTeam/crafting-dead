@@ -24,7 +24,6 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.ServerConfig;
-import com.craftingdead.core.capability.CapabilityUtil;
 import com.craftingdead.core.event.GrenadeThrowEvent;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import com.craftingdead.core.world.entity.grenade.Grenade;
@@ -47,8 +46,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class GrenadeItem extends Item {
 
@@ -79,7 +77,8 @@ public class GrenadeItem extends Item {
   public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
     final var itemStack = player.getItemInHand(hand);
 
-    if (!this.enabled.get() || MinecraftForge.EVENT_BUS.post(new GrenadeThrowEvent(player))) {
+    if (!this.enabled.get()
+        || NeoForge.EVENT_BUS.post(new GrenadeThrowEvent(player)).isCanceled()) {
       return InteractionResultHolder.pass(itemStack);
     }
 
@@ -112,10 +111,7 @@ public class GrenadeItem extends Item {
     return InteractionResultHolder.success(itemStack);
   }
 
-  @Override
-  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
-    return CapabilityUtil.provider(() -> CombatSlot.GRENADE, CombatSlotProvider.CAPABILITY);
-  }
+  
 
   public static class Properties extends Item.Properties {
 

@@ -24,21 +24,22 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.minecraft.core.registries.Registries;
 
 public class ModParticleTypes {
 
   public static final DeferredRegister<ParticleType<?>> deferredRegister =
-      DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, CraftingDead.ID);
+      DeferredRegister.create(Registries.PARTICLE_TYPE, CraftingDead.ID);
 
-  public static final RegistryObject<ParticleType<GrenadeSmokeParticleData>> GRENADE_SMOKE =
+  public static final DeferredHolder<ParticleType<?>, ParticleType<GrenadeSmokeParticleData>> GRENADE_SMOKE =
       deferredRegister.register("grenade_smoke",
           () -> create(true, GrenadeSmokeParticleData.CODEC,
               GrenadeSmokeParticleData.STREAM_CODEC));
 
-  public static final RegistryObject<ParticleType<FlashParticleOptions>> RGB_FLASH =
+  public static final DeferredHolder<ParticleType<?>, ParticleType<FlashParticleOptions>> RGB_FLASH =
       deferredRegister.register("rgb_flash",
           () -> create(true, FlashParticleOptions.CODEC, FlashParticleOptions.STREAM_CODEC));
 

@@ -18,41 +18,47 @@
 
 package com.craftingdead.core.network;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.Connection;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.common.util.LogicalSidedProvider;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class NetworkUtil {
 
-  public static Entity getEntityOrSender(CustomPayloadEvent.Context context, int entityId) {
+  public static Entity getEntityOrSender(IPayloadContext context, int entityId) {
     return getEntityOrSender(context, entityId, Entity.class);
   }
 
-  public static <T extends Entity> T getEntityOrSender(CustomPayloadEvent.Context context,
+  public static <T extends Entity> T getEntityOrSender(IPayloadContext context,
       int entityId, Class<T> clazz) {
-    if (context.isClientSide()) {
+    if (context.flow() == net.minecraft.network.protocol.PacketFlow.CLIENTBOUND) {
       return getEntity(context, entityId, clazz);
     }
-    if (clazz.isInstance(context.getSender())) {
-      return clazz.cast(context.getSender());
+    if (clazz.isInstance(context.player())) {
+      return clazz.cast(context.player());
     }
     throw new IllegalStateException("Sender is not instance of: " + clazz.getName());
   }
 
-  public static Entity getEntity(CustomPayloadEvent.Context context, int entityId) {
+  public static Entity getEntity(IPayloadContext context, int entityId) {
     return getEntity(context, entityId, Entity.class);
   }
 
-  public static <T extends Entity> T getEntity(CustomPayloadEvent.Context context, int entityId,
+  public static <T extends Entity> T getEntity(IPayloadContext context, int entityId,
       Class<T> clazz) {
-    return LogicalSidedProvider.CLIENTWORLD
-        .get(context.isClientSide() ? net.minecraftforge.fml.LogicalSide.CLIENT
-            : net.minecraftforge.fml.LogicalSide.SERVER)
-        .map(level -> level.getEntity(entityId))
-        .filter(clazz::isInstance)
-        .map(clazz::cast)
-        .orElseThrow(() -> new IllegalStateException(
-            String.format("Entity with ID %s of type %s is absent from client level", entityId,
-                clazz.getName())));
+    Level level = getLevel(context);
+    var entity = level.getEntity(entityId);
+    return clazz.isInstance(entity) ? clazz.cast(entity) : null;
+  }
+
+  private static Level getLevel(IPayloadContext context) {
+    if (context.flow() == net.minecraft.network.protocol.PacketFlow.CLIENTBOUND) {
+      return Minecraft.getInstance().level;
+    }
+    Connection connection = context.connection();
+    // Server side level is not available directly from the context; use the player's level.
+    return context.player().level();
   }
 }

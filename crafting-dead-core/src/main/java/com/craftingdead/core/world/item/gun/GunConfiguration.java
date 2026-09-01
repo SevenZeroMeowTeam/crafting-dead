@@ -31,7 +31,8 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 
 public class GunConfiguration {
 
@@ -240,23 +241,23 @@ public class GunConfiguration {
     public static final Codec<Sounds> CODEC =
         RecordCodecBuilder.create(instance -> instance
             .group(
-                ForgeRegistries.SOUND_EVENTS.getCodec()
+                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.byNameCodec()
                     .fieldOf("shoot_sound")
                     .xmap(FunctionalUtil::supplier, Supplier::get)
                     .forGetter(Sounds::shootSound),
-                ForgeRegistries.SOUND_EVENTS.getCodec()
+                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.byNameCodec()
                     .optionalFieldOf("distant_shoot_sound", null)
                     .xmap(FunctionalUtil::supplier, Supplier::get)
                     .forGetter(Sounds::distantShootSound),
-                ForgeRegistries.SOUND_EVENTS.getCodec()
+                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.byNameCodec()
                     .optionalFieldOf("silenced_shoot_sound", null)
                     .xmap(FunctionalUtil::supplier, Supplier::get)
                     .forGetter(Sounds::silencedShootSound),
-                ForgeRegistries.SOUND_EVENTS.getCodec()
+                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.byNameCodec()
                     .optionalFieldOf("reload_sound", null)
                     .xmap(FunctionalUtil::supplier, Supplier::get)
                     .forGetter(Sounds::reloadSound),
-                ForgeRegistries.SOUND_EVENTS.getCodec()
+                net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.byNameCodec()
                     .optionalFieldOf("secondary_action_sound", null)
                     .xmap(FunctionalUtil::supplier, Supplier::get)
                     .forGetter(Sounds::secondaryActionSound),

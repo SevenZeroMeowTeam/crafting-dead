@@ -18,6 +18,7 @@
 
 package com.craftingdead.survival.network.message;
 
+import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.client.MoonDataHolder;
 import javax.annotation.Nullable;
 import net.minecraft.core.component.DataComponents;
@@ -25,11 +26,13 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraftforge.event.network.CustomPayloadEvent;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
  * 服务端 → 客户端的击杀信息消息（玩家用什么武器击杀了什么）。
@@ -40,7 +43,20 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
  */
 public record SurvivalKillFeedMessage(Component killerName, Component victimName,
     ResourceLocation weaponId, int weaponCount, @Nullable Component weaponName,
-    @Nullable String gunId) {
+    @Nullable String gunId) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<SurvivalKillFeedMessage> TYPE =
+      new CustomPacketPayload.Type<>(
+          ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "survival_kill_feed_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, SurvivalKillFeedMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, SurvivalKillFeedMessage msg) -> msg.encode(buf),
+          SurvivalKillFeedMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
 
   public void encode(FriendlyByteBuf out) {
     ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.encode(out, this.killerName);
@@ -81,7 +97,7 @@ public record SurvivalKillFeedMessage(Component killerName, Component victimName
         weaponName, gunId);
   }
 
-  public static void handle(SurvivalKillFeedMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(SurvivalKillFeedMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(() -> {
       if (FMLEnvironment.dist.isClient()) {
         ItemStack weapon = ItemStack.EMPTY;

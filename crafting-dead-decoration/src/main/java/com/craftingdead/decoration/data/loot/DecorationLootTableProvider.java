@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.Registry;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.util.ProblemReporter;
@@ -41,8 +41,8 @@ public class DecorationLootTableProvider extends LootTableProvider {
   }
 
   @Override
-  protected void validate(Registry<LootTable> map, ValidationContext validationTracker,
-      ProblemReporter reporter) {
+  protected void validate(WritableRegistry<LootTable> map, ValidationContext validationTracker,
+      ProblemReporter.Collector reporter) {
     // TODO: Validate?
   }
 }

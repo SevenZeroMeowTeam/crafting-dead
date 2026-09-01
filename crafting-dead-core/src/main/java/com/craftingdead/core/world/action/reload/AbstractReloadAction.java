@@ -50,8 +50,11 @@ public abstract class AbstractReloadAction extends TimedAction {
     } else {
       this.slot = -1;
     }
-    this.gun = performer.mainHandItem().getCapability(Gun.CAPABILITY)
-        .orElseThrow(() -> new IllegalStateException("Performer not holding gun"));
+    var gun = performer.mainHandItem().getCapability(Gun.CAPABILITY);
+    if (gun == null) {
+      throw new IllegalStateException("Performer not holding gun");
+    }
+    this.gun = gun;
     this.oldMagazineStack = this.gun.getAmmoProvider().getMagazineStack();
   }
 
@@ -125,7 +128,7 @@ public abstract class AbstractReloadAction extends TimedAction {
       if (this.gun.getReloadSound().isPresent()) {
         // Stop reload sound
         Minecraft.getInstance().getSoundManager()
-            .stop(net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS.getKey(this.gun.getReloadSound().get()), SoundSource.PLAYERS);
+            .stop(net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.getKey(this.gun.getReloadSound().get()), SoundSource.PLAYERS);
       }
       if (this.animation != null) {
         this.animation.remove();

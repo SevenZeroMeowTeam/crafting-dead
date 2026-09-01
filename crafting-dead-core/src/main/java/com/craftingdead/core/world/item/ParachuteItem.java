@@ -37,8 +37,8 @@ public class ParachuteItem extends Item {
   @Override
   public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
     ItemStack itemstack = player.getItemInHand(hand);
-    if (!player.hasEffect(ModMobEffects.PARACHUTE.getHolder().orElseThrow())) {
-      player.addEffect(new MobEffectInstance(ModMobEffects.PARACHUTE.getHolder().orElseThrow(),
+    if (!player.hasEffect(ModMobEffects.PARACHUTE)) {
+      player.addEffect(new MobEffectInstance(ModMobEffects.PARACHUTE,
           1200, 0, false, false));
       if (!player.getAbilities().invulnerable) {
         itemstack.shrink(1);

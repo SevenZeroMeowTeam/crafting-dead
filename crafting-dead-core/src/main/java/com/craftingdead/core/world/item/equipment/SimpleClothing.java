@@ -18,7 +18,9 @@
 
 package com.craftingdead.core.world.item.equipment;
 
+import com.craftingdead.core.world.item.ClothingItem;
 import com.google.common.collect.Multimap;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -29,6 +31,14 @@ public record SimpleClothing(
     boolean fireImmunity,
     boolean enhancesSwimming,
     ResourceLocation texture) implements Clothing {
+
+  public static SimpleClothing of(ClothingItem item) {
+    var key = BuiltInRegistries.ITEM.getKey(item);
+    var texture = ResourceLocation.fromNamespaceAndPath(key.getNamespace(),
+        "textures/clothing/" + key.getPath() + "_default.png");
+    return new SimpleClothing(item.getAttributeModifiers(), item.isFireImmune(),
+        item.enhancesSwimming(), texture);
+  }
 
   @Override
   public ResourceLocation getTexture(String skinType) {

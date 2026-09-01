@@ -19,11 +19,10 @@
 package com.craftingdead.core.event;
 
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.bus.api.Event;
 
-@Cancelable
-public class OpenEquipmentMenuEvent extends Event {
+public class OpenEquipmentMenuEvent extends Event implements net.neoforged.bus.api.ICancellableEvent {
 
   private final PlayerExtension<?> player;
 

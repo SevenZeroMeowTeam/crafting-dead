@@ -25,7 +25,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.neoforge.common.util.TriState;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public interface PlayerHandler extends LivingHandler {
@@ -39,7 +39,7 @@ public interface PlayerHandler extends LivingHandler {
   }
 
   default boolean handleLeftClickBlock(BlockPos pos, Direction face,
-      Consumer<Event.Result> attackResult, Consumer<Event.Result> mineResult) {
+      Consumer<TriState> attackResult, Consumer<TriState> mineResult) {
     return false;
   }
 

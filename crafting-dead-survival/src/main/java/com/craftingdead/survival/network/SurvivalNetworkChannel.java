@@ -18,75 +18,21 @@
 
 package com.craftingdead.survival.network;
 
-import com.craftingdead.survival.CraftingDeadSurvival;
 import com.craftingdead.survival.network.message.SurvivalKillFeedMessage;
 import com.craftingdead.survival.network.message.SyncMoonDataMessage;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.Channel;
-import net.minecraftforge.network.ChannelBuilder;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.SimpleChannel;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 /**
  * 生存模块的独立网络通道，用于同步月亮事件 / 天数数据与击杀信息。
  */
-public enum SurvivalNetworkChannel {
+public class SurvivalNetworkChannel {
 
-  PLAY(ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "survival_play")) {
-    @Override
-    protected void registerMessages(SimpleChannel simpleChannel) {
-      simpleChannel
-          .messageBuilder(SyncMoonDataMessage.class, 0x00, NetworkDirection.PLAY_TO_CLIENT)
-          .encoder(SyncMoonDataMessage::encode)
-          .decoder(SyncMoonDataMessage::decode)
-          .consumerMainThread(SyncMoonDataMessage::handle)
-          .add();
-
-      simpleChannel
-          .messageBuilder(SurvivalKillFeedMessage.class, 0x01, NetworkDirection.PLAY_TO_CLIENT)
-          .encoder(SurvivalKillFeedMessage::encode)
-          .decoder(SurvivalKillFeedMessage::decode)
-          .consumerMainThread(SurvivalKillFeedMessage::handle)
-          .add();
-    }
-  };
-
-  /**
-   * 网络协议版本。
-   */
-  private static final int NETWORK_VERSION = 1;
-
-  /**
-   * 防止重复注册消息。
-   */
-  private static boolean loaded;
-
-  /**
-   * 简单网络通道。
-   */
-  private final SimpleChannel simpleChannel;
-
-  SurvivalNetworkChannel(ResourceLocation channelName) {
-    this.simpleChannel = ChannelBuilder
-        .named(channelName)
-        .clientAcceptedVersions(Channel.VersionTest.exact(NETWORK_VERSION))
-        .serverAcceptedVersions(Channel.VersionTest.exact(NETWORK_VERSION))
-        .networkProtocolVersion(NETWORK_VERSION)
-        .simpleChannel();
-  }
-
-  protected abstract void registerMessages(SimpleChannel simpleChannel);
-
-  public SimpleChannel getSimpleChannel() {
-    return this.simpleChannel;
-  }
-
-  public static void loadChannels() {
-    if (!loaded) {
-      for (SurvivalNetworkChannel channel : SurvivalNetworkChannel.values()) {
-        channel.registerMessages(channel.simpleChannel);
-      }
-      loaded = true;
-    }
+  public static void register(RegisterPayloadHandlersEvent event) {
+    PayloadRegistrar registrar = event.registrar("survival_play");
+    registrar.playToClient(SyncMoonDataMessage.TYPE, SyncMoonDataMessage.STREAM_CODEC,
+        SyncMoonDataMessage::handle);
+    registrar.playToClient(SurvivalKillFeedMessage.TYPE, SurvivalKillFeedMessage.STREAM_CODEC,
+        SurvivalKillFeedMessage::handle);
   }
 }

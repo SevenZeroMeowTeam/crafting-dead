@@ -17,15 +17,32 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.core.world.item.gun.FireMode;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SetFireModeMessage(int entityId, FireMode fireMode) {
+public record SetFireModeMessage(int entityId, FireMode fireMode) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<SetFireModeMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "set_fire_mode_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, SetFireModeMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, SetFireModeMessage msg) -> msg.encode(buf), SetFireModeMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.entityId);
@@ -36,11 +53,16 @@ public record SetFireModeMessage(int entityId, FireMode fireMode) {
     return new SetFireModeMessage(in.readVarInt(), in.readEnum(FireMode.class));
   }
 
-  public static void handle(SetFireModeMessage msg, CustomPayloadEvent.Context ctx) {
-    ctx.enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx, msg.entityId)
-        .getCapability(LivingExtension.CAPABILITY)
-        .ifPresent(extension -> extension.mainHandGun()
-            .ifPresent(gun -> gun.setFireMode(extension, msg.fireMode,
-                ctx.isServerSide()))));
+  public static void handle(SetFireModeMessage msg, IPayloadContext ctx) {
+    ctx.enqueueWork(() -> {
+      var extension = NetworkUtil.getEntityOrSender(ctx, msg.entityId)
+          .getCapability(LivingExtension.CAPABILITY);
+      if (extension != null) {
+        var gun = extension.mainHandGun();
+        if (gun != null) {
+          gun.setFireMode(extension, msg.fireMode, ctx.flow().isServerbound());
+        }
+      }
+    });
   }
 }

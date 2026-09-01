@@ -30,10 +30,11 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.slf4j.Logger;
+import net.minecraft.core.registries.Registries;
 
 public final class TraumaHandler {
 
@@ -79,7 +80,7 @@ public final class TraumaHandler {
 //    applyMobEffects(living, effect);
 //
 //    if (living instanceof ServerPlayer player) {
-//      NetworkChannel.PLAY.getSimpleChannel().send(
+//      PacketDistributor.__SEND__(
 //          PacketDistributor.PLAYER.with(() -> player),
 //          new TraumaPacket(result.severity(), effect.aimSwayTicks(), effect.aimSwayStrength()));
 //    }
@@ -127,7 +128,7 @@ public final class TraumaHandler {
     if (stack.isEmpty()) {
       return "empty";
     }
-    var itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+    var itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
     String idText = itemId != null ? itemId.toString() : "unknown";
     return stack.getCount() == 1
         ? String.format(Locale.ROOT, "%s(dmg=%d)", idText, stack.getDamageValue())

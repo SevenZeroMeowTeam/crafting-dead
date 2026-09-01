@@ -19,7 +19,7 @@
 package com.craftingdead.core.world.item.gun;
 
 
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.craftingdead.core.ServerConfig;
 import com.craftingdead.core.world.item.gun.attachment.Attachments;
 import java.util.HashMap;
@@ -104,9 +104,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
         && this.livingHitValidationBuffer.size() > 0
         && this.hitValidationTicks++ >= AbstractGun.HIT_VALIDATION_DELAY_TICKS) {
       this.hitValidationTicks = 0;
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          new ValidatePendingHitMessage(new HashMap<>(this.livingHitValidationBuffer.asMap())),
-          PacketDistributor.SERVER.noArg());
+      PacketDistributor.sendToServer(new ValidatePendingHitMessage(new HashMap<>(this.livingHitValidationBuffer.asMap())));
       this.livingHitValidationBuffer.clear();
     }
 
@@ -172,7 +170,7 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
 
   public void handleShoot(LivingExtension<?, ?> living) {
     var entity = living.entity();
-    var gun = living.mainHandGun().orElse(null);
+    var gun = living.mainHandGun();
 
     this.spawnShellCasing(entity);
 
@@ -244,15 +242,15 @@ public abstract class AbstractGunClient<T extends AbstractGun> implements GunCli
   public void handleHitEntityPre(LivingExtension<?, ?> living, Entity hitEntity,
       Vec3 hitPos, long randomSeed) {
     if (living.entity() instanceof LocalPlayer) {
-      hitEntity.getCapability(LivingExtension.CAPABILITY)
-          .ifPresent(hitLiving -> {
-            this.livingHitValidationBuffer.put(hitEntity.getId(),
-                new PendingHit(
-                    (byte) (AbstractGun.HIT_VALIDATION_DELAY_TICKS - this.hitValidationTicks),
-                    living.makeSnapshot(this.minecraft.getTimer().getGameTimeDeltaPartialTick(false)),
-                    hitLiving.makeSnapshot(this.minecraft.getTimer().getGameTimeDeltaPartialTick(false)), randomSeed,
-                    this.gun.getShotCount()));
-          });
+      var hitLiving = hitEntity.getCapability(LivingExtension.CAPABILITY);
+      if (hitLiving != null) {
+        this.livingHitValidationBuffer.put(hitEntity.getId(),
+            new PendingHit(
+                (byte) (AbstractGun.HIT_VALIDATION_DELAY_TICKS - this.hitValidationTicks),
+                living.makeSnapshot(this.minecraft.getTimer().getGameTimeDeltaPartialTick(false)),
+                hitLiving.makeSnapshot(this.minecraft.getTimer().getGameTimeDeltaPartialTick(false)), randomSeed,
+                this.gun.getShotCount()));
+      }
     }
   }
 

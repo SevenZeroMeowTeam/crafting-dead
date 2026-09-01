@@ -22,28 +22,29 @@ import com.craftingdead.core.CraftingDead;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.minecraft.core.registries.Registries;
 
 public class ModMobEffects {
 
   public static final DeferredRegister<MobEffect> deferredRegister =
-      DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, CraftingDead.ID);
+      DeferredRegister.create(Registries.MOB_EFFECT, CraftingDead.ID);
 
-  public static final RegistryObject<MobEffect> SCUBA =
+  public static final DeferredHolder<MobEffect, MobEffect> SCUBA =
       deferredRegister.register("scuba", ScubaMobEffect::new);
 
-  public static final RegistryObject<MobEffect> FLASH_BLINDNESS =
+  public static final DeferredHolder<MobEffect, MobEffect> FLASH_BLINDNESS =
       deferredRegister.register("flash_blindness", FlashBlindnessMobEffect::new);
 
-  public static final RegistryObject<MobEffect> ADRENALINE =
+  public static final DeferredHolder<MobEffect, MobEffect> ADRENALINE =
       deferredRegister.register("adrenaline", AdrenalineMobEffect::new);
 
-  public static final RegistryObject<MobEffect> BLEEDING =
+  public static final DeferredHolder<MobEffect, MobEffect> BLEEDING =
       deferredRegister.register("bleeding", BleedingMobEffect::new);
 
-  public static final RegistryObject<MobEffect> PARACHUTE =
+  public static final DeferredHolder<MobEffect, MobEffect> PARACHUTE =
       deferredRegister.register("parachute", ParachuteMobEffect::new);
 
   /**

@@ -91,7 +91,7 @@ public class AimableGun extends TypedGun implements Scope {
   public Optional<ResourceLocation> getOverlayTexture(LivingExtension<?, ?> living) {
     for (var attachment : this.getAttachments().values()) {
       if (attachment.isScope()) {
-        ResourceLocation key = Attachments.registry.get().getKey(attachment);
+        ResourceLocation key = Attachments.registry.getKey(attachment);
         return Optional.of(ResourceLocation.fromNamespaceAndPath(key.getNamespace(),
             "textures/scope/" + key.getPath() + ".png"));
       }

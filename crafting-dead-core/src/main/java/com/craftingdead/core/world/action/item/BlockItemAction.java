@@ -19,7 +19,7 @@
 package com.craftingdead.core.world.action.item;
 
 
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.craftingdead.core.network.NetworkChannel;
 import com.craftingdead.core.network.message.play.BlockDestroyActionMessage;
 import com.craftingdead.core.world.action.ActionObserver;
@@ -60,6 +60,15 @@ public class BlockItemAction extends ItemAction {
 
   public UseOnContext getContext() {
     return this.context;
+  }
+
+  /**
+   * {@link UseOnContext#getHitResult()} is protected since 1.21, so the hit
+   * result is reconstructed from the public accessors.
+   */
+  public BlockHitResult getHitResult() {
+    return new BlockHitResult(this.context.getClickLocation(), this.context.getClickedFace(),
+        this.context.getClickedPos(), this.context.isInside());
   }
 
   public BlockState getBlockState() {
@@ -112,8 +121,7 @@ public class BlockItemAction extends ItemAction {
   public void destroyBlockAction() {
     var pos = this.context.getClickedPos();
     if (this.type.getDestroyPredicate().test(this.performer.level().getBlockState(pos))) {
-      NetworkChannel.PLAY.getSimpleChannel().send(new BlockDestroyActionMessage(pos),
-          PacketDistributor.SERVER.noArg());
+      PacketDistributor.sendToServer(new BlockDestroyActionMessage(pos));
     }
   }
 }

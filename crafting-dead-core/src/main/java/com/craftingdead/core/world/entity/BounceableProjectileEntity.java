@@ -25,6 +25,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -38,10 +39,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 public abstract class BounceableProjectileEntity extends Entity
-    implements IEntityAdditionalSpawnData {
+    implements IEntityWithComplexSpawn {
 
   @Nullable
   private UUID sourceId;
@@ -301,7 +302,7 @@ public abstract class BounceableProjectileEntity extends Entity
   }
 
   @Override
-  public void writeSpawnData(FriendlyByteBuf buffer) {
+  public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
     buffer.writeBoolean(this.stoppedMoving);
     buffer.writeInt(this.totalTicksInAir);
     buffer.writeInt(this.motionStopCount);
@@ -310,7 +311,7 @@ public abstract class BounceableProjectileEntity extends Entity
   }
 
   @Override
-  public void readSpawnData(FriendlyByteBuf buffer) {
+  public void readSpawnData(RegistryFriendlyByteBuf buffer) {
     this.stoppedMoving = buffer.readBoolean();
     this.totalTicksInAir = buffer.readInt();
     this.motionStopCount = buffer.readInt();

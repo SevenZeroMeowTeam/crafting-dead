@@ -52,9 +52,9 @@ import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 final class PlayerExtensionImpl<E extends Player>
@@ -137,7 +137,7 @@ final class PlayerExtensionImpl<E extends Player>
 
   @Override
   public boolean handleLeftClickBlock(BlockPos pos, Direction face,
-      Consumer<Event.Result> attackResult, Consumer<Event.Result> mineResult) {
+      Consumer<TriState> attackResult, Consumer<TriState> mineResult) {
     if (this.handlers.values().stream()
         .anyMatch(e -> e.handleLeftClickBlock(pos, face, attackResult, mineResult))) {
       return true;
@@ -145,7 +145,7 @@ final class PlayerExtensionImpl<E extends Player>
 
     if (this.isHandcuffed()) {
       if (this.level().isClientSide()) {
-        mineResult.accept(Event.Result.DENY);
+        mineResult.accept(TriState.FALSE);
       }
       return true;
     }
@@ -202,8 +202,7 @@ final class PlayerExtensionImpl<E extends Player>
   @Override
   public void setCombatModeEnabled(boolean combatModeEnabled) {
     if (this.level().isClientSide() && combatModeEnabled != this.isCombatModeEnabled()) {
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          new EnableCombatModeMessage(combatModeEnabled), PacketDistributor.SERVER.noArg());
+      PacketDistributor.sendToServer(new EnableCombatModeMessage(combatModeEnabled));
     } else {
       this.data.set(COMBAT_MODE_ENABLED, combatModeEnabled);
     }
@@ -211,7 +210,7 @@ final class PlayerExtensionImpl<E extends Player>
 
   @Override
   public void openEquipmentMenu() {
-    if (MinecraftForge.EVENT_BUS.post(new OpenEquipmentMenuEvent(this))) {
+    if (NeoForge.EVENT_BUS.post(new OpenEquipmentMenuEvent(this)).isCanceled()) {
       return;
     }
     this.entity().openMenu(new SimpleMenuProvider(
@@ -221,7 +220,7 @@ final class PlayerExtensionImpl<E extends Player>
 
   @Override
   public void openCraftingMenu() {
-    if (MinecraftForge.EVENT_BUS.post(new OpenCraftingMenuEvent(this))) {
+    if (NeoForge.EVENT_BUS.post(new OpenCraftingMenuEvent(this)).isCanceled()) {
       return;
     }
     this.entity().openMenu(new SimpleMenuProvider(
@@ -232,11 +231,11 @@ final class PlayerExtensionImpl<E extends Player>
   @Override
   public void openMenu(Equipment.Slot slot) {
     var itemStack = this.getItemInSlot(slot);
-    itemStack.getCapability(Equipment.CAPABILITY)
-        .filter(MenuConstructor.class::isInstance)
-        .map(MenuConstructor.class::cast)
-        .ifPresent(constructor -> this.entity().openMenu(
-            new SimpleMenuProvider(constructor, itemStack.getHoverName())));
+    var equipment = itemStack.getCapability(Equipment.CAPABILITY);
+    if (equipment instanceof MenuConstructor constructor) {
+      this.entity().openMenu(
+          new SimpleMenuProvider(constructor, itemStack.getHoverName()));
+    }
   }
 
   @Override
@@ -244,9 +243,8 @@ final class PlayerExtensionImpl<E extends Player>
     if (super.handleDeath(source)) {
       return true;
     } else if (source instanceof KillFeedProvider provider) {
-      NetworkChannel.PLAY.getSimpleChannel()
-          .send(new AddKillFeedEntryMessage(provider.createKillFeedEntry(this.entity())),
-              net.minecraftforge.network.PacketDistributor.ALL.noArg());
+      PacketDistributor.sendToAllPlayers(
+          new AddKillFeedEntryMessage(provider.createKillFeedEntry(this.entity())));
     }
     return false;
   }

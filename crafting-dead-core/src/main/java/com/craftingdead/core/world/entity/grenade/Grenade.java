@@ -25,6 +25,7 @@ import com.craftingdead.core.world.entity.grenade.FireGrenadeEntity.BounceSound;
 import com.craftingdead.core.world.item.GrenadeItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -231,13 +232,13 @@ public abstract class Grenade extends BounceableProjectileEntity {
   }
 
   @Override
-  public void writeSpawnData(FriendlyByteBuf buffer) {
+  public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
     super.writeSpawnData(buffer);
     buffer.writeInt(this.activatedTicksCount);
   }
 
   @Override
-  public void readSpawnData(FriendlyByteBuf buffer) {
+  public void readSpawnData(RegistryFriendlyByteBuf buffer) {
     super.readSpawnData(buffer);
     this.activatedTicksCount = buffer.readInt();
   }

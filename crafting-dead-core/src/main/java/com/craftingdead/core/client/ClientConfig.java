@@ -22,25 +22,25 @@ import com.craftingdead.core.client.crosshair.CrosshairManager;
 import com.craftingdead.core.client.tutorial.ModTutorialSteps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ClientConfig {
 
-  public final ForgeConfigSpec.BooleanValue displayBlood;
+  public final ModConfigSpec.BooleanValue displayBlood;
 
-  public final ForgeConfigSpec.BooleanValue displayTargetInfo;
+  public final ModConfigSpec.BooleanValue displayTargetInfo;
 
-  public final ForgeConfigSpec.BooleanValue displayPlantGrowth;
+  public final ModConfigSpec.BooleanValue displayPlantGrowth;
 
-  public final ForgeConfigSpec.BooleanValue moonPhaseZombieTintEnabled;
+  public final ModConfigSpec.BooleanValue moonPhaseZombieTintEnabled;
 
-  public final ForgeConfigSpec.ConfigValue<String> killSound;
+  public final ModConfigSpec.ConfigValue<String> killSound;
 
-  public final ForgeConfigSpec.ConfigValue<String> crosshair;
+  public final ModConfigSpec.ConfigValue<String> crosshair;
 
-  public final ForgeConfigSpec.EnumValue<ModTutorialSteps> tutorialStep;
+  public final ModConfigSpec.EnumValue<ModTutorialSteps> tutorialStep;
 
-  public ClientConfig(ForgeConfigSpec.Builder builder) {
+  public ClientConfig(ModConfigSpec.Builder builder) {
     builder.push("client");
     {
       this.displayBlood = builder

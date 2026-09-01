@@ -18,6 +18,7 @@
 
 package com.craftingdead.core.world.item.equipment;
 
+import com.craftingdead.core.world.item.HatItem;
 import com.google.common.collect.Multimap;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -28,4 +29,14 @@ public record SimpleHat(
     boolean waterBreathing,
     boolean nightVision,
     float headshotReductionPercentage,
-    boolean immuneToFlashes) implements Hat {}
+    boolean immuneToFlashes) implements Hat {
+
+  public static SimpleHat of(HatItem item) {
+    return new SimpleHat(
+        item.getAttributeModifiers(),
+        item.isWaterBreathing(),
+        item.hasNightVision(),
+        item.getHeadshotReductionPercentage(),
+        item.isImmuneToFlashes());
+  }
+}

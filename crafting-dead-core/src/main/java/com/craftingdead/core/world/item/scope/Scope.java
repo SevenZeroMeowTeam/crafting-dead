@@ -19,15 +19,21 @@
 package com.craftingdead.core.world.item.scope;
 
 import java.util.Optional;
+import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
+import com.craftingdead.core.world.item.BinocularsItem;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 
 public interface Scope {
 
-  Capability<Scope> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+  static Scope of(BinocularsItem binoculars, ItemStack stack) {
+    return new SimpleScope(2.0F, binoculars.getScopeOverlayTexture(), 512, 512, stack);
+  }
+
+  ItemCapability<Scope, Void> CAPABILITY = ItemCapability.createVoid(
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "scope"), Scope.class);
 
   boolean isScoping(LivingExtension<?, ?> living);
 

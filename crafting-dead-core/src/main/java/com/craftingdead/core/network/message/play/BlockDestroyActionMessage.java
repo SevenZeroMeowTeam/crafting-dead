@@ -17,39 +17,56 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-import com.craftingdead.core.network.NetworkChannel;
-import java.util.function.Supplier;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.event.network.CustomPayloadEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.PacketDistributor;
 
-public record BlockDestroyActionMessage(BlockPos pos) {
+public record BlockDestroyActionMessage(BlockPos pos) implements CustomPacketPayload {
 
-  public static void encode(BlockDestroyActionMessage msg, FriendlyByteBuf buf) {
-    buf.writeBlockPos(msg.pos());
+  public static final CustomPacketPayload.Type<BlockDestroyActionMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "block_destroy_action_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, BlockDestroyActionMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, BlockDestroyActionMessage msg) -> msg.encode(buf), BlockDestroyActionMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
+
+  public void encode(FriendlyByteBuf buf) {
+    buf.writeBlockPos(this.pos());
   }
 
   public static BlockDestroyActionMessage decode(FriendlyByteBuf buf) {
     return new BlockDestroyActionMessage(buf.readBlockPos());
   }
 
-  public static void handle(BlockDestroyActionMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(BlockDestroyActionMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(() -> {
-      var player = ctx.getSender();
+      var player = ctx.player();
       if (player != null) {
         var level = player.level();
         var state = level.getBlockState(msg.pos);
         if (!state.isAir()) {
-          NetworkChannel.PLAY.getSimpleChannel().send(new BlockDestroyParticleMessage(msg.pos(), state),
-              PacketDistributor.TRACKING_CHUNK.with(level.getChunkAt(msg.pos())));
+          PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) level,
+              new ChunkPos(msg.pos()), new BlockDestroyParticleMessage(msg.pos(), state));
           player.level().setBlock(msg.pos, Blocks.AIR.defaultBlockState(), 3);
         }
       }
     });
-    ctx.setPacketHandled(true);
+    
   }
 }
 

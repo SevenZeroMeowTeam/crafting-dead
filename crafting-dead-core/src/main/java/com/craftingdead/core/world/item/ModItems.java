@@ -36,8 +36,14 @@ import com.craftingdead.core.world.entity.grenade.SmokeGrenadeEntity;
 import com.craftingdead.core.world.inventory.GenericMenu;
 import com.craftingdead.core.world.item.ClothingItem.ClothingType;
 import com.craftingdead.core.world.item.combatslot.CombatSlot;
+import com.craftingdead.core.world.item.combatslot.CombatSlotProvider;
 import com.craftingdead.core.world.item.equipment.Equipment;
+import com.craftingdead.core.world.item.equipment.SimpleClothing;
+import com.craftingdead.core.world.item.equipment.SimpleHat;
 import com.craftingdead.core.world.item.gun.Gun;
+import com.craftingdead.core.world.item.gun.magazine.Magazine;
+import com.craftingdead.core.world.item.gun.skin.Paint;
+import com.craftingdead.core.world.item.scope.Scope;
 import com.craftingdead.core.world.item.gun.GunAnimationEvent;
 import com.craftingdead.core.world.item.gun.GunConfigurations;
 import com.craftingdead.core.world.item.gun.aimable.AimableGunItem;
@@ -54,14 +60,14 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tiers;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModItems {
 
   public static final DeferredRegister<Item> deferredRegister =
-      DeferredRegister.create(ForgeRegistries.ITEMS, CraftingDead.ID);
+      DeferredRegister.create(Registries.ITEM, CraftingDead.ID);
 
   public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
       DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CraftingDead.ID);
@@ -70,115 +76,115 @@ public class ModItems {
   // Paints
   // ================================================================================
 
-  public static final RegistryObject<Item> VULCAN_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> VULCAN_PAINT =
       deferredRegister.register("vulcan_paint",
           () -> new PaintItem(Skins.VULCAN, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> ASMO_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> ASMO_PAINT =
       deferredRegister.register("asmo_paint",
           () -> new PaintItem(Skins.ASMO, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> CANDY_APPLE_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> CANDY_APPLE_PAINT =
       deferredRegister.register("candy_apple_paint",
           () -> new PaintItem(Skins.CANDY_APPLE, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> CYREX_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> CYREX_PAINT =
       deferredRegister.register("cyrex_paint",
           () -> new PaintItem(Skins.CYREX, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> DIAMOND_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> DIAMOND_PAINT =
       deferredRegister.register("diamond_paint",
           () -> new PaintItem(Skins.DIAMOND, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> DRAGON_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> DRAGON_PAINT =
       deferredRegister.register("dragon_paint",
           () -> new PaintItem(Skins.DRAGON, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> FADE_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> FADE_PAINT =
       deferredRegister.register("fade_paint",
           () -> new PaintItem(Skins.FADE, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> FURY_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> FURY_PAINT =
       deferredRegister.register("fury_paint",
           () -> new PaintItem(Skins.FURY, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> GEM_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> GEM_PAINT =
       deferredRegister.register("gem_paint",
           () -> new PaintItem(Skins.GEM, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> INFERNO_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> INFERNO_PAINT =
       deferredRegister.register("inferno_paint",
           () -> new PaintItem(Skins.INFERNO, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> RUBY_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> RUBY_PAINT =
       deferredRegister.register("ruby_paint",
           () -> new PaintItem(Skins.RUBY, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> SCORCHED_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> SCORCHED_PAINT =
       deferredRegister.register("scorched_paint",
           () -> new PaintItem(Skins.SCORCHED, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> SLAUGHTER_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> SLAUGHTER_PAINT =
       deferredRegister.register("slaughter_paint",
           () -> new PaintItem(Skins.SLAUGHTER, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> UV_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> UV_PAINT =
       deferredRegister.register("uv_paint",
           () -> new PaintItem(Skins.UV, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> HYPER_BEAST_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> HYPER_BEAST_PAINT =
       deferredRegister.register("hyper_beast_paint",
           () -> new PaintItem(Skins.HYPER_BEAST, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> EMPEROR_DRAGON_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> EMPEROR_DRAGON_PAINT =
       deferredRegister.register("emperor_dragon_paint",
           () -> new PaintItem(Skins.EMPEROR_DRAGON, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> NUCLEAR_WINTER_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> NUCLEAR_WINTER_PAINT =
       deferredRegister.register("nuclear_winter_paint",
           () -> new PaintItem(Skins.NUCLEAR_WINTER, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> MONARCH_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> MONARCH_PAINT =
       deferredRegister.register("monarch_paint",
           () -> new PaintItem(Skins.MONARCH, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> LOVELACE_PAINT =
+  public static final DeferredHolder<Item, ? extends Item> LOVELACE_PAINT =
       deferredRegister.register("lovelace_paint",
           () -> new PaintItem(Skins.LOVELACE, new Item.Properties()
               .stacksTo(1)
@@ -187,7 +193,7 @@ public class ModItems {
   // Magazines
   // ================================================================================
 
-  public static final RegistryObject<MagazineItem> STANAG_BOX_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> STANAG_BOX_MAGAZINE =
       deferredRegister.register("stanag_box_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(85)
@@ -195,7 +201,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> STANAG_DRUM_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> STANAG_DRUM_MAGAZINE =
       deferredRegister.register("stanag_drum_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(45)
@@ -203,7 +209,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> STANAG_30_ROUND_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> STANAG_30_ROUND_MAGAZINE =
       deferredRegister.register("stanag_30_round_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(30)
@@ -211,7 +217,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> STANAG_20_ROUND_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> STANAG_20_ROUND_MAGAZINE =
       deferredRegister.register("stanag_20_round_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(20)
@@ -219,7 +225,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> MPT55_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> MPT55_MAGAZINE =
       deferredRegister.register("mpt55_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(30)
@@ -227,14 +233,14 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> AK47_30_ROUND_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> AK47_30_ROUND_MAGAZINE =
       deferredRegister.register("ak47_30_round_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(30)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> FNFAL_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> FNFAL_MAGAZINE =
       deferredRegister.register("fnfal_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(20)
@@ -242,7 +248,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> ACR_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> ACR_MAGAZINE =
       deferredRegister.register("acr_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(20)
@@ -250,7 +256,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> G36C_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> G36C_MAGAZINE =
       deferredRegister.register("g36c_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(30)
@@ -258,7 +264,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> HK417_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> HK417_MAGAZINE =
       deferredRegister.register("hk417_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(30)
@@ -266,7 +272,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> M1911_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> M1911_MAGAZINE =
       deferredRegister.register("m1911_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(7)
@@ -274,7 +280,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> G18_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> G18_MAGAZINE =
       deferredRegister.register("g18_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(20)
@@ -282,7 +288,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> M9_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> M9_MAGAZINE =
       deferredRegister.register("m9_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(15)
@@ -290,7 +296,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> DESERT_EAGLE_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> DESERT_EAGLE_MAGAZINE =
       deferredRegister.register("desert_eagle_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(13)
@@ -298,7 +304,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> P250_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> P250_MAGAZINE =
       deferredRegister.register("p250_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(12)
@@ -306,7 +312,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> MAGNUM_AMMUNITION =
+  public static final DeferredHolder<Item, ? extends MagazineItem> MAGNUM_AMMUNITION =
       deferredRegister.register("magnum_ammunition",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(6)
@@ -314,7 +320,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> FN57_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> FN57_MAGAZINE =
       deferredRegister.register("fn57_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(20)
@@ -322,7 +328,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> P90_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> P90_MAGAZINE =
       deferredRegister.register("p90_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(50)
@@ -330,7 +336,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> VECTOR_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> VECTOR_MAGAZINE =
       deferredRegister.register("vector_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(30)
@@ -338,7 +344,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> MP5A5_35_ROUND_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> MP5A5_35_ROUND_MAGAZINE =
       deferredRegister.register("mp5a5_35_round_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(35)
@@ -346,7 +352,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> MP5A5_21_ROUND_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> MP5A5_21_ROUND_MAGAZINE =
       deferredRegister.register("mp5a5_21_round_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(21)
@@ -354,7 +360,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> MAC10_EXTENDED_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> MAC10_EXTENDED_MAGAZINE =
       deferredRegister.register("mac10_extended_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(45)
@@ -362,7 +368,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> MAC10_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> MAC10_MAGAZINE =
       deferredRegister.register("mac10_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(30)
@@ -370,14 +376,14 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> SPORTER22_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> SPORTER22_MAGAZINE =
       deferredRegister.register("sporter22_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(30)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> M107_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> M107_MAGAZINE =
       deferredRegister.register("m107_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(10)
@@ -385,7 +391,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> AS50_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> AS50_MAGAZINE =
       deferredRegister.register("as50_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(10)
@@ -393,7 +399,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> M1GARAND_AMMUNITION =
+  public static final DeferredHolder<Item, ? extends MagazineItem> M1GARAND_AMMUNITION =
       deferredRegister.register("m1garand_ammunition",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(8)
@@ -401,7 +407,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> AWP_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> AWP_MAGAZINE =
       deferredRegister.register("awp_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(10)
@@ -409,7 +415,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> KAR98K_AMMUNITION =
+  public static final DeferredHolder<Item, ? extends MagazineItem> KAR98K_AMMUNITION =
       deferredRegister.register("kar98k_ammunition",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(5)
@@ -417,7 +423,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> TRENCH_GUN_SHELLS =
+  public static final DeferredHolder<Item, ? extends MagazineItem> TRENCH_GUN_SHELLS =
       deferredRegister.register("trench_gun_shells",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(6)
@@ -425,7 +431,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> MOSSBERG_SHELLS =
+  public static final DeferredHolder<Item, ? extends MagazineItem> MOSSBERG_SHELLS =
       deferredRegister.register("mossberg_shells",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(8)
@@ -433,7 +439,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> DMR_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> DMR_MAGAZINE =
       deferredRegister.register("dmr_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(5)
@@ -441,14 +447,14 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> TASER_CARTRIDGE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> TASER_CARTRIDGE =
       deferredRegister.register("taser_cartridge",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(3)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> M240B_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> M240B_MAGAZINE =
       deferredRegister.register("m240b_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(150)
@@ -457,7 +463,7 @@ public class ModItems {
               ));
 
 
-  public static final RegistryObject<MagazineItem> RPK_DRUM_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> RPK_DRUM_MAGAZINE =
       deferredRegister.register("rpk_drum_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(100)
@@ -465,7 +471,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> RPK_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> RPK_MAGAZINE =
       deferredRegister.register("rpk_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(60)
@@ -473,7 +479,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> MINIGUN_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> MINIGUN_MAGAZINE =
       deferredRegister.register("minigun_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(350)
@@ -481,7 +487,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<MagazineItem> MK48MOD_MAGAZINE =
+  public static final DeferredHolder<Item, ? extends MagazineItem> MK48MOD_MAGAZINE =
       deferredRegister.register("mk48mod_magazine",
           () -> new MagazineItem((MagazineItem.Properties) new MagazineItem.Properties()
               .setSize(150)
@@ -493,55 +499,55 @@ public class ModItems {
   // Attachments
   // ================================================================================
 
-  public static final RegistryObject<AttachmentItem> RED_DOT_SIGHT =
+  public static final DeferredHolder<Item, ? extends AttachmentItem> RED_DOT_SIGHT =
       deferredRegister.register("red_dot_sight",
           () -> new AttachmentItem(Attachments.RED_DOT_SIGHT, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<AttachmentItem> ACOG_SIGHT =
+  public static final DeferredHolder<Item, ? extends AttachmentItem> ACOG_SIGHT =
       deferredRegister.register("acog_sight",
           () -> new AttachmentItem(Attachments.ACOG_SIGHT, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<AttachmentItem> LP_SCOPE =
+  public static final DeferredHolder<Item, ? extends AttachmentItem> LP_SCOPE =
       deferredRegister.register("lp_scope",
           () -> new AttachmentItem(Attachments.LP_SCOPE, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<AttachmentItem> HP_SCOPE =
+  public static final DeferredHolder<Item, ? extends AttachmentItem> HP_SCOPE =
       deferredRegister.register("hp_scope",
           () -> new AttachmentItem(Attachments.HP_SCOPE, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<AttachmentItem> SUPPRESSOR =
+  public static final DeferredHolder<Item, ? extends AttachmentItem> SUPPRESSOR =
       deferredRegister.register("suppressor",
           () -> new AttachmentItem(Attachments.SUPPRESSOR, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<AttachmentItem> TACTICAL_GRIP =
+  public static final DeferredHolder<Item, ? extends AttachmentItem> TACTICAL_GRIP =
       deferredRegister.register("tactical_grip",
           () -> new AttachmentItem(Attachments.TACTICAL_GRIP, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<AttachmentItem> BIPOD =
+  public static final DeferredHolder<Item, ? extends AttachmentItem> BIPOD =
       deferredRegister.register("bipod",
           () -> new AttachmentItem(Attachments.BIPOD, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<AttachmentItem> EOTECH_SIGHT =
+  public static final DeferredHolder<Item, ? extends AttachmentItem> EOTECH_SIGHT =
       deferredRegister.register("eotech_sight",
           () -> new AttachmentItem(Attachments.EOTECH_SIGHT, new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<AttachmentItem> KAR98K_SCOPE =
+  public static final DeferredHolder<Item, ? extends AttachmentItem> KAR98K_SCOPE =
       deferredRegister.register("kar98k_scope",
           () -> new AttachmentItem(Attachments.KAR98K_SCOPE, new Item.Properties()
               .stacksTo(1)
@@ -551,7 +557,7 @@ public class ModItems {
   // Assault Rifles
   // ================================================================================
 
-  public static final RegistryObject<GunItem> M4A1 =
+  public static final DeferredHolder<Item, ? extends GunItem> M4A1 =
       deferredRegister.register("m4a1",
           () -> AimableGunItem.builder(GunConfigurations.M4A1.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
@@ -571,7 +577,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.EOTECH_SIGHT)
               .build());
 
-  public static final RegistryObject<GunItem> SCARL =
+  public static final DeferredHolder<Item, ? extends GunItem> SCARL =
       deferredRegister.register("scarl",
           () -> AimableGunItem.builder(GunConfigurations.SCARL.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
@@ -591,7 +597,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.EOTECH_SIGHT)
               .build());
 
-  public static final RegistryObject<GunItem> AK47 =
+  public static final DeferredHolder<Item, ? extends GunItem> AK47 =
       deferredRegister.register("ak47",
           () -> AimableGunItem.builder(GunConfigurations.AK47.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
@@ -608,7 +614,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> FNFAL =
+  public static final DeferredHolder<Item, ? extends GunItem> FNFAL =
       deferredRegister.register("fnfal",
           () -> AimableGunItem.builder(GunConfigurations.FNFAL.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
@@ -624,7 +630,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> ACR =
+  public static final DeferredHolder<Item, ? extends GunItem> ACR =
       deferredRegister.register("acr",
           () -> AimableGunItem.builder(GunConfigurations.ACR.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
@@ -639,7 +645,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.EOTECH_SIGHT)
               .build());
 
-  public static final RegistryObject<GunItem> HK417 =
+  public static final DeferredHolder<Item, ? extends GunItem> HK417 =
       deferredRegister.register("hk417",
           () -> AimableGunItem.builder(GunConfigurations.HK417.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
@@ -655,7 +661,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.EOTECH_SIGHT)
               .build());
 
-  public static final RegistryObject<GunItem> MPT55 =
+  public static final DeferredHolder<Item, ? extends GunItem> MPT55 =
       deferredRegister.register("mpt55",
           () -> AimableGunItem.builder(GunConfigurations.MPT55.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
@@ -668,7 +674,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> M1GARAND =
+  public static final DeferredHolder<Item, ? extends GunItem> M1GARAND =
       deferredRegister.register("m1garand",
           () -> AimableGunItem.builder(GunConfigurations.M1GARAND.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
@@ -680,7 +686,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.BIPOD)
               .build());
 
-  public static final RegistryObject<GunItem> SPORTER22 =
+  public static final DeferredHolder<Item, ? extends GunItem> SPORTER22 =
       deferredRegister.register("sporter22",
           () -> AimableGunItem.builder(GunConfigurations.SPORTER22.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
@@ -696,7 +702,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> G36C =
+  public static final DeferredHolder<Item, ? extends GunItem> G36C =
       deferredRegister.register("g36c",
           () -> AimableGunItem.builder(GunConfigurations.G36C.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
@@ -713,7 +719,7 @@ public class ModItems {
   // Machine Guns
   // ================================================================================
 
-  public static final RegistryObject<GunItem> M240B =
+  public static final DeferredHolder<Item, ? extends GunItem> M240B =
       deferredRegister.register("m240b",
           () -> AimableGunItem.builder(GunConfigurations.M240B.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::submachineGun)
@@ -727,7 +733,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.EOTECH_SIGHT)
               .build());
 
-  public static final RegistryObject<GunItem> RPK =
+  public static final DeferredHolder<Item, ? extends GunItem> RPK =
       deferredRegister.register("rpk",
           () -> AimableGunItem.builder(GunConfigurations.RPK.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::rifle)
@@ -740,7 +746,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.ACOG_SIGHT)
               .build());
 
-  public static final RegistryObject<GunItem> MINIGUN =
+  public static final DeferredHolder<Item, ? extends GunItem> MINIGUN =
       deferredRegister.register("minigun",
           () -> MinigunItem.builder(GunConfigurations.MINIGUN.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::submachineGun)
@@ -750,7 +756,7 @@ public class ModItems {
               .setTriggerPredicate(Gun::isPerformingSecondaryAction)
               .build());
 
-  public static final RegistryObject<GunItem> MK48MOD =
+  public static final DeferredHolder<Item, ? extends GunItem> MK48MOD =
       deferredRegister.register("mk48mod",
           () -> AimableGunItem.builder(GunConfigurations.MK48MOD.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::submachineGun)
@@ -768,7 +774,7 @@ public class ModItems {
   // Pistols
   // ================================================================================
 
-  public static final RegistryObject<GunItem> TASER =
+  public static final DeferredHolder<Item, ? extends GunItem> TASER =
       deferredRegister.register("taser",
           () -> AimableGunItem.builder(GunConfigurations.TASER.getKey())
               .setCombatSlot(CombatSlot.SECONDARY)
@@ -778,7 +784,7 @@ public class ModItems {
               .setDefaultMagazine(ModItems.TASER_CARTRIDGE)
               .build());
 
-  public static final RegistryObject<GunItem> M1911 =
+  public static final DeferredHolder<Item, ? extends GunItem> M1911 =
       deferredRegister.register("m1911",
           () -> AimableGunItem.builder(GunConfigurations.M1911.getKey())
               .setCombatSlot(CombatSlot.SECONDARY)
@@ -790,7 +796,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> G18 =
+  public static final DeferredHolder<Item, ? extends GunItem> G18 =
       deferredRegister.register("g18",
           () -> AimableGunItem.builder(GunConfigurations.G18.getKey())
               .setCombatSlot(CombatSlot.SECONDARY)
@@ -802,7 +808,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> M9 =
+  public static final DeferredHolder<Item, ? extends GunItem> M9 =
       deferredRegister.register("m9",
           () -> AimableGunItem.builder(GunConfigurations.M9.getKey())
               .setCombatSlot(CombatSlot.SECONDARY)
@@ -813,7 +819,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> DESERT_EAGLE =
+  public static final DeferredHolder<Item, ? extends GunItem> DESERT_EAGLE =
       deferredRegister.register("desert_eagle",
           () -> AimableGunItem.builder(GunConfigurations.DESERT_EAGLE.getKey())
               .setCombatSlot(CombatSlot.SECONDARY)
@@ -823,7 +829,7 @@ public class ModItems {
               .setDefaultMagazine(ModItems.DESERT_EAGLE_MAGAZINE)
               .build());
 
-  public static final RegistryObject<GunItem> P250 =
+  public static final DeferredHolder<Item, ? extends GunItem> P250 =
       deferredRegister.register("p250",
           () -> AimableGunItem.builder(GunConfigurations.P250.getKey())
               .setCombatSlot(CombatSlot.SECONDARY)
@@ -835,7 +841,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> MAGNUM =
+  public static final DeferredHolder<Item, ? extends GunItem> MAGNUM =
       deferredRegister.register("magnum",
           () -> AimableGunItem.builder(GunConfigurations.MAGNUM.getKey())
               .setCombatSlot(CombatSlot.SECONDARY)
@@ -845,7 +851,7 @@ public class ModItems {
               .setDefaultMagazine(ModItems.MAGNUM_AMMUNITION)
               .build());
 
-  public static final RegistryObject<GunItem> FN57 =
+  public static final DeferredHolder<Item, ? extends GunItem> FN57 =
       deferredRegister.register("fn57",
           () -> AimableGunItem.builder(GunConfigurations.FN57.getKey())
               .setCombatSlot(CombatSlot.SECONDARY)
@@ -860,7 +866,7 @@ public class ModItems {
   // Submachine Guns
   // ================================================================================
 
-  public static final RegistryObject<GunItem> MAC10 =
+  public static final DeferredHolder<Item, ? extends GunItem> MAC10 =
       deferredRegister.register("mac10",
           () -> AimableGunItem.builder(GunConfigurations.MAC10.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::submachineGun)
@@ -872,7 +878,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> P90 =
+  public static final DeferredHolder<Item, ? extends GunItem> P90 =
       deferredRegister.register("p90",
           () -> AimableGunItem.builder(GunConfigurations.P90.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::submachineGun)
@@ -884,7 +890,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> VECTOR =
+  public static final DeferredHolder<Item, ? extends GunItem> VECTOR =
       deferredRegister.register("vector",
           () -> AimableGunItem.builder(GunConfigurations.VECTOR.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::submachineGun)
@@ -896,7 +902,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> MP5A5 =
+  public static final DeferredHolder<Item, ? extends GunItem> MP5A5 =
       deferredRegister.register("mp5a5",
           () -> AimableGunItem.builder(GunConfigurations.MP5A5.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::submachineGun)
@@ -913,7 +919,7 @@ public class ModItems {
   // Sniper Rifles
   // ================================================================================
 
-  public static final RegistryObject<GunItem> M107 =
+  public static final DeferredHolder<Item, ? extends GunItem> M107 =
       deferredRegister.register("m107",
           () -> AimableGunItem.builder(GunConfigurations.M107.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
@@ -928,7 +934,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.BIPOD)
               .build());
 
-  public static final RegistryObject<GunItem> AS50 =
+  public static final DeferredHolder<Item, ? extends GunItem> AS50 =
       deferredRegister.register("as50",
           () -> AimableGunItem.builder(GunConfigurations.AS50.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
@@ -943,7 +949,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.BIPOD)
               .build());
 
-  public static final RegistryObject<GunItem> AWP =
+  public static final DeferredHolder<Item, ? extends GunItem> AWP =
       deferredRegister.register("awp",
           () -> AimableGunItem.builder(GunConfigurations.AWP.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::boltActionSniper)
@@ -956,7 +962,7 @@ public class ModItems {
               .addAcceptedAttachment(Attachments.SUPPRESSOR)
               .build());
 
-  public static final RegistryObject<GunItem> DMR =
+  public static final DeferredHolder<Item, ? extends GunItem> DMR =
       deferredRegister.register("dmr",
           () -> AimableGunItem.builder(GunConfigurations.DMR.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::autoSniper)
@@ -971,7 +977,7 @@ public class ModItems {
               .build());
 
   // Kar98k 98k 狙击步枪（奖励箱 / 合成获得，配专用倍镜）
-  public static final RegistryObject<GunItem> KAR98K =
+  public static final DeferredHolder<Item, ? extends GunItem> KAR98K =
       deferredRegister.register("kar98k",
           () -> AimableGunItem.builder(GunConfigurations.KAR98K.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::boltActionSniper)
@@ -985,7 +991,7 @@ public class ModItems {
   // Shotguns
   // ================================================================================
 
-  public static final RegistryObject<GunItem> TRENCH_GUN =
+  public static final DeferredHolder<Item, ? extends GunItem> TRENCH_GUN =
       deferredRegister.register("trench_gun",
           () -> AimableGunItem.builder(GunConfigurations.TRENCH_GUN.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::shotGun)
@@ -994,7 +1000,7 @@ public class ModItems {
               .setDefaultMagazine(ModItems.TRENCH_GUN_SHELLS)
               .build());
 
-  public static final RegistryObject<GunItem> MOSSBERG =
+  public static final DeferredHolder<Item, ? extends GunItem> MOSSBERG =
       deferredRegister.register("mossberg",
           () -> AimableGunItem.builder(GunConfigurations.MOSSBERG.getKey())
               .putAnimation(GunAnimationEvent.SHOOT, ShootAnimation::shotGun)
@@ -1007,7 +1013,7 @@ public class ModItems {
   // Grenades
   // ================================================================================
 
-  public static final RegistryObject<GrenadeItem> FIRE_GRENADE =
+  public static final DeferredHolder<Item, ? extends GrenadeItem> FIRE_GRENADE =
       deferredRegister.register("fire_grenade",
           () -> new GrenadeItem((GrenadeItem.Properties) new GrenadeItem.Properties()
               .setGrenadeEntitySupplier(
@@ -1016,7 +1022,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<GrenadeItem> SMOKE_GRENADE =
+  public static final DeferredHolder<Item, ? extends GrenadeItem> SMOKE_GRENADE =
       deferredRegister.register("smoke_grenade",
           () -> new GrenadeItem((GrenadeItem.Properties) new GrenadeItem.Properties()
               .setGrenadeEntitySupplier(
@@ -1025,7 +1031,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<GrenadeItem> FLASH_GRENADE =
+  public static final DeferredHolder<Item, ? extends GrenadeItem> FLASH_GRENADE =
       deferredRegister.register("flash_grenade",
           () -> new GrenadeItem((GrenadeItem.Properties) new GrenadeItem.Properties()
               .setGrenadeEntitySupplier(
@@ -1034,7 +1040,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<GrenadeItem> DECOY_GRENADE =
+  public static final DeferredHolder<Item, ? extends GrenadeItem> DECOY_GRENADE =
       deferredRegister.register("decoy_grenade",
           () -> new GrenadeItem((GrenadeItem.Properties) new GrenadeItem.Properties()
               .setGrenadeEntitySupplier(
@@ -1043,7 +1049,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<GrenadeItem> FRAG_GRENADE =
+  public static final DeferredHolder<Item, ? extends GrenadeItem> FRAG_GRENADE =
       deferredRegister.register("frag_grenade",
           () -> new GrenadeItem((GrenadeItem.Properties) new GrenadeItem.Properties()
               .setGrenadeEntitySupplier(
@@ -1052,7 +1058,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<GrenadeItem> C4_EXPLOSIVE =
+  public static final DeferredHolder<Item, ? extends GrenadeItem> C4_EXPLOSIVE =
       deferredRegister.register("c4_explosive",
           () -> new GrenadeItem((GrenadeItem.Properties) new GrenadeItem.Properties()
               .setGrenadeEntitySupplier(
@@ -1062,7 +1068,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<GrenadeItem> STICKY_C4_EXPLOSIVE =
+  public static final DeferredHolder<Item, ? extends GrenadeItem> STICKY_C4_EXPLOSIVE =
       deferredRegister.register("sticky_c4_explosive",
           () -> new GrenadeItem((GrenadeItem.Properties) new GrenadeItem.Properties()
               .setGrenadeEntitySupplier(
@@ -1073,7 +1079,7 @@ public class ModItems {
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> REMOTE_DETONATOR =
+  public static final DeferredHolder<Item, ? extends Item> REMOTE_DETONATOR =
       deferredRegister.register("remote_detonator",
           () -> new RemoteDetonatorItem(new Item.Properties()
               .stacksTo(1)
@@ -1083,139 +1089,139 @@ public class ModItems {
   // Weapon
   // ================================================================================
 
-  public static final RegistryObject<Item> CROWBAR = deferredRegister.register("crowbar",
+  public static final DeferredHolder<Item, ? extends Item> CROWBAR = deferredRegister.register("crowbar",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(100)
           ));
 
-  public static final RegistryObject<Item> BAT = deferredRegister.register("bat",
+  public static final DeferredHolder<Item, ? extends Item> BAT = deferredRegister.register("bat",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(55)
           ));
 
-  public static final RegistryObject<Item> KATANA = deferredRegister.register("katana",
+  public static final DeferredHolder<Item, ? extends Item> KATANA = deferredRegister.register("katana",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(40)
           ));
 
-  public static final RegistryObject<Item> PIPE = deferredRegister.register("pipe",
+  public static final DeferredHolder<Item, ? extends Item> PIPE = deferredRegister.register("pipe",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(60)
           ));
 
-  public static final RegistryObject<Item> RUSTY_PIPE = deferredRegister.register("rusty_pipe",
+  public static final DeferredHolder<Item, ? extends Item> RUSTY_PIPE = deferredRegister.register("rusty_pipe",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(20)
           ));
 
-  public static final RegistryObject<Item> FIRE_AXE = deferredRegister.register("fire_axe",
+  public static final DeferredHolder<Item, ? extends Item> FIRE_AXE = deferredRegister.register("fire_axe",
       () -> new ModAxeItem(Tiers.IRON, 1.0F, 14, -2.4F, new Item.Properties()
           .durability(100)
           ));
 
-  public static final RegistryObject<Item> CHAINSAW = deferredRegister.register("chainsaw",
+  public static final DeferredHolder<Item, ? extends Item> CHAINSAW = deferredRegister.register("chainsaw",
       () -> new ModAxeItem(Tiers.IRON, 2.0F,8, -2.4F, new Item.Properties()
           .durability(75)
           ));
 
-  public static final RegistryObject<Item> BOWIE_KNIFE = deferredRegister.register("bowie_knife",
+  public static final DeferredHolder<Item, ? extends Item> BOWIE_KNIFE = deferredRegister.register("bowie_knife",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(20)
           ));
 
-  public static final RegistryObject<Item> GOLF_CLUB = deferredRegister.register("golf_club",
+  public static final DeferredHolder<Item, ? extends Item> GOLF_CLUB = deferredRegister.register("golf_club",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(40)
           ));
 
-  public static final RegistryObject<Item> NIGHT_STICK = deferredRegister.register("night_stick",
+  public static final DeferredHolder<Item, ? extends Item> NIGHT_STICK = deferredRegister.register("night_stick",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(70)
           ));
 
-  public static final RegistryObject<Item> SLEDGEHAMMER = deferredRegister.register("sledgehammer",
+  public static final DeferredHolder<Item, ? extends Item> SLEDGEHAMMER = deferredRegister.register("sledgehammer",
       () -> new ModPickaxeItem(Tiers.IRON, 0.55F, 10, -2.4F,
           new Item.Properties()
               .durability(110)
               ));
 
-  public static final RegistryObject<Item> NAIL_BAT = deferredRegister.register("nail_bat",
+  public static final DeferredHolder<Item, ? extends Item> NAIL_BAT = deferredRegister.register("nail_bat",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(55)
           ));
 
-  public static final RegistryObject<Item> SHOVEL = deferredRegister.register("shovel",
+  public static final DeferredHolder<Item, ? extends Item> SHOVEL = deferredRegister.register("shovel",
       () -> new ModShovelItem(Tiers.IRON, 1.0F, 8, -2.4F, new Item.Properties()
           .durability(70)
           ));
 
-  public static final RegistryObject<Item> HATCHET = deferredRegister.register("hatchet",
+  public static final DeferredHolder<Item, ? extends Item> HATCHET = deferredRegister.register("hatchet",
       () -> new ModAxeItem(Tiers.IRON, 1.4F, 16, -2.4F, new Item.Properties()
           .durability(40)
           ));
 
-  public static final RegistryObject<Item> BROADSWORD = deferredRegister.register("broadsword",
+  public static final DeferredHolder<Item, ? extends Item> BROADSWORD = deferredRegister.register("broadsword",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(55)
           ));
 
-  public static final RegistryObject<Item> MACHETE = deferredRegister.register("machete",
+  public static final DeferredHolder<Item, ? extends Item> MACHETE = deferredRegister.register("machete",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(70)
           ));
 
-  public static final RegistryObject<Item> WEAPONIZED_SCYTHE =
+  public static final DeferredHolder<Item, ? extends Item> WEAPONIZED_SCYTHE =
       deferredRegister.register("weaponized_scythe",
           () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
               .durability(40)
               ));
 
-  public static final RegistryObject<Item> SCYTHE = deferredRegister.register("scythe",
+  public static final DeferredHolder<Item, ? extends Item> SCYTHE = deferredRegister.register("scythe",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(20)
           ));
 
-  public static final RegistryObject<Item> PICKAXE = deferredRegister.register("pickaxe",
+  public static final DeferredHolder<Item, ? extends Item> PICKAXE = deferredRegister.register("pickaxe",
       () -> new ModPickaxeItem(Tiers.IRON, 0.8F, 10, -2.4F, new Item.Properties()
           .durability(210)
           ));
 
-  public static final RegistryObject<Item> BO_STAFF = deferredRegister.register("bo_staff",
+  public static final DeferredHolder<Item, ? extends Item> BO_STAFF = deferredRegister.register("bo_staff",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(70)
           ));
 
-  public static final RegistryObject<Item> WRENCH = deferredRegister.register("wrench",
+  public static final DeferredHolder<Item, ? extends Item> WRENCH = deferredRegister.register("wrench",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(120)
           ));
 
-  public static final RegistryObject<Item> FRYING_PAN = deferredRegister.register("frying_pan",
+  public static final DeferredHolder<Item, ? extends Item> FRYING_PAN = deferredRegister.register("frying_pan",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(80)
           ));
 
-  public static final RegistryObject<Item> BOLT_CUTTERS = deferredRegister.register("bolt_cutters",
+  public static final DeferredHolder<Item, ? extends Item> BOLT_CUTTERS = deferredRegister.register("bolt_cutters",
       () -> new BoltCuttersItem(40, 9, -2.4F, new Item.Properties()
           .durability(50)
           ));
 
-  public static final RegistryObject<Item> COMBAT_KNIFE = deferredRegister.register("combat_knife",
+  public static final DeferredHolder<Item, ? extends Item> COMBAT_KNIFE = deferredRegister.register("combat_knife",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(100)
           ));
 
-  public static final RegistryObject<Item> STEEL_BAT = deferredRegister.register("steel_bat",
+  public static final DeferredHolder<Item, ? extends Item> STEEL_BAT = deferredRegister.register("steel_bat",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(180)
           ));
 
-  public static final RegistryObject<Item> CLEAVER = deferredRegister.register("cleaver",
+  public static final DeferredHolder<Item, ? extends Item> CLEAVER = deferredRegister.register("cleaver",
       () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
           .durability(80)
           ));
 
-  public static final RegistryObject<Item> BROKEN_BOTTLE =
+  public static final DeferredHolder<Item, ? extends Item> BROKEN_BOTTLE =
       deferredRegister.register("broken_bottle",
           () -> new MeleeWeaponItem(50, 16.0F, new Item.Properties()
               .durability(10)
@@ -1225,13 +1231,13 @@ public class ModItems {
   // 自定义奖励 / 弹药物品
   // ================================================================================
 
-  public static final RegistryObject<Item> CREATIVE_AMMO_BOX =
+  public static final DeferredHolder<Item, ? extends Item> CREATIVE_AMMO_BOX =
       deferredRegister.register("creative_ammo_box",
           () -> new CreativeAmmoBoxItem(new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> STARTER_REWARD_BOX =
+  public static final DeferredHolder<Item, ? extends Item> STARTER_REWARD_BOX =
       deferredRegister.register("starter_reward_box",
           () -> new StarterRewardBoxItem(new Item.Properties()
               .stacksTo(1)
@@ -1241,293 +1247,293 @@ public class ModItems {
   // Vests
   // ================================================================================
 
-  public static final RegistryObject<Item> BLACK_TACTICAL_VEST =
+  public static final DeferredHolder<Item, ? extends Item> BLACK_TACTICAL_VEST =
       deferredRegister.register("black_tactical_vest", ModItems::weakVest);
 
-  public static final RegistryObject<Item> GHILLIE_TACTICAL_VEST =
+  public static final DeferredHolder<Item, ? extends Item> GHILLIE_TACTICAL_VEST =
       deferredRegister.register("ghillie_tactical_vest", ModItems::weakVest);
 
-  public static final RegistryObject<Item> GREEN_TACTICAL_VEST =
+  public static final DeferredHolder<Item, ? extends Item> GREEN_TACTICAL_VEST =
       deferredRegister.register("green_tactical_vest", ModItems::weakVest);
 
-  public static final RegistryObject<Item> GREY_TACTICAL_VEST =
+  public static final DeferredHolder<Item, ? extends Item> GREY_TACTICAL_VEST =
       deferredRegister.register("grey_tactical_vest", ModItems::weakVest);
 
-  public static final RegistryObject<Item> RIOT_VEST =
+  public static final DeferredHolder<Item, ? extends Item> RIOT_VEST =
       deferredRegister.register("riot_vest", ModItems::strongVest);
 
-  public static final RegistryObject<Item> TAN_TACTICAL_VEST =
+  public static final DeferredHolder<Item, ? extends Item> TAN_TACTICAL_VEST =
       deferredRegister.register("tan_tactical_vest", ModItems::weakVest);
 
   // ================================================================================
   // Hats, Helmets and Masks
   // ================================================================================
 
-  public static final RegistryObject<Item> ARMY_HELMET = deferredRegister.register("army_helmet",
+  public static final DeferredHolder<Item, ? extends Item> ARMY_HELMET = deferredRegister.register("army_helmet",
       () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 1.0F)
           .setHeadshotReductionPercentage(0.2F)
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> BEANIE_HAT = deferredRegister.register("beanie_hat",
+  public static final DeferredHolder<Item, ? extends Item> BEANIE_HAT = deferredRegister.register("beanie_hat",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> BLACK_BALLISTIC_HAT =
+  public static final DeferredHolder<Item, ? extends Item> BLACK_BALLISTIC_HAT =
       deferredRegister.register("black_ballistic_hat",
           () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 1.0F)
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> FIREMAN_CHIEF_HAT =
+  public static final DeferredHolder<Item, ? extends Item> FIREMAN_CHIEF_HAT =
       deferredRegister.register("chief_fireman_hat",
           () -> new HatItem((HatItem.Properties) new HatItem.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> BLUE_HARD_HAT =
+  public static final DeferredHolder<Item, ? extends Item> BLUE_HARD_HAT =
       deferredRegister.register("blue_hard_hat",
           () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 0.0F)
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> BUNNY_HAT = deferredRegister.register("bunny_hat",
+  public static final DeferredHolder<Item, ? extends Item> BUNNY_HAT = deferredRegister.register("bunny_hat",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> CAMO_HELMET = deferredRegister.register("camo_helmet",
+  public static final DeferredHolder<Item, ? extends Item> CAMO_HELMET = deferredRegister.register("camo_helmet",
       () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 1.0F)
           .setHeadshotReductionPercentage(0.2F)
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> CLONE_HAT = deferredRegister.register("clone_hat",
+  public static final DeferredHolder<Item, ? extends Item> CLONE_HAT = deferredRegister.register("clone_hat",
       () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 1.0F)
           .setHeadshotReductionPercentage(0.2F)
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> COMBAT_BDU_HELMET =
+  public static final DeferredHolder<Item, ? extends Item> COMBAT_BDU_HELMET =
       deferredRegister.register("combat_bdu_helmet",
           () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 1.0F)
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> COOKIE_MASK = deferredRegister.register("cookie_mask",
+  public static final DeferredHolder<Item, ? extends Item> COOKIE_MASK = deferredRegister.register("cookie_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> COW_MASK = deferredRegister.register("cow_mask",
+  public static final DeferredHolder<Item, ? extends Item> COW_MASK = deferredRegister.register("cow_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> CREEPER_MASK = deferredRegister.register("creeper_mask",
+  public static final DeferredHolder<Item, ? extends Item> CREEPER_MASK = deferredRegister.register("creeper_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> DEADPOOL_MASK =
+  public static final DeferredHolder<Item, ? extends Item> DEADPOOL_MASK =
       deferredRegister.register("deadpool_mask",
           () -> new HatItem((HatItem.Properties) new HatItem.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> DOCTOR_MASK = deferredRegister.register("doctor_mask",
+  public static final DeferredHolder<Item, ? extends Item> DOCTOR_MASK = deferredRegister.register("doctor_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> FIREMAN_HAT = deferredRegister.register("fireman_hat",
+  public static final DeferredHolder<Item, ? extends Item> FIREMAN_HAT = deferredRegister.register("fireman_hat",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> GAS_MASK = deferredRegister.register("gas_mask",
+  public static final DeferredHolder<Item, ? extends Item> GAS_MASK = deferredRegister.register("gas_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .setImmuneToFlashes(true)
           .setImmuneToGas(true)
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> GHILLIE_HAT = deferredRegister.register("ghillie_hat",
+  public static final DeferredHolder<Item, ? extends Item> GHILLIE_HAT = deferredRegister.register("ghillie_hat",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> GREEN_ARMY_HELMET =
+  public static final DeferredHolder<Item, ? extends Item> GREEN_ARMY_HELMET =
       deferredRegister.register("green_army_helmet",
           () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 1.0F)
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> GREEN_BALLISTIC_HELMET =
+  public static final DeferredHolder<Item, ? extends Item> GREEN_BALLISTIC_HELMET =
       deferredRegister.register("green_ballistic_helmet",
           () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 1.0F)
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> GREEN_HARD_HAT =
+  public static final DeferredHolder<Item, ? extends Item> GREEN_HARD_HAT =
       deferredRegister.register("green_hard_hat",
           () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 0.0F)
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> GREY_ARMY_HELMET =
+  public static final DeferredHolder<Item, ? extends Item> GREY_ARMY_HELMET =
       deferredRegister.register("grey_army_helmet",
           () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 1.0F)
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> HACKER_MASK = deferredRegister.register("hacker_mask",
+  public static final DeferredHolder<Item, ? extends Item> HACKER_MASK = deferredRegister.register("hacker_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> HAZMAT_HAT = deferredRegister.register("hazmat_hat",
+  public static final DeferredHolder<Item, ? extends Item> HAZMAT_HAT = deferredRegister.register("hazmat_hat",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .setImmuneToFlashes(true)
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> JUGGERNAUT_HELMET =
+  public static final DeferredHolder<Item, ? extends Item> JUGGERNAUT_HELMET =
       deferredRegister.register("juggernaut_helmet",
           () -> new HatItem((HatItem.Properties) new HatItem.Properties()
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> KNIGHT_HAT = deferredRegister.register("knight_hat",
+  public static final DeferredHolder<Item, ? extends Item> KNIGHT_HAT = deferredRegister.register("knight_hat",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> MILITARY_HAZMAT_HAT =
+  public static final DeferredHolder<Item, ? extends Item> MILITARY_HAZMAT_HAT =
       deferredRegister.register("military_hazmat_hat",
           () -> new HatItem((HatItem.Properties) new HatItem.Properties()
               .setImmuneToFlashes(true)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> NINJA_HAT = deferredRegister.register("ninja_hat",
+  public static final DeferredHolder<Item, ? extends Item> NINJA_HAT = deferredRegister.register("ninja_hat",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> NV_GOGGLES_HAT =
+  public static final DeferredHolder<Item, ? extends Item> NV_GOGGLES_HAT =
       deferredRegister.register("nv_goggles_hat",
           () -> new HatItem((HatItem.Properties) new HatItem.Properties()
               .setNightVision(true)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> ORANGE_HARD_HAT =
+  public static final DeferredHolder<Item, ? extends Item> ORANGE_HARD_HAT =
       deferredRegister.register("orange_hard_hat",
           () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 0.0F)
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> PAYDAY_MASK = deferredRegister.register("payday_mask",
+  public static final DeferredHolder<Item, ? extends Item> PAYDAY_MASK = deferredRegister.register("payday_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> PAYDAY2_MASK = deferredRegister.register("payday2_mask",
+  public static final DeferredHolder<Item, ? extends Item> PAYDAY2_MASK = deferredRegister.register("payday2_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> PILOT_HELMET = deferredRegister.register("pilot_helmet",
+  public static final DeferredHolder<Item, ? extends Item> PILOT_HELMET = deferredRegister.register("pilot_helmet",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> PUMPKIN_MASK = deferredRegister.register("pumpkin_mask",
+  public static final DeferredHolder<Item, ? extends Item> PUMPKIN_MASK = deferredRegister.register("pumpkin_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> RADAR_CAP = deferredRegister.register("radar_cap",
+  public static final DeferredHolder<Item, ? extends Item> RADAR_CAP = deferredRegister.register("radar_cap",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> RIOT_HAT = deferredRegister.register("riot_hat",
+  public static final DeferredHolder<Item, ? extends Item> RIOT_HAT = deferredRegister.register("riot_hat",
       () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 1.0F)
           .setHeadshotReductionPercentage(0.2F)
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> SANTA_HAT = deferredRegister.register("santa_hat",
+  public static final DeferredHolder<Item, ? extends Item> SANTA_HAT = deferredRegister.register("santa_hat",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> SCUBA_MASK = deferredRegister.register("scuba_mask",
+  public static final DeferredHolder<Item, ? extends Item> SCUBA_MASK = deferredRegister.register("scuba_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .waterBreathing(true)
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> SHEEP_MASK = deferredRegister.register("sheep_mask",
+  public static final DeferredHolder<Item, ? extends Item> SHEEP_MASK = deferredRegister.register("sheep_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> SKI_MASK = deferredRegister.register("ski_mask",
+  public static final DeferredHolder<Item, ? extends Item> SKI_MASK = deferredRegister.register("ski_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .setImmuneToFlashes(true)
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> SPETSNAZ_HELMET =
+  public static final DeferredHolder<Item, ? extends Item> SPETSNAZ_HELMET =
       deferredRegister.register("spetsnaz_helmet",
           () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 1.0F)
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> TOP_HAT = deferredRegister.register("top_hat",
+  public static final DeferredHolder<Item, ? extends Item> TOP_HAT = deferredRegister.register("top_hat",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> TRAPPER_HAT = deferredRegister.register("trapper_hat",
+  public static final DeferredHolder<Item, ? extends Item> TRAPPER_HAT = deferredRegister.register("trapper_hat",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> USHANKA_HAT = deferredRegister.register("ushanka_hat",
+  public static final DeferredHolder<Item, ? extends Item> USHANKA_HAT = deferredRegister.register("ushanka_hat",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
 
-  public static final RegistryObject<Item> WINTER_MILITARY_HELMET =
+  public static final DeferredHolder<Item, ? extends Item> WINTER_MILITARY_HELMET =
       deferredRegister.register("winter_military_helmet",
           () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 1.0F)
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> YELLOW_HARD_HAT =
+  public static final DeferredHolder<Item, ? extends Item> YELLOW_HARD_HAT =
       deferredRegister.register("yellow_hard_hat",
           () -> new HatItem((HatItem.Properties) hatArmor(2.0F, 0.0F)
               .setHeadshotReductionPercentage(0.2F)
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> ZOMBIE_MASK = deferredRegister.register("zombie_mask",
+  public static final DeferredHolder<Item, ? extends Item> ZOMBIE_MASK = deferredRegister.register("zombie_mask",
       () -> new HatItem((HatItem.Properties) new HatItem.Properties()
           .stacksTo(1)
           ));
@@ -1536,7 +1542,7 @@ public class ModItems {
   // Clothing
   // ================================================================================
 
-  public static final RegistryObject<Item> ARMY_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> ARMY_CLOTHING =
       deferredRegister.register("army_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1544,7 +1550,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> SAS_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> SAS_CLOTHING =
       deferredRegister.register("sas_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1552,7 +1558,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> SPETSNAZ_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> SPETSNAZ_CLOTHING =
       deferredRegister.register("spetsnaz_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1560,7 +1566,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> POLICE_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> POLICE_CLOTHING =
       deferredRegister.register("police_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1568,7 +1574,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> CAMO_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> CAMO_CLOTHING =
       deferredRegister.register("camo_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1576,7 +1582,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> COMBAT_BDU_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> COMBAT_BDU_CLOTHING =
       deferredRegister.register("combat_bdu_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1584,7 +1590,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> WINTER_ARMY_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> WINTER_ARMY_CLOTHING =
       deferredRegister.register("winter_army_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1592,7 +1598,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> ARMY_DESERT_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> ARMY_DESERT_CLOTHING =
       deferredRegister.register("army_desert_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1600,7 +1606,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> PILOT_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> PILOT_CLOTHING =
       deferredRegister.register("pilot_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1608,7 +1614,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> HAZMAT_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> HAZMAT_CLOTHING =
       deferredRegister.register("hazmat_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .fireImmunity()
@@ -1617,7 +1623,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> TAC_GHILLIE_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> TAC_GHILLIE_CLOTHING =
       deferredRegister.register("tac_ghillie_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1625,7 +1631,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> SWAT_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> SWAT_CLOTHING =
       deferredRegister.register("swat_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1633,7 +1639,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> SPACE_SUIT_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> SPACE_SUIT_CLOTHING =
       deferredRegister.register("space_suit_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1641,7 +1647,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> SHERIFF_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> SHERIFF_CLOTHING =
       deferredRegister.register("sheriff_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1649,7 +1655,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> JUGGERNAUT_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> JUGGERNAUT_CLOTHING =
       deferredRegister.register("juggernaut_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .fireImmunity()
@@ -1658,7 +1664,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> FIREMAN_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> FIREMAN_CLOTHING =
       deferredRegister.register("fireman_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .fireImmunity()
@@ -1667,7 +1673,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> DOCTOR_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> DOCTOR_CLOTHING =
       deferredRegister.register("doctor_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1675,7 +1681,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> SMART_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> SMART_CLOTHING =
       deferredRegister.register("smart_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1683,7 +1689,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.CASUAL));
 
-  public static final RegistryObject<Item> CASUAL_GREEN_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> CASUAL_GREEN_CLOTHING =
       deferredRegister.register("casual_green_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1691,7 +1697,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.CASUAL));
 
-  public static final RegistryObject<Item> BUILDER_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> BUILDER_CLOTHING =
       deferredRegister.register("builder_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1699,7 +1705,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> BUSINESS_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> BUSINESS_CLOTHING =
       deferredRegister.register("business_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1707,7 +1713,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.CASUAL));
 
-  public static final RegistryObject<Item> SEC_GUARD_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> SEC_GUARD_CLOTHING =
       deferredRegister.register("sec_guard_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1715,7 +1721,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> MIL_HAZMAT_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> MIL_HAZMAT_CLOTHING =
       deferredRegister.register("mil_hazmat_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .fireImmunity()
@@ -1724,7 +1730,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> FULL_GHILLIE_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> FULL_GHILLIE_CLOTHING =
       deferredRegister.register("full_ghillie_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1732,7 +1738,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> RED_DUSK_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> RED_DUSK_CLOTHING =
       deferredRegister.register("red_dusk_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1740,7 +1746,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> CLONE_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> CLONE_CLOTHING =
       deferredRegister.register("clone_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1748,7 +1754,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> COOKIE_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> COOKIE_CLOTHING =
       deferredRegister.register("cookie_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1756,7 +1762,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.CASUAL));
 
-  public static final RegistryObject<Item> DEADPOOL_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> DEADPOOL_CLOTHING =
       deferredRegister.register("deadpool_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1764,7 +1770,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.CASUAL));
 
-  public static final RegistryObject<Item> NINJA_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> NINJA_CLOTHING =
       deferredRegister.register("ninja_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1772,7 +1778,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.CASUAL));
 
-  public static final RegistryObject<Item> ARMY_MEDIC_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> ARMY_MEDIC_CLOTHING =
       deferredRegister.register("army_medic_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1780,7 +1786,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> BLUE_DUSK_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> BLUE_DUSK_CLOTHING =
       deferredRegister.register("blue_dusk_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1788,7 +1794,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> PRESIDENT_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> PRESIDENT_CLOTHING =
       deferredRegister.register("president_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1796,7 +1802,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> YELLOW_DUSK_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> YELLOW_DUSK_CLOTHING =
       deferredRegister.register("yellow_dusk_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1804,7 +1810,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> ORANGE_DUSK_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> ORANGE_DUSK_CLOTHING =
       deferredRegister.register("orange_dusk_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1812,7 +1818,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> GREEN_DUSK_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> GREEN_DUSK_CLOTHING =
       deferredRegister.register("green_dusk_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1820,7 +1826,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> WHITE_DUSK_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> WHITE_DUSK_CLOTHING =
       deferredRegister.register("white_dusk_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1828,7 +1834,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> PURPLE_DUSK_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> PURPLE_DUSK_CLOTHING =
       deferredRegister.register("purple_dusk_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1836,7 +1842,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> SCUBA_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> SCUBA_CLOTHING =
       deferredRegister.register("scuba_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .enhancesSwimming()
@@ -1845,7 +1851,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.UTILITY));
 
-  public static final RegistryObject<Item> DDPAT_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> DDPAT_CLOTHING =
       deferredRegister.register("ddpat_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1853,7 +1859,7 @@ public class ModItems {
               ActionTypes.SHRED_CLOTHING,
               ClothingType.MILITARY));
 
-  public static final RegistryObject<Item> CONTRACTOR_CLOTHING =
+  public static final DeferredHolder<Item, ? extends Item> CONTRACTOR_CLOTHING =
       deferredRegister.register("contractor_clothing",
           () -> new ClothingItem((ClothingItem.Properties) new ClothingItem.Properties()
               .stacksTo(1)
@@ -1865,76 +1871,76 @@ public class ModItems {
   // Gun Parts
   // ================================================================================
 
-  public static final RegistryObject<Item> SMALL_BARREL = deferredRegister.register("small_barrel",
+  public static final DeferredHolder<Item, ? extends Item> SMALL_BARREL = deferredRegister.register("small_barrel",
       () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> MEDIUM_BARREL =
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_BARREL =
       deferredRegister.register("medium_barrel",
           () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> HEAVY_BARREL = deferredRegister.register("heavy_barrel",
+  public static final DeferredHolder<Item, ? extends Item> HEAVY_BARREL = deferredRegister.register("heavy_barrel",
       () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> SMALL_BODY = deferredRegister.register("small_body",
+  public static final DeferredHolder<Item, ? extends Item> SMALL_BODY = deferredRegister.register("small_body",
       () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> MEDIUM_BODY = deferredRegister.register("medium_body",
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_BODY = deferredRegister.register("medium_body",
       () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> HEAVY_BODY = deferredRegister.register("heavy_body",
+  public static final DeferredHolder<Item, ? extends Item> HEAVY_BODY = deferredRegister.register("heavy_body",
       () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> SMALL_HANDLE = deferredRegister.register("small_handle",
+  public static final DeferredHolder<Item, ? extends Item> SMALL_HANDLE = deferredRegister.register("small_handle",
       () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> MEDIUM_HANDLE =
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_HANDLE =
       deferredRegister.register("medium_handle",
           () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> HEAVY_HANDLE = deferredRegister.register("heavy_handle",
+  public static final DeferredHolder<Item, ? extends Item> HEAVY_HANDLE = deferredRegister.register("heavy_handle",
       () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> SMALL_STOCK = deferredRegister.register("small_stock",
+  public static final DeferredHolder<Item, ? extends Item> SMALL_STOCK = deferredRegister.register("small_stock",
       () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> MEDIUM_STOCK = deferredRegister.register("medium_stock",
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_STOCK = deferredRegister.register("medium_stock",
       () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> MEDIUM_BOLT = deferredRegister.register("medium_bolt",
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_BOLT = deferredRegister.register("medium_bolt",
       () -> new Item(new Item.Properties()));
 
-  public static final RegistryObject<Item> HEAVY_BOLT = deferredRegister.register("heavy_bolt",
+  public static final DeferredHolder<Item, ? extends Item> HEAVY_BOLT = deferredRegister.register("heavy_bolt",
       () -> new Item(new Item.Properties()));
 
   // ================================================================================
   // Miscellaneous
   // ================================================================================
 
-  public static final RegistryObject<Item> BINOCULARS =
+  public static final DeferredHolder<Item, ? extends Item> BINOCULARS =
       deferredRegister.register("binoculars",
           () -> new BinocularsItem(new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> PARACHUTE =
+  public static final DeferredHolder<Item, ? extends Item> PARACHUTE =
       deferredRegister.register("parachute",
           () -> new ParachuteItem(new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<ActionItem> HANDCUFFS =
+  public static final DeferredHolder<Item, ? extends ActionItem> HANDCUFFS =
       deferredRegister.register("handcuffs",
           () -> new ActionItem(ActionTypes.APPLY_HANDCUFFS, new Item.Properties()
               .durability(200)
               ));
 
-  public static final RegistryObject<Item> HANDCUFFS_KEY =
+  public static final DeferredHolder<Item, ? extends Item> HANDCUFFS_KEY =
       deferredRegister.register("handcuffs_key",
           () -> new HandcuffsKeyItem(new Item.Properties()
               .stacksTo(1)
               ));
 
-  public static final RegistryObject<Item> ELECTRONIC_SIGNAL =
+  public static final DeferredHolder<Item, ? extends Item> ELECTRONIC_SIGNAL =
       deferredRegister.register("electronic_signal",
           () -> new Item(new Item.Properties()
               .stacksTo(1)
@@ -1982,49 +1988,49 @@ public class ModItems {
   // Medical
   // ================================================================================
 
-  public static final RegistryObject<ActionItem> FIRST_AID_KIT =
+  public static final DeferredHolder<Item, ? extends ActionItem> FIRST_AID_KIT =
       deferredRegister.register("first_aid_kit",
           () -> new ActionItem(ActionTypes.USE_FIRST_AID_KIT, new Item.Properties()
               .stacksTo(3)
               ));
 
-  public static final RegistryObject<Item> DIRTY_RAG =
+  public static final DeferredHolder<Item, ? extends Item> DIRTY_RAG =
       deferredRegister.register("dirty_rag",
       () -> new ActionItem(ActionTypes.WASH_RAG, new Item.Properties()
           .stacksTo(3)
           ));
 
-  public static final RegistryObject<Item> BLOODY_RAG =
+  public static final DeferredHolder<Item, ? extends Item> BLOODY_RAG =
       deferredRegister.register("bloody_rag",
       () -> new ActionItem(ActionTypes.WASH_RAG, new Item.Properties()
           .stacksTo(3)
           ));
 
-  public static final RegistryObject<Item> CLEAN_RAG =
+  public static final DeferredHolder<Item, ? extends Item> CLEAN_RAG =
       deferredRegister.register("clean_rag",
       () -> new ActionItem(ActionTypes.USE_CLEAN_RAG, new Item.Properties()
           .stacksTo(3)
           ));
 
-  public static final RegistryObject<ActionItem> ADRENALINE_SYRINGE =
+  public static final DeferredHolder<Item, ? extends ActionItem> ADRENALINE_SYRINGE =
       deferredRegister.register("adrenaline_syringe",
           () -> new ActionItem(ActionTypes.USE_ADRENALINE_SYRINGE, new Item.Properties()
               .stacksTo(3)
               ));
 
-  public static final RegistryObject<ActionItem> SYRINGE =
+  public static final DeferredHolder<Item, ? extends ActionItem> SYRINGE =
       deferredRegister.register("syringe",
           () -> new ActionItem(ActionTypes.USE_SYRINGE, new Item.Properties()
               .stacksTo(3)
               ));
 
-  public static final RegistryObject<ActionItem> BLOOD_SYRINGE =
+  public static final DeferredHolder<Item, ? extends ActionItem> BLOOD_SYRINGE =
       deferredRegister.register("blood_syringe",
           () -> new ActionItem(ActionTypes.USE_BLOOD_SYRINGE, new Item.Properties()
               .stacksTo(3)
               ));
 
-  public static final RegistryObject<ActionItem> BANDAGE =
+  public static final DeferredHolder<Item, ? extends ActionItem> BANDAGE =
       deferredRegister.register("bandage",
           () -> new ActionItem(ActionTypes.USE_BANDAGE, new Item.Properties()
               .stacksTo(3)
@@ -2034,73 +2040,73 @@ public class ModItems {
   // Backpacks
   // ================================================================================
 
-  public static final RegistryObject<Item> SMALL_RED_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> SMALL_RED_BACKPACK = deferredRegister
       .register("small_red_backpack", ModItems::smallBackpack);
 
-  public static final RegistryObject<Item> SMALL_ORANGE_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> SMALL_ORANGE_BACKPACK = deferredRegister
       .register("small_orange_backpack", ModItems::smallBackpack);
 
-  public static final RegistryObject<Item> SMALL_YELLOW_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> SMALL_YELLOW_BACKPACK = deferredRegister
       .register("small_yellow_backpack", ModItems::smallBackpack);
 
-  public static final RegistryObject<Item> SMALL_GREEN_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> SMALL_GREEN_BACKPACK = deferredRegister
       .register("small_green_backpack", ModItems::smallBackpack);
 
-  public static final RegistryObject<Item> SMALL_BLUE_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> SMALL_BLUE_BACKPACK = deferredRegister
       .register("small_blue_backpack", ModItems::smallBackpack);
 
-  public static final RegistryObject<Item> SMALL_PURPLE_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> SMALL_PURPLE_BACKPACK = deferredRegister
       .register("small_purple_backpack", ModItems::smallBackpack);
 
-  public static final RegistryObject<Item> MEDIUM_RED_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_RED_BACKPACK = deferredRegister
       .register("medium_red_backpack", ModItems::mediumBackpack);
 
-  public static final RegistryObject<Item> MEDIUM_ORANGE_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_ORANGE_BACKPACK = deferredRegister
       .register("medium_orange_backpack", ModItems::mediumBackpack);
 
-  public static final RegistryObject<Item> MEDIUM_YELLOW_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_YELLOW_BACKPACK = deferredRegister
       .register("medium_yellow_backpack", ModItems::mediumBackpack);
 
-  public static final RegistryObject<Item> MEDIUM_GREEN_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_GREEN_BACKPACK = deferredRegister
       .register("medium_green_backpack", ModItems::mediumBackpack);
 
-  public static final RegistryObject<Item> MEDIUM_BLUE_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_BLUE_BACKPACK = deferredRegister
       .register("medium_blue_backpack", ModItems::mediumBackpack);
 
-  public static final RegistryObject<Item> MEDIUM_PURPLE_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_PURPLE_BACKPACK = deferredRegister
       .register("medium_purple_backpack", ModItems::mediumBackpack);
 
-  public static final RegistryObject<Item> MEDIUM_GREY_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_GREY_BACKPACK = deferredRegister
       .register("medium_grey_backpack", ModItems::mediumBackpack);
 
-  public static final RegistryObject<Item> MEDIUM_BLACK_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_BLACK_BACKPACK = deferredRegister
       .register("medium_black_backpack", ModItems::mediumBackpack);
 
-  public static final RegistryObject<Item> MEDIUM_GHILLIE_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_GHILLIE_BACKPACK = deferredRegister
       .register("medium_ghillie_backpack", ModItems::mediumBackpack);
 
-  public static final RegistryObject<Item> MEDIUM_WHITE_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> MEDIUM_WHITE_BACKPACK = deferredRegister
       .register("medium_white_backpack", ModItems::mediumBackpack);
 
-  public static final RegistryObject<Item> LARGE_GREY_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> LARGE_GREY_BACKPACK = deferredRegister
       .register("large_grey_backpack", ModItems::largeBackpack);
 
-  public static final RegistryObject<Item> LARGE_GREEN_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> LARGE_GREEN_BACKPACK = deferredRegister
       .register("large_green_backpack", ModItems::largeBackpack);
 
-  public static final RegistryObject<Item> LARGE_TAN_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> LARGE_TAN_BACKPACK = deferredRegister
       .register("large_tan_backpack", ModItems::largeBackpack);
 
-  public static final RegistryObject<Item> LARGE_BLACK_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> LARGE_BLACK_BACKPACK = deferredRegister
       .register("large_black_backpack", ModItems::largeBackpack);
 
-  public static final RegistryObject<Item> LARGE_GHILLIE_BACKPACK = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> LARGE_GHILLIE_BACKPACK = deferredRegister
       .register("large_ghillie_backpack", ModItems::largeBackpack);
 
-  public static final RegistryObject<Item> TAN_GUN_BAG = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> TAN_GUN_BAG = deferredRegister
       .register("tan_gun_bag", ModItems::gunBag);
 
-  public static final RegistryObject<Item> GREY_GUN_BAG = deferredRegister
+  public static final DeferredHolder<Item, ? extends Item> GREY_GUN_BAG = deferredRegister
       .register("grey_gun_bag", ModItems::gunBag);
 
   private static HatItem.Properties hatArmor(float armor, float armorToughness) {
@@ -2184,7 +2190,7 @@ public class ModItems {
   // Creative Mode Tabs
   // ================================================================================
 
-  public static final RegistryObject<CreativeModeTab> COSMETICS_TAB =
+  public static final DeferredHolder<CreativeModeTab, ? extends CreativeModeTab> COSMETICS_TAB =
       CREATIVE_MODE_TABS.register("cosmetics",
           () -> CreativeModeTab.builder()
               .title(Component.translatable("craftingdead.cosmetics"))
@@ -2192,7 +2198,7 @@ public class ModItems {
               .displayItems((params, output) -> ModItems.addCosmeticsTabItems(output))
               .build());
 
-  public static final RegistryObject<CreativeModeTab> COMBAT_TAB =
+  public static final DeferredHolder<CreativeModeTab, ? extends CreativeModeTab> COMBAT_TAB =
       CREATIVE_MODE_TABS.register("combat",
           () -> CreativeModeTab.builder()
               .title(Component.translatable("craftingdead.combat"))
@@ -2200,7 +2206,7 @@ public class ModItems {
               .displayItems((params, output) -> ModItems.addCombatTabItems(output))
               .build());
 
-  public static final RegistryObject<CreativeModeTab> MEDICAL_TAB =
+  public static final DeferredHolder<CreativeModeTab, ? extends CreativeModeTab> MEDICAL_TAB =
       CREATIVE_MODE_TABS.register("medical",
           () -> CreativeModeTab.builder()
               .title(Component.translatable("craftingdead.medical"))
@@ -2510,5 +2516,45 @@ public class ModItems {
     ArbitraryTooltips.registerTooltip(PARACHUTE,
         Component.translatable("parachute.information")
             .withStyle(ChatFormatting.GRAY));
+  }
+
+  public static void initAbilityProviders(net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent event) {
+    for (var item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
+      if (item instanceof GunItem gunItem) {
+        if (gunItem instanceof MinigunItem) {
+          event.registerItem(Gun.CAPABILITY,
+              (stack, ctx) -> new com.craftingdead.core.world.item.gun.minigun.Minigun(stack, gunItem),
+              gunItem);
+        } else {
+          event.registerItem(Gun.CAPABILITY,
+              (stack, ctx) -> new com.craftingdead.core.world.item.gun.aimable.AimableGun(stack, gunItem),
+              gunItem);
+        }
+      } else if (item instanceof MagazineItem magazineItem) {
+        event.registerItem(Magazine.CAPABILITY,
+            (stack, ctx) -> new com.craftingdead.core.world.item.gun.magazine.MagazineImpl(magazineItem),
+            magazineItem);
+      } else if (item instanceof ClothingItem clothingItem) {
+        event.registerItem(Equipment.CAPABILITY,
+            (stack, ctx) -> SimpleClothing.of(clothingItem), clothingItem);
+      } else if (item instanceof HatItem hatItem) {
+        event.registerItem(Equipment.CAPABILITY, (stack, ctx) -> SimpleHat.of(hatItem), hatItem);
+      } else if (item instanceof StorageItem storageItem) {
+        event.registerItem(Equipment.CAPABILITY,
+            (stack, ctx) -> storageItem.new Storage(), storageItem);
+      } else if (item instanceof MeleeWeaponItem meleeWeaponItem) {
+        event.registerItem(Equipment.CAPABILITY, (stack, ctx) -> Equipment.forSlot(Equipment.Slot.MELEE), meleeWeaponItem);
+        event.registerItem(CombatSlotProvider.CAPABILITY, (stack, ctx) -> CombatSlot.MELEE, meleeWeaponItem);
+      } else if (item instanceof GrenadeItem) {
+        event.registerItem(CombatSlotProvider.CAPABILITY, (stack, ctx) -> CombatSlot.GRENADE, item);
+      } else if (item instanceof BinocularsItem binocularsItem) {
+        event.registerItem(Scope.CAPABILITY, (stack, ctx) -> Scope.of(binocularsItem, stack), binocularsItem);
+      } else if (item instanceof PaintItem paintItem) {
+        event.registerItem(Paint.CAPABILITY, (stack, ctx) -> {
+          var skin = paintItem.getSkin();
+          return skin == null ? null : Paint.of(skin);
+        }, paintItem);
+      }
+    }
   }
 }

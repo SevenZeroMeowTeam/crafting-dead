@@ -17,14 +17,30 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.CraftingDead;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record HitMessage(Vec3 hitPos, boolean dead) {
+public record HitMessage(Vec3 hitPos, boolean dead) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<HitMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "hit_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, HitMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, HitMessage msg) -> msg.encode(buf), HitMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeDouble(this.hitPos.x());
@@ -38,7 +54,7 @@ public record HitMessage(Vec3 hitPos, boolean dead) {
         in.readBoolean());
   }
 
-  public static void handle(HitMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(HitMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(
         () -> CraftingDead.getInstance().getClientDist().handleHit(msg.hitPos, msg.dead));
   }

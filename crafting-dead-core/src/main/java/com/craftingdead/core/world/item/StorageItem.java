@@ -41,13 +41,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class StorageItem extends EquipmentItem {
 
@@ -71,41 +67,7 @@ public class StorageItem extends EquipmentItem {
     this.component = properties.component;
   }
 
-  @Override
-  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
-    return new ICapabilitySerializable<CompoundTag>() {
-
-      private final LazyOptional<Storage> storage = LazyOptional.of(Storage::new);
-
-      @Override
-      public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-          return this.storage.lazyMap(Storage::itemHandler).cast();
-        }
-
-        if (cap == Equipment.CAPABILITY) {
-          return this.storage.cast();
-        }
-
-        return LazyOptional.empty();
-      }
-
-      @Override
-      public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
-        return this.storage
-            .lazyMap(Storage::itemHandler)
-            .map(itemHandler -> itemHandler.serializeNBT(provider))
-            .orElseGet(CompoundTag::new);
-      }
-
-      @Override
-      public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag tag) {
-        this.storage
-            .lazyMap(Storage::itemHandler)
-            .ifPresent(itemHandler -> itemHandler.deserializeNBT(provider, tag));
-      }
-    };
-  }
+  
 
   @Override
   public void appendHoverText(ItemStack itemStack, net.minecraft.world.item.Item.TooltipContext world, List<Component> lines,
@@ -116,12 +78,12 @@ public class StorageItem extends EquipmentItem {
       lines.add(this.component.copy().withStyle(ChatFormatting.GRAY));
     }
 
-    itemStack.getCapability(ForgeCapabilities.ITEM_HANDLER)
-        .ifPresent(itemHandler -> {
-          int itemsBeyondLimit = 0;
-          int itemsDisplayed = 0;
+    var itemHandler = itemStack.getCapability(Capabilities.ItemHandler.ITEM);
+    if (itemHandler != null) {
+      int itemsBeyondLimit = 0;
+      int itemsDisplayed = 0;
 
-          for (int i = 0; i < itemHandler.getSlots(); i++) {
+      for (int i = 0; i < itemHandler.getSlots(); i++) {
             var stack = itemHandler.getStackInSlot(i);
             if (!stack.isEmpty()) {
               if (itemsDisplayed++ >= MAX_ROWS_TO_SHOW) {
@@ -141,11 +103,11 @@ public class StorageItem extends EquipmentItem {
             }
           }
 
-          if (itemsBeyondLimit > 0) {
-            lines.add(Component.literal(". . . + " + itemsBeyondLimit)
-                .withStyle(ChatFormatting.RED));
-          }
-        });
+      if (itemsBeyondLimit > 0) {
+        lines.add(Component.literal(". . . + " + itemsBeyondLimit)
+            .withStyle(ChatFormatting.RED));
+      }
+    }
   }
 
   public static class Properties extends Item.Properties {
@@ -190,7 +152,7 @@ public class StorageItem extends EquipmentItem {
     AbstractContainerMenu createMenu(int windowId, Inventory inventory, IItemHandler itemHandler);
   }
 
-  private class Storage implements Equipment, MenuConstructor {
+  public class Storage implements Equipment, MenuConstructor {
 
     private final ItemStackHandler itemHandler;
 

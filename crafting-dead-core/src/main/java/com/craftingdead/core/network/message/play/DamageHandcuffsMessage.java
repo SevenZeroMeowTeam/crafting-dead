@@ -17,15 +17,32 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.function.Supplier;
 
-public record DamageHandcuffsMessage() {
+public record DamageHandcuffsMessage() implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<DamageHandcuffsMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "damage_handcuffs_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, DamageHandcuffsMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, DamageHandcuffsMessage msg) -> msg.encode(buf), DamageHandcuffsMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf buf) {
   }
@@ -34,9 +51,9 @@ public record DamageHandcuffsMessage() {
     return new DamageHandcuffsMessage();
   }
 
-  public static void handle(DamageHandcuffsMessage msg, CustomPayloadEvent.Context context) {
+  public static void handle(DamageHandcuffsMessage msg, IPayloadContext context) {
     context.enqueueWork(() -> {
-      ServerPlayer player = context.getSender();
+      ServerPlayer player = (ServerPlayer) context.player();
       if (player != null) {
         var playerExtension = PlayerExtension.getOrThrow(player);
         if (playerExtension.isHandcuffed()) {

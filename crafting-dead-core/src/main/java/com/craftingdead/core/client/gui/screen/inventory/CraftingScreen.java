@@ -19,7 +19,7 @@
 package com.craftingdead.core.client.gui.screen.inventory;
 
 
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.network.NetworkChannel;
 import com.craftingdead.core.network.message.play.OpenEquipmentMenuMessage;
@@ -152,8 +152,7 @@ public class CraftingScreen extends EffectRenderingInventoryScreen<CraftingMenu>
     if (this.minecraft != null && this.minecraft.player != null) {
       this.minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.2F, 1.0F);
     }
-    NetworkChannel.PLAY.getSimpleChannel().send(new OpenEquipmentMenuMessage(),
-        PacketDistributor.SERVER.noArg());
+    PacketDistributor.sendToServer(new OpenEquipmentMenuMessage());
   }
 
   /**

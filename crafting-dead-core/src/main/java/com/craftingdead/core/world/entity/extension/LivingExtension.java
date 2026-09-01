@@ -40,30 +40,29 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.EntityCapability;
 
 public interface LivingExtension<E extends LivingEntity, H extends LivingHandler>
     extends LivingHandler {
 
-  Capability<LivingExtension<?, ?>> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
-
-  /**
-   * @see {@link net.minecraftforge.event.AttachCapabilitiesEvent}
-   */
-  ResourceLocation CAPABILITY_KEY = ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "living_extension");
+  @SuppressWarnings("unchecked")
+  EntityCapability<LivingExtension<?, ?>, Void> CAPABILITY = EntityCapability.createVoid(
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "living_extension"),
+      (Class<LivingExtension<?, ?>>) (Class<?>) LivingExtension.class);
 
   @SuppressWarnings("unchecked")
   static <E extends LivingEntity> LivingExtension<E, ?> getOrThrow(E entity) {
-    return CapabilityUtil.getOrThrow(CAPABILITY, entity, LivingExtension.class);
+    final var living = entity.getCapability(CAPABILITY);
+    if (living == null) {
+      throw new IllegalStateException("Expecting LivingExtension capability");
+    }
+    return (LivingExtension<E, ?>) living;
   }
 
   @Nullable
   @SuppressWarnings("unchecked")
   static <E extends LivingEntity> LivingExtension<E, ?> get(E entity) {
-    return CapabilityUtil.get(CAPABILITY, entity, LivingExtension.class);
+    return (LivingExtension<E, ?>) entity.getCapability(CAPABILITY);
   }
 
   /**
@@ -115,7 +114,7 @@ public interface LivingExtension<E extends LivingEntity, H extends LivingHandler
    * @return whether the {@link Action} is being performed
    */
   default boolean performAction(Action action, boolean sendUpdate) {
-    return this.performAction(action, false, sendUpdate);
+    return this.<Action>performAction(action, false, sendUpdate);
   }
 
   /**
@@ -263,22 +262,23 @@ public interface LivingExtension<E extends LivingEntity, H extends LivingHandler
   /**
    * Helper method to retrieve a gun in the entity's main hand.
    * 
-   * @return a {@link LazyOptional} gun.
+   * @return a {@link Gun}, or {@code null} if not present.
    */
-  default LazyOptional<Gun> mainHandGun() {
+  @Nullable
+  default Gun mainHandGun() {
     return this.mainHandItem().getCapability(Gun.CAPABILITY);
   }
 
   ItemStack getItemInSlot(Equipment.Slot slot);
 
-  default LazyOptional<Equipment> getEquipmentInSlot(Equipment.Slot slot) {
+  @Nullable
+  default Equipment getEquipmentInSlot(Equipment.Slot slot) {
     return this.getItemInSlot(slot).getCapability(Equipment.CAPABILITY);
   }
 
   default <T extends Equipment> Optional<T> getEquipmentInSlot(Equipment.Slot slot, Class<T> type) {
-    return this.getEquipmentInSlot(slot)
-        .filter(type::isInstance)
-        .map(type::cast);
+    var equipment = this.getEquipmentInSlot(slot);
+    return type.isInstance(equipment) ? Optional.of(type.cast(equipment)) : Optional.empty();
   }
 
   ItemStack setItemInSlot(Equipment.Slot slot, ItemStack itemStack);

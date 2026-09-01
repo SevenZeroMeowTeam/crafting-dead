@@ -23,8 +23,7 @@ import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.core.world.item.gun.magazine.Magazine;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 public interface AmmoProvider extends INBTSerializable<CompoundTag>, Synched {
 
@@ -37,11 +36,15 @@ public interface AmmoProvider extends INBTSerializable<CompoundTag>, Synched {
   ItemStack getMagazineStack();
 
   default Magazine getExpectedMagazine() {
-    return this.getMagazine()
-        .orElseThrow(() -> new IllegalStateException("No magazine capability"));
+    var magazine = this.getMagazine();
+    if (magazine == null) {
+      throw new IllegalStateException("No magazine capability");
+    }
+    return magazine;
   }
 
-  default LazyOptional<Magazine> getMagazine() {
+  @org.jetbrains.annotations.Nullable
+  default Magazine getMagazine() {
     return this.getMagazineStack().getCapability(Magazine.CAPABILITY);
   }
 

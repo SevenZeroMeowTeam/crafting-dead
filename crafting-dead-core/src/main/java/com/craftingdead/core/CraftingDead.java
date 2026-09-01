@@ -75,42 +75,46 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.loading.JarVersionLookupHandler;
-import net.minecraftforge.server.ServerLifecycleHooks;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 @Mod(CraftingDead.ID)
 public class CraftingDead {
 
   public static final String ID = "craftingdead";
 
-  public static final String VERSION =
-      JarVersionLookupHandler.getImplementationVersion(CraftingDead.class).orElse("[version]");
+  public static final String VERSION = net.neoforged.fml.ModList.get()
+      .getModContainerById(ID)
+      .map(container -> container.getModInfo().getVersion().toString())
+      .orElse("[version]");
 
   /**
    * Logger.
@@ -127,13 +131,11 @@ public class CraftingDead {
    */
   private final ModDist modDist;
 
-  public CraftingDead(FMLJavaModLoadingContext context) {
+  public CraftingDead(IEventBus modEventBus) {
     instance = this;
 
-    final var modEventBus = context.getModEventBus();
-
     if (FMLEnvironment.dist.isClient()) {
-      this.modDist = new ClientDist(context);
+      this.modDist = new ClientDist(modEventBus);
     } else {
       this.modDist = new ServerDist();
     }
@@ -143,9 +145,10 @@ public class CraftingDead {
     modEventBus.addListener(this::handleRegisterCapabilities);
     modEventBus.addListener(this::handleConfigLoading);
     modEventBus.addListener(this::handleConfigReloading);
+    modEventBus.addListener(this::handleRegisterPayloads);
 
-    context.registerConfig(ModConfig.Type.COMMON, CommonConfig.configSpec);
-    context.registerConfig(ModConfig.Type.SERVER, ServerConfig.configSpec);
+    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, CommonConfig.configSpec);
+    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.SERVER, ServerConfig.configSpec);
 
     ModEntityTypes.deferredRegister.register(modEventBus);
     ModItems.deferredRegister.register(modEventBus);
@@ -163,11 +166,12 @@ public class CraftingDead {
     GunConfigurations.deferredRegister.register(modEventBus);
     GunTriggerPredicates.deferredRegister.register(modEventBus);
 
-    MinecraftForge.EVENT_BUS.register(this);
-//    MinecraftForge.EVENT_BUS.register(TraumaHandler.INSTANCE);
+    NeoForge.EVENT_BUS.register(this);
+    NeoForge.EVENT_BUS.addListener(this::handleRegisterBrewingRecipes);
+//    NeoForge.EVENT_BUS.register(TraumaHandler.INSTANCE);
 
-    // 品质系统：合成随机品质 / 品质伤害加成 / 剑 50 伤害无 CD / 初始奖励 / 创造弹药箱
-    MinecraftForge.EVENT_BUS.register(com.craftingdead.core.quality.QualityEventHandler.INSTANCE);
+    // 注册质量事件处理器（每 50 tick / server 端）
+    NeoForge.EVENT_BUS.register(com.craftingdead.core.quality.QualityEventHandler.INSTANCE);
 
     ProtectionConfig.load();
   }
@@ -196,15 +200,28 @@ public class CraftingDead {
     // TelemetryManager.initialize(ID, VERSION, Optional::empty, null,
     //     scope -> scope.setTag("craftingdead.version", VERSION));
     // Sentry telemetry disabled - dependency not bundled
-    NetworkChannel.loadChannels();
-    MinecraftForge.EVENT_BUS.addListener(this::handleBrewingRecipeRegister);
   }
 
-  private void handleBrewingRecipeRegister(
-      net.minecraftforge.event.brewing.BrewingRecipeRegisterEvent event) {
-    event.addRecipe(Ingredient.of(ModItems.SYRINGE.get()),
-        Ingredient.of(Items.REDSTONE),
-        new ItemStack(ModItems.ADRENALINE_SYRINGE.get()));
+  private void handleRegisterBrewingRecipes(RegisterBrewingRecipesEvent event) {
+    final ItemStack syringe = ModItems.SYRINGE.get().getDefaultInstance();
+    final ItemStack adrenaline = ModItems.ADRENALINE_SYRINGE.get().getDefaultInstance();
+    final Ingredient redstone = Ingredient.of(Items.REDSTONE);
+    event.getBuilder().addRecipe(new net.neoforged.neoforge.common.brewing.IBrewingRecipe() {
+      @Override
+      public boolean isInput(ItemStack input) {
+        return ItemStack.isSameItemSameComponents(input, syringe);
+      }
+
+      @Override
+      public boolean isIngredient(ItemStack ingredient) {
+        return redstone.test(ingredient);
+      }
+
+      @Override
+      public ItemStack getOutput(ItemStack input, ItemStack ingredient) {
+        return isInput(input) && isIngredient(ingredient) ? adrenaline.copy() : ItemStack.EMPTY;
+      }
+    });
   }
 
   private void handleGatherData(GatherDataEvent event) {
@@ -223,13 +240,11 @@ public class CraftingDead {
   }
 
   private void handleRegisterCapabilities(RegisterCapabilitiesEvent event) {
-    event.register(LivingExtension.class);
-    event.register(Equipment.class);
-    event.register(CombatSlotProvider.class);
-    event.register(Gun.class);
-    event.register(Magazine.class);
-    event.register(Scope.class);
-    event.register(Paint.class);
+    ModItems.initAbilityProviders(event);
+  }
+
+  private void handleRegisterPayloads(RegisterPayloadHandlersEvent event) {
+    NetworkChannel.register(event);
   }
 
   private void handleConfigLoading(ModConfigEvent.Loading event) {
@@ -286,59 +301,52 @@ public class CraftingDead {
   }
 
   @SubscribeEvent
-  public void handleEntityItemPickup(EntityItemPickupEvent event) {
-    ((Player) event.getEntity()).getCapability(LivingExtension.CAPABILITY)
-        .<PlayerExtension<?>>cast()
-        .filter(PlayerExtension::isCombatModeEnabled)
-        .ifPresent(living -> {
-          final ItemStack itemStack = event.getItem().getItem();
-          CombatSlot combatSlot = CombatSlot.getSlotType(itemStack).orElse(null);
-          CombatPickupEvent combatPickupEvent = new CombatPickupEvent(itemStack, combatSlot);
-          if (MinecraftForge.EVENT_BUS.post(combatPickupEvent)) {
-            event.setCanceled(true);
-          } else if (combatSlot != null) {
-            if (combatSlot.addToInventory(itemStack, event.getEntity().getInventory(), false)) {
-              // Allows normal processing of item pickup but prevents item being added to inventory
-              // because we've already added it.
-              event.setResult(Event.Result.ALLOW);
-            } else {
-              event.setCanceled(true);
-            }
-          }
-        });
+  public void handleEntityItemPickup(ItemEntityPickupEvent.Pre event) {
+    var living = event.getPlayer().getCapability(LivingExtension.CAPABILITY);
+    if (living instanceof PlayerExtension<?> playerExtension && playerExtension.isCombatModeEnabled()) {
+      final ItemStack itemStack = event.getItemEntity().getItem();
+      CombatSlot combatSlot = CombatSlot.getSlotType(itemStack).orElse(null);
+      CombatPickupEvent combatPickupEvent = new CombatPickupEvent(itemStack, combatSlot);
+      NeoForge.EVENT_BUS.post(combatPickupEvent);
+      if (combatPickupEvent.isCanceled()) {
+        event.setCanPickup(TriState.FALSE);
+      } else if (combatSlot != null) {
+        if (combatSlot.addToInventory(itemStack, event.getPlayer().getInventory(), false)) {
+          // Allows normal processing of item pickup but prevents item being added to inventory
+          // because we've already added it.
+          event.setCanPickup(TriState.TRUE);
+        } else {
+          event.setCanPickup(TriState.FALSE);
+        }
+      }
+    }
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
   public void handleLivingSetTarget(LivingChangeTargetEvent event) {
-    if (event.getNewTarget() != null && event.getEntity() instanceof Mob mob) {
-      if (mob.hasEffect(ModMobEffects.FLASH_BLINDNESS.getHolder().orElseThrow())) {
-        event.setNewTarget(null);
+    if (event.getNewAboutToBeSetTarget() != null && event.getEntity() instanceof Mob mob) {
+      if (mob.hasEffect(ModMobEffects.FLASH_BLINDNESS)) {
+        event.setNewAboutToBeSetTarget(null);
       }
     }
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
   public void handleLivingDeath(LivingDeathEvent event) {
-    if (event.getEntity()
-        .getCapability(LivingExtension.CAPABILITY)
-        .map(living -> living.handleDeath(event.getSource()))
-        .orElse(false)
-        || (event.getSource().getEntity() != null && event
-            .getSource()
-            .getEntity()
-            .getCapability(LivingExtension.CAPABILITY)
-            .map(living -> living.handleKill(event.getEntity()))
-            .orElse(false))) {
+    var deadLiving = event.getEntity().getCapability(LivingExtension.CAPABILITY);
+    var sourceEntity = event.getSource().getEntity();
+    var killerLiving = sourceEntity != null ? sourceEntity.getCapability(LivingExtension.CAPABILITY) : null;
+    if ((deadLiving != null && deadLiving.handleDeath(event.getSource()))
+        || (killerLiving != null && killerLiving.handleKill(event.getEntity()))) {
       event.setCanceled(true);
     }
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
   public void handleLivingDrops(LivingDropsEvent event) {
-    boolean canceled = event.getEntity()
-        .getCapability(LivingExtension.CAPABILITY)
-        .map(living -> living.handleDeathLoot(event.getSource(), event.getDrops(), 0))
-        .orElse(false);
+    var living = event.getEntity().getCapability(LivingExtension.CAPABILITY);
+    boolean canceled = living != null
+        && living.handleDeathLoot(event.getSource(), event.getDrops(), 0);
     event.setCanceled(canceled);
     if (!canceled) {
       scatterDrops(event.getEntity(), event.getDrops());
@@ -346,8 +354,7 @@ public class CraftingDead {
   }
 
   /**
-   * 物理散落：让击杀产生的掉落物以带随机速度与朝向的方式向四周散落，
-   * 落地后保持为可拾取实体（保留默认拾取延迟）。
+   * 将死亡掉落物向四周散开，让掉落物看起来更真实。
    */
   private static void scatterDrops(LivingEntity entity, Collection<ItemEntity> drops) {
     var random = entity.getRandom();
@@ -362,91 +369,78 @@ public class CraftingDead {
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
-  public void handleLivingAttack(LivingAttackEvent event) {
-    event.getEntity()
-        .getCapability(LivingExtension.CAPABILITY)
-        .ifPresent(living -> event.setCanceled(
-            living.handleHurt(event.getSource(), event.getAmount())));
+  public void handleLivingAttack(LivingIncomingDamageEvent event) {
+    var living = event.getEntity().getCapability(LivingExtension.CAPABILITY);
+    if (living != null) {
+      event.setCanceled(living.handleHurt(event.getSource(), event.getAmount()));
+    }
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
-  public void handleLivingDamage(LivingDamageEvent event) {
-    event.getEntity()
-        .getCapability(LivingExtension.CAPABILITY)
-        .ifPresent(living -> event.setAmount(
-            living.handleDamaged(event.getSource(), event.getAmount())));
+  public void handleLivingDamage(LivingDamageEvent.Pre event) {
+    var living = event.getEntity().getCapability(LivingExtension.CAPABILITY);
+    if (living != null) {
+      event.setNewDamage(living.handleDamaged(event.getSource(), event.getNewDamage()));
+    }
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
   public void handleEntityBlockPlace(BlockEvent.EntityPlaceEvent event) {
     if (event.getEntity() != null) {
-      event.getEntity()
-          .getCapability(LivingExtension.CAPABILITY)
-          .ifPresent(living -> event.setCanceled(
-              living.handleBlockPlace(event.getBlockSnapshot(), event.getPlacedBlock(),
-                  event.getPlacedAgainst())));
+      var living = event.getEntity().getCapability(LivingExtension.CAPABILITY);
+      if (living != null) {
+        event.setCanceled(living.handleBlockPlace(event.getBlockSnapshot(), event.getPlacedBlock(),
+            event.getPlacedAgainst()));
+      }
     }
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
   public void handleEntityBlockMultiPlace(BlockEvent.EntityMultiPlaceEvent event) {
     if (event.getEntity() != null) {
-      event.getEntity()
-          .getCapability(LivingExtension.CAPABILITY)
-          .ifPresent(living -> event.setCanceled(
-              living.handleMultiBlockPlace(event.getReplacedBlockSnapshots(),
-                  event.getPlacedBlock(), event.getPlacedAgainst())));
+      var living = event.getEntity().getCapability(LivingExtension.CAPABILITY);
+      if (living != null) {
+        event.setCanceled(living.handleMultiBlockPlace(event.getReplacedBlockSnapshots(),
+            event.getPlacedBlock(), event.getPlacedAgainst()));
+      }
     }
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST)
   public void handleEntityBlockBreakEvent(BlockEvent.BreakEvent event) {
-    var xp = new MutableInt(event.getExpToDrop());
+    var xp = new MutableInt();
     event.setCanceled(PlayerExtension.getOrThrow(event.getPlayer()).handleBlockBreak(event.getPos(),
         event.getState(), xp));
-    event.setExpToDrop(xp.getValue());
   }
 
   @SubscribeEvent
   public void handlePlayerClone(PlayerEvent.Clone event) {
-    event.getOriginal().reviveCaps();
     PlayerExtension.getOrThrow(event.getEntity()).copyFrom(
         PlayerExtension.getOrThrow((ServerPlayer) event.getOriginal()), event.isWasDeath());
   }
 
   @SubscribeEvent
-  public void handleLivingUpdate(LivingTickEvent event) {
-    event.getEntity().getCapability(LivingExtension.CAPABILITY).ifPresent(living -> {
+  public void handleLivingUpdate(EntityTickEvent event) {
+    if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
+      return;
+    }
+    var living = livingEntity.getCapability(LivingExtension.CAPABILITY);
+    if (living != null) {
       living.tick();
       if (!living.level().isClientSide() && living.requiresSync()) {
         RegistryFriendlyByteBuf data = new RegistryFriendlyByteBuf(
             new FriendlyByteBuf(Unpooled.buffer()), living.level().registryAccess());
         living.encode(data, false);
-        NetworkChannel.PLAY.getSimpleChannel().send(
-            new SyncLivingMessage(living.entity().getId(), data),
-            PacketDistributor.TRACKING_ENTITY_AND_SELF.with(living.entity()));
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(living.entity(), new SyncLivingMessage(living.entity().getId(), data));
       }
-    });
-  }
-
-  @SubscribeEvent
-  public void handlePlayerTick(TickEvent.PlayerTickEvent event) {
-    if (event.phase == TickEvent.Phase.END) {
-      event.player.getCapability(LivingExtension.CAPABILITY)
-          .map(PlayerExtension.class::cast)
-          .ifPresent(PlayerExtension::playerTick);
     }
   }
 
   @SubscribeEvent
-  public void handleAttachEntityCapabilities(AttachCapabilitiesEvent<Entity> event) {
-    if (event.getObject() instanceof LivingEntity entity) {
-      var living = entity instanceof Player player
-          ? PlayerExtension.create(player)
-          : BasicLivingExtension.create(entity);
-      event.addCapability(LivingExtension.CAPABILITY_KEY, CapabilityUtil.serializableProvider(
-          () -> living, LivingExtension.CAPABILITY));
-      living.load();
+  public void handlePlayerTick(PlayerTickEvent.Post event) {
+    var living = event.getEntity().getCapability(LivingExtension.CAPABILITY);
+    if (living instanceof PlayerExtension<?> playerExtension) {
+      playerExtension.playerTick();
     }
   }
 
@@ -466,9 +460,7 @@ public class CraftingDead {
     RegistryFriendlyByteBuf data = new RegistryFriendlyByteBuf(
         new FriendlyByteBuf(Unpooled.buffer()), event.getEntity().level().registryAccess());
     PlayerExtension.getOrThrow(event.getEntity()).encode(data, true);
-    NetworkChannel.PLAY.getSimpleChannel().send(
-        new SyncLivingMessage(event.getEntity().getId(), data),
-        PacketDistributor.TRACKING_ENTITY_AND_SELF.with(event.getEntity()));
+    PacketDistributor.sendToPlayersTrackingEntityAndSelf(event.getEntity(), new SyncLivingMessage(event.getEntity().getId(), data));
   }
 
   @SubscribeEvent
@@ -483,21 +475,18 @@ public class CraftingDead {
   }
 
   private static void startTracking(Entity targetEntity, ServerPlayer playerEntity) {
-    targetEntity.getCapability(LivingExtension.CAPABILITY).ifPresent(trackedLiving -> {
+    var trackedLiving = targetEntity.getCapability(LivingExtension.CAPABILITY);
+    if (trackedLiving != null) {
       trackedLiving.handleStartTracking(playerEntity);
       RegistryFriendlyByteBuf data = new RegistryFriendlyByteBuf(
           new FriendlyByteBuf(Unpooled.buffer()), targetEntity.level().registryAccess());
       trackedLiving.encode(data, true);
-      NetworkChannel.PLAY.getSimpleChannel().send(
-          new SyncLivingMessage(trackedLiving.entity().getId(), data),
-          PacketDistributor.PLAYER.with(playerEntity));
-    });
+      PacketDistributor.sendToPlayer(playerEntity, new SyncLivingMessage(trackedLiving.entity().getId(), data));
+    }
   }
 
   private void syncProtectionConfig(ServerPlayer player) {
-    NetworkChannel.PLAY.getSimpleChannel().send(
-        new SyncProtectionConfigMessage(ProtectionConfig.getSerializedConfig()),
-        PacketDistributor.PLAYER.with(player));
+    PacketDistributor.sendToPlayer(player, new SyncProtectionConfigMessage(ProtectionConfig.getSerializedConfig()));
   }
 
   private void syncProtectionConfigToAllPlayers() {
@@ -506,8 +495,6 @@ public class CraftingDead {
       return;
     }
     String serializedConfig = ProtectionConfig.getSerializedConfig();
-    server.getPlayerList().getPlayers().forEach(player -> NetworkChannel.PLAY.getSimpleChannel()
-        .send(new SyncProtectionConfigMessage(serializedConfig),
-            PacketDistributor.PLAYER.with(player)));
+    server.getPlayerList().getPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, new SyncProtectionConfigMessage(serializedConfig)));
   }
 }

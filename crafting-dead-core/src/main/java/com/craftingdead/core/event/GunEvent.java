@@ -32,10 +32,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.bus.api.Event;
 
-public abstract class GunEvent extends Event {
+public abstract class GunEvent extends Event implements ICancellableEvent {
 
   private final Gun gun;
   private final ItemStack itemStack;
@@ -68,7 +68,6 @@ public abstract class GunEvent extends Event {
     }
   }
 
-  @Cancelable
   public static class TriggerPressed extends Action {
 
     public TriggerPressed(Gun gun, ItemStack itemStack, LivingExtension<?, ?> living) {
@@ -76,7 +75,6 @@ public abstract class GunEvent extends Event {
     }
   }
 
-  @Cancelable
   public static class NPCTriggerPressed extends Action {
 
     public NPCTriggerPressed(Gun gun, ItemStack itemStack, LivingExtension<?, ?> living) {
@@ -120,7 +118,6 @@ public abstract class GunEvent extends Event {
     }
   }
 
-  @Cancelable
   public static class BlockHit extends Action {
 
     private final BlockHitResult result;
@@ -148,7 +145,6 @@ public abstract class GunEvent extends Event {
     }
   }
 
-  @Cancelable
   public static class EntityHit extends Action {
 
     private final Entity target;

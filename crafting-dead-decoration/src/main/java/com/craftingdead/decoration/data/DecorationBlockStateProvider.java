@@ -24,10 +24,10 @@ import com.craftingdead.decoration.world.level.block.DoubleBlock;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class DecorationBlockStateProvider extends BlockStateProvider {
 
@@ -191,13 +191,13 @@ public class DecorationBlockStateProvider extends BlockStateProvider {
     this.horizontalBlock(DecorationBlocks.HEALTH_CHARGER);
   }
 
-  private void simpleBlock(RegistryObject<? extends Block> block) {
+  private void simpleBlock(DeferredHolder<Block, ? extends Block> block) {
     var model = this.blockModel(block.getId().getPath());
     this.simpleBlock(block.get(), model);
     this.simpleBlockItem(block.get(), model);
   }
 
-  private void horizontalBlock(RegistryObject<? extends Block> block) {
+  private void horizontalBlock(DeferredHolder<Block, ? extends Block> block) {
     this.horizontalBlock(block.get(), block.getId().getPath());
   }
 

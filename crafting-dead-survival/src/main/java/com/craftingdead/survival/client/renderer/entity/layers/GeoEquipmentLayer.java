@@ -64,7 +64,9 @@ public class GeoEquipmentLayer extends GeoRenderLayer<ModZombie> {
   public void render(PoseStack poseStack, ModZombie animatable, BakedGeoModel bakedModel,
       @Nullable RenderType renderType, MultiBufferSource bufferSource,
       @Nullable VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
-    animatable.getCapability(LivingExtension.CAPABILITY).ifPresent(living -> {
+    var living = animatable.getCapability(LivingExtension.CAPABILITY);
+if (living != null) {
+
       ItemStack itemStack = living.getItemInSlot(this.slot);
       if (!itemStack.isEmpty()) {
         var minecraft = Minecraft.getInstance();
@@ -93,7 +95,7 @@ public class GeoEquipmentLayer extends GeoRenderLayer<ModZombie> {
 
         poseStack.popPose();
       }
-    });
+    }
   }
 
   public static Builder builder(GeoRenderer<ModZombie> renderer) {

@@ -37,12 +37,11 @@ public class EntityMixin {
   private void isInvisible(CallbackInfoReturnable<Boolean> callbackInfo) {
     Entity entity = (Entity) (Object) this;
     // It's faster not flat-mapping or filtering (we want to be fast in a render method)
-    entity.getCapability(LivingExtension.CAPABILITY).ifPresent(living -> {
-      if (living.getVisibility() == Visibility.INVISIBLE
-          || living.getVisibility() == Visibility.PARTIALLY_VISIBLE) {
-        callbackInfo.setReturnValue(true);
-      }
-    });
+    var living = entity.getCapability(LivingExtension.CAPABILITY);
+    if (living != null && (living.getVisibility() == Visibility.INVISIBLE
+        || living.getVisibility() == Visibility.PARTIALLY_VISIBLE)) {
+      callbackInfo.setReturnValue(true);
+    }
   }
 
   /**
@@ -53,10 +52,9 @@ public class EntityMixin {
       CallbackInfoReturnable<Boolean> callbackInfo) {
     Entity entity = (Entity) (Object) this;
     // It's faster not flat-mapping or filtering (we want to be fast in a render method)
-    entity.getCapability(LivingExtension.CAPABILITY).ifPresent(living -> {
-      if (living.getVisibility() == Visibility.PARTIALLY_VISIBLE) {
-        callbackInfo.setReturnValue(false);
-      }
-    });
+    var living = entity.getCapability(LivingExtension.CAPABILITY);
+    if (living != null && living.getVisibility() == Visibility.PARTIALLY_VISIBLE) {
+      callbackInfo.setReturnValue(false);
+    }
   }
 }

@@ -34,7 +34,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.flag.FeatureFlags;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 
 public class SurvivalBlockLoot extends BlockLootSubProvider {
@@ -61,7 +61,7 @@ public class SurvivalBlockLoot extends BlockLootSubProvider {
   @Override
   protected @NotNull Iterable<Block> getKnownBlocks() {
     return SurvivalBlocks.deferredRegister.getEntries().stream()
-        .map(RegistryObject::get)
+        .map(DeferredHolder::get)
         .collect(Collectors.toList());
   }
 }

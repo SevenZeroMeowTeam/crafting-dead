@@ -29,7 +29,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class Skins {
 
@@ -121,10 +121,10 @@ public class Skins {
     return ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, name));
   }
 
-  private static void register(ResourceKey<Skin> location, RegistryObject<?>... guns) {
+  private static void register(ResourceKey<Skin> location, DeferredHolder<?, ?>... guns) {
     REGISTRY.register(location, new Skin(location.location(),
             Arrays.stream(guns)
-                .map(RegistryObject::getId)
+                .map(DeferredHolder::getId)
                 .collect(Collectors.toList())),
         RegistrationInfo.BUILT_IN);
   }

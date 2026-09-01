@@ -51,9 +51,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 public class CraftingDeadWorldGuard extends JavaPlugin {
 
@@ -109,7 +108,7 @@ public class CraftingDeadWorldGuard extends JavaPlugin {
     registerFlag(GRENADE_THROWING);
     registerFlag(CLEAR_EQUIPMENT_ON_EXIT);
 
-    var forgeBus = MinecraftForge.EVENT_BUS;
+    var forgeBus = NeoForge.EVENT_BUS;
     forgeBus.addListener(this::handlePotionApplicable);
     forgeBus.addListener(this::handleWaterDecay);
     forgeBus.addListener(this::handleGunEntityHit);
@@ -143,14 +142,12 @@ public class CraftingDeadWorldGuard extends JavaPlugin {
       }
     }
 
-    if (stopBleeding
-        && hasEffect(extension.entity(), ModMobEffects.BLEEDING.getHolder().orElseThrow())) {
-      removeEffect(extension.entity(), ModMobEffects.BLEEDING.getHolder().orElseThrow());
+    if (stopBleeding && hasEffect(extension.entity(), ModMobEffects.BLEEDING)) {
+      removeEffect(extension.entity(), ModMobEffects.BLEEDING);
     }
 
-    if (stopBrokenLegs
-        && hasEffect(extension.entity(), SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow())) {
-      removeEffect(extension.entity(), SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow());
+    if (stopBrokenLegs && hasEffect(extension.entity(), SurvivalMobEffects.BROKEN_LEG)) {
+      removeEffect(extension.entity(), SurvivalMobEffects.BROKEN_LEG);
     }
   }
 
@@ -176,16 +173,16 @@ public class CraftingDeadWorldGuard extends JavaPlugin {
 
 
       StateFlag flag = null;
-      if (effect == SurvivalMobEffects.INFECTION.getHolder().orElseThrow()) {
+      if (effect == SurvivalMobEffects.INFECTION) {
         flag = INFECTION;
-      } else if (effect == SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow()) {
+      } else if (effect == SurvivalMobEffects.BROKEN_LEG) {
         flag = BROKEN_LEGS;
-      } else if (effect == ModMobEffects.BLEEDING.getHolder().orElseThrow()) {
+      } else if (effect == ModMobEffects.BLEEDING) {
         flag = BLEEDING;
       }
 
       if (flag != null && !regions.testState(localPlayer, flag)) {
-        event.setResult(Event.Result.DENY);
+        event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
       }
     }
   }

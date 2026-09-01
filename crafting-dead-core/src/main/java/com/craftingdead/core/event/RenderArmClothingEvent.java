@@ -21,7 +21,7 @@ package com.craftingdead.core.event;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 public class RenderArmClothingEvent extends Event {
 

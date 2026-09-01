@@ -25,9 +25,9 @@ import java.util.concurrent.CompletableFuture;
 import com.craftingdead.survival.world.level.storage.loot.BuiltInLootTables;
 import com.google.common.collect.Sets;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ProblemReporter;
@@ -50,8 +50,8 @@ public class SurvivalLootTableProvider extends LootTableProvider {
   }
 
   @Override
-  protected void validate(Registry<LootTable> map, ValidationContext validationTracker,
-      ProblemReporter reporter) {
+  protected void validate(WritableRegistry<LootTable> map, ValidationContext validationTracker,
+      ProblemReporter.Collector reporter) {
     for (var location : Sets.difference(BuiltInLootTables.getLootTables(), map.keySet())) {
       reporter.report("Missing built-in table: " + location);
     }

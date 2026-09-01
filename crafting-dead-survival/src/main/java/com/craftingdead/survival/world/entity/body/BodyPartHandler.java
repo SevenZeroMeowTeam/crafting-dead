@@ -29,8 +29,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 /**
  * 部位伤害 / 断肢系统。
@@ -263,7 +263,7 @@ public final class BodyPartHandler {
    * 仍由 {@link #handleGunHit(GunEvent.EntityHit)} 处理，避免重复判定。
    */
   @SubscribeEvent
-  public static void handleTaczGunHit(LivingHurtEvent event) {
+  public static void handleTaczGunHit(LivingIncomingDamageEvent event) {
     var source = event.getSource();
     if (source == null) {
       return;

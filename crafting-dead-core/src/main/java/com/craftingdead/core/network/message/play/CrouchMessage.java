@@ -17,14 +17,31 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record CrouchMessage(int entityId, boolean crouching) {
+public record CrouchMessage(int entityId, boolean crouching) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<CrouchMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "crouch_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, CrouchMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, CrouchMessage msg) -> msg.encode(buf), CrouchMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.entityId);
@@ -35,10 +52,13 @@ public record CrouchMessage(int entityId, boolean crouching) {
     return new CrouchMessage(in.readVarInt(), in.readBoolean());
   }
 
-  public static void handle(CrouchMessage msg, CustomPayloadEvent.Context ctx) {
-    ctx.enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx, msg.entityId)
-        .getCapability(LivingExtension.CAPABILITY)
-        .ifPresent(living -> living.setCrouching(msg.crouching,
-            ctx.isServerSide())));
+  public static void handle(CrouchMessage msg, IPayloadContext ctx) {
+    ctx.enqueueWork(() -> {
+      var living = NetworkUtil.getEntityOrSender(ctx, msg.entityId)
+          .getCapability(LivingExtension.CAPABILITY);
+      if (living != null) {
+        living.setCrouching(msg.crouching, ctx.flow().isServerbound());
+      }
+    });
   }
 }

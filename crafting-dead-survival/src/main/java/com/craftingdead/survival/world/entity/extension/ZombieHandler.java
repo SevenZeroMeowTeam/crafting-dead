@@ -55,7 +55,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 public class ZombieHandler implements LivingHandler {
 
@@ -177,7 +177,8 @@ public class ZombieHandler implements LivingHandler {
             this.extension.entity().position())
         .create(LootContextParamSets.CHEST);
     List<ItemStack> loot = lootTable.getRandomItems(lootParams);
-    vestStack.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(inv -> {
+    var inv = vestStack.getCapability(Capabilities.ItemHandler.ITEM);
+    if (inv != null) {
       List<Integer> slots = new ArrayList<>();
       for (int i = 0; i < inv.getSlots(); i++) {
         slots.add(i);
@@ -186,7 +187,7 @@ public class ZombieHandler implements LivingHandler {
       for (int i = 0; i < loot.size() && i < slots.size(); i++) {
         inv.insertItem(slots.get(i), loot.get(i), false);
       }
-    });
+    }
     return vestStack;
   }
 
@@ -205,7 +206,8 @@ public class ZombieHandler implements LivingHandler {
             this.extension.entity().position())
         .create(LootContextParamSets.CHEST);
     List<ItemStack> loot = lootTable.getRandomItems(lootParams);
-    backpackStack.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(inv -> {
+    var inv = backpackStack.getCapability(Capabilities.ItemHandler.ITEM);
+    if (inv != null) {
       List<Integer> slots = new ArrayList<>();
       for (int i = 0; i < inv.getSlots(); i++) {
         slots.add(i);
@@ -214,7 +216,7 @@ public class ZombieHandler implements LivingHandler {
       for (int i = 0; i < loot.size() && i < slots.size(); i++) {
         inv.insertItem(slots.get(i), loot.get(i), false);
       }
-    });
+    }
     return backpackStack;
   }
 
@@ -248,8 +250,12 @@ public class ZombieHandler implements LivingHandler {
     // The dropped Gun will spawn with its #defaultMagazineStack
     loot.stream()
         .map(ItemEntity::getItem)
-        .forEach(item -> item.getCapability(Gun.CAPABILITY).ifPresent(gun ->
-            gun.setAmmoProvider(new MagazineAmmoProvider(gun.getDefaultMagazineStack()))));
+        .forEach(item -> {
+          var gun = item.getCapability(Gun.CAPABILITY);
+          if (gun != null) {
+            gun.setAmmoProvider(new MagazineAmmoProvider(gun.getDefaultMagazineStack()));
+          }
+        });
     return false;
   }
 

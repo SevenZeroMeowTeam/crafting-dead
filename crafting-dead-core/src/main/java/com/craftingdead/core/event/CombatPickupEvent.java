@@ -21,11 +21,10 @@ package com.craftingdead.core.event;
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.world.item.combatslot.CombatSlot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.bus.api.Event;
 
-@Cancelable
-public class CombatPickupEvent extends Event {
+public class CombatPickupEvent extends Event implements ICancellableEvent {
 
   private final ItemStack itemStack;
   @Nullable

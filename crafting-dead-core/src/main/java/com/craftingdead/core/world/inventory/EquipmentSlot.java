@@ -42,9 +42,8 @@ public class EquipmentSlot extends Slot {
 
   @Override
   public boolean mayPlace(@Nonnull ItemStack stack) {
-    return !stack.isEmpty() && stack.getCapability(Equipment.CAPABILITY)
-        .lazyMap(equipment -> equipment.isValidForSlot(this.slot))
-        .orElse(false);
+    var equipment = stack.getCapability(Equipment.CAPABILITY);
+    return !stack.isEmpty() && equipment != null && equipment.isValidForSlot(this.slot);
   }
 
   @Override

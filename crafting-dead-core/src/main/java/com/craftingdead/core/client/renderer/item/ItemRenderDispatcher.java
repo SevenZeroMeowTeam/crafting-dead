@@ -50,8 +50,8 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.StartupMessageManager;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 
 public class ItemRenderDispatcher implements ResourceManagerReloadListener {
 
@@ -107,7 +107,7 @@ public class ItemRenderDispatcher implements ResourceManagerReloadListener {
       var pathNoFileExtension = ResourceLocation.fromNamespaceAndPath(location.getNamespace(),
           path.substring(i, path.length() - PATH_SUFFIX_LENGTH));
 
-      var item = ForgeRegistries.ITEMS.getValue(pathNoFileExtension);
+      var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(pathNoFileExtension);
       if (item == null) {
         logger.warn("No matching item for item renderer: {}", pathNoFileExtension.toString());
         continue;
@@ -174,7 +174,6 @@ public class ItemRenderDispatcher implements ResourceManagerReloadListener {
 
   @Override
   public void onResourceManagerReload(ResourceManager resourceManager) {
-    StartupMessageManager.addModMessage("Refreshing cached models");
     this.renderers.values()
         .forEach(
             renderer -> renderer.refreshCachedModels(this.minecraft.getEntityModels()::bakeLayer));

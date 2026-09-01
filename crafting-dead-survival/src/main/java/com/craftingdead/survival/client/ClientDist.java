@@ -43,26 +43,26 @@ import net.minecraft.client.particle.SpellParticle;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.config.ModConfig;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientDist implements ModDist {
 
   public static final ClientConfig clientConfig;
-  public static final ForgeConfigSpec clientConfigSpec;
+  public static final ModConfigSpec clientConfigSpec;
 
   static {
-    var clientConfigPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
+    var clientConfigPair = new ModConfigSpec.Builder().configure(ClientConfig::new);
     clientConfigSpec = clientConfigPair.getRight();
     clientConfig = clientConfigPair.getLeft();
   }
@@ -75,25 +75,24 @@ public class ClientDist implements ModDist {
   private final Minecraft minecraft;
   private final MoonHudOverlay moonHudOverlay;
 
-  public ClientDist(FMLJavaModLoadingContext context) {
+  public ClientDist(IEventBus modEventBus) {
     this.minecraft = Minecraft.getInstance();
     this.moonHudOverlay = new MoonHudOverlay(this.minecraft);
-    final IEventBus modEventBus = context.getModEventBus();
     modEventBus.addListener(this::handleEntityRenderers);
     modEventBus.addListener(this::handleEntityRenderersAddLayers);
     modEventBus.addListener(this::handleParticleFactoryRegisterEvent);
     modEventBus.addListener(this::handleEntityRenderersLayerDefinitions);
     modEventBus.addListener(this::handleAddGuiOverlayLayers);
 
-    context.registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
+    ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
 
     // Register event handlers to Forge event bus
-    MinecraftForge.EVENT_BUS.register(this);
+    NeoForge.EVENT_BUS.register(this);
     // Register item frame gun interaction handler for shop displays
-    MinecraftForge.EVENT_BUS.register(new ItemFrameGunInteractionHandler());
+    NeoForge.EVENT_BUS.register(new ItemFrameGunInteractionHandler());
     // TODO: Re-enable once MovementSoundAmplifier is fixed for Forge 1.18.2 API
     // Register CSGO-style movement sound amplifier for tactical awareness gameplay
-    // MinecraftForge.EVENT_BUS.register(new MovementSoundAmplifier());
+    // NeoForge.EVENT_BUS.register(new MovementSoundAmplifier());
   }
 
   private void handleEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -150,11 +149,11 @@ public class ClientDist implements ModDist {
 
   private void handleEntityRenderersAddLayers(EntityRenderersEvent.AddLayers event) {
     net.minecraft.client.renderer.entity.EntityRenderer<?> soliderZombie =
-        event.getEntityRenderer(SurvivalEntityTypes.SOLDIER_ZOMBIE.get());
+        event.getRenderer(SurvivalEntityTypes.SOLDIER_ZOMBIE.get());
     net.minecraft.client.renderer.entity.EntityRenderer<?> fastZombie =
-        event.getEntityRenderer(SurvivalEntityTypes.FAST_ZOMBIE.get());
+        event.getRenderer(SurvivalEntityTypes.FAST_ZOMBIE.get());
     net.minecraft.client.renderer.entity.EntityRenderer<?> scoutZombie =
-        event.getEntityRenderer(SurvivalEntityTypes.SCOUT_ZOMBIE.get());
+        event.getRenderer(SurvivalEntityTypes.SCOUT_ZOMBIE.get());
 
     if (soliderZombie instanceof ZombieGeoRenderer soldierZombieRenderer) {
       soldierZombieRenderer.addRenderLayer(new GeoParachuteLayer(soldierZombieRenderer, event.getEntityModels()));
@@ -189,8 +188,8 @@ public class ClientDist implements ModDist {
         SpellParticle.Provider::new);
   }
 
-  public void handleAddGuiOverlayLayers(AddGuiOverlayLayersEvent event) {
-    event.getLayeredDraw().add(
+  public void handleAddGuiOverlayLayers(RegisterGuiLayersEvent event) {
+    event.registerAboveAll(
         ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "blood"),
         (guiGraphics, deltaTracker) -> {
           var player = CraftingDead.getInstance().getClientDist().getCameraPlayer();
@@ -203,12 +202,12 @@ public class ClientDist implements ModDist {
             float healthPercentage =
                 player.entity().getHealth() / player.entity().getMaxHealth();
             if (clientConfig.displayBlood.get() && healthPercentage < 1.0F
-                && player.entity().hasEffect(ModMobEffects.BLEEDING.getHolder().orElseThrow())) {
+                && player.entity().hasEffect(ModMobEffects.BLEEDING)) {
               renderBlood(guiGraphics.guiWidth(), guiGraphics.guiHeight(), healthPercentage);
             }
           }
         });
-    event.getLayeredDraw().add(
+    event.registerAboveAll(
         ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "moon_hud"),
         (guiGraphics, deltaTracker) -> this.moonHudOverlay.render(guiGraphics,
             deltaTracker.getGameTimeDeltaPartialTick(false)));

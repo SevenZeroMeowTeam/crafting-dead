@@ -17,6 +17,11 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.network.NetworkUtil;
@@ -26,9 +31,21 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncGunContainerSlotMessage(int entityId, int slot, FriendlyByteBuf data) {
+public record SyncGunContainerSlotMessage(int entityId, int slot, FriendlyByteBuf data) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<SyncGunContainerSlotMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "sync_gun_container_slot_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, SyncGunContainerSlotMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, SyncGunContainerSlotMessage msg) -> msg.encode(buf), SyncGunContainerSlotMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public SyncGunContainerSlotMessage(int entityId, int slot, Gun gun, boolean writeAll,
       RegistryAccess registryAccess) {
@@ -53,10 +70,14 @@ public record SyncGunContainerSlotMessage(int entityId, int slot, FriendlyByteBu
         new FriendlyByteBuf(Unpooled.wrappedBuffer(data)));
   }
 
-  public static void handle(SyncGunContainerSlotMessage msg, CustomPayloadEvent.Context ctx) {
-    ctx.enqueueWork(() -> NetworkUtil.getEntity(
-        ctx, msg.entityId, Player.class).inventoryMenu.getSlot(msg.slot).getItem()
-            .getCapability(Gun.CAPABILITY)
-            .ifPresent(gun -> gun.decode(msg.data)));
+  public static void handle(SyncGunContainerSlotMessage msg, IPayloadContext ctx) {
+    ctx.enqueueWork(() -> {
+      var gun = NetworkUtil.getEntity(
+          ctx, msg.entityId, Player.class).inventoryMenu.getSlot(msg.slot).getItem()
+              .getCapability(Gun.CAPABILITY);
+      if (gun != null) {
+        gun.decode(msg.data);
+      }
+    });
   }
 }

@@ -18,14 +18,15 @@
 
 package com.craftingdead.core.world.item.combatslot;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 
 @FunctionalInterface
 public interface CombatSlotProvider {
-  
-  Capability<CombatSlotProvider> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+
+  ItemCapability<CombatSlotProvider, Void> CAPABILITY = ItemCapability.createVoid(
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "combat_slot"), CombatSlotProvider.class);
 
   CombatSlot getCombatSlot();
 }

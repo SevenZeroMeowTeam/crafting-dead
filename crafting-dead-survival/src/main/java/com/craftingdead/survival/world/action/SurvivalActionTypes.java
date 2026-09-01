@@ -35,34 +35,34 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class SurvivalActionTypes {
 
   public static final DeferredRegister<ActionType<?>> deferredRegister =
       DeferredRegister.create(ActionTypes.REGISTRY_KEY, CraftingDeadSurvival.ID);
 
-  public static final RegistryObject<EntityItemActionType<?>> USE_SPLINT =
+  public static final DeferredHolder<ActionType<?>, ? extends ItemActionType<?>> USE_SPLINT =
       deferredRegister.register("use_splint",
           () -> EntityItemActionType
-              .builder(TargetSelector.SELF_OR_OTHERS.hasEffect(SurvivalMobEffects.BROKEN_LEG))
+              .builder(TargetSelector.SELF_OR_OTHERS.hasEffect(() -> SurvivalMobEffects.BROKEN_LEG.get()))
               .forItem(SurvivalItems.SPLINT)
               .customAction((performer, target) -> target.entity().removeEffect(
-                  SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow()))
+                  SurvivalMobEffects.BROKEN_LEG))
               .build());
 
-  public static final RegistryObject<EntityItemActionType<?>> USE_MORPHINE_SYRINGE =
+  public static final DeferredHolder<ActionType<?>, ? extends ItemActionType<?>> USE_MORPHINE_SYRINGE =
       deferredRegister.register("use_morphine_syringe",
           () -> EntityItemActionType
-              .builder(TargetSelector.SELF_OR_OTHERS.hasEffect(SurvivalMobEffects.BROKEN_LEG))
+              .builder(TargetSelector.SELF_OR_OTHERS.hasEffect(() -> SurvivalMobEffects.BROKEN_LEG.get()))
               .forItem(SurvivalItems.MORPHINE_SYRINGE)
               .customAction((performer, target) -> target.entity().removeEffect(
-                  SurvivalMobEffects.BROKEN_LEG.getHolder().orElseThrow()))
+                  SurvivalMobEffects.BROKEN_LEG))
               .build());
 
-  public static final RegistryObject<EntityItemActionType<?>> USE_SYRINGE_ON_ZOMBIE =
+  public static final DeferredHolder<ActionType<?>, ? extends ItemActionType<?>> USE_SYRINGE_ON_ZOMBIE =
       deferredRegister.register("use_syringe_on_zombie",
           () -> EntityItemActionType.builder(TargetSelector.OTHERS_ONLY.ofEntityType(Zombie.class))
               .forItem(ModItems.SYRINGE)
@@ -72,27 +72,27 @@ public class SurvivalActionTypes {
               .resultItem(SurvivalItems.RBI_SYRINGE)
               .build());
 
-  public static final RegistryObject<EntityItemActionType<?>> USE_CURE_SYRINGE =
+  public static final DeferredHolder<ActionType<?>, ? extends ItemActionType<?>> USE_CURE_SYRINGE =
       deferredRegister.register("use_cure_syringe",
-          () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS.hasEffect(SurvivalMobEffects.INFECTION))
+          () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS.hasEffect(() -> SurvivalMobEffects.INFECTION.get()))
               .forItem(SurvivalItems.CURE_SYRINGE)
               .duration(16)
               .customAction((performer, target) -> target.entity().removeEffect(
-                  SurvivalMobEffects.INFECTION.getHolder().orElseThrow()))
+                  SurvivalMobEffects.INFECTION))
               .resultItem(ModItems.SYRINGE)
               .build());
 
-  public static final RegistryObject<EntityItemActionType<?>> USE_RBI_SYRINGE =
+  public static final DeferredHolder<ActionType<?>, ? extends ItemActionType<?>> USE_RBI_SYRINGE =
       deferredRegister.register("use_rbi_syringe",
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(SurvivalItems.RBI_SYRINGE)
               .duration(16)
               .effect(() -> new MobEffectInstance(
-                  SurvivalMobEffects.INFECTION.getHolder().orElseThrow(), 9999999))
+                  SurvivalMobEffects.INFECTION, 9999999))
               .resultItem(ModItems.SYRINGE)
               .build());
 
-  public static final RegistryObject<ItemActionType<?>> FILL_WATER_CANTEEN =
+  public static final DeferredHolder<ActionType<?>, ? extends ItemActionType<?>> FILL_WATER_CANTEEN =
       deferredRegister.register("fill_water_canteen",
           () -> BlockItemActionType.builder()
               .durationSeconds(3)
@@ -103,12 +103,12 @@ public class SurvivalActionTypes {
               .consumeItemInCreative(true)
               .build());
 
-  public static final RegistryObject<ItemActionType<?>> FILL_WATER_CANTEEN_FROM_PUMP =
+  public static final DeferredHolder<ActionType<?>, ? extends ItemActionType<?>> FILL_WATER_CANTEEN_FROM_PUMP =
       deferredRegister.register("fill_water_canteen_from_pump",
           () -> BlockItemActionType.builder()
               .durationSeconds(5)
               .forBlock(blockState -> {
-                var blockKey = ForgeRegistries.BLOCKS.getKey(blockState.getBlock());
+                var blockKey = BuiltInRegistries.BLOCK.getKey(blockState.getBlock());
                 return blockKey != null
                     && (blockKey.toString().equals("craftingdeadimmerse:water_pump")
                     || blockKey.toString().equals("craftingdeadimmerse:water_pump_tall")
@@ -122,7 +122,7 @@ public class SurvivalActionTypes {
               .consumeItemInCreative(true)
               .build());
 
-  public static final RegistryObject<ItemActionType<?>> FILL_FLASK =
+  public static final DeferredHolder<ActionType<?>, ? extends ItemActionType<?>> FILL_FLASK =
       deferredRegister.register("fill_flask",
           () -> BlockItemActionType.builder()
               .durationSeconds(3)
@@ -133,12 +133,12 @@ public class SurvivalActionTypes {
               .consumeItemInCreative(true)
               .build());
 
-  public static final RegistryObject<ItemActionType<?>> FILL_FLASK_FROM_PUMP =
+  public static final DeferredHolder<ActionType<?>, ? extends ItemActionType<?>> FILL_FLASK_FROM_PUMP =
       deferredRegister.register("fill_flask_from_pump",
           () -> BlockItemActionType.builder()
               .durationSeconds(0.5F)
               .forBlock(blockState -> {
-                var blockKey = ForgeRegistries.BLOCKS.getKey(blockState.getBlock());
+                var blockKey = BuiltInRegistries.BLOCK.getKey(blockState.getBlock());
                 return blockKey != null
                     && (blockKey.toString().equals("craftingdeadimmerse:water_pump")
                     || blockKey.toString().equals("craftingdeadimmerse:water_pump_tall")
@@ -151,7 +151,7 @@ public class SurvivalActionTypes {
               .consumeItemInCreative(true)
               .build());
 
-  public static final RegistryObject<ItemActionType<?>> FILL_WATER_BOTTLE =
+  public static final DeferredHolder<ActionType<?>, ? extends ItemActionType<?>> FILL_WATER_BOTTLE =
       deferredRegister.register("fill_water_bottle",
           () -> BlockItemActionType.builder()
               .durationSeconds(3)
@@ -162,12 +162,12 @@ public class SurvivalActionTypes {
               .consumeItemInCreative(true)
               .build());
 
-  public static final RegistryObject<ItemActionType<?>> FILL_WATER_BOTTLE_FROM_PUMP =
+  public static final DeferredHolder<ActionType<?>, ? extends ItemActionType<?>> FILL_WATER_BOTTLE_FROM_PUMP =
       deferredRegister.register("fill_water_bottle_from_pump",
           () -> BlockItemActionType.builder()
               .durationSeconds(0.5F)
               .forBlock(blockState -> {
-                var blockKey = ForgeRegistries.BLOCKS.getKey(blockState.getBlock());
+                var blockKey = BuiltInRegistries.BLOCK.getKey(blockState.getBlock());
                 return blockKey != null
                     && (blockKey.toString().equals("craftingdeadimmerse:water_pump")
                     || blockKey.toString().equals("craftingdeadimmerse:water_pump_tall")

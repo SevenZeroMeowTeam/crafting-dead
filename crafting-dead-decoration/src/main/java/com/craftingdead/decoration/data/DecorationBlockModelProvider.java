@@ -24,9 +24,9 @@ import com.craftingdead.decoration.world.level.block.DecorationBlocks;
 import java.util.Map;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.BlockModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class DecorationBlockModelProvider extends BlockModelProvider {
 
@@ -111,7 +111,7 @@ public class DecorationBlockModelProvider extends BlockModelProvider {
     }
   }
 
-  private void textureVariant(RegistryObject<? extends Block> block, String model) {
+  private void textureVariant(DeferredHolder<Block, ? extends Block> block, String model) {
     this.singleTexture(block.getId().toString(), this.modLoc("block/" + model),
         this.modLoc("block/" + block.getId().getPath().toString()));
   }

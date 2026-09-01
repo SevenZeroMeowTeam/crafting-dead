@@ -19,7 +19,7 @@
 package com.craftingdead.survival;
 
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ServerConfig {
 
@@ -27,282 +27,282 @@ public class ServerConfig {
   // Game-Settings Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue allowSupplyDropBreak;
-  public final ForgeConfigSpec.IntValue supplyDropDuration;
-    public final ForgeConfigSpec.BooleanValue showSubtitles;
+  public final ModConfigSpec.BooleanValue allowSupplyDropBreak;
+  public final ModConfigSpec.IntValue supplyDropDuration;
+    public final ModConfigSpec.BooleanValue showSubtitles;
 
   // ================================================================================
   // Loot Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue lootEnabled;
-  public final ForgeConfigSpec.BooleanValue civilianLootEnabled;
-  public final ForgeConfigSpec.BooleanValue rareCivilianLootEnabled;
-  public final ForgeConfigSpec.BooleanValue medicalLootEnabled;
-  public final ForgeConfigSpec.BooleanValue policeLootEnabled;
-  public final ForgeConfigSpec.BooleanValue militaryLootEnabled;
-  public final ForgeConfigSpec.IntValue civilianLootRefreshDelayTicks;
-  public final ForgeConfigSpec.IntValue rareCivilianLootRefreshDelayTicks;
-  public final ForgeConfigSpec.IntValue medicalLootRefreshDelayTicks;
-  public final ForgeConfigSpec.IntValue policeLootRefreshDelayTicks;
-  public final ForgeConfigSpec.IntValue militaryLootRefreshDelayTicks;
+  public final ModConfigSpec.BooleanValue lootEnabled;
+  public final ModConfigSpec.BooleanValue civilianLootEnabled;
+  public final ModConfigSpec.BooleanValue rareCivilianLootEnabled;
+  public final ModConfigSpec.BooleanValue medicalLootEnabled;
+  public final ModConfigSpec.BooleanValue policeLootEnabled;
+  public final ModConfigSpec.BooleanValue militaryLootEnabled;
+  public final ModConfigSpec.IntValue civilianLootRefreshDelayTicks;
+  public final ModConfigSpec.IntValue rareCivilianLootRefreshDelayTicks;
+  public final ModConfigSpec.IntValue medicalLootRefreshDelayTicks;
+  public final ModConfigSpec.IntValue policeLootRefreshDelayTicks;
+  public final ModConfigSpec.IntValue militaryLootRefreshDelayTicks;
 
   // ================================================================================
   // Zombies Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue zombiesEnabled;
-  public final ForgeConfigSpec.BooleanValue advancedZombiesEnabled;
-  public final ForgeConfigSpec.BooleanValue tankZombiesEnabled;
-  public final ForgeConfigSpec.BooleanValue fastZombiesEnabled;
-  public final ForgeConfigSpec.BooleanValue weakZombiesEnabled;
-  public final ForgeConfigSpec.DoubleValue advancedZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue tankZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue fastZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue weakZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue policeZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue alfaZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue bountyHunterZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue desertRaiderZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue fireFighterZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue hazmatZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue juggernautZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue minerZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue ninjaZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue pilotZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue scoutZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue sniperZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue soldierZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue swatZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue doctorZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue giantZombieMaxHealth;
-  public final ForgeConfigSpec.DoubleValue advancedZombieAttackDamage;
-  public final ForgeConfigSpec.DoubleValue tankZombieAttackDamage;
-  public final ForgeConfigSpec.DoubleValue fastZombieAttackDamage;
-  public final ForgeConfigSpec.DoubleValue weakZombieAttackDamage;
-  public final ForgeConfigSpec.DoubleValue hazmatZombieAttackDamage;
-  public final ForgeConfigSpec.DoubleValue scoutZombieAttackDamage;
-  public final ForgeConfigSpec.DoubleValue policeZombieGunAccuracy;
-  public final ForgeConfigSpec.DoubleValue alfaZombieGunAccuracy;
-  public final ForgeConfigSpec.DoubleValue bountyHunterZombieGunAccuracy;
-  public final ForgeConfigSpec.DoubleValue desertRaiderZombieGunAccuracy;
-  public final ForgeConfigSpec.DoubleValue giantZombieGunAccuracy;
-  public final ForgeConfigSpec.DoubleValue juggernautZombieGunAccuracy;
-  public final ForgeConfigSpec.DoubleValue pilotZombieGunAccuracy;
-  public final ForgeConfigSpec.DoubleValue sniperZombieGunAccuracy;
-  public final ForgeConfigSpec.DoubleValue soldierZombieGunAccuracy;
-  public final ForgeConfigSpec.DoubleValue swatZombieGunAccuracy;
-  public final ForgeConfigSpec.DoubleValue doctorZombieAttackDamage;
-  public final ForgeConfigSpec.DoubleValue giantZombieAttackDamage;
-  public final ForgeConfigSpec.DoubleValue alfaZombieAttackDistance;
-  public final ForgeConfigSpec.DoubleValue bountyHunterZombieAttackDistance;
-  public final ForgeConfigSpec.DoubleValue desertRaiderZombieAttackDistance;
-  public final ForgeConfigSpec.DoubleValue giantZombieAttackDistance;
-  public final ForgeConfigSpec.DoubleValue juggernautZombieAttackDistance;
-  public final ForgeConfigSpec.DoubleValue pilotZombieAttackDistance;
-  public final ForgeConfigSpec.DoubleValue policeZombieAttackDistance;
-  public final ForgeConfigSpec.DoubleValue sniperZombieAttackDistance;
-  public final ForgeConfigSpec.DoubleValue soldierZombieAttackDistance;
-  public final ForgeConfigSpec.DoubleValue swatZombieAttackDistance;
-  public final ForgeConfigSpec.DoubleValue alfaZombieVestEquipChance;
-  public final ForgeConfigSpec.DoubleValue desertRaiderVestEquipChance;
-  public final ForgeConfigSpec.DoubleValue juggernautZombieVestEquipChance;
-  public final ForgeConfigSpec.DoubleValue pilotZombieVestEquipChance;
-  public final ForgeConfigSpec.DoubleValue sniperZombieVestEquipChance;
-  public final ForgeConfigSpec.DoubleValue soldierZombieVestEquipChance;
-  public final ForgeConfigSpec.DoubleValue swatZombieVestEquipChance;
-  public final ForgeConfigSpec.DoubleValue alfaZombieBackpackEquipChance;
-  public final ForgeConfigSpec.DoubleValue desertRaiderBackpackEquipChance;
-  public final ForgeConfigSpec.DoubleValue juggernautZombieBackpackEquipChance;
-  public final ForgeConfigSpec.DoubleValue scoutZombieBackpackEquipChance;
-  public final ForgeConfigSpec.DoubleValue soldierZombieBackpackEquipChance;
-  public final ForgeConfigSpec.DoubleValue swatZombieBackpackEquipChance;
-  public final ForgeConfigSpec.IntValue advancedZombieSpawnWeight;
-  public final ForgeConfigSpec.IntValue tankZombieSpawnWeight;
-  public final ForgeConfigSpec.IntValue fastZombieSpawnWeight;
-  public final ForgeConfigSpec.IntValue weakZombieSpawnWeight;
-  public final ForgeConfigSpec.IntValue advancedZombieMinSpawn;
-  public final ForgeConfigSpec.IntValue tankZombieMinSpawn;
-  public final ForgeConfigSpec.IntValue fastZombieMinSpawn;
-  public final ForgeConfigSpec.IntValue weakZombieMinSpawn;
-  public final ForgeConfigSpec.IntValue advancedZombieMaxSpawn;
-  public final ForgeConfigSpec.IntValue tankZombieMaxSpawn;
-  public final ForgeConfigSpec.IntValue fastZombieMaxSpawn;
-  public final ForgeConfigSpec.IntValue weakZombieMaxSpawn;
-  public final ForgeConfigSpec.DoubleValue zombieHatSpawnChance;
-  public final ForgeConfigSpec.DoubleValue zombieHandSpawnChance;
-  public final ForgeConfigSpec.DoubleValue zombieClothingSpawnChance;
-  public final ForgeConfigSpec.DoubleValue zombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue zombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue zombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue zombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue zombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue alfaZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue alfaZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue alfaZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue alfaZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue alfaZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue bountyHunterZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue bountyHunterZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue bountyHunterZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue bountyHunterZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue bountyHunterZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue desertRaiderZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue desertRaiderZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue desertRaiderZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue desertRaiderZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue desertRaiderZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue doctorZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue doctorZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue doctorZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue doctorZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue doctorZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue fireFighterZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue fireFighterZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue fireFighterZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue fireFighterZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue fireFighterZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue giantZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue giantZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue giantZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue giantZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue giantZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue hazmatZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue hazmatZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue hazmatZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue hazmatZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue hazmatZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue juggernautZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue juggernautZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue juggernautZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue juggernautZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue juggernautZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue minerZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue minerZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue minerZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue minerZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue minerZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue ninjaZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue ninjaZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue ninjaZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue ninjaZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue ninjaZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue pilotZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue pilotZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue pilotZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue pilotZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue pilotZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue policeZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue policeZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue policeZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue policeZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue policeZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue scoutZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue scoutZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue scoutZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue scoutZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue scoutZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue sniperZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue sniperZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue sniperZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue sniperZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue sniperZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue soldierZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue soldierZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue soldierZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue soldierZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue soldierZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue swatZombieClothingDropChance;
-  public final ForgeConfigSpec.DoubleValue swatZombieHatDropChance;
-  public final ForgeConfigSpec.DoubleValue swatZombieVestDropChance;
-  public final ForgeConfigSpec.DoubleValue swatZombieBackpackDropChance;
-  public final ForgeConfigSpec.DoubleValue swatZombieHandDropChance;
-  public final ForgeConfigSpec.DoubleValue zombieAttackKnockback;
-  public final ForgeConfigSpec.DoubleValue fastZombieSpeed;
+  public final ModConfigSpec.BooleanValue zombiesEnabled;
+  public final ModConfigSpec.BooleanValue advancedZombiesEnabled;
+  public final ModConfigSpec.BooleanValue tankZombiesEnabled;
+  public final ModConfigSpec.BooleanValue fastZombiesEnabled;
+  public final ModConfigSpec.BooleanValue weakZombiesEnabled;
+  public final ModConfigSpec.DoubleValue advancedZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue tankZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue fastZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue weakZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue policeZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue alfaZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue bountyHunterZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue desertRaiderZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue fireFighterZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue hazmatZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue juggernautZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue minerZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue ninjaZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue pilotZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue scoutZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue sniperZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue soldierZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue swatZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue doctorZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue giantZombieMaxHealth;
+  public final ModConfigSpec.DoubleValue advancedZombieAttackDamage;
+  public final ModConfigSpec.DoubleValue tankZombieAttackDamage;
+  public final ModConfigSpec.DoubleValue fastZombieAttackDamage;
+  public final ModConfigSpec.DoubleValue weakZombieAttackDamage;
+  public final ModConfigSpec.DoubleValue hazmatZombieAttackDamage;
+  public final ModConfigSpec.DoubleValue scoutZombieAttackDamage;
+  public final ModConfigSpec.DoubleValue policeZombieGunAccuracy;
+  public final ModConfigSpec.DoubleValue alfaZombieGunAccuracy;
+  public final ModConfigSpec.DoubleValue bountyHunterZombieGunAccuracy;
+  public final ModConfigSpec.DoubleValue desertRaiderZombieGunAccuracy;
+  public final ModConfigSpec.DoubleValue giantZombieGunAccuracy;
+  public final ModConfigSpec.DoubleValue juggernautZombieGunAccuracy;
+  public final ModConfigSpec.DoubleValue pilotZombieGunAccuracy;
+  public final ModConfigSpec.DoubleValue sniperZombieGunAccuracy;
+  public final ModConfigSpec.DoubleValue soldierZombieGunAccuracy;
+  public final ModConfigSpec.DoubleValue swatZombieGunAccuracy;
+  public final ModConfigSpec.DoubleValue doctorZombieAttackDamage;
+  public final ModConfigSpec.DoubleValue giantZombieAttackDamage;
+  public final ModConfigSpec.DoubleValue alfaZombieAttackDistance;
+  public final ModConfigSpec.DoubleValue bountyHunterZombieAttackDistance;
+  public final ModConfigSpec.DoubleValue desertRaiderZombieAttackDistance;
+  public final ModConfigSpec.DoubleValue giantZombieAttackDistance;
+  public final ModConfigSpec.DoubleValue juggernautZombieAttackDistance;
+  public final ModConfigSpec.DoubleValue pilotZombieAttackDistance;
+  public final ModConfigSpec.DoubleValue policeZombieAttackDistance;
+  public final ModConfigSpec.DoubleValue sniperZombieAttackDistance;
+  public final ModConfigSpec.DoubleValue soldierZombieAttackDistance;
+  public final ModConfigSpec.DoubleValue swatZombieAttackDistance;
+  public final ModConfigSpec.DoubleValue alfaZombieVestEquipChance;
+  public final ModConfigSpec.DoubleValue desertRaiderVestEquipChance;
+  public final ModConfigSpec.DoubleValue juggernautZombieVestEquipChance;
+  public final ModConfigSpec.DoubleValue pilotZombieVestEquipChance;
+  public final ModConfigSpec.DoubleValue sniperZombieVestEquipChance;
+  public final ModConfigSpec.DoubleValue soldierZombieVestEquipChance;
+  public final ModConfigSpec.DoubleValue swatZombieVestEquipChance;
+  public final ModConfigSpec.DoubleValue alfaZombieBackpackEquipChance;
+  public final ModConfigSpec.DoubleValue desertRaiderBackpackEquipChance;
+  public final ModConfigSpec.DoubleValue juggernautZombieBackpackEquipChance;
+  public final ModConfigSpec.DoubleValue scoutZombieBackpackEquipChance;
+  public final ModConfigSpec.DoubleValue soldierZombieBackpackEquipChance;
+  public final ModConfigSpec.DoubleValue swatZombieBackpackEquipChance;
+  public final ModConfigSpec.IntValue advancedZombieSpawnWeight;
+  public final ModConfigSpec.IntValue tankZombieSpawnWeight;
+  public final ModConfigSpec.IntValue fastZombieSpawnWeight;
+  public final ModConfigSpec.IntValue weakZombieSpawnWeight;
+  public final ModConfigSpec.IntValue advancedZombieMinSpawn;
+  public final ModConfigSpec.IntValue tankZombieMinSpawn;
+  public final ModConfigSpec.IntValue fastZombieMinSpawn;
+  public final ModConfigSpec.IntValue weakZombieMinSpawn;
+  public final ModConfigSpec.IntValue advancedZombieMaxSpawn;
+  public final ModConfigSpec.IntValue tankZombieMaxSpawn;
+  public final ModConfigSpec.IntValue fastZombieMaxSpawn;
+  public final ModConfigSpec.IntValue weakZombieMaxSpawn;
+  public final ModConfigSpec.DoubleValue zombieHatSpawnChance;
+  public final ModConfigSpec.DoubleValue zombieHandSpawnChance;
+  public final ModConfigSpec.DoubleValue zombieClothingSpawnChance;
+  public final ModConfigSpec.DoubleValue zombieHatDropChance;
+  public final ModConfigSpec.DoubleValue zombieVestDropChance;
+  public final ModConfigSpec.DoubleValue zombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue zombieHandDropChance;
+  public final ModConfigSpec.DoubleValue zombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue alfaZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue alfaZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue alfaZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue alfaZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue alfaZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue bountyHunterZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue bountyHunterZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue bountyHunterZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue bountyHunterZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue bountyHunterZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue desertRaiderZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue desertRaiderZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue desertRaiderZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue desertRaiderZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue desertRaiderZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue doctorZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue doctorZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue doctorZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue doctorZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue doctorZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue fireFighterZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue fireFighterZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue fireFighterZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue fireFighterZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue fireFighterZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue giantZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue giantZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue giantZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue giantZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue giantZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue hazmatZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue hazmatZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue hazmatZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue hazmatZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue hazmatZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue juggernautZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue juggernautZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue juggernautZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue juggernautZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue juggernautZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue minerZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue minerZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue minerZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue minerZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue minerZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue ninjaZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue ninjaZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue ninjaZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue ninjaZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue ninjaZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue pilotZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue pilotZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue pilotZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue pilotZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue pilotZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue policeZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue policeZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue policeZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue policeZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue policeZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue scoutZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue scoutZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue scoutZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue scoutZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue scoutZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue sniperZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue sniperZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue sniperZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue sniperZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue sniperZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue soldierZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue soldierZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue soldierZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue soldierZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue soldierZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue swatZombieClothingDropChance;
+  public final ModConfigSpec.DoubleValue swatZombieHatDropChance;
+  public final ModConfigSpec.DoubleValue swatZombieVestDropChance;
+  public final ModConfigSpec.DoubleValue swatZombieBackpackDropChance;
+  public final ModConfigSpec.DoubleValue swatZombieHandDropChance;
+  public final ModConfigSpec.DoubleValue zombieAttackKnockback;
+  public final ModConfigSpec.DoubleValue fastZombieSpeed;
 
   // ================================================================================
   // Zombie Spawn Multipliers
   // ================================================================================
 
-  public final ForgeConfigSpec.DoubleValue globalZombieSpawnMultiplier;
-  public final ForgeConfigSpec.DoubleValue civilianZombieSpawnMultiplier;
-  public final ForgeConfigSpec.DoubleValue militaryZombieSpawnMultiplier;
-  public final ForgeConfigSpec.DoubleValue policeZombieSpawnMultiplier;
-  public final ForgeConfigSpec.DoubleValue medicZombieSpawnMultiplier;
+  public final ModConfigSpec.DoubleValue globalZombieSpawnMultiplier;
+  public final ModConfigSpec.DoubleValue civilianZombieSpawnMultiplier;
+  public final ModConfigSpec.DoubleValue militaryZombieSpawnMultiplier;
+  public final ModConfigSpec.DoubleValue policeZombieSpawnMultiplier;
+  public final ModConfigSpec.DoubleValue medicZombieSpawnMultiplier;
 
   // ================================================================================
   // Abilities Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue brokenLegsEnabled;
-  public final ForgeConfigSpec.DoubleValue brokenLegChance;
-  public final ForgeConfigSpec.BooleanValue bleedingEnabled;
-  public final ForgeConfigSpec.BooleanValue infectionEnabled;
+  public final ModConfigSpec.BooleanValue brokenLegsEnabled;
+  public final ModConfigSpec.DoubleValue brokenLegChance;
+  public final ModConfigSpec.BooleanValue bleedingEnabled;
+  public final ModConfigSpec.BooleanValue infectionEnabled;
 
   // ================================================================================
   // Explosives Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue pipeBombEnabled;
-  public final ForgeConfigSpec.EnumValue<Level.ExplosionInteraction> pipeBombBlockInteraction;
-  public final ForgeConfigSpec.DoubleValue pipeBombRadius;
-  public final ForgeConfigSpec.DoubleValue pipeBombKnockbackMultiplier;
-  public final ForgeConfigSpec.DoubleValue pipeBombDamageMultiplier;
-  public final ForgeConfigSpec.IntValue pipeBombTicksBeforeActivation;
+  public final ModConfigSpec.BooleanValue pipeBombEnabled;
+  public final ModConfigSpec.EnumValue<Level.ExplosionInteraction> pipeBombBlockInteraction;
+  public final ModConfigSpec.DoubleValue pipeBombRadius;
+  public final ModConfigSpec.DoubleValue pipeBombKnockbackMultiplier;
+  public final ModConfigSpec.DoubleValue pipeBombDamageMultiplier;
+  public final ModConfigSpec.IntValue pipeBombTicksBeforeActivation;
 
   // ================================================================================
   // Food and Drink Values
   // ================================================================================
 
-  public final ForgeConfigSpec.DoubleValue foodNutritionMultiplier;
-  public final ForgeConfigSpec.DoubleValue foodSaturationMultiplier;
-  public final ForgeConfigSpec.DoubleValue drinkHydrationMultiplier;
+  public final ModConfigSpec.DoubleValue foodNutritionMultiplier;
+  public final ModConfigSpec.DoubleValue foodSaturationMultiplier;
+  public final ModConfigSpec.DoubleValue drinkHydrationMultiplier;
 
   // ================================================================================
   // Moon Events / Apocalypse Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue moonEventsEnabled;
-  public final ForgeConfigSpec.BooleanValue scoreboardEnabled;
-  public final ForgeConfigSpec.BooleanValue zombieEvolutionEnabled;
-  public final ForgeConfigSpec.IntValue evolutionIntervalDays;
-  public final ForgeConfigSpec.DoubleValue evolutionHealthPerTier;
-  public final ForgeConfigSpec.DoubleValue evolutionDamagePerTier;
-  public final ForgeConfigSpec.DoubleValue evolutionSpeedPerTier;
-  public final ForgeConfigSpec.BooleanValue moonPhaseZombieStrengthEnabled;
-  public final ForgeConfigSpec.DoubleValue moonPhaseZombieStrengthFactor;
-  public final ForgeConfigSpec.DoubleValue evolvedZombieHeldItemChance;
-  public final ForgeConfigSpec.DoubleValue evolvedZombieHeldItemPerTier;
-  public final ForgeConfigSpec.IntValue bloodMoonSpawnIntervalTicks;
-  public final ForgeConfigSpec.IntValue bloodMoonSpawnCount;
-  public final ForgeConfigSpec.IntValue bloodMoonMaxZombiesNear;
-  public final ForgeConfigSpec.DoubleValue bloodMoonExtraEvolutionChance;
-  public final ForgeConfigSpec.DoubleValue superBloodMoonExtraEvolutionChance;
-  public final ForgeConfigSpec.IntValue blueMoonLuckAmplifier;
-  public final ForgeConfigSpec.DoubleValue yellowMoonGrowthBoostChance;
-  public final ForgeConfigSpec.BooleanValue hordeEnabled;
-  public final ForgeConfigSpec.IntValue hordeIntervalDays;
-  public final ForgeConfigSpec.IntValue hordeDayOffset;
-  public final ForgeConfigSpec.IntValue hordeWaveCount;
-  public final ForgeConfigSpec.IntValue hordeWaveIntervalTicks;
-  public final ForgeConfigSpec.IntValue hordeSpawnPerWave;
-  public final ForgeConfigSpec.IntValue hordeMaxZombiesNear;
-  public final ForgeConfigSpec.IntValue hordeInitialWaveDelayTicks;
-  public final ForgeConfigSpec.BooleanValue killFeedEnabled;
-  public final ForgeConfigSpec.BooleanValue killDropsEnabled;
-  public final ForgeConfigSpec.DoubleValue killDropChance;
-  public final ForgeConfigSpec.IntValue killDropMin;
-  public final ForgeConfigSpec.IntValue killDropMax;
+  public final ModConfigSpec.BooleanValue moonEventsEnabled;
+  public final ModConfigSpec.BooleanValue scoreboardEnabled;
+  public final ModConfigSpec.BooleanValue zombieEvolutionEnabled;
+  public final ModConfigSpec.IntValue evolutionIntervalDays;
+  public final ModConfigSpec.DoubleValue evolutionHealthPerTier;
+  public final ModConfigSpec.DoubleValue evolutionDamagePerTier;
+  public final ModConfigSpec.DoubleValue evolutionSpeedPerTier;
+  public final ModConfigSpec.BooleanValue moonPhaseZombieStrengthEnabled;
+  public final ModConfigSpec.DoubleValue moonPhaseZombieStrengthFactor;
+  public final ModConfigSpec.DoubleValue evolvedZombieHeldItemChance;
+  public final ModConfigSpec.DoubleValue evolvedZombieHeldItemPerTier;
+  public final ModConfigSpec.IntValue bloodMoonSpawnIntervalTicks;
+  public final ModConfigSpec.IntValue bloodMoonSpawnCount;
+  public final ModConfigSpec.IntValue bloodMoonMaxZombiesNear;
+  public final ModConfigSpec.DoubleValue bloodMoonExtraEvolutionChance;
+  public final ModConfigSpec.DoubleValue superBloodMoonExtraEvolutionChance;
+  public final ModConfigSpec.IntValue blueMoonLuckAmplifier;
+  public final ModConfigSpec.DoubleValue yellowMoonGrowthBoostChance;
+  public final ModConfigSpec.BooleanValue hordeEnabled;
+  public final ModConfigSpec.IntValue hordeIntervalDays;
+  public final ModConfigSpec.IntValue hordeDayOffset;
+  public final ModConfigSpec.IntValue hordeWaveCount;
+  public final ModConfigSpec.IntValue hordeWaveIntervalTicks;
+  public final ModConfigSpec.IntValue hordeSpawnPerWave;
+  public final ModConfigSpec.IntValue hordeMaxZombiesNear;
+  public final ModConfigSpec.IntValue hordeInitialWaveDelayTicks;
+  public final ModConfigSpec.BooleanValue killFeedEnabled;
+  public final ModConfigSpec.BooleanValue killDropsEnabled;
+  public final ModConfigSpec.DoubleValue killDropChance;
+  public final ModConfigSpec.IntValue killDropMin;
+  public final ModConfigSpec.IntValue killDropMax;
 
   // Zombie Performance / AI Values
   // ================================================================================
 
   /** 僵尸可破门的概率（0 = 全部不破门，1 = 全部破门）。破门 AI 开销大，大量僵尸时应降低。 */
-  public final ForgeConfigSpec.DoubleValue zombieBreakDoorChance;
+  public final ModConfigSpec.DoubleValue zombieBreakDoorChance;
   /** 僵尸追踪距离（格）。越大寻路越频繁，服务器开销越大。 */
-  public final ForgeConfigSpec.DoubleValue zombieFollowRange;
+  public final ModConfigSpec.DoubleValue zombieFollowRange;
 
-  public ServerConfig(ForgeConfigSpec.Builder builder) {
+  public ServerConfig(ModConfigSpec.Builder builder) {
     // Game-Settings configuration
     builder
         .comment("General Game-Settings")

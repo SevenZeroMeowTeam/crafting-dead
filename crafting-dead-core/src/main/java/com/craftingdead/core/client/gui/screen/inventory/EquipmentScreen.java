@@ -19,7 +19,7 @@
 package com.craftingdead.core.client.gui.screen.inventory;
 
 
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.client.ClientDist;
 import com.craftingdead.core.client.gui.widget.button.CompositeButton;
@@ -70,8 +70,7 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
         .setHoverAtlasPos(196, 240)
         .setInactiveAtlasPos(183, 240)
         .setAction((button) -> {
-          NetworkChannel.PLAY.getSimpleChannel()
-              .send(new OpenStorageMessage(Equipment.Slot.VEST), PacketDistributor.SERVER.noArg());
+          PacketDistributor.sendToServer(new OpenStorageMessage(Equipment.Slot.VEST));
           this.transitioning = true;
         }).build();
     this.addRenderableWidget(this.vestButton);
@@ -81,8 +80,7 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
         .setHoverAtlasPos(196, 240)
         .setInactiveAtlasPos(183, 240)
         .setAction((button) -> {
-          NetworkChannel.PLAY.getSimpleChannel()
-              .send(new OpenStorageMessage(Equipment.Slot.BACKPACK), PacketDistributor.SERVER.noArg());
+          PacketDistributor.sendToServer(new OpenStorageMessage(Equipment.Slot.BACKPACK));
           this.transitioning = true;
         }).build();
     this.addRenderableWidget(this.backpackButton);
@@ -106,14 +104,10 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
   private void refreshButtonStatus() {
     this.backpackButton.active = this.menu
         .getPlayer()
-        .getEquipmentInSlot(Equipment.Slot.BACKPACK)
-        .map(MenuConstructor.class::isInstance)
-        .orElse(false);
+        .getEquipmentInSlot(Equipment.Slot.BACKPACK) instanceof MenuConstructor;
     this.vestButton.active = this.menu
         .getPlayer()
-        .getEquipmentInSlot(Equipment.Slot.VEST)
-        .map(MenuConstructor.class::isInstance)
-        .orElse(false);
+        .getEquipmentInSlot(Equipment.Slot.VEST) instanceof MenuConstructor;
   }
 
   /**
@@ -142,7 +136,8 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
     }
 
     ItemStack gunStack = this.menu.getGunStack();
-    gunStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> {
+    var gun = gunStack.getCapability(Gun.CAPABILITY);
+    if (gun != null) {
 
       final int gunSlotX = this.leftPos + 135;
       final int gunSlotY = this.topPos + 26;
@@ -158,7 +153,7 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
         // Red outline
         guiGraphics.blit(BACKGROUND, gunSlotX, gunSlotY, 147, 238, 16, 16);
       }
-    });
+    }
 
     guiGraphics.blit(BACKGROUND, this.leftPos, this.topPos - 28, 183, 0, 28, 35);
     guiGraphics.blit(BACKGROUND, this.leftPos + 30, this.topPos - 28, 211, 0, 29, 28);
@@ -173,8 +168,7 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
       if (this.minecraft != null && this.minecraft.player != null) {
         this.minecraft.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.2F, 1.0F);
       }
-      NetworkChannel.PLAY.getSimpleChannel().send(new OpenCraftingMenuMessage(),
-          PacketDistributor.SERVER.noArg());
+      PacketDistributor.sendToServer(new OpenCraftingMenuMessage());
       return true;
     }
     return super.mouseClicked(mouseX, mouseY, button);

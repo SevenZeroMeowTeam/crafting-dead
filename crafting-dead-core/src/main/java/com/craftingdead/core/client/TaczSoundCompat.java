@@ -18,8 +18,8 @@
 
 package com.craftingdead.core.client;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * TaCZ（Timeless and Classics Guns）声音兼容补丁。

@@ -74,7 +74,7 @@ public class KillFeedEntry {
     // 而网络消息编解码拿到的是普通 FriendlyByteBuf，强行强转会导致崩溃。
     out.writeBoolean(!this.weaponStack.isEmpty());
     if (!this.weaponStack.isEmpty()) {
-      out.writeResourceLocation(BuiltInRegistries.ITEM.getKey(this.weaponStack.getItem()));
+      out.writeResourceLocation(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(this.weaponStack.getItem()));
       out.writeVarInt(this.weaponStack.getCount());
     }
     out.writeEnum(this.type);

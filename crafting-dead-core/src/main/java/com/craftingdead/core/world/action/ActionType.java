@@ -31,6 +31,6 @@ public interface ActionType<T extends Action> {
   boolean isTriggeredByClient();
 
   default String makeDescriptionId() {
-    return Util.makeDescriptionId("action", ActionTypes.REGISTRY.get().getKey(this));
+    return Util.makeDescriptionId("action", ActionTypes.REGISTRY.getKey(this));
   }
 }

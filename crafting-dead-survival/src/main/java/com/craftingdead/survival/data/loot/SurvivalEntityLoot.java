@@ -38,7 +38,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerC
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithEnchantedBonusCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class SurvivalEntityLoot extends EntityLootSubProvider {
 
@@ -82,7 +82,7 @@ public class SurvivalEntityLoot extends EntityLootSubProvider {
   protected Iterable<EntityType<?>> getKnownEntities() {
     return SurvivalEntityTypes.deferredRegister.getEntries()
         .stream()
-        .<EntityType<?>>map(RegistryObject::get)
+        .<EntityType<?>>map(DeferredHolder::get)
         .toList();
   }
 }

@@ -84,7 +84,7 @@ public abstract class DamageSourceMixin {
    * 是否属于 TaCZ 命名空间下的物品（TaCZ 枪械统一为 {@code tacz:modern_kinetic_gun}）。
    */
   private static boolean isTaczGun(ItemStack stack) {
-    final ResourceLocation key = BuiltInRegistries.ITEM.getKey(stack.getItem());
+    final ResourceLocation key = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
     return key != null && "tacz".equals(key.getNamespace());
   }
 

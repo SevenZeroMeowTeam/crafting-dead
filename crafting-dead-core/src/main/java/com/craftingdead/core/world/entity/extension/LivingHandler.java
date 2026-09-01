@@ -28,8 +28,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.BlockSnapshot;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.BlockSnapshot;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 public interface LivingHandler extends INBTSerializable<CompoundTag>, Synched {
 

@@ -80,8 +80,9 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import net.minecraftforge.common.util.TransformationHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.util.TransformationHelper;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 
 public class GunRenderer implements CombatSlotItemRenderer {
 
@@ -157,7 +158,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
       int packedLight,
       int packedOverlay) {
 
-    var scope = itemStack.getCapability(Scope.CAPABILITY).orElse(null);
+    var scope = itemStack.getCapability(Scope.CAPABILITY);
     var scoping = scope != null && living != null && scope.isScoping(living);
     if (scoping && scope.getOverlayTexture(living).isPresent()) {
       return;
@@ -440,12 +441,10 @@ public class GunRenderer implements CombatSlotItemRenderer {
 
     var skinTextureLocation = gun.getSkin() == null
         ? null
-        : gun.getSkin().getTextureLocation(ForgeRegistries.ITEMS.getKey(gun.getItemStack().getItem()));
+        : gun.getSkin().getTextureLocation(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(gun.getItemStack().getItem()));
 
-    final var color = gun.getPaintStack().getCapability(Paint.CAPABILITY)
-        .resolve()
-        .map(paint -> paint.getColor().orElse(0xFFFFFFFF))
-        .orElse(0xFFFFFFFF);
+    final var paint = gun.getPaintStack().getCapability(Paint.CAPABILITY);
+    final var color = paint == null ? 0xFFFFFFFF : paint.getColor().orElse(0xFFFFFFFF);
 
     Map<String, Either<Material, String>> textures = null;
     if (skinTextureLocation != null) {
@@ -463,7 +462,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
             gun.hasIronSight()
                 ? this.properties.aimTransform()
                 : this.properties.scopeAimTransform().getOrDefault(
-                    Attachments.registry.get().getKey(gun.getAttachments().get(GunCraftSlotType.OVERBARREL_ATTACHMENT)), this.properties.aimTransform()),
+                    Attachments.registry.getKey(gun.getAttachments().get(GunCraftSlotType.OVERBARREL_ATTACHMENT)), this.properties.aimTransform()),
             aimingPct)
         : normalTransform;
 
@@ -555,11 +554,11 @@ public class GunRenderer implements CombatSlotItemRenderer {
 
     for (var attachment : gun.getAttachments().values()) {
       var transform = this.properties.attachmentTransforms()
-          .getOrDefault(Attachments.registry.get().getKey(attachment), Transformation.identity());
+          .getOrDefault(Attachments.registry.getKey(attachment), Transformation.identity());
       matrixStack.mulPose(transform.getMatrix());
       {
         var bakedModel =
-            this.getBakedModel(getAttachmentModelLocation(Attachments.registry.get().getKey(attachment)), null);
+            this.getBakedModel(getAttachmentModelLocation(Attachments.registry.getKey(attachment)), null);
         this.renderBakedModel(bakedModel, foil, colour, transformType, matrixStack,
             renderTypeBuffer, packedLight, packedOverlay);
       }
@@ -578,10 +577,10 @@ public class GunRenderer implements CombatSlotItemRenderer {
       int packedLight,
       int packedOverlay) {
     var transform = this.properties.magazineTransforms()
-        .getOrDefault(ForgeRegistries.ITEMS.getKey(magazineStack.getItem()), Transformation.identity());
+        .getOrDefault(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(magazineStack.getItem()), Transformation.identity());
     poseStack.mulPose(transform.getMatrix());
     {
-      var modelLocation = getMagazineModelLocation(ForgeRegistries.ITEMS.getKey(magazineStack.getItem()));
+      var modelLocation = getMagazineModelLocation(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(magazineStack.getItem()));
 
       var magazineBakedModel = this.getBakedModel(modelLocation,
           Map.of(GUN_TEXTURE_REFERENCE, Either.left(skinTextureLocation == null
@@ -609,11 +608,11 @@ public class GunRenderer implements CombatSlotItemRenderer {
         .map(Pair::getFirst)
         .collect(Collectors.toSet()));
     dependencies.addAll(this.item.getAcceptedAttachments().stream()
-        .map(attachment -> Attachments.registry.get().getKey(attachment))
+        .map(attachment -> Attachments.registry.getKey(attachment))
         .map(GunRenderer::getAttachmentModelLocation)
         .collect(Collectors.toSet()));
     dependencies.addAll(this.item.getAcceptedMagazines().stream()
-        .map(item -> ForgeRegistries.ITEMS.getKey(item))
+        .map(item -> net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item))
         .map(GunRenderer::getMagazineModelLocation)
         .collect(Collectors.toSet()));
     dependencies.add(this.properties.modelLocation());

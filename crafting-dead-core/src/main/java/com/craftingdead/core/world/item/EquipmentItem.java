@@ -43,16 +43,15 @@ public abstract class EquipmentItem extends Item {
       TooltipFlag tooltipFlag) {
     super.appendHoverText(stack, world, lines, tooltipFlag);
 
-    stack.getCapability(Equipment.CAPABILITY)
-        .map(Equipment::attributeModifiers)
-        .filter(Predicates.not(Multimap::isEmpty))
-        .ifPresent(attributeModifiers -> {
+    var equipment = stack.getCapability(Equipment.CAPABILITY);
+    if (equipment != null && !equipment.attributeModifiers().isEmpty()) {
+      var attributeModifiers = equipment.attributeModifiers();
 
-          lines.add(Component.empty());
-          lines.add(Component.translatable("item.modifiers.clothing")
-              .withStyle(ChatFormatting.GRAY));
+      lines.add(Component.empty());
+      lines.add(Component.translatable("item.modifiers.clothing")
+          .withStyle(ChatFormatting.GRAY));
 
-          for (var entry : attributeModifiers.entries()) {
+      for (var entry : attributeModifiers.entries()) {
             var modifier = entry.getValue();
             var amount = modifier.amount();
 
@@ -91,6 +90,6 @@ public abstract class EquipmentItem extends Item {
                       .withStyle(ChatFormatting.RED));
             }
           }
-        });
+    }
   }
 }

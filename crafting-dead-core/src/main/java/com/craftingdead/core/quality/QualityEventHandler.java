@@ -31,12 +31,12 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 
 /**
  * 品质系统主事件处理器。
@@ -89,7 +89,7 @@ public class QualityEventHandler {
   // ================================================================================
 
   @SubscribeEvent(priority = EventPriority.HIGH)
-  public void handleLivingDamage(LivingDamageEvent event) {
+  public void handleLivingDamage(LivingDamageEvent.Pre event) {
     if (event.getEntity().level().isClientSide()) {
       return;
     }
@@ -102,7 +102,7 @@ public class QualityEventHandler {
       return;
     }
 
-    float amount = event.getAmount();
+    float amount = event.getNewDamage();
     float qualityMultiplier = QualityHelper.getQualityDamageMultiplier(weapon);
 
     if (QualityHelper.isSword(weapon)) {
@@ -118,8 +118,8 @@ public class QualityEventHandler {
       amount += material.getAttackBonus() * qualityMultiplier;
     }
 
-    if (amount != event.getAmount()) {
-      event.setAmount(amount);
+    if (amount != event.getNewDamage()) {
+      event.setNewDamage(amount);
     }
   }
 
@@ -154,11 +154,8 @@ public class QualityEventHandler {
   // ================================================================================
 
   @SubscribeEvent
-  public void handlePlayerTick(TickEvent.PlayerTickEvent event) {
-    if (event.phase != TickEvent.Phase.END) {
-      return;
-    }
-    Player player = event.player;
+  public void handlePlayerTick(PlayerTickEvent.Post event) {
+    Player player = (Player) event.getEntity();
     if (player.level().isClientSide()) {
       return;
     }
@@ -167,7 +164,8 @@ public class QualityEventHandler {
         || QualityHelper.isCreativeAmmoBox(player.getOffhandItem());
 
     ItemStack mainHand = player.getMainHandItem();
-    mainHand.getCapability(Gun.CAPABILITY).ifPresent(gun -> {
+    var gun = mainHand.getCapability(Gun.CAPABILITY);
+    if (gun != null) {
       AmmoProvider provider = gun.getAmmoProvider();
       boolean infiniteActive =
           provider instanceof RefillableAmmoProvider refillable && refillable.hasInfiniteAmmo();
@@ -178,13 +176,13 @@ public class QualityEventHandler {
         // 导致服务器 "Ticking player" 崩溃（见 logs 2026-08-24 crash）。
         ItemStack magazineStack = provider.getMagazineStack();
         if (!magazineStack.isEmpty()
-            && magazineStack.getCapability(Magazine.CAPABILITY).isPresent()) {
+            && magazineStack.getCapability(Magazine.CAPABILITY) != null) {
           gun.setAmmoProvider(new RefillableAmmoProvider(magazineStack, 0, true));
         }
       } else if (!hasBox && infiniteActive) {
         gun.setAmmoProvider(new MagazineAmmoProvider(provider.getMagazineStack()));
       }
-    });
+    }
   }
 
   // ================================================================================

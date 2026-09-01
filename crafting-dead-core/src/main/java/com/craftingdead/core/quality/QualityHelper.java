@@ -54,8 +54,8 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.ModList;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 /**
  * 品质系统的通用工具方法：读写物品 NBT、判定物品类型（自动兼容其他模组物品）、
@@ -559,7 +559,8 @@ public final class QualityHelper {
    */
   public static Item resolveItem(String namespace, String path) {
     Item item =
-        ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath(namespace, path));
+        net.minecraft.core.registries.BuiltInRegistries.ITEM
+            .get(ResourceLocation.fromNamespaceAndPath(namespace, path));
     return (item == null || item == Items.AIR) ? null : item;
   }
 
@@ -773,7 +774,7 @@ public final class QualityHelper {
     if (stack.isEmpty()) {
       return false;
     }
-    ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
+    ResourceLocation key = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
     return key != null && "tacz".equals(key.getNamespace());
   }
 
@@ -838,21 +839,23 @@ public final class QualityHelper {
     if (gunStack.isEmpty()) {
       return;
     }
-    gunStack.getCapability(com.craftingdead.core.world.item.gun.Gun.CAPABILITY)
-        .ifPresent(gun -> {
-          if (!magazineStack.isEmpty()) {
-            magazineStack.getCapability(
-                com.craftingdead.core.world.item.gun.magazine.Magazine.CAPABILITY)
-                .ifPresent(magazine -> magazine.setSize(magazine.getMaxSize()));
-            gun.setAmmoProvider(
-                new com.craftingdead.core.world.item.gun.ammoprovider.MagazineAmmoProvider(
-                    magazineStack));
-          }
-          if (attachment != null) {
-            gun.setAttachments(java.util.Map.of(
-                com.craftingdead.core.world.inventory.GunCraftSlotType.OVERBARREL_ATTACHMENT,
-                attachment));
-          }
-        });
+    var gun = gunStack.getCapability(com.craftingdead.core.world.item.gun.Gun.CAPABILITY);
+    if (gun != null) {
+      if (!magazineStack.isEmpty()) {
+        var magazine =
+            magazineStack.getCapability(com.craftingdead.core.world.item.gun.magazine.Magazine.CAPABILITY);
+        if (magazine != null) {
+          magazine.setSize(magazine.getMaxSize());
+        }
+        gun.setAmmoProvider(
+            new com.craftingdead.core.world.item.gun.ammoprovider.MagazineAmmoProvider(
+                magazineStack));
+      }
+      if (attachment != null) {
+        gun.setAttachments(java.util.Map.of(
+            com.craftingdead.core.world.inventory.GunCraftSlotType.OVERBARREL_ATTACHMENT,
+            attachment));
+      }
+    }
   }
 }

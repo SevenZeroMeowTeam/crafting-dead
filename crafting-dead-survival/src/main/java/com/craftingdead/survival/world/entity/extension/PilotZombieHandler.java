@@ -42,14 +42,17 @@ public class PilotZombieHandler extends ZombieHandler {
   @Override
   protected ItemStack createHeldItem() {
     var gunStack = ModItems.M9.get().getDefaultInstance();
-    gunStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> {
+    var gun = gunStack.getCapability(Gun.CAPABILITY);
+if (gun != null) {
+
       var magazineStack = ModItems.M9_MAGAZINE.get().getDefaultInstance();
       gun.setAmmoProvider(new RefillableAmmoProvider(magazineStack, 0, true));
       Map<GunCraftSlotType, Attachment> attachments = new HashMap<>();
       var suppressor = Attachments.SUPPRESSOR.get();
       attachments.put(GunCraftSlotType.MUZZLE_ATTACHMENT, suppressor);
       gun.setAttachments(attachments);
-    });
+    
+}
     return gunStack;
   }
 

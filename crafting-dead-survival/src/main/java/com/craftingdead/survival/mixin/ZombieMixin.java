@@ -49,9 +49,11 @@ public abstract class ZombieMixin extends Monster {
   @Inject(at = @At("RETURN"), method = "setBaby")
   public void setBaby(boolean baby, CallbackInfo callbackInfo) {
     var zombie = (Zombie) (Object) this;
-    zombie.getCapability(LivingExtension.CAPABILITY).resolve()
-        .flatMap(extension -> extension.getHandler(ZombieHandler.TYPE))
-        .ifPresent(handler -> handler.handleSetBaby(baby));
+    var extension = zombie.getCapability(LivingExtension.CAPABILITY);
+    if (extension != null) {
+      extension.getHandler(ZombieHandler.TYPE)
+          .ifPresent(handler -> handler.handleSetBaby(baby));
+    }
   }
 
   @Inject(at = @At("RETURN"), method = "convertsInWater", cancellable = true)
@@ -68,8 +70,10 @@ public abstract class ZombieMixin extends Monster {
   public void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty,
       CallbackInfo callbackInfo) {
     var zombie = (Zombie) (Object) this;
-    zombie.getCapability(LivingExtension.CAPABILITY).resolve()
-        .flatMap(extension -> extension.getHandler(ZombieHandler.TYPE))
-        .ifPresent(handler -> handler.populateDefaultEquipmentSlots(difficulty));
+    var extension = zombie.getCapability(LivingExtension.CAPABILITY);
+    if (extension != null) {
+      extension.getHandler(ZombieHandler.TYPE)
+          .ifPresent(handler -> handler.populateDefaultEquipmentSlots(difficulty));
+    }
   }
 }

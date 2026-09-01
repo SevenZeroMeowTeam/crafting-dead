@@ -80,7 +80,8 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
 
       final var itemRenderer = minecraft.getItemRenderer();
 
-      livingEntity.getCapability(LivingExtension.CAPABILITY).ifPresent(living -> {
+      var living = livingEntity.getCapability(LivingExtension.CAPABILITY);
+      if (living != null) {
 
         final var itemStack = living.getItemInSlot(this.slot);
 
@@ -118,7 +119,7 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
 
           poseStack.popPose();
         }
-      });
+      }
     }
   }
 

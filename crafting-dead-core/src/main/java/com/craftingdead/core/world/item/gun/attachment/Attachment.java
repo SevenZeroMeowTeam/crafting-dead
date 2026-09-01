@@ -70,7 +70,7 @@ public class Attachment implements ItemLike {
 
   protected String getOrCreateDescriptionId() {
     if (this.descriptionId == null) {
-      this.descriptionId = Util.makeDescriptionId("attachment", Attachments.registry.get().getKey(this));
+      this.descriptionId = Util.makeDescriptionId("attachment", Attachments.registry.getKey(this));
     }
     return this.descriptionId;
   }

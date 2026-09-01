@@ -21,27 +21,27 @@ package com.craftingdead.survival.particles;
 import com.craftingdead.survival.CraftingDeadSurvival;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class SurvivalParticleTypes {
 
   public static final DeferredRegister<ParticleType<?>> deferredRegister =
-      DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, CraftingDeadSurvival.ID);
+      DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, CraftingDeadSurvival.ID);
 
-  public static final RegistryObject<SimpleParticleType> MILITARY_LOOT_GEN =
+  public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MILITARY_LOOT_GEN =
       deferredRegister.register("military_loot_gen", () -> new SimpleParticleType(false));
 
-  public static final RegistryObject<SimpleParticleType> MEDIC_LOOT_GEN =
+  public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MEDIC_LOOT_GEN =
       deferredRegister.register("medic_loot_gen", () -> new SimpleParticleType(false));
 
-  public static final RegistryObject<SimpleParticleType> CIVILIAN_LOOT_GEN =
+  public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CIVILIAN_LOOT_GEN =
       deferredRegister.register("civilian_loot_gen", () -> new SimpleParticleType(false));
 
-  public static final RegistryObject<SimpleParticleType> CIVILIAN_RARE_LOOT_GEN =
+  public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CIVILIAN_RARE_LOOT_GEN =
       deferredRegister.register("civilian_rare_loot_gen", () -> new SimpleParticleType(false));
 
-  public static final RegistryObject<SimpleParticleType> POLICE_LOOT_GEN =
+  public static final DeferredHolder<ParticleType<?>, SimpleParticleType> POLICE_LOOT_GEN =
       deferredRegister.register("police_loot_gen", () -> new SimpleParticleType(false));
 }

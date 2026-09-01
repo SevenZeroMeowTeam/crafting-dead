@@ -23,10 +23,9 @@ import com.craftingdead.core.sounds.ModSoundEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegistryBuilder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.function.Supplier;
 
@@ -38,16 +37,14 @@ public class GunConfigurations {
   public static final DeferredRegister<GunConfiguration> deferredRegister =
       DeferredRegister.create(REGISTRY_KEY, CraftingDead.ID);
 
-  public static final Supplier<IForgeRegistry<GunConfiguration>> registry =
-      deferredRegister.makeRegistry(
-          () -> new RegistryBuilder<GunConfiguration>()
-              .hasTags());
+  public static final Registry<GunConfiguration> registry = deferredRegister.makeRegistry(
+          builder -> builder.sync(true));
 
   // ================================================================================
   // Assault Rifles
   // ================================================================================
 
-  public static final RegistryObject<GunConfiguration> M4A1 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> M4A1 =
       deferredRegister.register("m4a1",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -66,7 +63,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.M4A1_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> SCARL =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> SCARL =
       deferredRegister.register("scarl",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -85,7 +82,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.SCARL_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> AK47 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> AK47 =
       deferredRegister.register("ak47",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -103,7 +100,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.AK47_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> FNFAL =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> FNFAL =
       deferredRegister.register("fnfal",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -120,7 +117,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.FNFAL_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> ACR =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> ACR =
       deferredRegister.register("acr",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -138,7 +135,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.ACR_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> HK417 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> HK417 =
       deferredRegister.register("hk417",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -156,7 +153,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.HK417_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> MPT55 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> MPT55 =
       deferredRegister.register("mpt55",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -174,7 +171,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.MPT_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> M1GARAND =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> M1GARAND =
       deferredRegister.register("m1garand",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -191,7 +188,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.M1GARAND_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> SPORTER22 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> SPORTER22 =
       deferredRegister.register("sporter22",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -209,7 +206,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.SPORTER22_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> G36C =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> G36C =
       deferredRegister.register("g36c",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -231,7 +228,7 @@ public class GunConfigurations {
   // Machine Guns
   // ================================================================================
 
-  public static final RegistryObject<GunConfiguration> M240B =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> M240B =
       deferredRegister.register("m240b",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -248,7 +245,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.M240B_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> RPK =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> RPK =
       deferredRegister.register("rpk",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -265,7 +262,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.RPK_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> MINIGUN =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> MINIGUN =
       deferredRegister.register("minigun",
           () -> GunConfiguration.builder()
               .setFireDelayMs(60)
@@ -283,7 +280,7 @@ public class GunConfigurations {
               .setSecondaryActionSoundRepeatDelayMs(177L)
               .build());
 
-  public static final RegistryObject<GunConfiguration> MK48MOD =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> MK48MOD =
       deferredRegister.register("mk48mod",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -304,7 +301,7 @@ public class GunConfigurations {
   // Pistols
   // ================================================================================
 
-  public static final RegistryObject<GunConfiguration> TASER =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> TASER =
       deferredRegister.register("taser",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -318,7 +315,7 @@ public class GunConfigurations {
               .setShootSound(ModSoundEvents.TASER_SHOOT)
               .build());
 
-  public static final RegistryObject<GunConfiguration> M1911 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> M1911 =
       deferredRegister.register("m1911",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -335,7 +332,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.M1911_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> G18 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> G18 =
       deferredRegister.register("g18",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -352,7 +349,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.G18_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> M9 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> M9 =
       deferredRegister.register("m9",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -369,7 +366,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.M9_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> DESERT_EAGLE =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> DESERT_EAGLE =
       deferredRegister.register("desert_eagle",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -385,7 +382,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.DESERT_EAGLE_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> P250 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> P250 =
       deferredRegister.register("p250",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -402,7 +399,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.P250_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> MAGNUM =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> MAGNUM =
       deferredRegister.register("magnum",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -418,7 +415,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.MAGNUM_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> FN57 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> FN57 =
       deferredRegister.register("fn57",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -439,7 +436,7 @@ public class GunConfigurations {
   // Submachine Guns
   // ================================================================================
 
-  public static final RegistryObject<GunConfiguration> MAC10 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> MAC10 =
       deferredRegister.register("mac10",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -456,7 +453,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.MAC10_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> P90 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> P90 =
       deferredRegister.register("p90",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -473,7 +470,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.P90_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> VECTOR =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> VECTOR =
       deferredRegister.register("vector",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -490,7 +487,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.VECTOR_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> MP5A5 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> MP5A5 =
       deferredRegister.register("mp5a5",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -512,7 +509,7 @@ public class GunConfigurations {
   // Sniper Rifles
   // ================================================================================
 
-  public static final RegistryObject<GunConfiguration> M107 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> M107 =
       deferredRegister.register("m107",
           () -> GunConfiguration.builder()
               .aimable(true)
@@ -529,7 +526,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.M107_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> AS50 =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> AS50 =
       deferredRegister.register("as50",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -546,7 +543,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.AS50_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> AWP =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> AWP =
       deferredRegister.register("awp",
           () -> GunConfiguration.builder()
               .aimable(true)
@@ -564,7 +561,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.AWP_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> DMR =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> DMR =
       deferredRegister.register("dmr",
           () -> GunConfiguration.builder()
               .aimable(false)
@@ -583,7 +580,7 @@ public class GunConfigurations {
               .build());
 
   // Kar98k 98k 狙击步枪（奖励箱 / 合成获得）
-  public static final RegistryObject<GunConfiguration> KAR98K =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> KAR98K =
       deferredRegister.register("kar98k",
           () -> GunConfiguration.builder()
               .aimable(true)
@@ -605,7 +602,7 @@ public class GunConfigurations {
   // Shotguns
   // ================================================================================
 
-  public static final RegistryObject<GunConfiguration> TRENCH_GUN =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> TRENCH_GUN =
       deferredRegister.register("trench_gun",
           () -> GunConfiguration.builder()
               .aimable(true)
@@ -622,7 +619,7 @@ public class GunConfigurations {
               .setReloadSound(ModSoundEvents.SHOTGUN_RELOAD)
               .build());
 
-  public static final RegistryObject<GunConfiguration> MOSSBERG =
+  public static final DeferredHolder<GunConfiguration, ? extends GunConfiguration> MOSSBERG =
       deferredRegister.register("mossberg",
           () -> GunConfiguration.builder()
               .aimable(true)

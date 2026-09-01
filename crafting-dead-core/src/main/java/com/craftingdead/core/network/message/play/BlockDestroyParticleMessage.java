@@ -17,6 +17,11 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
@@ -24,20 +29,32 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record BlockDestroyParticleMessage(BlockPos pos, BlockState state) {
+public record BlockDestroyParticleMessage(BlockPos pos, BlockState state) implements CustomPacketPayload {
 
-  public static void encode(BlockDestroyParticleMessage msg, FriendlyByteBuf buf) {
-    buf.writeBlockPos(msg.pos());
-    buf.writeVarInt(Block.getId(msg.state()));
+  public static final CustomPacketPayload.Type<BlockDestroyParticleMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "block_destroy_particle_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, BlockDestroyParticleMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, BlockDestroyParticleMessage msg) -> msg.encode(buf), BlockDestroyParticleMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
+
+  public void encode(FriendlyByteBuf buf) {
+    buf.writeBlockPos(this.pos());
+    buf.writeVarInt(Block.getId(this.state()));
   }
 
   public static BlockDestroyParticleMessage decode(FriendlyByteBuf buf) {
     return new BlockDestroyParticleMessage(buf.readBlockPos(), Block.stateById(buf.readVarInt()));
   }
 
-  public static void handle(BlockDestroyParticleMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(BlockDestroyParticleMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(() -> {
       var player = Minecraft.getInstance().player;
       if (player != null) {
@@ -45,6 +62,6 @@ public record BlockDestroyParticleMessage(BlockPos pos, BlockState state) {
         player.level().addDestroyBlockEffect(msg.pos, state);
       }
     });
-    ctx.setPacketHandled(true);
+    
   }
 }

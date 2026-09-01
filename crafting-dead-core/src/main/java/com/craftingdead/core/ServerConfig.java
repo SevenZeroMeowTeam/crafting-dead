@@ -20,216 +20,216 @@ package com.craftingdead.core;
 
 import com.craftingdead.core.client.gui.HitMarker;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ServerConfig {
 
   public static final ServerConfig instance;
-  public static final ForgeConfigSpec configSpec;
+  public static final ModConfigSpec configSpec;
 
   static {
-    var pair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
+    var pair = new ModConfigSpec.Builder().configure(ServerConfig::new);
     configSpec = pair.getRight();
     instance = pair.getLeft();
   }
 
-  public final ForgeConfigSpec.EnumValue<HitMarker.Mode> hitMarkerMode;
-  public final ForgeConfigSpec.BooleanValue killSoundEnabled;
+  public final ModConfigSpec.EnumValue<HitMarker.Mode> hitMarkerMode;
+  public final ModConfigSpec.BooleanValue killSoundEnabled;
 
   // ================================================================================
   // Game-Settings Values
   // ================================================================================
 
-  public final ForgeConfigSpec.DoubleValue handcuffDamageChance;
+  public final ModConfigSpec.DoubleValue handcuffDamageChance;
 
   // ================================================================================
   // Clothing Values
   // ================================================================================
 
-  public final ForgeConfigSpec.DoubleValue casualClothingDamageReduction;
-  public final ForgeConfigSpec.DoubleValue casualClothingBleedAndInfectionReduction;
-  public final ForgeConfigSpec.DoubleValue utilityClothingDamageReduction;
-  public final ForgeConfigSpec.DoubleValue utilityClothingBleedAndInfectionReduction;
-  public final ForgeConfigSpec.DoubleValue militaryClothingDamageReduction;
-  public final ForgeConfigSpec.DoubleValue militaryClothingBleedAndInfectionReduction;
+  public final ModConfigSpec.DoubleValue casualClothingDamageReduction;
+  public final ModConfigSpec.DoubleValue casualClothingBleedAndInfectionReduction;
+  public final ModConfigSpec.DoubleValue utilityClothingDamageReduction;
+  public final ModConfigSpec.DoubleValue utilityClothingBleedAndInfectionReduction;
+  public final ModConfigSpec.DoubleValue militaryClothingDamageReduction;
+  public final ModConfigSpec.DoubleValue militaryClothingBleedAndInfectionReduction;
 
   // Passive Protection Values
-  public final ForgeConfigSpec.DoubleValue casualClothingBiteProtection;
-  public final ForgeConfigSpec.DoubleValue casualClothingStabResistance;
-  public final ForgeConfigSpec.DoubleValue casualClothingBluntResistance;
-  public final ForgeConfigSpec.DoubleValue casualClothingWeightModifier;
+  public final ModConfigSpec.DoubleValue casualClothingBiteProtection;
+  public final ModConfigSpec.DoubleValue casualClothingStabResistance;
+  public final ModConfigSpec.DoubleValue casualClothingBluntResistance;
+  public final ModConfigSpec.DoubleValue casualClothingWeightModifier;
 
-  public final ForgeConfigSpec.DoubleValue utilityClothingBiteProtection;
-  public final ForgeConfigSpec.DoubleValue utilityClothingStabResistance;
-  public final ForgeConfigSpec.DoubleValue utilityClothingBluntResistance;
-  public final ForgeConfigSpec.DoubleValue utilityClothingWeightModifier;
+  public final ModConfigSpec.DoubleValue utilityClothingBiteProtection;
+  public final ModConfigSpec.DoubleValue utilityClothingStabResistance;
+  public final ModConfigSpec.DoubleValue utilityClothingBluntResistance;
+  public final ModConfigSpec.DoubleValue utilityClothingWeightModifier;
 
-  public final ForgeConfigSpec.DoubleValue militaryClothingBiteProtection;
-  public final ForgeConfigSpec.DoubleValue militaryClothingStabResistance;
-  public final ForgeConfigSpec.DoubleValue militaryClothingBluntResistance;
-  public final ForgeConfigSpec.DoubleValue militaryClothingWeightModifier;
+  public final ModConfigSpec.DoubleValue militaryClothingBiteProtection;
+  public final ModConfigSpec.DoubleValue militaryClothingStabResistance;
+  public final ModConfigSpec.DoubleValue militaryClothingBluntResistance;
+  public final ModConfigSpec.DoubleValue militaryClothingWeightModifier;
 
-  public final ForgeConfigSpec.DoubleValue heavyClothingBiteProtection;
-  public final ForgeConfigSpec.DoubleValue heavyClothingStabResistance;
-  public final ForgeConfigSpec.DoubleValue heavyClothingBluntResistance;
-  public final ForgeConfigSpec.DoubleValue heavyClothingWeightModifier;
+  public final ModConfigSpec.DoubleValue heavyClothingBiteProtection;
+  public final ModConfigSpec.DoubleValue heavyClothingStabResistance;
+  public final ModConfigSpec.DoubleValue heavyClothingBluntResistance;
+  public final ModConfigSpec.DoubleValue heavyClothingWeightModifier;
 
   // ================================================================================
   // Medical Consumables Values
   // ================================================================================
 
   // Bandage
-  public final ForgeConfigSpec.DoubleValue bandageHealAmount;
-  public final ForgeConfigSpec.IntValue bandageDurationTicks;
-  public final ForgeConfigSpec.BooleanValue bandageRemovesBleeding;
-  public final ForgeConfigSpec.DoubleValue bandageBleedReductionChance;
+  public final ModConfigSpec.DoubleValue bandageHealAmount;
+  public final ModConfigSpec.IntValue bandageDurationTicks;
+  public final ModConfigSpec.BooleanValue bandageRemovesBleeding;
+  public final ModConfigSpec.DoubleValue bandageBleedReductionChance;
 
   // First Aid Kit
-  public final ForgeConfigSpec.DoubleValue firstAidKitHealAmount;
-  public final ForgeConfigSpec.IntValue firstAidKitDurationTicks;
-  public final ForgeConfigSpec.BooleanValue firstAidKitRemovesBleeding;
-  public final ForgeConfigSpec.DoubleValue firstAidKitInfectionReductionChance;
-  public final ForgeConfigSpec.IntValue firstAidKitTraumaSeverityReduction;
+  public final ModConfigSpec.DoubleValue firstAidKitHealAmount;
+  public final ModConfigSpec.IntValue firstAidKitDurationTicks;
+  public final ModConfigSpec.BooleanValue firstAidKitRemovesBleeding;
+  public final ModConfigSpec.DoubleValue firstAidKitInfectionReductionChance;
+  public final ModConfigSpec.IntValue firstAidKitTraumaSeverityReduction;
 
   // Adrenaline Syringe
-  public final ForgeConfigSpec.IntValue adrenalineDurationTicks;
-  public final ForgeConfigSpec.IntValue adrenalineCooldownTicks;
-  public final ForgeConfigSpec.DoubleValue adrenalineAimSwayReductionFactor;
-  public final ForgeConfigSpec.DoubleValue adrenalineSlowReductionFactor;
-  public final ForgeConfigSpec.DoubleValue adrenalineBleedChanceMultiplier;
+  public final ModConfigSpec.IntValue adrenalineDurationTicks;
+  public final ModConfigSpec.IntValue adrenalineCooldownTicks;
+  public final ModConfigSpec.DoubleValue adrenalineAimSwayReductionFactor;
+  public final ModConfigSpec.DoubleValue adrenalineSlowReductionFactor;
+  public final ModConfigSpec.DoubleValue adrenalineBleedChanceMultiplier;
 
   // Blood Syringe
-  public final ForgeConfigSpec.DoubleValue bloodSyringeHealAmount;
-  public final ForgeConfigSpec.IntValue bloodSyringeDurationTicks;
+  public final ModConfigSpec.DoubleValue bloodSyringeHealAmount;
+  public final ModConfigSpec.IntValue bloodSyringeDurationTicks;
 
   // Clean Rag
-  public final ForgeConfigSpec.IntValue cleanRagDurationTicks;
-  public final ForgeConfigSpec.BooleanValue cleanRagRemovesBleeding;
+  public final ModConfigSpec.IntValue cleanRagDurationTicks;
+  public final ModConfigSpec.BooleanValue cleanRagRemovesBleeding;
 
   // ================================================================================
   // Burst-fire Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue burstfireEnabled;
-  public final ForgeConfigSpec.IntValue burstfireShotsPerBurst;
+  public final ModConfigSpec.BooleanValue burstfireEnabled;
+  public final ModConfigSpec.IntValue burstfireShotsPerBurst;
 
   // ================================================================================
   // Reload Values
   // ================================================================================
 
   // TODO: Implement those once individual ammo/bullets are added - juanmuscaria
-  // public final ForgeConfigSpec.BooleanValue reloadReloadBulletsIndividually;
-  // public final ForgeConfigSpec.BooleanValue reloadTakeAmmoOnReload;
-  // public final ForgeConfigSpec.BooleanValue reloadTakeAmmoAsMagazine;
-  public final ForgeConfigSpec.BooleanValue reloadGunComeEmptyMag;
-  public final ForgeConfigSpec.BooleanValue reloadGunComeNoMag;
-  public final ForgeConfigSpec.IntValue reloadDuration;
-  public final ForgeConfigSpec.BooleanValue reloadDestroyMagWhenEmpty;
+  // public final ModConfigSpec.BooleanValue reloadReloadBulletsIndividually;
+  // public final ModConfigSpec.BooleanValue reloadTakeAmmoOnReload;
+  // public final ModConfigSpec.BooleanValue reloadTakeAmmoAsMagazine;
+  public final ModConfigSpec.BooleanValue reloadGunComeEmptyMag;
+  public final ModConfigSpec.BooleanValue reloadGunComeNoMag;
+  public final ModConfigSpec.IntValue reloadDuration;
+  public final ModConfigSpec.BooleanValue reloadDestroyMagWhenEmpty;
   // Sub Category Dual Wield
   // TODO : Implement those once dual wielding is added - juanmuscaria
-  // public final ForgeConfigSpec.IntValue reloadDualWieldSingleReloadDuration;
-  // public final ForgeConfigSpec.BooleanValue reloadDualWieldSoundsSingleReload;
-  // public final ForgeConfigSpec.BooleanValue reloadDualWieldSoundsShootWithNoAmmo;
+  // public final ModConfigSpec.IntValue reloadDualWieldSingleReloadDuration;
+  // public final ModConfigSpec.BooleanValue reloadDualWieldSoundsSingleReload;
+  // public final ModConfigSpec.BooleanValue reloadDualWieldSoundsShootWithNoAmmo;
 
   // ================================================================================
   // Recoil Values
   // ================================================================================
 
-  public final ForgeConfigSpec.DoubleValue crouchRecoilMultiplier;
-  public final ForgeConfigSpec.DoubleValue proneRecoilMultiplier;
-  public final ForgeConfigSpec.DoubleValue tacticalGripRecoilMultiplier;
-  public final ForgeConfigSpec.DoubleValue bipodRecoilMultiplier;
+  public final ModConfigSpec.DoubleValue crouchRecoilMultiplier;
+  public final ModConfigSpec.DoubleValue proneRecoilMultiplier;
+  public final ModConfigSpec.DoubleValue tacticalGripRecoilMultiplier;
+  public final ModConfigSpec.DoubleValue bipodRecoilMultiplier;
 
   // ================================================================================
   // Scope Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue scopeAttachmentsAllowed;
+  public final ModConfigSpec.BooleanValue scopeAttachmentsAllowed;
   // TODO: Implement when pre define attachments are added - juanmuscaria
-  // public final ForgeConfigSpec.BooleanValue scopeAttachmentOverride;
+  // public final ModConfigSpec.BooleanValue scopeAttachmentOverride;
   // TODO: Implement those when Night/Thermal vision scopes are added - juanmuscaria
-  // public final ForgeConfigSpec.BooleanValue scopeNightVision;
-  // public final ForgeConfigSpec.BooleanValue scopeThermalVision;
-  public final ForgeConfigSpec.DoubleValue scopeZoomMultiplier;
-  // public final ForgeConfigSpec.BooleanValue scopeZoomBeforeShooting;
+  // public final ModConfigSpec.BooleanValue scopeNightVision;
+  // public final ModConfigSpec.BooleanValue scopeThermalVision;
+  public final ModConfigSpec.DoubleValue scopeZoomMultiplier;
+  // public final ModConfigSpec.BooleanValue scopeZoomBeforeShooting;
 
   // ================================================================================
   // Riot Shield Values
   // ================================================================================
   // TODO: Implement those when riot shield is added - juanmuscaria
-  // public final ForgeConfigSpec.BooleanValue riotShieldEnable;
-  // public final ForgeConfigSpec.BooleanValue riotShieldDoNotBlockProjectiles;
-  // public final ForgeConfigSpec.BooleanValue riotShieldDoNotBlockMeleeAttacks;
-  // public final ForgeConfigSpec.BooleanValue riotShieldDurabilityBasedOnDamage;
-  // public final ForgeConfigSpec.IntValue riotShieldDurabilityLossPerHit;
-  // public final ForgeConfigSpec.BooleanValue riotShieldForcefieldMode;
-  // public final ForgeConfigSpec.BooleanValue riotShieldOnlyWorksWhileBlocking;
+  // public final ModConfigSpec.BooleanValue riotShieldEnable;
+  // public final ModConfigSpec.BooleanValue riotShieldDoNotBlockProjectiles;
+  // public final ModConfigSpec.BooleanValue riotShieldDoNotBlockMeleeAttacks;
+  // public final ModConfigSpec.BooleanValue riotShieldDurabilityBasedOnDamage;
+  // public final ModConfigSpec.IntValue riotShieldDurabilityLossPerHit;
+  // public final ModConfigSpec.BooleanValue riotShieldForcefieldMode;
+  // public final ModConfigSpec.BooleanValue riotShieldOnlyWorksWhileBlocking;
 
   // ================================================================================
   // Headshot Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue headshotEnabled;
-  public final ForgeConfigSpec.DoubleValue headshotBonusDamage;
+  public final ModConfigSpec.BooleanValue headshotEnabled;
+  public final ModConfigSpec.DoubleValue headshotBonusDamage;
 
   // ================================================================================
   // Backstab Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue backstabEnabled;
-  public final ForgeConfigSpec.DoubleValue backstabBonusDamage;
+  public final ModConfigSpec.BooleanValue backstabEnabled;
+  public final ModConfigSpec.DoubleValue backstabBonusDamage;
 
   // ================================================================================
   // Critical Hits Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue criticalHitEnable;
-  public final ForgeConfigSpec.DoubleValue criticalHitBonusDamage;
-  public final ForgeConfigSpec.DoubleValue criticalHitChance;
+  public final ModConfigSpec.BooleanValue criticalHitEnable;
+  public final ModConfigSpec.DoubleValue criticalHitBonusDamage;
+  public final ModConfigSpec.DoubleValue criticalHitChance;
 
   // ================================================================================
   // Damage Drop Off Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue damageDropOffEnable;
-  public final ForgeConfigSpec.DoubleValue damageDropOffLoss;
-  public final ForgeConfigSpec.DoubleValue damageDropOffMinimumDamage;
+  public final ModConfigSpec.BooleanValue damageDropOffEnable;
+  public final ModConfigSpec.DoubleValue damageDropOffLoss;
+  public final ModConfigSpec.DoubleValue damageDropOffMinimumDamage;
 
   // ================================================================================
   // Explosives Values
   // ================================================================================
 
-  public final ForgeConfigSpec.BooleanValue explosivesRemoteDetonatorEnabled;
-  public final ForgeConfigSpec.BooleanValue explosivesC4Enabled;
-  public final ForgeConfigSpec.BooleanValue explosivesDecoyGrenadeEnabled;
-  public final ForgeConfigSpec.BooleanValue explosivesFireGrenadeEnabled;
-  public final ForgeConfigSpec.BooleanValue explosivesFlashGrenadeEnabled;
-  public final ForgeConfigSpec.BooleanValue explosivesFragGrenadeEnabled;
-  public final ForgeConfigSpec.BooleanValue explosivesSmokeGrenadeEnabled;
-  public final ForgeConfigSpec.EnumValue<Level.ExplosionInteraction> explosivesC4ExplosionMode;
-  public final ForgeConfigSpec.EnumValue<Level.ExplosionInteraction> explosivesFireGrenadeExplosionMode;
-  public final ForgeConfigSpec.EnumValue<Level.ExplosionInteraction> explosivesFragGrenadeExplosionMode;
-  public final ForgeConfigSpec.DoubleValue explosivesRemoteDetonatorRange;
-  public final ForgeConfigSpec.DoubleValue explosivesC4Radius;
-  public final ForgeConfigSpec.DoubleValue explosivesFireGrenadeRadius;
-  public final ForgeConfigSpec.DoubleValue explosivesFlashRadius;
-  public final ForgeConfigSpec.DoubleValue explosivesFragGrenadeRadius;
-  public final ForgeConfigSpec.DoubleValue explosivesSmokeGrenadeRadius;
-  public final ForgeConfigSpec.DoubleValue explosivesC4KnockbackMultiplier;
-  public final ForgeConfigSpec.DoubleValue explosivesFireGrenadeKnockbackMultiplier;
-  public final ForgeConfigSpec.DoubleValue explosivesFragGrenadeKnockbackMultiplier;
-  public final ForgeConfigSpec.DoubleValue explosivesC4DamageMultiplier;
-  public final ForgeConfigSpec.DoubleValue explosivesFireGrenadeDamageMultiplier;
-  public final ForgeConfigSpec.DoubleValue explosivesFragGrenadeDamageMultiplier;
-  public final ForgeConfigSpec.IntValue explosivesFlashGrenadeTicksBeforeActivation;
-  public final ForgeConfigSpec.IntValue explosivesFragGrenadeTicksBeforeActivation;
-  public final ForgeConfigSpec.IntValue explosivesDecoyGrenadeTicksBeforeDeactivation;
-  public final ForgeConfigSpec.IntValue explosivesFlashGrenadeTicksBeforeDeactivation;
-  public final ForgeConfigSpec.IntValue explosivesSmokeGrenadeTicksBeforeDeactivation;
-  public final ForgeConfigSpec.BooleanValue explosivesDispenseGrenades;
-  public final ForgeConfigSpec.BooleanValue enableFireGrenadeSecondaryExplosion;
+  public final ModConfigSpec.BooleanValue explosivesRemoteDetonatorEnabled;
+  public final ModConfigSpec.BooleanValue explosivesC4Enabled;
+  public final ModConfigSpec.BooleanValue explosivesDecoyGrenadeEnabled;
+  public final ModConfigSpec.BooleanValue explosivesFireGrenadeEnabled;
+  public final ModConfigSpec.BooleanValue explosivesFlashGrenadeEnabled;
+  public final ModConfigSpec.BooleanValue explosivesFragGrenadeEnabled;
+  public final ModConfigSpec.BooleanValue explosivesSmokeGrenadeEnabled;
+  public final ModConfigSpec.EnumValue<Level.ExplosionInteraction> explosivesC4ExplosionMode;
+  public final ModConfigSpec.EnumValue<Level.ExplosionInteraction> explosivesFireGrenadeExplosionMode;
+  public final ModConfigSpec.EnumValue<Level.ExplosionInteraction> explosivesFragGrenadeExplosionMode;
+  public final ModConfigSpec.DoubleValue explosivesRemoteDetonatorRange;
+  public final ModConfigSpec.DoubleValue explosivesC4Radius;
+  public final ModConfigSpec.DoubleValue explosivesFireGrenadeRadius;
+  public final ModConfigSpec.DoubleValue explosivesFlashRadius;
+  public final ModConfigSpec.DoubleValue explosivesFragGrenadeRadius;
+  public final ModConfigSpec.DoubleValue explosivesSmokeGrenadeRadius;
+  public final ModConfigSpec.DoubleValue explosivesC4KnockbackMultiplier;
+  public final ModConfigSpec.DoubleValue explosivesFireGrenadeKnockbackMultiplier;
+  public final ModConfigSpec.DoubleValue explosivesFragGrenadeKnockbackMultiplier;
+  public final ModConfigSpec.DoubleValue explosivesC4DamageMultiplier;
+  public final ModConfigSpec.DoubleValue explosivesFireGrenadeDamageMultiplier;
+  public final ModConfigSpec.DoubleValue explosivesFragGrenadeDamageMultiplier;
+  public final ModConfigSpec.IntValue explosivesFlashGrenadeTicksBeforeActivation;
+  public final ModConfigSpec.IntValue explosivesFragGrenadeTicksBeforeActivation;
+  public final ModConfigSpec.IntValue explosivesDecoyGrenadeTicksBeforeDeactivation;
+  public final ModConfigSpec.IntValue explosivesFlashGrenadeTicksBeforeDeactivation;
+  public final ModConfigSpec.IntValue explosivesSmokeGrenadeTicksBeforeDeactivation;
+  public final ModConfigSpec.BooleanValue explosivesDispenseGrenades;
+  public final ModConfigSpec.BooleanValue enableFireGrenadeSecondaryExplosion;
 
-  private ServerConfig(ForgeConfigSpec.Builder builder) {
+  private ServerConfig(ModConfigSpec.Builder builder) {
     this.hitMarkerMode = builder
         .translation("options.craftingdead.server.hit_marker_mode")
         .defineEnum("hitMarkerMode", HitMarker.Mode.HIT_AND_KILL);

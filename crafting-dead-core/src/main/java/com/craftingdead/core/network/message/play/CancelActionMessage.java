@@ -17,14 +17,31 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record CancelActionMessage(int entityId) {
+public record CancelActionMessage(int entityId) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<CancelActionMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "cancel_action_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, CancelActionMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, CancelActionMessage msg) -> msg.encode(buf), CancelActionMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.entityId);
@@ -34,10 +51,13 @@ public record CancelActionMessage(int entityId) {
     return new CancelActionMessage(in.readVarInt());
   }
 
-  public static void handle(CancelActionMessage msg, CustomPayloadEvent.Context ctx) {
-    ctx.enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx, msg.entityId)
-        .getCapability(LivingExtension.CAPABILITY)
-        .ifPresent(living -> living.cancelAction(
-            ctx.isServerSide())));
+  public static void handle(CancelActionMessage msg, IPayloadContext ctx) {
+    ctx.enqueueWork(() -> {
+      var living = NetworkUtil.getEntityOrSender(ctx, msg.entityId)
+          .getCapability(LivingExtension.CAPABILITY);
+      if (living != null) {
+        living.cancelAction(ctx.flow().isServerbound());
+      }
+    });
   }
 }

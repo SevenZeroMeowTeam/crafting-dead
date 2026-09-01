@@ -21,11 +21,10 @@ package com.craftingdead.core.event;
 import java.lang.reflect.Type;
 import com.craftingdead.core.world.action.Action;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.IGenericEvent;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.bus.api.Event;
 
-public abstract class LivingExtensionEvent extends Event {
+public abstract class LivingExtensionEvent extends Event implements net.neoforged.bus.api.ICancellableEvent {
 
   private final LivingExtension<?, ?> living;
 
@@ -44,9 +43,7 @@ public abstract class LivingExtensionEvent extends Event {
     }
   }
 
-  @Cancelable
-  public static class PerformAction<T extends Action> extends LivingExtensionEvent
-      implements IGenericEvent<T> {
+  public static class PerformAction<T extends Action> extends LivingExtensionEvent {
 
     private final T action;
 
@@ -57,11 +54,6 @@ public abstract class LivingExtensionEvent extends Event {
 
     public T getAction() {
       return this.action;
-    }
-
-    @Override
-    public Type getGenericType() {
-      return this.action.getClass();
     }
   }
 }

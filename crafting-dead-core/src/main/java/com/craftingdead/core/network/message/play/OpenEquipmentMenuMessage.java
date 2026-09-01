@@ -17,13 +17,30 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.world.entity.extension.PlayerExtension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record OpenEquipmentMenuMessage() {
+public record OpenEquipmentMenuMessage() implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<OpenEquipmentMenuMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "open_equipment_menu_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, OpenEquipmentMenuMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, OpenEquipmentMenuMessage msg) -> msg.encode(buf), OpenEquipmentMenuMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {}
 
@@ -31,8 +48,8 @@ public record OpenEquipmentMenuMessage() {
     return new OpenEquipmentMenuMessage();
   }
 
-  public static void handle(OpenEquipmentMenuMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(OpenEquipmentMenuMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(
-        () -> PlayerExtension.getOrThrow(ctx.getSender()).openEquipmentMenu());
+        () -> PlayerExtension.getOrThrow(ctx.player()).openEquipmentMenu());
   }
 }

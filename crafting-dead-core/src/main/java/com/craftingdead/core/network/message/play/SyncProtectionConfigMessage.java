@@ -17,14 +17,31 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import com.craftingdead.core.trauma.ProtectionConfig;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncProtectionConfigMessage(String serializedConfig) {
+public record SyncProtectionConfigMessage(String serializedConfig) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<SyncProtectionConfigMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "sync_protection_config_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, SyncProtectionConfigMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, SyncProtectionConfigMessage msg) -> msg.encode(buf), SyncProtectionConfigMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   private static final int MAX_LENGTH = 1 << 15;
 
@@ -36,7 +53,7 @@ public record SyncProtectionConfigMessage(String serializedConfig) {
     return new SyncProtectionConfigMessage(in.readUtf(MAX_LENGTH));
   }
 
-  public static void handle(SyncProtectionConfigMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(SyncProtectionConfigMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(() -> ProtectionConfig.applySerializedConfig(msg.serializedConfig));
   }
 }

@@ -19,14 +19,7 @@
 package com.craftingdead.core.world.item.equipment;
 
 import com.craftingdead.core.world.item.ClothingItem;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 /**
  * Event listener that automatically applies protection attributes to clothing items.
@@ -34,7 +27,6 @@ import net.minecraftforge.fml.common.Mod;
  * 
  * @author Crafting Dead Team
  */
-@Mod.EventBusSubscriber
 public class ClothingProtectionInitializer {
 
   /**

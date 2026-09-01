@@ -45,6 +45,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.PostChain;
+import net.minecraft.client.renderer.PostPass;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -63,8 +64,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class RenderUtil {
 
@@ -120,13 +121,15 @@ public class RenderUtil {
   private static final Minecraft minecraft = Minecraft.getInstance();
 
   public static void updateUniform(String name, float value, PostChain postChain) {
-    for (var pass : postChain.passes) {
+    for (Object passObj : ReflectionUtil.postChainPasses(postChain)) {
+      var pass = (PostPass) passObj;
       pass.getEffect().safeGetUniform(name).set(value);
     }
   }
 
   public static void updateUniform(String name, float[] value, PostChain postChain) {
-    for (var pass : postChain.passes) {
+    for (Object passObj : ReflectionUtil.postChainPasses(postChain)) {
+      var pass = (PostPass) passObj;
       pass.getEffect().safeGetUniform(name).set(value);
     }
   }
@@ -172,7 +175,7 @@ public class RenderUtil {
       }
     }
 
-    final var fov = minecraft.gameRenderer.getFov(activeRenderInfo, partialTicks, true);
+    final var fov = ReflectionUtil.gameRendererFov(minecraft.gameRenderer, activeRenderInfo, partialTicks, true);
     final var halfHeight = minecraft.getWindow().getGuiScaledHeight() / 2.0F;
     final var scale = halfHeight / (result.z() * (float) Math.tan(Math.toRadians(fov / 2.0D)));
     return result.z() > 0.0D
@@ -240,7 +243,7 @@ public class RenderUtil {
     projectionMatrix.identity();
 
     projectionMatrix.mul(
-        gameRenderer.getProjectionMatrix(gameRenderer.getFov(camera, partialTicks, true)));
+        gameRenderer.getProjectionMatrix(ReflectionUtil.gameRendererFov(gameRenderer, camera, partialTicks, true)));
 
     final var frustum = new Frustum(poseStack.last().pose(), projectionMatrix);
     frustum.prepare(viewerX, viewerY, viewerZ);
@@ -402,7 +405,7 @@ public class RenderUtil {
 
   @SuppressWarnings("deprecation")
   public static void setupItemRendering(PoseStack poseStack) {
-    minecraft.textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
+    ReflectionUtil.textureManager().getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
     RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
     RenderSystem.enableBlend();
     RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,

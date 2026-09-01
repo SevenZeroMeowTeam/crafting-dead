@@ -21,7 +21,6 @@ package com.craftingdead.core.world.item;
 import java.util.List;
 import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
-import com.craftingdead.core.capability.CapabilityUtil;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.core.world.item.equipment.SimpleHat;
 import com.google.common.collect.ImmutableMultimap;
@@ -36,7 +35,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class HatItem extends EquipmentItem {
 
@@ -63,6 +61,26 @@ public class HatItem extends EquipmentItem {
     this.immuneToGas = properties.immuneToGas;
     this.nightVision = properties.nightVision;
     this.waterBreathing = properties.waterBreathing;
+  }
+
+  public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers() {
+    return this.attributeModifiers;
+  }
+
+  public boolean isWaterBreathing() {
+    return this.waterBreathing;
+  }
+
+  public boolean hasNightVision() {
+    return this.nightVision;
+  }
+
+  public float getHeadshotReductionPercentage() {
+    return this.headshotReductionPercentage;
+  }
+
+  public boolean isImmuneToFlashes() {
+    return this.immuneToFlashes;
   }
 
   @Override
@@ -92,17 +110,7 @@ public class HatItem extends EquipmentItem {
     }
   }
 
-  @Override
-  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
-    return CapabilityUtil.provider(
-        () -> new SimpleHat(
-            this.attributeModifiers,
-            this.waterBreathing,
-            this.nightVision,
-            this.headshotReductionPercentage,
-            this.immuneToFlashes),
-        Equipment.CAPABILITY);
-  }
+  
 
   public static class Properties extends Item.Properties {
 

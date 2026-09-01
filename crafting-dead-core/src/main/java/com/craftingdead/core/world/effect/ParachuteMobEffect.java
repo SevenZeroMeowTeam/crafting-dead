@@ -25,7 +25,7 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ParachuteMobEffect extends MobEffect {
 
@@ -40,7 +40,7 @@ public class ParachuteMobEffect extends MobEffect {
   public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
     livingEntity.resetFallDistance();
     if (livingEntity.onGround() || livingEntity.isInWater()) {
-      livingEntity.removeEffect(ModMobEffects.PARACHUTE.getHolder().orElseThrow());
+      livingEntity.removeEffect(ModMobEffects.PARACHUTE);
       this.syncParachuteEffect(livingEntity, false);
       return false;
     }
@@ -55,9 +55,7 @@ public class ParachuteMobEffect extends MobEffect {
 
   private void syncParachuteEffect(LivingEntity entity, boolean hasParachute) {
     if (!entity.level().isClientSide()) {
-      NetworkChannel.PLAY.getSimpleChannel()
-          .send(new ParachuteSyncMessage(entity.getId(), hasParachute),
-              PacketDistributor.TRACKING_ENTITY_AND_SELF.with(entity));
+      PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new ParachuteSyncMessage(entity.getId(), hasParachute));
     }
   }
 }

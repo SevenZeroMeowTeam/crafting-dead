@@ -23,10 +23,9 @@ import com.craftingdead.core.CraftingDead;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegistryBuilder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class AmmoProviderTypes {
 
@@ -36,14 +35,13 @@ public class AmmoProviderTypes {
   public static final DeferredRegister<AmmoProviderType> deferredRegister =
       DeferredRegister.create(REGISTRY_KEY, CraftingDead.ID);
 
-  public static final Supplier<IForgeRegistry<AmmoProviderType>> registry =
-      deferredRegister.makeRegistry(() -> new RegistryBuilder<AmmoProviderType>().hasTags());
+  public static final Registry<AmmoProviderType> registry = deferredRegister.makeRegistry(builder -> builder.sync(true));
 
-  public static final RegistryObject<AmmoProviderType> MAGAZINE =
+  public static final DeferredHolder<AmmoProviderType, AmmoProviderType> MAGAZINE =
       deferredRegister.register("magazine",
           () -> new AmmoProviderType(MagazineAmmoProvider::new));
 
-  public static final RegistryObject<AmmoProviderType> REFILLABLE =
+  public static final DeferredHolder<AmmoProviderType, AmmoProviderType> REFILLABLE =
       deferredRegister.register("refillable",
           () -> new AmmoProviderType(RefillableAmmoProvider::new));
 }

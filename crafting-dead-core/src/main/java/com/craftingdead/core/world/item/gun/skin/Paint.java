@@ -23,14 +23,14 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.registries.ForgeRegistries;
+import com.craftingdead.core.CraftingDead;
+import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.minecraft.core.registries.Registries;
 
 public interface Paint {
 
-  Capability<Paint> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+  ItemCapability<Paint, Void> CAPABILITY = ItemCapability.createVoid(
+      net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "paint"), Paint.class);
 
   Holder<Skin> getSkin();
 
@@ -62,14 +62,15 @@ public interface Paint {
   }
 
   static boolean isValid(ItemStack gunStack, ItemStack itemStack) {
-    return isValid(ForgeRegistries.ITEMS.getKey(gunStack.getItem()), itemStack);
+    return isValid(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(gunStack.getItem()), itemStack);
   }
 
   static boolean isValid(ResourceLocation gunName, ItemStack itemStack) {
-    return itemStack.getCapability(Paint.CAPABILITY)
-        .map(Paint::getSkin)
-        .map(Holder::value)
-        .filter(skin -> skin.getAcceptedGuns().contains(gunName))
-        .isPresent();
+    var paint = itemStack.getCapability(Paint.CAPABILITY);
+    if (paint == null) {
+      return false;
+    }
+    var skin = paint.getSkin();
+    return skin != null && skin.value().getAcceptedGuns().contains(gunName);
   }
 }

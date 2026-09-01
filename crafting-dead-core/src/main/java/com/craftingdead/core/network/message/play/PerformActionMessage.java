@@ -17,6 +17,11 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.network.NetworkUtil;
@@ -24,14 +29,26 @@ import com.craftingdead.core.world.action.ActionType;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record PerformActionMessage(ActionType<?> actionType, int performerEntityId,
-    FriendlyByteBuf buf) {
+    FriendlyByteBuf buf) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<PerformActionMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "perform_action_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, PerformActionMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, PerformActionMessage msg) -> msg.encode(buf), PerformActionMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeResourceLocation(
-        com.craftingdead.core.world.action.ActionTypes.REGISTRY.get().getKey(this.actionType));
+        com.craftingdead.core.world.action.ActionTypes.REGISTRY.getKey(this.actionType));
     out.writeVarInt(this.performerEntityId);
     out.writeVarInt(this.buf.readableBytes());
     out.writeBytes(this.buf);
@@ -39,18 +56,18 @@ public record PerformActionMessage(ActionType<?> actionType, int performerEntity
   }
 
   public static PerformActionMessage decode(FriendlyByteBuf in) {
-    var actionType = com.craftingdead.core.world.action.ActionTypes.REGISTRY.get()
-        .getValue(in.readResourceLocation());
+    var actionType = com.craftingdead.core.world.action.ActionTypes.REGISTRY
+        .get(in.readResourceLocation());
     return new PerformActionMessage(java.util.Objects.requireNonNull(actionType), in.readVarInt(),
         new FriendlyByteBuf(in.readBytes(in.readVarInt())));
   }
 
-  public static void handle(PerformActionMessage msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(PerformActionMessage msg, IPayloadContext ctx) {
     ctx.enqueueWork(() -> {
       final var performerEntity =
           NetworkUtil.getEntityOrSender(ctx, msg.performerEntityId, LivingEntity.class);
       final var performer = LivingExtension.getOrThrow(performerEntity);
-      final var serverSide = ctx.isServerSide();
+      final var serverSide = ctx.flow().isServerbound();
       if (!serverSide || msg.actionType.isTriggeredByClient()) {
         performer.performAction(msg.actionType.decode(performer, msg.buf), serverSide);
       }

@@ -44,10 +44,9 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegistryBuilder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ActionTypes {
 
@@ -57,22 +56,22 @@ public class ActionTypes {
   public static final DeferredRegister<ActionType<?>> deferredRegister =
       DeferredRegister.create(REGISTRY_KEY, CraftingDead.ID);
 
-  public static final Supplier<IForgeRegistry<ActionType<?>>> REGISTRY =
-      deferredRegister.makeRegistry(() -> new RegistryBuilder<ActionType<?>>().hasTags());
+  public static final Registry<ActionType<?>> REGISTRY =
+      deferredRegister.makeRegistry(builder -> builder.sync(true));
 
-  public static final RegistryObject<ActionType<?>> MAGAZINE_RELOAD =
+  public static final DeferredHolder<ActionType<?>, ActionType<?>> MAGAZINE_RELOAD =
       deferredRegister.register("magazine_reload",
           () -> new SimpleActionType<>(MagazineReloadAction::new, true));
 
-  public static final RegistryObject<ActionType<?>> REFILLABLE_RELOAD =
+  public static final DeferredHolder<ActionType<?>, ActionType<?>> REFILLABLE_RELOAD =
       deferredRegister.register("refillable_reload",
           () -> new SimpleActionType<>(RefillableReloadAction::new, true));
 
-  public static final RegistryObject<ActionType<?>> REMOVE_MAGAZINE =
+  public static final DeferredHolder<ActionType<?>, ActionType<?>> REMOVE_MAGAZINE =
       deferredRegister.register("remove_magazine",
           () -> new SimpleActionType<>(RemoveMagazineAction::new, true));
 
-  public static final RegistryObject<EntityItemActionType<?>> SHRED_CLOTHING =
+  public static final DeferredHolder<ActionType<?>, EntityItemActionType<?>> SHRED_CLOTHING =
       deferredRegister.register("shred_clothing",
           () -> EntityItemActionType.builder(TargetSelector.SELF_ONLY)
               .forItem(itemStack -> itemStack.is(ModItemTags.CLOTHING))
@@ -92,7 +91,7 @@ public class ActionTypes {
               }, 1.0F)
               .build());
 
-  public static final RegistryObject<EntityItemActionType<?>> USE_SYRINGE =
+  public static final DeferredHolder<ActionType<?>, EntityItemActionType<?>> USE_SYRINGE =
       deferredRegister.register("use_syringe",
           () -> EntityItemActionType
               .builder((performer, target) -> {
@@ -123,7 +122,7 @@ public class ActionTypes {
               .resultItem(ModItems.BLOOD_SYRINGE)
               .build());
 
-  public static final RegistryObject<EntityItemActionType<?>> USE_FIRST_AID_KIT =
+  public static final DeferredHolder<ActionType<?>, EntityItemActionType<?>> USE_FIRST_AID_KIT =
       deferredRegister.register("use_first_aid_kit",
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(ModItems.FIRST_AID_KIT)
@@ -132,18 +131,18 @@ public class ActionTypes {
                   (int) Math.max(0, ServerConfig.instance.firstAidKitHealAmount.get().floatValue() - 1)))
               .build());
 
-  public static final RegistryObject<EntityItemActionType<?>> USE_ADRENALINE_SYRINGE =
+  public static final DeferredHolder<ActionType<?>, EntityItemActionType<?>> USE_ADRENALINE_SYRINGE =
       deferredRegister.register("use_adrenaline_syringe",
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(ModItems.ADRENALINE_SYRINGE)
               .duration(16)
               .resultItem(ModItems.SYRINGE)
               .useResultItemInCreative(false)
-              .effect(() -> new MobEffectInstance(ModMobEffects.ADRENALINE.getHolder().orElseThrow(), 
+              .effect(() -> new MobEffectInstance(ModMobEffects.ADRENALINE, 
                   ServerConfig.instance.adrenalineDurationTicks.get(), 1))
               .build());
 
-  public static final RegistryObject<EntityItemActionType<?>> USE_BLOOD_SYRINGE =
+  public static final DeferredHolder<ActionType<?>, EntityItemActionType<?>> USE_BLOOD_SYRINGE =
       deferredRegister.register("use_blood_syringe",
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(ModItems.BLOOD_SYRINGE)
@@ -154,7 +153,7 @@ public class ActionTypes {
                   (int) Math.max(0, ServerConfig.instance.bloodSyringeHealAmount.get().floatValue() - 1)))
               .build());
 
-  public static final RegistryObject<EntityItemActionType<?>> USE_BANDAGE =
+  public static final DeferredHolder<ActionType<?>, EntityItemActionType<?>> USE_BANDAGE =
       deferredRegister.register("use_bandage",
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(ModItems.BANDAGE)
@@ -163,7 +162,7 @@ public class ActionTypes {
                   (int) Math.max(0, ServerConfig.instance.bandageHealAmount.get().floatValue() - 1)))
               .build());
 
-  public static final RegistryObject<EntityItemActionType<?>> USE_CLEAN_RAG =
+  public static final DeferredHolder<ActionType<?>, EntityItemActionType<?>> USE_CLEAN_RAG =
       deferredRegister.register("use_clean_rag",
           () -> EntityItemActionType
               .builder(TargetSelector.SELF_OR_OTHERS.hasEffect(ModMobEffects.BLEEDING))
@@ -172,7 +171,7 @@ public class ActionTypes {
               .resultItem(ModItems.BLOODY_RAG)
               .build());
 
-  public static final RegistryObject<BlockItemActionType> WASH_RAG =
+  public static final DeferredHolder<ActionType<?>, BlockItemActionType> WASH_RAG =
       deferredRegister.register("wash_rag",
           () -> BlockItemActionType.builder()
               .forItem(itemStack -> itemStack.is(ModItems.DIRTY_RAG.get())
@@ -183,7 +182,7 @@ public class ActionTypes {
               .forFluid(FluidTags.WATER)
               .build());
 
-  public static final RegistryObject<EntityItemActionType<?>> APPLY_HANDCUFFS =
+  public static final DeferredHolder<ActionType<?>, EntityItemActionType<?>> APPLY_HANDCUFFS =
       deferredRegister.register("apply_handcuffs",
           () -> EntityItemActionType.builder(TargetSelector.OTHERS_ONLY
               .players()

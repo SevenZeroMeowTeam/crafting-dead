@@ -17,14 +17,31 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record NPCTriggerPressedMessage(int entityId, boolean triggerPressed) {
+public record NPCTriggerPressedMessage(int entityId, boolean triggerPressed) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<NPCTriggerPressedMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "npctrigger_pressed_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, NPCTriggerPressedMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, NPCTriggerPressedMessage msg) -> msg.encode(buf), NPCTriggerPressedMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.entityId);
@@ -35,11 +52,16 @@ public record NPCTriggerPressedMessage(int entityId, boolean triggerPressed) {
     return new NPCTriggerPressedMessage(in.readVarInt(), in.readBoolean());
   }
 
-  public static void handle(NPCTriggerPressedMessage msg, CustomPayloadEvent.Context ctx) {
-    ctx.enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx, msg.entityId)
-        .getCapability(LivingExtension.CAPABILITY)
-        .ifPresent(extension -> extension.mainHandGun()
-            .ifPresent(gun -> gun.setNPCTriggerPressed(extension, msg.triggerPressed,
-                ctx.isServerSide(), 0))));
+  public static void handle(NPCTriggerPressedMessage msg, IPayloadContext ctx) {
+    ctx.enqueueWork(() -> {
+      var extension = NetworkUtil.getEntityOrSender(ctx, msg.entityId)
+          .getCapability(LivingExtension.CAPABILITY);
+      if (extension != null) {
+        var gun = extension.mainHandGun();
+        if (gun != null) {
+          gun.setNPCTriggerPressed(extension, msg.triggerPressed, ctx.flow().isServerbound(), 0);
+        }
+      }
+    });
   }
 }

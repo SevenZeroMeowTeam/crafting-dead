@@ -20,8 +20,8 @@ package com.craftingdead.core.world.inventory;
 
 import java.util.function.BiPredicate;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class PredicateItemHandlerSlot extends SlotItemHandler {
 

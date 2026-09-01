@@ -18,7 +18,6 @@
 
 package com.craftingdead.core.world.item;
 
-import com.craftingdead.core.capability.CapabilityUtil;
 import com.craftingdead.core.world.item.gun.magazine.Magazine;
 import com.craftingdead.core.world.item.gun.magazine.MagazineImpl;
 import java.util.List;
@@ -31,9 +30,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 public class MagazineItem extends Item {
 
@@ -54,14 +52,11 @@ public class MagazineItem extends Item {
     return this.size;
   }
 
-  @Override
-  public net.minecraftforge.common.capabilities.ICapabilityProvider getCapabilityProvider(ItemStack itemStack) {
-    return CapabilityUtil.serializableProvider(() -> new MagazineImpl(this), Magazine.CAPABILITY);
-  }
+  
 
   @Override
   public boolean isValidRepairItem(ItemStack itemStack, ItemStack materialStack) {
-    return materialStack.is(Tags.Items.GUNPOWDER)
+    return materialStack.is(Tags.Items.GUNPOWDERS)
         || super.isValidRepairItem(itemStack, materialStack);
   }
 
@@ -72,9 +67,9 @@ public class MagazineItem extends Item {
 
   @Override
   public int getBarWidth(ItemStack itemStack) {
-    return Math.round(13.0F - (this.size
-        - itemStack.getCapability(Magazine.CAPABILITY).map(Magazine::getSize).orElse(this.size))
-        * 13.0F / this.size);
+    var magazine = itemStack.getCapability(Magazine.CAPABILITY);
+    int magazineSize = magazine == null ? this.size : magazine.getSize();
+    return Math.round(13.0F - (this.size - magazineSize) * 13.0F / this.size);
   }
 
   @Override
@@ -89,8 +84,8 @@ public class MagazineItem extends Item {
 
     // Shows the current amount if the maximum size is higher than 1
     if (this.getSize() > 1) {
-      int currentAmount =
-          stack.getCapability(Magazine.CAPABILITY).map(Magazine::getSize).orElse(0);
+      var magazine = stack.getCapability(Magazine.CAPABILITY);
+      int currentAmount = magazine == null ? 0 : magazine.getSize();
 
       Component amountText = Component.literal(currentAmount + "/" + this.getSize())
           .withStyle(ChatFormatting.RED);

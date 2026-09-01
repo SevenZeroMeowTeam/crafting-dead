@@ -19,36 +19,36 @@
 package com.craftingdead.core;
 
 import com.craftingdead.core.telemetry.TelemetryEnvironment;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class CommonConfig {
   
   public static final CommonConfig instance;
-  public static final ForgeConfigSpec configSpec;
+  public static final ModConfigSpec configSpec;
 
   static {
-    var pair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
+    var pair = new ModConfigSpec.Builder().configure(CommonConfig::new);
     configSpec = pair.getRight();
     instance = pair.getLeft();
   }
 
-  public final ForgeConfigSpec.EnumValue<TelemetryEnvironment> telemetryEnvironment;
-  public final ForgeConfigSpec.ConfigValue<String> telemetryDsnExperimental;
-  public final ForgeConfigSpec.ConfigValue<String> telemetryDsnProduction;
-  public final ForgeConfigSpec.ConfigValue<String> telemetryPasswordSalt;
-  public final ForgeConfigSpec.ConfigValue<String> telemetryPasswordHash;
-  public final ForgeConfigSpec.BooleanValue telemetryClientEnabled;
-  public final ForgeConfigSpec.BooleanValue telemetryServerEnabled;
-  public final ForgeConfigSpec.ConfigValue<String> telemetryModpackId;
-  public final ForgeConfigSpec.DoubleValue telemetryTracesSampleRate;
+  public final ModConfigSpec.EnumValue<TelemetryEnvironment> telemetryEnvironment;
+  public final ModConfigSpec.ConfigValue<String> telemetryDsnExperimental;
+  public final ModConfigSpec.ConfigValue<String> telemetryDsnProduction;
+  public final ModConfigSpec.ConfigValue<String> telemetryPasswordSalt;
+  public final ModConfigSpec.ConfigValue<String> telemetryPasswordHash;
+  public final ModConfigSpec.BooleanValue telemetryClientEnabled;
+  public final ModConfigSpec.BooleanValue telemetryServerEnabled;
+  public final ModConfigSpec.ConfigValue<String> telemetryModpackId;
+  public final ModConfigSpec.DoubleValue telemetryTracesSampleRate;
 
-  public final ForgeConfigSpec.DoubleValue weakVestArmor;
-  public final ForgeConfigSpec.DoubleValue weakVestArmorToughness;
+  public final ModConfigSpec.DoubleValue weakVestArmor;
+  public final ModConfigSpec.DoubleValue weakVestArmorToughness;
 
-  public final ForgeConfigSpec.DoubleValue strongVestArmor;
-  public final ForgeConfigSpec.DoubleValue strongVestArmorToughness;
+  public final ModConfigSpec.DoubleValue strongVestArmor;
+  public final ModConfigSpec.DoubleValue strongVestArmorToughness;
 
-  private CommonConfig(ForgeConfigSpec.Builder builder) {
+  private CommonConfig(ModConfigSpec.Builder builder) {
   builder.push("telemetry");
   this.telemetryEnvironment = builder.comment("Controls which DSN block is used.")
     .defineEnum("environment", TelemetryEnvironment.PRODUCTION);

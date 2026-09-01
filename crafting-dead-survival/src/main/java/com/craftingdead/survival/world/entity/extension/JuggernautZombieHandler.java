@@ -45,7 +45,9 @@ public class JuggernautZombieHandler extends ZombieHandler {
   protected ItemStack createHeldItem() {
     var random = new Random();
     var gunStack = ModItems.M240B.get().getDefaultInstance();
-    gunStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> {
+    var gun = gunStack.getCapability(Gun.CAPABILITY);
+if (gun != null) {
+
       var magazineStack = ModItems.M240B_MAGAZINE.get().getDefaultInstance();
       gun.setAmmoProvider(new RefillableAmmoProvider(magazineStack, 0, true));
       Map<GunCraftSlotType, Supplier<Attachment>> possibleAttachments = Map.of(
@@ -59,7 +61,8 @@ public class JuggernautZombieHandler extends ZombieHandler {
         }
       }
       gun.setAttachments(attachments);
-    });
+    
+}
     return gunStack;
   }
 

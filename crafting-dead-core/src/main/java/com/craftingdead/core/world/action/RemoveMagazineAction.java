@@ -52,8 +52,11 @@ public class RemoveMagazineAction extends TimedAction {
     } else {
       this.slot = -1;
     }
-    this.gun = performer.mainHandGun()
-        .orElseThrow(() -> new IllegalStateException("Performer not holding gun"));
+    var gun = performer.mainHandGun();
+    if (gun == null) {
+      throw new IllegalStateException("Performer not holding gun");
+    }
+    this.gun = gun;
     AmmoProvider ammoProvider = this.gun.getAmmoProvider();
     if (!(ammoProvider instanceof MagazineAmmoProvider)) {
       throw new IllegalStateException("No MagazineAmmoProvider present");
@@ -118,11 +121,12 @@ public class RemoveMagazineAction extends TimedAction {
         // This will be synced to the client by the gun.
         this.ammoProvider.setMagazineStack(ItemStack.EMPTY);
         if (!this.oldMagazineStack.isEmpty()
-            && this.performer().entity() instanceof Player
-            && !(this.oldMagazineStack.getCapability(Magazine.CAPABILITY).map(Magazine::isEmpty)
-            .orElse(true)
-            && ServerConfig.instance.reloadDestroyMagWhenEmpty.get())) {
-          ((Player) this.performer().entity()).addItem(this.oldMagazineStack);
+            && this.performer().entity() instanceof Player) {
+          var magazine = this.oldMagazineStack.getCapability(Magazine.CAPABILITY);
+          boolean isEmptyMagazine = magazine == null || magazine.isEmpty();
+          if (!(isEmptyMagazine && ServerConfig.instance.reloadDestroyMagWhenEmpty.get())) {
+            ((Player) this.performer().entity()).addItem(this.oldMagazineStack);
+          }
         }
       }
       return;

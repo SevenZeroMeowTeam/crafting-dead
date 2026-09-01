@@ -29,7 +29,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 
 public class UpgradeMagazineRecipeBuilder {
 
@@ -58,11 +59,11 @@ public class UpgradeMagazineRecipeBuilder {
   }
 
   public void save(RecipeOutput output) {
-    this.save(output, ForgeRegistries.ITEMS.getKey(this.nextTier));
+    this.save(output, net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(this.nextTier));
   }
 
   public void save(RecipeOutput output, String id) {
-    ResourceLocation resourcelocation = ForgeRegistries.ITEMS.getKey(this.nextTier);
+    ResourceLocation resourcelocation = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(this.nextTier);
     if ((ResourceLocation.parse(id)).equals(resourcelocation)) {
       throw new IllegalStateException(
           "Shapeless Recipe " + id + " should remove its 'save' argument");

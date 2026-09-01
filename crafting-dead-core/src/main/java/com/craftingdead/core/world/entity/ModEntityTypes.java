@@ -29,16 +29,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.minecraft.core.registries.Registries;
 
 public class ModEntityTypes {
 
   public static final DeferredRegister<EntityType<?>> deferredRegister =
-      DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, CraftingDead.ID);
+      DeferredRegister.create(Registries.ENTITY_TYPE, CraftingDead.ID);
 
-  public static final RegistryObject<EntityType<C4Explosive>> C4_EXPLOSIVE =
+  public static final DeferredHolder<EntityType<?>, EntityType<C4Explosive>> C4_EXPLOSIVE =
       deferredRegister.register("c4_explosive", () -> create("c4_explosive",
           EntityType.Builder
               .<C4Explosive>of(C4Explosive::new, MobCategory.MISC)
@@ -46,7 +47,7 @@ public class ModEntityTypes {
               .setUpdateInterval(4)
               .sized(0.65F, 0.25F)
               .setShouldReceiveVelocityUpdates(false)));
-  public static final RegistryObject<EntityType<DecoyGrenadeEntity>> DECOY_GRENADE =
+  public static final DeferredHolder<EntityType<?>, EntityType<DecoyGrenadeEntity>> DECOY_GRENADE =
       deferredRegister.register("decoy_grenade", () -> create("decoy_grenade",
           EntityType.Builder
               .<DecoyGrenadeEntity>of(DecoyGrenadeEntity::new, MobCategory.MISC)
@@ -55,7 +56,7 @@ public class ModEntityTypes {
               .sized(0.25F, 0.5F)
               .setShouldReceiveVelocityUpdates(false)));
 
-  public static final RegistryObject<EntityType<FireGrenadeEntity>> FIRE_GRENADE =
+  public static final DeferredHolder<EntityType<?>, EntityType<FireGrenadeEntity>> FIRE_GRENADE =
       deferredRegister.register("fire_grenade", () -> create("fire_grenade",
           EntityType.Builder
               .<FireGrenadeEntity>of(FireGrenadeEntity::new, MobCategory.MISC)
@@ -64,7 +65,7 @@ public class ModEntityTypes {
               .sized(0.25F, 0.5F)
               .setShouldReceiveVelocityUpdates(false)));
 
-  public static final RegistryObject<EntityType<FlashGrenadeEntity>> FLASH_GRENADE =
+  public static final DeferredHolder<EntityType<?>, EntityType<FlashGrenadeEntity>> FLASH_GRENADE =
       deferredRegister.register("flash_grenade", () -> create("flash_grenade",
           EntityType.Builder
               .<FlashGrenadeEntity>of(FlashGrenadeEntity::new, MobCategory.MISC)
@@ -73,7 +74,7 @@ public class ModEntityTypes {
               .sized(0.25F, 0.5F)
               .setShouldReceiveVelocityUpdates(false)));
 
-  public static final RegistryObject<EntityType<FragGrenade>> FRAG_GRENADE =
+  public static final DeferredHolder<EntityType<?>, EntityType<FragGrenade>> FRAG_GRENADE =
       deferredRegister.register("frag_grenade", () -> create("frag_grenade",
           EntityType.Builder
               .<FragGrenade>of(FragGrenade::new, MobCategory.MISC)
@@ -82,7 +83,7 @@ public class ModEntityTypes {
               .sized(0.25F, 0.25F)
               .setShouldReceiveVelocityUpdates(false)));
 
-  public static final RegistryObject<EntityType<SmokeGrenadeEntity>> SMOKE_GRENADE =
+  public static final DeferredHolder<EntityType<?>, EntityType<SmokeGrenadeEntity>> SMOKE_GRENADE =
       deferredRegister.register("smoke_grenade", () -> create("smoke_grenade",
           EntityType.Builder
               .<SmokeGrenadeEntity>of(SmokeGrenadeEntity::new, MobCategory.MISC)

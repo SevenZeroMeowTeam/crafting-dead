@@ -53,7 +53,7 @@ public class GunZombie extends ModZombie implements RangedAttackMob {
       @Override
       public boolean canUse() {
         return super.canUse() && GunZombie.this.getMainHandItem()
-            .getCapability(Gun.CAPABILITY).isPresent();
+            .getCapability(Gun.CAPABILITY) != null;
       }
     };
     this.goalSelector.addGoal(2, this.rangedAttackGoal);
@@ -66,11 +66,13 @@ public class GunZombie extends ModZombie implements RangedAttackMob {
     super.addBehaviourGoals();
     this.targetSelector.addGoal(2,
         new NearestAttackableTargetGoal<>(this, Player.class, 5, false, false,
-            targetEntity -> targetEntity.getCapability(LivingExtension.CAPABILITY)
-                .resolve()
-                .flatMap(extension -> extension.getHandler(SurvivalPlayerHandler.TYPE))
-                .map(handler -> handler.getSoundLevel() >= targetEntity.distanceTo(this))
-                .orElse(false)) {
+            targetEntity -> {
+              var extension = targetEntity.getCapability(LivingExtension.CAPABILITY);
+              return extension != null
+                  && extension.getHandler(SurvivalPlayerHandler.TYPE)
+                      .map(handler -> handler.getSoundLevel() >= targetEntity.distanceTo(this))
+                      .orElse(false);
+            }) {
           @Override
           public double getFollowDistance() {
             return 100.0D;
@@ -82,25 +84,29 @@ public class GunZombie extends ModZombie implements RangedAttackMob {
   public void tick() {
     super.tick();
     if (!this.level().isClientSide()) {
-      this.getCapability(LivingExtension.CAPABILITY)
-          .ifPresent(living -> living.mainHandGun().ifPresent(gun -> {
-            if (gun.isTriggerPressed()
-                && (!this.rangedAttackGoal.canContinueToUse() || (Util.getMillis()
-                    - this.triggerPressedStartTime > 200 + this.random.nextInt(400)))) {
-              gun.setNPCTriggerPressed(living, false, true, this.accuracy);
-            }
-          }));
+      var living = this.getCapability(LivingExtension.CAPABILITY);
+      if (living != null) {
+        var gun = living.mainHandGun();
+        if (gun != null && gun.isTriggerPressed()
+            && (!this.rangedAttackGoal.canContinueToUse() || (Util.getMillis()
+                - this.triggerPressedStartTime > 200 + this.random.nextInt(400)))) {
+          gun.setNPCTriggerPressed(living, false, true, this.accuracy);
+        }
+      }
     }
   }
 
   @Override
   public void performRangedAttack(@NotNull LivingEntity livingEntity, float distance) {
     if (!this.level().isClientSide()) {
-      this.getCapability(LivingExtension.CAPABILITY)
-          .ifPresent(living -> living.mainHandGun().ifPresent(gun -> {
-            this.triggerPressedStartTime = Util.getMillis();
-            gun.setNPCTriggerPressed(living, true, true, this.accuracy);
-          }));
+      var living = this.getCapability(LivingExtension.CAPABILITY);
+      if (living != null) {
+        var gun = living.mainHandGun();
+        if (gun != null) {
+          this.triggerPressedStartTime = Util.getMillis();
+          gun.setNPCTriggerPressed(living, true, true, this.accuracy);
+        }
+      }
     }
   }
 

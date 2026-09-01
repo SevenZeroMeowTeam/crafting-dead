@@ -20,7 +20,7 @@ package com.craftingdead.core.server;
 
 import com.craftingdead.core.ModDist;
 import net.minecraft.core.RegistryAccess;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public class ServerDist implements ModDist {
 

@@ -44,14 +44,14 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.registries.ForgeRegistries;
+import com.craftingdead.core.CraftingDead;
+import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.minecraft.core.registries.Registries;
 
 public interface Gun extends Equipment, CombatSlotProvider, Synched {
 
-  Capability<Gun> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+  ItemCapability<Gun, Void> CAPABILITY = ItemCapability.createVoid(
+      net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "gun"), Gun.class);
 
   @Override
   default boolean isValidForSlot(Slot slot) {
@@ -178,7 +178,7 @@ public interface Gun extends Equipment, CombatSlotProvider, Synched {
   default Optional<ResourceLocation> getSkinName() {
     return this.getPaintStack().isEmpty()
         ? Optional.empty()
-        : Optional.of(ForgeRegistries.ITEMS.getKey(this.getPaintStack().getItem()));
+        : Optional.of(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(this.getPaintStack().getItem()));
   }
 
   /**

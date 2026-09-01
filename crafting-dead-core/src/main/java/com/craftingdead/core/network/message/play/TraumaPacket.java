@@ -17,14 +17,30 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.trauma.TraumaSeverity;
 import java.util.function.Supplier;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record TraumaPacket(TraumaSeverity severity, int aimSwayTicks, float aimSwayStrength) {
+public record TraumaPacket(TraumaSeverity severity, int aimSwayTicks, float aimSwayStrength) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<TraumaPacket> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "trauma_packet"));
+
+  public static final StreamCodec<FriendlyByteBuf, TraumaPacket> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, TraumaPacket msg) -> msg.encode(buf), TraumaPacket::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.severity.ordinal());
@@ -39,7 +55,7 @@ public record TraumaPacket(TraumaSeverity severity, int aimSwayTicks, float aimS
     return new TraumaPacket(severity, aimSwayTicks, aimSwayStrength);
   }
 
-  public static void handle(TraumaPacket msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(TraumaPacket msg, IPayloadContext ctx) {
     ctx.enqueueWork(() -> CraftingDead.getInstance().getClientDist().handleTrauma(msg));
   }
 }

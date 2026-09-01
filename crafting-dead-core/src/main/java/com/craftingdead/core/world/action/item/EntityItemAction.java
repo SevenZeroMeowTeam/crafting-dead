@@ -142,17 +142,17 @@ public final class EntityItemAction<T extends LivingExtension<?, ?>> extends Ite
       float effectiveChance = this.calculateBleedingChance(targetEntity, baseChance);
       
       if (ServerConfig.instance.bandageRemovesBleeding.get() && random.nextFloat() < effectiveChance) {
-        targetEntity.removeEffect(ModMobEffects.BLEEDING.getHolder().orElseThrow());
+        targetEntity.removeEffect(ModMobEffects.BLEEDING);
       }
     } else if (itemStack.is(ModItems.FIRST_AID_KIT.get())) {
       // First Aid Kit effects
       if (ServerConfig.instance.firstAidKitRemovesBleeding.get()) {
-        targetEntity.removeEffect(ModMobEffects.BLEEDING.getHolder().orElseThrow());
+        targetEntity.removeEffect(ModMobEffects.BLEEDING);
       }
       
       // Infection reduction (remove infection effect with chance)
       // Use ResourceLocation to check for infection effect across modules
-      var infectionEffectHolder = net.minecraftforge.registries.ForgeRegistries.MOB_EFFECTS
+      var infectionEffectHolder = net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT
           .getHolder(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("craftingdead",
               "infection"));
       if (infectionEffectHolder.isPresent()
@@ -169,14 +169,14 @@ public final class EntityItemAction<T extends LivingExtension<?, ?>> extends Ite
     } else if (itemStack.is(ModItems.CLEAN_RAG.get())) {
       // Clean Rag effects
       if (ServerConfig.instance.cleanRagRemovesBleeding.get()) {
-        targetEntity.removeEffect(ModMobEffects.BLEEDING.getHolder().orElseThrow());
+        targetEntity.removeEffect(ModMobEffects.BLEEDING);
       }
     }
   }
 
   private float calculateBleedingChance(net.minecraft.world.entity.LivingEntity entity, float baseChance) {
     // Apply adrenaline bleeding chance multiplier if adrenaline effect is active
-    if (entity.hasEffect(ModMobEffects.ADRENALINE.getHolder().orElseThrow())) {
+    if (entity.hasEffect(ModMobEffects.ADRENALINE)) {
       float multiplier = ServerConfig.instance.adrenalineBleedChanceMultiplier.get().floatValue();
       return Math.min(1.0f, baseChance * multiplier);
     }

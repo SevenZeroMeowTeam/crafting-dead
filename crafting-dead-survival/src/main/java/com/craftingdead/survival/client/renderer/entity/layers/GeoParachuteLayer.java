@@ -56,7 +56,7 @@ public class GeoParachuteLayer extends GeoRenderLayer<ModZombie> {
   public void render(PoseStack poseStack, ModZombie animatable, BakedGeoModel bakedModel,
       @Nullable RenderType renderType, MultiBufferSource bufferSource,
       @Nullable VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
-    if (animatable.hasEffect(ModMobEffects.PARACHUTE.getHolder().orElseThrow())) {
+    if (animatable.hasEffect(ModMobEffects.PARACHUTE)) {
       poseStack.pushPose();
       {
         poseStack.translate(0.0D, 0.0D, 0.125D);

@@ -17,14 +17,31 @@
  */
 
 package com.craftingdead.core.network.message.play;
+import com.craftingdead.core.CraftingDead;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+
 
 import java.util.function.Supplier;
 import com.craftingdead.core.network.NetworkUtil;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record TriggerPressedMessage(int entityId, boolean triggerPressed) {
+public record TriggerPressedMessage(int entityId, boolean triggerPressed) implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<TriggerPressedMessage> TYPE =
+      new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "trigger_pressed_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, TriggerPressedMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, TriggerPressedMessage msg) -> msg.encode(buf), TriggerPressedMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
 
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.entityId);
@@ -35,11 +52,16 @@ public record TriggerPressedMessage(int entityId, boolean triggerPressed) {
     return new TriggerPressedMessage(in.readVarInt(), in.readBoolean());
   }
 
-  public static void handle(TriggerPressedMessage msg, CustomPayloadEvent.Context ctx) {
-    ctx.enqueueWork(() -> NetworkUtil.getEntityOrSender(ctx, msg.entityId)
-        .getCapability(LivingExtension.CAPABILITY)
-        .ifPresent(extension -> extension.mainHandGun()
-            .ifPresent(gun -> gun.setTriggerPressed(extension, msg.triggerPressed,
-                ctx.isServerSide()))));
+  public static void handle(TriggerPressedMessage msg, IPayloadContext ctx) {
+    ctx.enqueueWork(() -> {
+      var extension = NetworkUtil.getEntityOrSender(ctx, msg.entityId)
+          .getCapability(LivingExtension.CAPABILITY);
+      if (extension != null) {
+        var gun = extension.mainHandGun();
+        if (gun != null) {
+          gun.setTriggerPressed(extension, msg.triggerPressed, ctx.flow().isServerbound());
+        }
+      }
+    });
   }
 }

@@ -50,6 +50,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -58,7 +59,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 @RegisterGunColor
 public abstract class GunItem extends ProjectileWeaponItem {
@@ -107,9 +107,6 @@ public abstract class GunItem extends ProjectileWeaponItem {
         .anyMatch(itemStack.getItem()::equals);
   }
 
-  @Override
-  public abstract ICapabilityProvider getCapabilityProvider(ItemStack itemStack);
-
   public Map<GunAnimationEvent, Function<Gun, Animation>> getAnimations() {
     return this.animations;
   }
@@ -148,7 +145,7 @@ public abstract class GunItem extends ProjectileWeaponItem {
   }
 
   @Override
-  public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+  public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
     return true;
   }
 
@@ -209,10 +206,11 @@ public abstract class GunItem extends ProjectileWeaponItem {
           .append(rangeText));
     }
 
-    itemStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> {
-      var ammoCount = Component.literal(String.valueOf(gun.getAmmoProvider().getMagazine()
-          .map(Magazine::getSize)
-          .orElse(0))).withStyle(ChatFormatting.RED);
+    var gun = itemStack.getCapability(Gun.CAPABILITY);
+    if (gun != null) {
+      var magazine = gun.getAmmoProvider().getMagazine();
+      var ammoCount = Component.literal(String.valueOf(magazine == null ? 0 : magazine.getSize()))
+          .withStyle(ChatFormatting.RED);
 
       lines.add(Component.translatable("gun.ammo_amount")
           .withStyle(ChatFormatting.GRAY)
@@ -226,17 +224,12 @@ public abstract class GunItem extends ProjectileWeaponItem {
             .withStyle(ChatFormatting.GRAY)
             .append(attachmentName));
       }
-    });
+    }
   }
 
   @Override
   public boolean isEnchantable(ItemStack stack) {
     return true;
-  }
-
-  @Override
-  public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-    return super.canApplyAtEnchantingTable(stack, enchantment);
   }
 
   @Override

@@ -104,8 +104,10 @@ public class EquipmentMenu extends AbstractContainerMenu {
         this.craftingContainer));
 
     final BiPredicate<PredicateSlot, ItemStack> attachmentOrPaintPredicate =
-        (slot, itemStack) -> this.getGunStack().getCapability(Gun.CAPABILITY)
-            .map(gun -> gun.isAcceptedAttachment(itemStack)).orElse(false);
+        (slot, itemStack) -> {
+          var gun = this.getGunStack().getCapability(Gun.CAPABILITY);
+          return gun != null && gun.isAcceptedAttachment(itemStack);
+        };
 
     final BiPredicate<PredicateSlot, ItemStack> attachmentPredicate =
         (slot, itemStack) -> itemStack.getItem() instanceof AttachmentLike
@@ -162,19 +164,19 @@ public class EquipmentMenu extends AbstractContainerMenu {
   }
 
   public boolean isCraftable() {
-    return this.getGunStack().getCapability(Gun.CAPABILITY)
-        .map(gun -> {
-          for (int i = 0; i < this.craftingContainer.getContainerSize(); i++) {
-            ItemStack itemStack = this.craftingContainer.getItem(i);
-            if (!itemStack.isEmpty()
-                && !gun.isAcceptedAttachment(itemStack)
-                && !Paint.isValid(this.getGunStack(), itemStack)) {
-              return false;
-            }
-          }
-          return true;
-        })
-        .orElse(false);
+    var gun = this.getGunStack().getCapability(Gun.CAPABILITY);
+    if (gun == null) {
+      return false;
+    }
+    for (int i = 0; i < this.craftingContainer.getContainerSize(); i++) {
+      ItemStack itemStack = this.craftingContainer.getItem(i);
+      if (!itemStack.isEmpty()
+          && !gun.isAcceptedAttachment(itemStack)
+          && !Paint.isValid(this.getGunStack(), itemStack)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override

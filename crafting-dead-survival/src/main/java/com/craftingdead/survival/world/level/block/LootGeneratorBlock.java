@@ -39,12 +39,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class LootGeneratorBlock extends AirBlock {
 
-  private final Supplier<Block> lootBlock;
+  private final Supplier<? extends Block> lootBlock;
   private final Supplier<? extends ParticleOptions> particleOptions;
   private final Supplier<Integer> refreshDelayTicks;
   private final Supplier<Boolean> enabled;
 
-  public LootGeneratorBlock(Properties properties, Supplier<Block> lootBlock,
+  public LootGeneratorBlock(Properties properties, Supplier<? extends Block> lootBlock,
       Supplier<? extends ParticleOptions> particleOptions, Supplier<Integer> refreshDelayTicks,
       Supplier<Boolean> enabled) {
     super(properties);

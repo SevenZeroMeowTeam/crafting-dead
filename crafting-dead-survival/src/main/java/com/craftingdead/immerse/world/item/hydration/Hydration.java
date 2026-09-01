@@ -18,9 +18,8 @@
 
 package com.craftingdead.immerse.world.item.hydration;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 
 /**
  * Stub class for immerse Hydration capability.
@@ -28,8 +27,9 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
  * The actual implementation will be loaded from the immerse mod at runtime.
  */
 public interface Hydration {
-  
-  Capability<Hydration> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+
+  ItemCapability<Hydration, Void> CAPABILITY = ItemCapability.createVoid(
+      ResourceLocation.fromNamespaceAndPath("craftingdeadimmerse", "hydration"), Hydration.class);
 
   static Hydration fixed(int water) {
     return new Hydration() {

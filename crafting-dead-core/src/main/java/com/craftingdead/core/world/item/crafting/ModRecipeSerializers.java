@@ -21,24 +21,25 @@ package com.craftingdead.core.world.item.crafting;
 import com.craftingdead.core.CraftingDead;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.minecraft.core.registries.Registries;
 
 public class ModRecipeSerializers {
 
   public static final DeferredRegister<RecipeSerializer<?>> deferredRegister =
-      DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, CraftingDead.ID);
+      DeferredRegister.create(Registries.RECIPE_SERIALIZER, CraftingDead.ID);
 
-  public static final RegistryObject<RecipeSerializer<?>> UPGRADE_MAGAZINE =
+  public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> UPGRADE_MAGAZINE =
       deferredRegister.register("upgrade_magazine",
           UpgradeMagazineRecipe.Serializer::new);
 
-  public static final RegistryObject<SimpleCraftingRecipeSerializer<?>> DUPLICATE_MAGAZINE =
+  public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> DUPLICATE_MAGAZINE =
       deferredRegister.register("duplicate_magazine",
           () -> new SimpleCraftingRecipeSerializer<>(DuplicateMagazineRecipe::new));
 
-  public static final RegistryObject<RecipeSerializer<?>> MYTHIC_UPGRADE =
+  public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> MYTHIC_UPGRADE =
       deferredRegister.register("mythic_upgrade",
           MythicUpgradeRecipe.Serializer::new);
 }

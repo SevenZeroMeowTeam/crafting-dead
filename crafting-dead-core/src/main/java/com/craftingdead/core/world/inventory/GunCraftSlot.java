@@ -49,7 +49,8 @@ public class GunCraftSlot extends Slot {
 
   @Override
   public void set(ItemStack itemStack) {
-    itemStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> {
+    var gun = itemStack.getCapability(Gun.CAPABILITY);
+    if (gun != null) {
       gun.getAttachments().forEach(
           (type, attachment) -> this.craftingInventory.setItem(type.getIndex(),
               new ItemStack(attachment)));
@@ -58,13 +59,14 @@ public class GunCraftSlot extends Slot {
       this.craftingInventory.setItem(GunCraftSlotType.PAINT.getIndex(),
           gun.getPaintStack());
       gun.setPaintStack(ItemStack.EMPTY);
-    });
+    }
     super.set(itemStack);
   }
 
   @Override
   public void onTake(Player playerEntity, ItemStack gunStack) {
-    gunStack.getCapability(Gun.CAPABILITY).ifPresent(gun -> {
+    var gun = gunStack.getCapability(Gun.CAPABILITY);
+    if (gun != null) {
       gun.setPaintStack(ItemStack.EMPTY);
       Map<GunCraftSlotType, Attachment> attachments = new HashMap<>();
       for (int i = 0; i < this.craftingInventory.getContainerSize(); i++) {
@@ -79,6 +81,6 @@ public class GunCraftSlot extends Slot {
         }
       }
       gun.setAttachments(attachments);
-    });
+    }
   }
 }

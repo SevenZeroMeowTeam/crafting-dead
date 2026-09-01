@@ -20,18 +20,18 @@ package com.craftingdead.survival.world.effect;
 
 import com.craftingdead.survival.CraftingDeadSurvival;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class SurvivalMobEffects {
 
   public static final DeferredRegister<MobEffect> deferredRegister =
-      DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, CraftingDeadSurvival.ID);
+      DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, CraftingDeadSurvival.ID);
 
-  public static final RegistryObject<MobEffect> INFECTION =
+  public static final DeferredHolder<MobEffect, ? extends MobEffect> INFECTION =
       deferredRegister.register("infection", InfectionMobEffect::new);
 
-  public static final RegistryObject<MobEffect> BROKEN_LEG =
+  public static final DeferredHolder<MobEffect, ? extends MobEffect> BROKEN_LEG =
       deferredRegister.register("broken_leg", BrokenLegMobEffect::new);
 }

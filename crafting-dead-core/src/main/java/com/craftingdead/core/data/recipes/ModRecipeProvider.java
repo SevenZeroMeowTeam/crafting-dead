@@ -37,7 +37,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 public class ModRecipeProvider extends RecipeProvider {
 
@@ -586,8 +586,8 @@ public class ModRecipeProvider extends RecipeProvider {
         .pattern("wiw")
         .define('i', Tags.Items.INGOTS_IRON)
         .define('w', ItemTags.WOOL)
-        .define('g', Tags.Items.GUNPOWDER)
-        .unlockedBy("has_gunpowder", has(Tags.Items.GUNPOWDER))
+        .define('g', net.neoforged.neoforge.common.Tags.Items.GUNPOWDERS)
+        .unlockedBy("has_gunpowder", has(net.neoforged.neoforge.common.Tags.Items.GUNPOWDERS))
         .save(output);
     ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT,ModItems.FLASH_GRENADE.get())
         .pattern("eie")
@@ -595,7 +595,7 @@ public class ModRecipeProvider extends RecipeProvider {
         .pattern("eie")
         .define('i', Tags.Items.INGOTS_IRON)
         .define('e', Items.FERMENTED_SPIDER_EYE)
-        .define('g', Tags.Items.GUNPOWDER)
+        .define('g', net.neoforged.neoforge.common.Tags.Items.GUNPOWDERS)
         .unlockedBy("has_fermented_spider_eye", has(Items.FERMENTED_SPIDER_EYE))
         .save(output);
     ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT,ModItems.DECOY_GRENADE.get())
@@ -604,7 +604,7 @@ public class ModRecipeProvider extends RecipeProvider {
         .pattern("nin")
         .define('i', Tags.Items.INGOTS_IRON)
         .define('n', Items.NOTE_BLOCK)
-        .define('g', Tags.Items.GUNPOWDER)
+        .define('g', net.neoforged.neoforge.common.Tags.Items.GUNPOWDERS)
         .unlockedBy("has_note_block", has(Items.NOTE_BLOCK))
         .save(output);
     ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT,ModItems.FRAG_GRENADE.get())
@@ -612,8 +612,8 @@ public class ModRecipeProvider extends RecipeProvider {
         .pattern("igi")
         .pattern(" i ")
         .define('i', Tags.Items.INGOTS_IRON)
-        .define('g', Tags.Items.GUNPOWDER)
-        .unlockedBy("has_gunpowder", has(Tags.Items.GUNPOWDER))
+        .define('g', net.neoforged.neoforge.common.Tags.Items.GUNPOWDERS)
+        .unlockedBy("has_gunpowder", has(net.neoforged.neoforge.common.Tags.Items.GUNPOWDERS))
         .save(output);
     ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT,ModItems.C4_EXPLOSIVE.get())
         .pattern(" i ")

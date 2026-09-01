@@ -34,8 +34,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerSynchronizer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 //TODO - temp until https://github.com/MinecraftForge/MinecraftForge/pull/8224 gets merged
 @Mixin(AbstractContainerMenu.class)
@@ -78,24 +78,25 @@ public class AbstractContainerMenuMixin {
 
         var container = (AbstractContainerMenu) (Object) this;
 
-        currentStack.getCapability(Gun.CAPABILITY)
-            .filter(Synched::requiresSync)
-            .ifPresent(gun -> {
-              if (container == player.inventoryMenu) {
-                for (ItemStack equipmentStack : player.getAllSlots()) {
-                  // If the item is equipment we don't need to sync it as Minecraft does
-                  // that in a separate method (and if we sync it twice the capability wont think
-                  // it's dirty anymore on the second call).
-                  if (equipmentStack == currentStack) {
-                    return;
-                  }
-                }
+        var gun = currentStack.getCapability(Gun.CAPABILITY);
+        if (gun != null && gun.requiresSync()) {
+          boolean isEquipment = false;
+          if (container == player.inventoryMenu) {
+            for (ItemStack equipmentStack : player.getAllSlots()) {
+              // If the item is equipment we don't need to sync it as Minecraft does
+              // that in a separate method (and if we sync it twice the capability wont think
+              // it's dirty anymore on the second call).
+              if (equipmentStack == currentStack) {
+                isEquipment = true;
+                break;
               }
-              NetworkChannel.PLAY.getSimpleChannel().send(
-                  new SyncGunContainerSlotMessage(
-                      player.getId(), slotIndex, gun, false, player.level().registryAccess()),
-                  PacketDistributor.PLAYER.with(player));
-            });
+            }
+          }
+          if (!isEquipment) {
+            PacketDistributor.sendToPlayer(player, new SyncGunContainerSlotMessage(
+                    player.getId(), slotIndex, gun, false, player.level().registryAccess()));
+          }
+        }
         return true;
       }
     }

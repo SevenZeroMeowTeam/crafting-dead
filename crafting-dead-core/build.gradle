@@ -3,35 +3,14 @@ plugins {
     id 'java-library'
 }
 
-repositories {
-    maven {
-        name = 'Forge'
-        url = 'https://maven.minecraftforge.net/'
-    }
-    mavenCentral() // Fallback repository
-}
-
 dependencies {
-    implementation 'cpw.mods:bootstraplauncher:1.0.0'
-
-    // GeckoLib 4 animation engine - required at runtime, bundled via jarJar
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.21.1:4.7.4')
-    jarJar(group: 'software.bernie.geckolib', name: 'geckolib-forge-1.21.1', version: '[4.7.4,5.0.0)')
+    implementation('software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7.5')
 
     // Sentry for error tracking - available in dev, bundled via jarJar for production
     api('io.sentry:sentry:6.34.0') {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
-    jarJar(group: 'io.sentry', name: 'sentry', version: '[6.34.0,6.35.0)') {
-        exclude group: 'com.google.code.gson', module: 'gson'
-    }
 }
-
-mixin {
-    add sourceSets.main, 'craftingdead.refmap.json'
-}
-
-jarJar.enable()
 
 jar {
     manifest {
@@ -41,41 +20,5 @@ jar {
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             "MixinConfigs": "craftingdead.mixins.json"
         ])
-    }
-}
-
-minecraft {
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    runs {
-        configureEach {
-            property 'forge.logging.console.level', 'debug'
-            args '--mixin', 'craftingdead.mixins.json'
-
-            mods {
-                craftingdead {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        client {
-            taskName 'runCoreClient'
-            workingDirectory project.file('run/client')
-        }
-
-        server {
-            taskName 'runCoreServer'
-            workingDirectory project.file('run/server')
-        }
-
-        data {
-            taskName 'runCoreData'
-            workingDirectory project.file('run/data')
-
-            args '--mod', 'craftingdead', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            environment 'target', 'fmluserdevdata'
-        }
     }
 }
