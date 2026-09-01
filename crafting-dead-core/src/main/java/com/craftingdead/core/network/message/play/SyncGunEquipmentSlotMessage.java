@@ -59,7 +59,9 @@ public record SyncGunEquipmentSlotMessage(int entityId, EquipmentSlot slot, Frie
     out.writeVarInt(this.entityId);
     out.writeEnum(this.slot);
     out.writeVarInt(this.data.readableBytes());
-    out.writeBytes(this.data);
+    // Copy without advancing the reader index: encode() may be invoked more than once
+    // (NeoForge's GenericPacketSplitter measures size first, then the real encoder runs).
+    out.writeBytes(this.data, this.data.readerIndex(), this.data.readableBytes());
   }
 
   public static SyncGunEquipmentSlotMessage decode(FriendlyByteBuf in) {

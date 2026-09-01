@@ -62,8 +62,10 @@ public abstract class AbstractAdvancedZombieRenderer<T extends Zombie, M extends
 
   @Override
   public ResourceLocation getTextureLocation(Zombie entity) {
-    var textureIndex =
-        LivingExtension.getOrThrow(entity).getHandlerOrThrow(ZombieHandler.TYPE).getTextureIndex();
+    var textureIndex = LivingExtension.getOrThrow(entity)
+        .getHandler(ZombieHandler.TYPE)
+        .map(ZombieHandler::getTextureIndex)
+        .orElse(0);
     return ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID, "textures/entity/zombie/zombie"
         + textureIndex + ".png");
   }

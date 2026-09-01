@@ -45,7 +45,12 @@ public record SyncLivingMessage(int entityId, FriendlyByteBuf data) implements C
   public void encode(FriendlyByteBuf out) {
     out.writeVarInt(this.entityId);
     out.writeVarInt(this.data.readableBytes());
-    out.writeBytes(this.data);
+    // Copy without advancing the reader index: encode() may be invoked more than once
+    // (NeoForge's GenericPacketSplitter encodes the packet once to measure its size,
+    // then the real PacketEncoder encodes it again). Consuming this.data would send an
+    // empty payload on the second pass and crash the client's decode with an
+    // IndexOutOfBoundsException (EmptyByteBuf.readShort).
+    out.writeBytes(this.data, this.data.readerIndex(), this.data.readableBytes());
   }
 
   public static SyncLivingMessage decode(FriendlyByteBuf in) {

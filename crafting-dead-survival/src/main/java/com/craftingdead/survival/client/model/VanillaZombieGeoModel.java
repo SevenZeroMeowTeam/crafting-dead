@@ -45,8 +45,9 @@ public class VanillaZombieGeoModel extends DefaultedEntityGeoModel<VanillaZombie
     if (renderer instanceof GeoReplacedEntityRenderer<?, ?> replacedRenderer
         && replacedRenderer.getCurrentEntity() instanceof Zombie zombie) {
       int textureIndex = LivingExtension.getOrThrow(zombie)
-          .getHandlerOrThrow(ZombieHandler.TYPE)
-          .getTextureIndex();
+          .getHandler(ZombieHandler.TYPE)
+          .map(ZombieHandler::getTextureIndex)
+          .orElse(0);
       return ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID,
           "textures/entity/zombie/zombie" + textureIndex + ".png");
     }

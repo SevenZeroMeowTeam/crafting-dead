@@ -51,8 +51,10 @@ public record PerformActionMessage(ActionType<?> actionType, int performerEntity
         com.craftingdead.core.world.action.ActionTypes.REGISTRY.getKey(this.actionType));
     out.writeVarInt(this.performerEntityId);
     out.writeVarInt(this.buf.readableBytes());
-    out.writeBytes(this.buf);
-    this.buf.release();
+    // Copy without consuming or releasing: encode() may be invoked more than once
+    // (NeoForge's GenericPacketSplitter measures size first, then the real encoder runs).
+    // The receiving side releases its own decoded buffer in handle().
+    out.writeBytes(this.buf, this.buf.readerIndex(), this.buf.readableBytes());
   }
 
   public static PerformActionMessage decode(FriendlyByteBuf in) {

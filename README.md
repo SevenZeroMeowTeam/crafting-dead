@@ -21,6 +21,30 @@
 
 ## 更新日志
 
+### NeoForge 1.21.1 稳定性修复：网络同步崩溃 + 刷怪笼渲染崩溃（基于运行日志定位）
+
+**关键修复：`sync_living` 网络同步每 tick 崩溃（进世界即触发）**
+
+- 症状：进世界后日志反复刷屏 `Failed to process a synchronized task of the payload: craftingdead:sync_living`，
+  最终在 `BaseLivingExtension.decode` 抛 `IndexOutOfBoundsException`（`EmptyByteBuf.readShort`）导致游戏卡死 / 崩溃
+- 根因：NeoForge 21.1.x 的 `GenericPacketSplitter`（netty 动态 handler）会先把**每个自定义包**编码到临时缓冲区
+  测大小，再由真正的 `PacketEncoder` 二次编码 → 消息的 `encode()` 被调用两次。
+  而 `SyncLivingMessage` 等消息在 `encode()` 里用 `out.writeBytes(this.data)` 会**消耗源缓冲区**
+  （把 readerIndex 推到末尾），第二次编码时 `readableBytes()==0`，写出 0 长度数据 → 客户端解码拿到空缓冲即崩溃
+- 修复：所有带内嵌缓冲区的网络消息改为按 `readerIndex + readableBytes` 复制，`encode()` 不再消耗源缓冲区（幂等）：
+  `SyncLivingMessage` / `PerformActionMessage` / `SyncGunContainerSlotMessage` / `SyncGunEquipmentSlotMessage`；
+  `PerformActionMessage` 同时移除 `encode()` 中对缓冲区的 `release()`（避免二次编码触发 `IllegalReferenceCountException`）
+
+**关键修复：刷怪笼渲染僵尸崩溃（Missing handler）**
+
+- 症状：渲染刷怪笼内的僵尸时抛
+  `IllegalStateException: Missing handler: LivingHandlerType[id=craftingdeadsurvival:zombie]`，
+  触发路径 `SpawnerRenderer → GeoReplacedEntityRenderer → VanillaZombieGeoModel`
+- 根因：刷怪笼显示的临时实体未走 `LivingExtensionEvent.Load`，`ZombieHandler` 未注册，
+  渲染代码 `getHandlerOrThrow(ZombieHandler.TYPE)` 直接抛异常
+- 修复：渲染侧改用 `getHandler(ZombieHandler.TYPE).map(...).orElse(0)` 兜底默认贴图
+  （`VanillaZombieGeoModel` / `ZombieGeoModel` / `AbstractAdvancedZombieRenderer`）
+
 ### 月相颜色 / 月相强度 / 进化僵尸手持物品（参考 Zombie Apocalypse 系列）
 
 **新功能：月相对应颜色 + 月相决定僵尸强度 + 进化僵尸手持物品**

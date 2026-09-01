@@ -58,7 +58,9 @@ public record SyncGunContainerSlotMessage(int entityId, int slot, FriendlyByteBu
     out.writeVarInt(this.entityId);
     out.writeShort(this.slot);
     out.writeVarInt(this.data.readableBytes());
-    out.writeBytes(this.data);
+    // Copy without advancing the reader index: encode() may be invoked more than once
+    // (NeoForge's GenericPacketSplitter measures size first, then the real encoder runs).
+    out.writeBytes(this.data, this.data.readerIndex(), this.data.readableBytes());
   }
 
   public static SyncGunContainerSlotMessage decode(FriendlyByteBuf in) {

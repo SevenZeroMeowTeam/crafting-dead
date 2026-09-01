@@ -38,8 +38,9 @@ public class ZombieGeoModel extends DefaultedEntityGeoModel<ModZombie> {
   @Override
   public ResourceLocation getTextureResource(ModZombie animatable) {
     var textureIndex = LivingExtension.getOrThrow(animatable)
-        .getHandlerOrThrow(ZombieHandler.TYPE)
-        .getTextureIndex();
+        .getHandler(ZombieHandler.TYPE)
+        .map(ZombieHandler::getTextureIndex)
+        .orElse(0);
     return ResourceLocation.fromNamespaceAndPath(CraftingDeadSurvival.ID,
         "textures/entity/zombie/zombie" + textureIndex + ".png");
   }
