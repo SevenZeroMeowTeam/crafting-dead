@@ -1,0 +1,29 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "GPL v3.0"
+issueTrackerURL = "https://github.com/SevenZeroMeowTeam/crafting-dead/issues"
+
+[[mods]]
+modId = "craftingdeaddecoration"
+version = "${file.jarVersion}"
+displayName = "Crafting Dead Decoration"
+displayURL = "https://github.com/SevenZeroMeowTeam/crafting-dead"
+authors = "Sm0keySa1m0n"
+credits = "Sm0keySa1m0n, Hallzmine, SevenZeroMeowTeam, miaoxing"
+description = '''
+    The decorative blocks mod for Crafting Dead.
+    '''
+
+[[dependencies.craftingdeaddecoration]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.0,22)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.craftingdeaddecoration]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21,1.22)"
+ordering = "NONE"
+side = "BOTH"

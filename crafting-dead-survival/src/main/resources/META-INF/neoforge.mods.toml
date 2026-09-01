@@ -1,0 +1,43 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "GPL v3.0"
+issueTrackerURL = "https://github.com/SevenZeroMeowTeam/crafting-dead/issues"
+
+[[mods]]
+modId = "craftingdeadsurvival"
+version = "${file.jarVersion}"
+displayName = "Crafting Dead Survival"
+displayURL = "https://github.com/SevenZeroMeowTeam/crafting-dead"
+authors = "Sm0keySa1m0n, Hallzmine"
+credits = "Sm0keySa1m0n, Hallzmine, SevenZeroMeowTeam, miaoxing"
+description = '''
+    The survival mechanics mod for Crafting Dead.
+    '''
+
+[[dependencies.craftingdeadsurvival]]
+modId = "craftingdead"
+type = "required"
+versionRange = "[1.6.0-alpha,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.craftingdeadsurvival]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.0,22)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.craftingdeadsurvival]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21,1.22)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.craftingdeadsurvival]]
+modId = "geckolib"
+type = "required"
+versionRange = "[4.7.0,)"
+ordering = "NONE"
+side = "BOTH"
