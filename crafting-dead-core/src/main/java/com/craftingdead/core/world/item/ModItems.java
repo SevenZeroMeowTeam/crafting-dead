@@ -2120,15 +2120,16 @@ public class ModItems {
   }
 
   private static StorageItem weakVest() {
+    // NeoForge：物品在 RegisterEvent 注册时 config 尚未加载，不能调用 get()，只能用默认值
     return vest(
-        CommonConfig.instance.weakVestArmor.get().floatValue(),
-        CommonConfig.instance.weakVestArmorToughness.get().floatValue());
+        CommonConfig.instance.weakVestArmor.getDefault().floatValue(),
+        CommonConfig.instance.weakVestArmorToughness.getDefault().floatValue());
   }
 
   private static StorageItem strongVest() {
     return vest(
-        CommonConfig.instance.strongVestArmor.get().floatValue(),
-        CommonConfig.instance.strongVestArmorToughness.get().floatValue());
+        CommonConfig.instance.strongVestArmor.getDefault().floatValue(),
+        CommonConfig.instance.strongVestArmorToughness.getDefault().floatValue());
   }
 
   private static StorageItem vest(float armor, float armorToughness) {

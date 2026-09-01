@@ -126,7 +126,7 @@ public class ActionTypes {
       deferredRegister.register("use_first_aid_kit",
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(ModItems.FIRST_AID_KIT)
-              .duration(ServerConfig.instance.firstAidKitDurationTicks.get())
+              .duration(ServerConfig.instance.firstAidKitDurationTicks.getDefault())
               .effect(() -> new MobEffectInstance(MobEffects.HEAL, 1, 
                   (int) Math.max(0, ServerConfig.instance.firstAidKitHealAmount.get().floatValue() - 1)))
               .build());
@@ -146,7 +146,7 @@ public class ActionTypes {
       deferredRegister.register("use_blood_syringe",
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(ModItems.BLOOD_SYRINGE)
-              .duration(ServerConfig.instance.bloodSyringeDurationTicks.get())
+              .duration(ServerConfig.instance.bloodSyringeDurationTicks.getDefault())
               .resultItem(ModItems.SYRINGE)
               .useResultItemInCreative(false)
               .effect(() -> new MobEffectInstance(MobEffects.HEAL, 1, 
@@ -157,7 +157,7 @@ public class ActionTypes {
       deferredRegister.register("use_bandage",
           () -> EntityItemActionType.builder(TargetSelector.SELF_OR_OTHERS)
               .forItem(ModItems.BANDAGE)
-              .duration(ServerConfig.instance.bandageDurationTicks.get())
+              .duration(ServerConfig.instance.bandageDurationTicks.getDefault())
               .effect(() -> new MobEffectInstance(MobEffects.HEAL, 1, 
                   (int) Math.max(0, ServerConfig.instance.bandageHealAmount.get().floatValue() - 1)))
               .build());
@@ -167,7 +167,7 @@ public class ActionTypes {
           () -> EntityItemActionType
               .builder(TargetSelector.SELF_OR_OTHERS.hasEffect(ModMobEffects.BLEEDING))
               .forItem(ModItems.CLEAN_RAG)
-              .duration(ServerConfig.instance.cleanRagDurationTicks.get())
+              .duration(ServerConfig.instance.cleanRagDurationTicks.getDefault())
               .resultItem(ModItems.BLOODY_RAG)
               .build());
 
