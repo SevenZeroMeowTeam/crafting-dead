@@ -58,6 +58,10 @@ public class StorageItem extends EquipmentItem {
   private final ItemHandlerMenuConstructor menuConstructor;
   private final Component component;
 
+  public int getItemRows() {
+    return this.itemRows;
+  }
+
   public StorageItem(Properties properties) {
     super(properties);
     this.attributeModifiers = properties.attributeModifiers.build();
@@ -154,27 +158,20 @@ public class StorageItem extends EquipmentItem {
 
   public class Storage implements Equipment, MenuConstructor {
 
-    private final ItemStackHandler itemHandler;
+    private final ItemStack stack;
 
-    public Storage() {
-      final var size = StorageItem.this.itemRows * 9;
-      this.itemHandler = new ItemStackHandler(size) {
-        @Override
-        protected void onLoad() {
-          if (this.getSlots() != size) {
-            this.setSize(size);
-          }
-        }
-      };
-    }
-
-    private ItemStackHandler itemHandler() {
-      return this.itemHandler;
+    public Storage(ItemStack stack) {
+      this.stack = stack;
     }
 
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inventory, Player player) {
-      return StorageItem.this.menuConstructor.createMenu(windowId, inventory, this.itemHandler);
+      // 使用数据组件承载的物品栏处理器，确保容器内容随物品保存 / 加载。
+      IItemHandler itemHandler = this.stack.getCapability(Capabilities.ItemHandler.ITEM);
+      if (itemHandler == null) {
+        itemHandler = new ItemStackHandler(StorageItem.this.itemRows * 9);
+      }
+      return StorageItem.this.menuConstructor.createMenu(windowId, inventory, itemHandler);
     }
 
     @Override

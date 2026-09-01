@@ -687,10 +687,13 @@ public class ClientDist implements ModDist {
               guiGraphics.guiWidth(), guiGraphics.guiHeight(),
               deltaTracker.getGameTimeDeltaPartialTick(false));
         });
-    event.registerBelowAll(
-        ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "target_overlay"),
-        (guiGraphics, deltaTracker) -> this.targetOverlay.render(guiGraphics,
-            deltaTracker.getGameTimeDeltaPartialTick(false)));
+    // 已安装 WTHIT 时不注册内置目标信息叠加层（功能与其重复）
+    if (!WthitCompat.isWthitLoaded()) {
+      event.registerBelowAll(
+          ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "target_overlay"),
+          (guiGraphics, deltaTracker) -> this.targetOverlay.render(guiGraphics,
+              deltaTracker.getGameTimeDeltaPartialTick(false)));
+    }
   }
 
   /**

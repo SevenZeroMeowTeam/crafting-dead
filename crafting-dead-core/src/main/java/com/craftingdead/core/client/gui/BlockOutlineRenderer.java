@@ -19,6 +19,7 @@
 package com.craftingdead.core.client.gui;
 
 import com.craftingdead.core.client.ClientDist;
+import com.craftingdead.core.client.WthitCompat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -68,6 +69,10 @@ public class BlockOutlineRenderer {
       return;
     }
     if (!ClientDist.clientConfig.displayTargetInfo.get()) {
+      return;
+    }
+    // 已安装 WTHIT 时隐藏内置的方块范围框，避免重复显示
+    if (WthitCompat.isWthitLoaded()) {
       return;
     }
     var level = this.minecraft.level;

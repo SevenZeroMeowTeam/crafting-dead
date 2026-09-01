@@ -42,6 +42,7 @@ import com.craftingdead.core.network.message.play.RightClickStateMessage;
 import com.craftingdead.core.network.message.play.BlockDestroyParticleMessage;
 import com.craftingdead.core.network.message.play.BlockDestroyActionMessage;
 import com.craftingdead.core.network.message.play.AddKillFeedEntryMessage;
+import com.craftingdead.core.network.message.play.SortInventoryMessage;
 import com.craftingdead.core.CraftingDead;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -74,5 +75,6 @@ public class NetworkChannel {
         registrar.playToClient(BlockDestroyParticleMessage.TYPE, BlockDestroyParticleMessage.STREAM_CODEC, BlockDestroyParticleMessage::handle);
         registrar.playToServer(BlockDestroyActionMessage.TYPE, BlockDestroyActionMessage.STREAM_CODEC, BlockDestroyActionMessage::handle);
         registrar.playToClient(AddKillFeedEntryMessage.TYPE, AddKillFeedEntryMessage.STREAM_CODEC, AddKillFeedEntryMessage::handle);
+        registrar.playToServer(SortInventoryMessage.TYPE, SortInventoryMessage.STREAM_CODEC, SortInventoryMessage::handle);
     }
 }

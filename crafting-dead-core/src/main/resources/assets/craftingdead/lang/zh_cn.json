@@ -484,5 +484,6 @@
   "bolt_cutters.free": "你的手铐被%s剪开了。",
   "handcuffs.information": "右键点击玩家。",
   "handcuffs_key.information": "右键点击被手铐铐住的玩家。",
-  "handcuffs_key.removed": "手铐已解开！"
+  "handcuffs_key.removed": "手铐已解开！",
+  "gui.craftingdead.sort": "整理物品栏"
 }

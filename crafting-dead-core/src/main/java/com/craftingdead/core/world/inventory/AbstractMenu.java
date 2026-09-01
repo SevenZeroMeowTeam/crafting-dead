@@ -68,6 +68,21 @@ public abstract class AbstractMenu extends AbstractContainerMenu {
   }
 
   @Nullable
+  public IItemHandler getContents() {
+    return this.contents;
+  }
+
+  /**
+   * 判断物品是否能放入本菜单的容器区域（尊重槽位校验规则）。
+   */
+  public boolean mayPlaceInContainer(ItemStack itemStack) {
+    if (this.getContentsSize() <= 0) {
+      return true;
+    }
+    return this.getSlot(0).mayPlace(itemStack);
+  }
+
+  @Nullable
   public Container getPlayerInventory() {
     return this.playerInventory;
   }

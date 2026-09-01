@@ -24,6 +24,7 @@ import com.craftingdead.core.CraftingDead;
 import com.craftingdead.core.client.gui.widget.button.CompositeButton;
 import com.craftingdead.core.network.NetworkChannel;
 import com.craftingdead.core.network.message.play.OpenEquipmentMenuMessage;
+import com.craftingdead.core.network.message.play.SortInventoryMessage;
 import com.craftingdead.core.world.inventory.AbstractMenu;
 import com.craftingdead.core.world.inventory.GenericMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -41,11 +42,15 @@ public class GenericContainerScreen extends AbstractContainerScreen<GenericMenu>
   private static final ResourceLocation GENERIC_CONTAINER_TEXTURE =
       ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/container/generic_54.png");
 
+  private static final ResourceLocation SORT_BUTTON_TEXTURE =
+      ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "textures/gui/sort_button.png");
+
   private static final int TITLE_TEXT_COLOUR = 0x000000;
   // Implementations may change this field to another action for the return button
   @Nullable
   protected Consumer<Button> returnButtonAction = (button) -> PacketDistributor.sendToServer(new OpenEquipmentMenuMessage());
   private CompositeButton returnButton;
+  private CompositeButton sortButton;
 
   public GenericContainerScreen(GenericMenu menu, Inventory playerInventory,
       Component title) {
@@ -65,11 +70,25 @@ public class GenericContainerScreen extends AbstractContainerScreen<GenericMenu>
         .setAction(action::accept).build();
     this.returnButton.active = returnButtonAction != null;
     this.addRenderableWidget(returnButton);
+
+    // 一键整理按钮：合并同类 + 按名称排序（容器 + 玩家背包）
+    this.sortButton = CompositeButton.button(this.leftPos + 144, this.topPos - 1, 12, 16,
+            SORT_BUTTON_TEXTURE)
+        .setAtlasPos(0, 0)
+        .setHoverAtlasPos(0, 16)
+        .setInactiveAtlasPos(0, 32)
+        .setAction((button) -> PacketDistributor.sendToServer(new SortInventoryMessage()))
+        .build();
+    this.addRenderableWidget(this.sortButton);
   }
 
   @Override
   public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
     super.render(guiGraphics, mouseX, mouseY, partialTicks);
+    if (this.sortButton != null && this.sortButton.isHoveredOrFocused()) {
+      guiGraphics.renderTooltip(this.font, Component.translatable("gui.craftingdead.sort"),
+          mouseX, mouseY);
+    }
     this.renderTooltip(guiGraphics, mouseX, mouseY);
   }
 

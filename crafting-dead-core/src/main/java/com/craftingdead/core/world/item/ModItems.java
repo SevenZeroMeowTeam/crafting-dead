@@ -52,6 +52,7 @@ import com.craftingdead.core.world.item.gun.minigun.MinigunItem;
 import com.craftingdead.core.world.item.gun.skin.Skins;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -60,6 +61,9 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.component.ItemContainerContents;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.ComponentItemHandler;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -71,6 +75,14 @@ public class ModItems {
 
   public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
       DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CraftingDead.ID);
+
+  public static final DeferredRegister.DataComponents DATA_COMPONENTS =
+      DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, CraftingDead.ID);
+
+  /** 存储类物品（背心 / 背包 / 枪袋）的物品栏数据组件，内容随物品自动保存。 */
+  public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContainerContents>> STORAGE_CONTENTS =
+      DATA_COMPONENTS.registerComponentType("storage",
+          builder -> builder.persistent(ItemContainerContents.CODEC));
 
   // ================================================================================
   // Paints
@@ -2542,7 +2554,14 @@ public class ModItems {
         event.registerItem(Equipment.CAPABILITY, (stack, ctx) -> SimpleHat.of(hatItem), hatItem);
       } else if (item instanceof StorageItem storageItem) {
         event.registerItem(Equipment.CAPABILITY,
-            (stack, ctx) -> storageItem.new Storage(), storageItem);
+            (stack, ctx) -> storageItem.new Storage(stack), storageItem);
+        // 恢复 NeoForge 迁移中丢失的 ITEM_HANDLER 能力注册（旧 Forge 用 initCapabilities）：
+        // 用数据组件（ItemContainerContents）承载物品栏，ComponentItemHandler 直接读写
+        // 物品堆栈上的 "storage" 数据组件，内容随物品自动保存 / 加载。
+        event.registerItem(Capabilities.ItemHandler.ITEM,
+            (stack, ctx) -> new ComponentItemHandler(stack, STORAGE_CONTENTS.get(),
+                storageItem.getItemRows() * 9),
+            storageItem);
       } else if (item instanceof MeleeWeaponItem meleeWeaponItem) {
         event.registerItem(Equipment.CAPABILITY, (stack, ctx) -> Equipment.forSlot(Equipment.Slot.MELEE), meleeWeaponItem);
         event.registerItem(CombatSlotProvider.CAPABILITY, (stack, ctx) -> CombatSlot.MELEE, meleeWeaponItem);

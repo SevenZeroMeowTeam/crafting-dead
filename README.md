@@ -21,6 +21,34 @@
 
 ## 更新日志
 
+### NeoForge 1.21.1 新功能：一键整理 + WTHIT 兼容 + 存储持久化修复
+
+**新功能：一键整理（容器 + 玩家背包）**
+
+- 在背包 / 背心 / 枪袋等容器界面的返回按钮左侧新增「整理」图标按钮
+- 点击后服务端执行整理：**合并同类可堆叠物品**（同物品同组件堆叠到上限），再**按物品名称排序**堆放
+- 同时整理容器内容与玩家下方 36 格背包（不影响盔甲与副手）；整理尊重容器槽位校验
+  （背心不会放入枪械 / 储物类物品）
+- 涉及：`InventorySorter`、`SortInventoryMessage`、`GenericContainerScreen`、新图标 `sort_button.png`
+
+**新功能：WTHIT 兼容（自动隐藏内置目标信息叠加层）**
+
+- 当玩家安装 **WTHIT**（What The Hell Is That）模组时，自动隐藏 crafting-dead 内置的
+  Jade 风格目标信息叠加层与方块范围框，避免重复显示
+- 未安装 WTHIT 时行为不变（仍由 `displayTargetInfo` 客户端选项控制）
+- 涉及：`WthitCompat`（ModList 检测 `wthit`）、`TargetOverlay`、`BlockOutlineRenderer`、`ClientDist`
+
+**关键修复：存储类物品（背心 / 背包 / 枪袋）内容持久化**
+
+- 症状：NeoForge 1.21.1 迁移后背包 / 背心 / 枪袋内容无法保存 / 读取（每次打开为空），
+  且僵尸掉落的背心不再自动填装战利品
+- 根因：迁移时丢失了旧 Forge 的 `initCapabilities`（`ITEM_HANDLER` 能力）注册；
+  1.21.1 已移除 `Item.getShareTag/readShareTag`，且 `ItemStackHandler` 不会自动持久化
+- 修复：改用 NeoForge 1.21.1 原生**数据组件**方案——注册 `storage` 数据组件
+  （`ItemContainerContents`），恢复 `Capabilities.ItemHandler.ITEM` 能力注册，
+  用 `ComponentItemHandler` 将物品栏直接写入物品堆栈数据组件，随物品自动保存 / 加载
+- 涉及：`ModItems`（`STORAGE_CONTENTS` 数据组件 + 能力注册）、`StorageItem.Storage`、`CraftingDead`
+
 ### NeoForge 1.21.1 稳定性修复：网络同步崩溃 + 刷怪笼渲染崩溃（基于运行日志定位）
 
 **关键修复：`sync_living` 网络同步每 tick 崩溃（进世界即触发）**
@@ -520,6 +548,7 @@ crafting-dead
 - 装备耐久与磨损
 - 末日生存系统：月亮事件（血月/蓝月/黄月/超级血月）、僵尸进化（随天数提升血量/攻击/速度）、
   计分板（天数/时间/月相）、左上角 HUD（手持武器/击杀信息）、击杀概率掉落
+- 一键整理：容器（背包 / 背心 / 枪袋）与玩家背包一键合并同类并按名称排序（图标按钮）
 
 ### 装饰方块
 
@@ -541,7 +570,7 @@ crafting-dead
 
 | 技术 | 用途 |
 |------|------|
-| **Minecraft Forge 52.1.16** | Mod 加载框架 |
+| **NeoForge 21.1.249** | Mod 加载框架（NeoForge） |
 | **Minecraft 1.21.1** | 游戏版本 |
 | **Java 21** | 开发语言 |
 | **Gradle 8.5** | 构建工具 |
@@ -556,7 +585,7 @@ crafting-dead
 
 ### 前置要求
 
-- [JDK 21](https://adoptium.net/)（1.21.x 分支；1.19.x/1.20.x 分支使用 JDK 17）
+- [JDK 21](https://adoptium.net/)（1.21.1 分支；1.19.x/1.20.x 分支使用 JDK 17）
 - Git
 
 ### 克隆与构建
@@ -566,8 +595,8 @@ crafting-dead
 git clone https://github.com/SevenZeroMeowTeam/crafting-dead.git
 cd crafting-dead
 
-# 切换到 1.21.x 分支（默认活跃分支）
-git checkout 1.21.x
+# 切换到 neoforge-1.21.1 分支（默认活跃分支）
+git checkout neoforge-1.21.1
 
 # 编译打包（跳过测试）
 ./gradlew build -x test
@@ -579,17 +608,17 @@ git checkout 1.21.x
 
 | 模块 | Jar 文件（本地构建） |
 |------|----------|
-| Core | `crafting-dead-core-1.21.1-1.9.4.homebaked.jar` |
-| Survival | `crafting-dead-survival-1.21.1-1.2.6.homebaked.jar` |
-| Decoration | `crafting-dead-decoration-1.21.1-1.0.6.homebaked.jar` |
-| WorldGuard | `crafting-dead-worldguard-1.21.1-0.0.6.homebaked.jar` |
+| Core | `crafting-dead-core-1.21.1-1.9.6.homebaked.jar` |
+| Survival | `crafting-dead-survival-1.21.1-1.2.8.homebaked.jar` |
+| Decoration | `crafting-dead-decoration-1.21.1-1.0.7.homebaked.jar` |
+| WorldGuard | `crafting-dead-worldguard-1.21.1-0.0.7.homebaked.jar` |
 
 > CI 构建（GitHub Actions）使用运行编号替代 `homebaked` 后缀，
-> 例如 `crafting-dead-core-1.21.1-1.9.4.42.jar`。
+> 例如 `crafting-dead-core-1.21.1-1.9.6.42.jar`。
 
 ### 持续集成与自动发布
 
-推送到 `1.21.x` / `1.20.x` / `1.19.x` 分支后，GitHub Actions 自动执行：
+推送到 `neoforge-1.21.1` / `1.20.x` / `1.19.x` 分支后，GitHub Actions 自动执行：
 
 1. **构建** — `./gradlew clean build` 编译全部四个模块
 2. **Artifact** — 构建产物上传至 Actions 工件（按分支与构建编号命名）

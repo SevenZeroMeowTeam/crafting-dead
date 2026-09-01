@@ -588,5 +588,6 @@
 
   "trade.error.self": "You cannot trade with yourself",
   "trade.error.distance": "You are too far away from %s",
-  "trade.error.no_session": "You are not in a trade"
+  "trade.error.no_session": "You are not in a trade",
+  "gui.craftingdead.sort": "Sort inventory"
 }

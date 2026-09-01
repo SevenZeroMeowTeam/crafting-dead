@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import com.craftingdead.core.client.ClientDist;
+import com.craftingdead.core.client.WthitCompat;
 import com.craftingdead.core.quality.QualityHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -77,6 +78,10 @@ public class TargetOverlay {
       return;
     }
     if (!ClientDist.clientConfig.displayTargetInfo.get()) {
+      return;
+    }
+    // 已安装 WTHIT 时隐藏内置的同类目标信息叠加层，避免重复显示
+    if (WthitCompat.isWthitLoaded()) {
       return;
     }
 

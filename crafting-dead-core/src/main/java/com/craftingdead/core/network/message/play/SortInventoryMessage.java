@@ -1,0 +1,67 @@
+/*
+ * Crafting Dead
+ * Copyright (C) 2022  NexusNode LTD
+ *
+ * This Non-Commercial Software License Agreement (the "Agreement") is made between
+ * you (the "Licensee") and NEXUSNODE (BRAD HUNTER). (the "Licensor").
+ * By installing or otherwise using Crafting Dead (the "Software"), you agree to be
+ * bound by the terms and conditions of this Agreement as may be revised from time
+ * to time at Licensor's sole discretion.
+ *
+ * If you do not agree to the terms and conditions of this Agreement do not download,
+ * copy, reproduce or otherwise use any of the source code available online at any time.
+ *
+ * https://github.com/nexusnode/crafting-dead/blob/1.18.x/LICENSE.txt
+ *
+ * https://craftingdead.net/terms.php
+ */
+
+package com.craftingdead.core.network.message.play;
+
+import com.craftingdead.core.CraftingDead;
+import com.craftingdead.core.world.inventory.AbstractMenu;
+import com.craftingdead.core.world.inventory.InventorySorter;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+/**
+ * 一键整理请求（客户端 → 服务端）。
+ *
+ * <p>服务端对玩家当前打开的容器菜单内容 + 玩家背包执行整理
+ * （合并同类 + 按名称排序），结果经容器同步自动下发客户端。
+ */
+public record SortInventoryMessage() implements CustomPacketPayload {
+
+  public static final CustomPacketPayload.Type<SortInventoryMessage> TYPE =
+      new CustomPacketPayload.Type<>(
+          ResourceLocation.fromNamespaceAndPath(CraftingDead.ID, "sort_inventory_message"));
+
+  public static final StreamCodec<FriendlyByteBuf, SortInventoryMessage> STREAM_CODEC =
+      StreamCodec.of((FriendlyByteBuf buf, SortInventoryMessage msg) -> msg.encode(buf),
+          SortInventoryMessage::decode);
+
+  @Override
+  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    return TYPE;
+  }
+
+  public void encode(FriendlyByteBuf out) {}
+
+  public static SortInventoryMessage decode(FriendlyByteBuf in) {
+    return new SortInventoryMessage();
+  }
+
+  public static void handle(SortInventoryMessage msg, IPayloadContext ctx) {
+    ctx.enqueueWork(() -> {
+      var player = ctx.player();
+      if (player.containerMenu instanceof AbstractMenu abstractMenu) {
+        InventorySorter.sortMenu(abstractMenu);
+      } else {
+        InventorySorter.sortPlayerInventory(player.getInventory());
+      }
+    });
+  }
+}

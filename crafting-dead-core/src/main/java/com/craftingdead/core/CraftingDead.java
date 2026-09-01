@@ -155,6 +155,7 @@ public class CraftingDead {
     ModEntityTypes.deferredRegister.register(modEventBus);
     ModItems.deferredRegister.register(modEventBus);
     ModItems.CREATIVE_MODE_TABS.register(modEventBus);
+    ModItems.DATA_COMPONENTS.register(modEventBus);
     ModSoundEvents.deferredRegister.register(modEventBus);
     ModMenuTypes.deferredRegister.register(modEventBus);
     ModMobEffects.deferredRegister.register(modEventBus);
