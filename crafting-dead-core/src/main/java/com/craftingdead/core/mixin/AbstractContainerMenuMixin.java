@@ -62,10 +62,11 @@ public class AbstractContainerMenuMixin {
     if (clazz.isAnonymousClass() && clazz.getEnclosingClass() == ServerPlayer.class) {
       Object parent;
       try {
-        // this$0
+        // this$0：匿名 ContainerSynchronizer（ServerPlayer$1）的外层 ServerPlayer 引用。
+        // NeoForge 1.21.1 用官方映射，运行时字段名是 this$0（旧 SRG 名 f_143433_ 已不存在）
         parent = ObfuscationReflectionHelper.getPrivateValue(
             (Class<ContainerSynchronizer>) this.synchronizer.getClass(), this.synchronizer,
-            "f_143433_");
+            "this$0");
       } catch (ObfuscationReflectionHelper.UnableToAccessFieldException e) {
         logger.error("Failed to reflect", e);
         return ItemStack.matches(lastStack, currentStack);

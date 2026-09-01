@@ -61,12 +61,14 @@ import io.netty.buffer.Unpooled;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -240,6 +242,20 @@ public class CraftingDead {
   }
 
   private void handleRegisterCapabilities(RegisterCapabilitiesEvent event) {
+    // LivingExtension 实体能力：所有活体生物附加能力（玩家用 PlayerExtension，其他用
+    // BasicLivingExtension），与原 Forge 版 AttachCapabilitiesEvent 一致。
+    // NeoForge 1.21 迁移时曾丢失 registerEntity 注册，导致 getOrThrow 报
+    // "Expecting capability: craftingdead:living_extension"
+    for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
+      event.registerEntity(LivingExtension.CAPABILITY, entityType, (entity, ctx) -> {
+        if (entity instanceof Player player) {
+          return PlayerExtension.create(player);
+        } else if (entity instanceof LivingEntity livingEntity) {
+          return BasicLivingExtension.create(livingEntity);
+        }
+        return null;
+      });
+    }
     ModItems.initAbilityProviders(event);
   }
 
