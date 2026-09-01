@@ -4,7 +4,7 @@
 	"particle": "craftingdead:hats/gas_mask"
 },
 
-	"loader":"forge:obj",
+	"loader":"neoforge:obj",
 	"model":"craftingdead:models/hats/gas_mask.obj",
 	"flip-v":true,
 	"ambientToFullbright": false

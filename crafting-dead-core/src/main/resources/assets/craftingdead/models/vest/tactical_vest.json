@@ -4,7 +4,7 @@
 	"particle": "craftingdead:vest/black_tactical_vest"
 },
 
-	"loader":"forge:obj",
+	"loader":"neoforge:obj",
 	"model":"craftingdead:models/vest/tactical_vest.obj",
 	"flip-v":true,
 	"ambientToFullbright": false,

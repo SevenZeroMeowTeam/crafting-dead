@@ -4,7 +4,7 @@
 	"particle": "craftingdead:hats/hacker_mask"
 },
 
-	"loader":"forge:obj",
+	"loader":"neoforge:obj",
 	"model":"craftingdead:models/hats/mask.obj",
 	"flip-v":true,
 	"ambientToFullbright": false,

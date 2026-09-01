@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
-  "loader": "forge:separate_transforms",
+  "loader": "neoforge:separate_transforms",
   "textures": {
     "base": "craftingdead:vest/riot_vest",
     "particle": "craftingdead:vest/riot_vest"

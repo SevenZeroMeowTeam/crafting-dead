@@ -4,7 +4,7 @@
 	"particle": "craftingdead:hats/chief_fireman_hat"
 },
 
-	"loader":"forge:obj",
+	"loader":"neoforge:obj",
 	"model":"craftingdead:models/hats/chief_fireman_hat.obj",
 	"flip-v":true,
 	"ambientToFullbright": false

@@ -4,7 +4,7 @@
 	"particle": "craftingdead:hats/bunny_hat"
 },
 
-	"loader":"forge:obj",
+	"loader":"neoforge:obj",
 	"model":"craftingdead:models/hats/bunny_hat.obj",
 	"flip-v":true,
 	"ambientToFullbright": false

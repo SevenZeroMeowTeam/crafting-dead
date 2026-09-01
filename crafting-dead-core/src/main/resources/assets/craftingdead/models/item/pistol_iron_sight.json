@@ -1,6 +1,6 @@
 ﻿{
   "parent": "item/generated",
-  "loader": "forge:separate_transforms",
+  "loader": "neoforge:separate_transforms",
   "base": {
     "parent": "item/generated",
     "textures": {
@@ -9,7 +9,7 @@
   },
   "perspectives": {
     "third_person_right_hand": {
-      "loader": "forge:composite",
+      "loader": "neoforge:composite",
       "parts": {
         "pistol_is1": {
           "parent": "craftingdead:item/attachments/pistol_is1/pistol_is1"
@@ -20,7 +20,7 @@
       }
     },
     "third_person_left_hand": {
-      "loader": "forge:composite",
+      "loader": "neoforge:composite",
       "parts": {
         "pistol_is1": {
           "parent": "craftingdead:item/attachments/pistol_is1/pistol_is1"
@@ -32,7 +32,7 @@
     },
     "first_person_right_hand": {
       "model": {
-        "loader": "forge:composite",
+        "loader": "neoforge:composite",
         "parts": {
           "pistol_is1": {
             "parent": "craftingdead:item/attachments/pistol_is1/pistol_is1"
@@ -44,7 +44,7 @@
       }
     },
     "firs_person_left_hand": {
-      "loader": "forge:composite",
+      "loader": "neoforge:composite",
       "parts": {
         "pistol_is1": {
           "parent": "craftingdead:item/attachments/pistol_is1/pistol_is1"

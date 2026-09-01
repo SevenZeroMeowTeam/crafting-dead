@@ -4,7 +4,7 @@
 	"particle": "craftingdead:hats/nv_goggles_hat"
 },
 
-	"loader":"forge:obj",
+	"loader":"neoforge:obj",
 	"model":"craftingdead:models/hats/nv_goggles_hat.obj",
 	"flip-v":true,
 	"ambientToFullbright": false

@@ -4,7 +4,7 @@
 	"particle": "craftingdead:hats/scuba_mask"
 },
 
-	"loader":"forge:obj",
+	"loader":"neoforge:obj",
 	"model":"craftingdead:models/hats/scuba_mask.obj",
 	"flip-v":true,
 	"ambientToFullbright": false
