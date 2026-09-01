@@ -44,7 +44,7 @@ final class HandlerAdapter extends Handler {
       ApplicableRegionSet toSet, Set<ProtectedRegion> entered, Set<ProtectedRegion> exited,
       MoveType moveType) {
 
-    var extension = PlayerExtension.getOrThrow(CraftingDeadWorldGuard.toEntity(player));
+    var extension = PlayerExtension.getOrThrow(WorldGuardIntegration.toEntity(player));
     this.enterHandler.handleEnter(extension, entered);
     this.exitHandler.handleExit(extension, exited);
 
