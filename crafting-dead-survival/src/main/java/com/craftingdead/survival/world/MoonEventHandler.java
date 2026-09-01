@@ -102,10 +102,7 @@ public class MoonEventHandler {
   // ================================================================================
 
   @SubscribeEvent
-  public void handleServerTick(ServerTickEvent event) {
-    if (!(event instanceof ServerTickEvent.Post)) {
-      return;
-    }
+  public void handleServerTick(ServerTickEvent.Post event) {
     MinecraftServer server = event.getServer();
     if (server == null || server.overworld() == null) {
       return;

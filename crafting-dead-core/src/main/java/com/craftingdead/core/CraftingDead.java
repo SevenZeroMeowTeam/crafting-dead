@@ -420,7 +420,7 @@ public class CraftingDead {
   }
 
   @SubscribeEvent
-  public void handleLivingUpdate(EntityTickEvent event) {
+  public void handleLivingUpdate(EntityTickEvent.Post event) {
     if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
       return;
     }
