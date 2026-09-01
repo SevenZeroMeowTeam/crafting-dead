@@ -86,8 +86,8 @@ public class ClientDist implements ModDist {
 
     ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.CLIENT, clientConfigSpec);
 
-    // Register event handlers to Forge event bus
-    NeoForge.EVENT_BUS.register(this);
+    // 该类所有事件均已通过 modEventBus 注册（无 @SubscribeEvent 方法），
+    // 不能对 NeoForge.EVENT_BUS 调用 register(this)，否则会抛 IllegalArgumentException
     // Register item frame gun interaction handler for shop displays
     NeoForge.EVENT_BUS.register(new ItemFrameGunInteractionHandler());
     // TODO: Re-enable once MovementSoundAmplifier is fixed for Forge 1.18.2 API

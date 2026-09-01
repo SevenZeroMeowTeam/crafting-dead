@@ -223,7 +223,7 @@ public class ClientDist implements ModDist {
     modBus.addListener(this::handleParticleFactoryRegisterEvent);
     modBus.addListener(this::handleItemColor);
     modBus.addListener(this::handleRegisterKeyMappings);
-    modBus.addListener(this::handleConfigReloading);
+    modBus.addListener(this::handleConfig);
     modBus.addListener(this::handleEntityRenderers);
     modBus.addListener(this::handleEntityRenderersAddLayers);
     modBus.addListener(this::handleEntityRenderersLayerDefinitions);
@@ -239,8 +239,11 @@ public class ClientDist implements ModDist {
     this.crosshairManager = new CrosshairManager();
     this.itemRenderDispatcher = new ItemRenderDispatcher();
 
+    // 构造阶段 config 尚未加载，不能调用 get()；先用默认值创建 IngameGui，
+    // 实际 crosshair 会在 config 加载/重载事件中由 handleConfig 更新
     this.ingameGui =
-        new IngameGui(this.minecraft, this, ResourceLocation.parse(clientConfig.crosshair.get()));
+        new IngameGui(this.minecraft, this,
+            ResourceLocation.parse(clientConfig.crosshair.getDefault()));
     this.targetOverlay = new TargetOverlay(this.minecraft);
     this.blockOutlineRenderer = new BlockOutlineRenderer(this.minecraft);
     this.cameraManager = new CameraManager();
@@ -354,7 +357,8 @@ public class ClientDist implements ModDist {
             .thenRun(TaczSoundCompat::clearTaczSoundResourceCache));
   }
 
-  private void handleConfigReloading(ModConfigEvent.Reloading event) {
+  private void handleConfig(ModConfigEvent event) {
+    // 同时覆盖 Loading 与 Reloading：config 首次加载后也应用 crosshair 设置
     if (event.getConfig().getSpec() == clientConfigSpec) {
       this.ingameGui.setCrosshairLocation(ResourceLocation.parse(clientConfig.crosshair.get()));
     }
