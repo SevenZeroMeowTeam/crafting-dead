@@ -21,6 +21,36 @@
 
 ## 更新日志
 
+### NeoForge 1.21.1 修复：按 R 换弹后 HUD 仍显示「空弹药」（客户端弹药不同步）
+
+**关键修复：主手枪（装备槽）弹药状态不同步**
+
+- 症状：手持主手枪械打空弹匣后按 R 换弹，弹匣确实装上、服务端弹药已满，
+  但 HUD 右下角一直显示红色「空弹药」，开枪也不会随射击扣减
+- 根因：1.21 移植时丢失了「装备槽枪械」的弹药同步钩子。枪械弹药/弹匣存放在
+  `ItemStack` 的能力对象中（而非物品数据组件），堆栈本身不变时原版不会广播——
+  需靠两条 mixin 钩子主动推送：① `AbstractContainerMenuMixin` 同步**非装备**槽枪械
+  （对主手/副手等装备槽**故意跳过**）；② `LivingEntityMixin` 重定向
+  `collectEquipmentChanges` 同步**装备槽**（主手/副手/盔甲）枪械并发
+  `SyncGunEquipmentSlotMessage`。迁移到 1.21 时 ② 整段丢失
+  （1.21 原版把判断抽成了 `equipmentHasChanged()`，未按新签名重写），
+  于是主手枪的弹药永远到不了客户端
+- 修复：按 1.21.1 签名在 `LivingEntityMixin` 补回 ②——`@Redirect` `collectEquipmentChanges`
+  中的 `equipmentHasChanged`：当堆栈未变但装备槽持枪 `requiresSync()` 时，
+  向跟踪者 + 自己发送 `SyncGunEquipmentSlotMessage` 同步弹药/弹匣状态
+
+**关键修复：上一补丁的 mixin 启动崩溃（`@Redirect` 处理器签名）**
+
+- 症状：游戏启动即 FATAL，日志报
+  `InvalidInjectionException: Expected signature (LivingEntity, ItemStack, ItemStack)Z`，
+  实际为 `(ItemStack, ItemStack)Z`（`craftingdead.mixins.json:LivingEntityMixin`）
+- 根因：Mixin `@Redirect` 目标若是**实例方法**，处理器第一个参数必须是接收者自身（`this`）
+- 修复：处理器改为 `craftingdead$equipmentHasChanged(LivingEntity self, ItemStack lastStack, ItemStack currentStack)`，
+  直接用接收到的 `self` 作为实体
+
+- 涉及：`LivingEntityMixin`（core）
+- 版本：core `1.9.6` 后续构建（本地 `.homebaked` / CI 递增编号）
+
 ### NeoForge 1.21.1 崩溃修复：换弹崩溃 + 僵尸战利品表解析失败（基于运行日志定位）
 
 **关键修复：装填弹匣时客户端崩溃（`MagazineReloadAction` 转换异常）**
