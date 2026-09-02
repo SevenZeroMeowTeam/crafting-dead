@@ -22,7 +22,7 @@
               "enchantment": "minecraft:looting",
               "formula": "minecraft:uniform_bonus_count",
               "parameters": {
-                "extra": 1.0
+                "bonusMultiplier": 1
               }
             }
           ],

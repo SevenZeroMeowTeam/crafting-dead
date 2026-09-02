@@ -386,8 +386,12 @@ public class CraftingDeadSurvival {
   }
 
   @SubscribeEvent
-  public void handlePerformAction(LivingExtensionEvent.PerformAction<EntityItemAction<?>> event) {
-    var action = event.getAction();
+  public void handlePerformAction(LivingExtensionEvent.PerformAction<?> event) {
+    // NeoForge EventBus 不做泛型过滤：所有 performAction（含 MagazineReloadAction 等非
+    // EntityItemAction 动作）都会派发到此监听器，必须先做运行时类型检查再强制转换
+    if (!(event.getAction() instanceof EntityItemAction<?> action)) {
+      return;
+    }
     var target = action.getSelectedTarget();
     if (!event.getLiving().level().isClientSide()
         && action.type() == ActionTypes.USE_SYRINGE.get()) {

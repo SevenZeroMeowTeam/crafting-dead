@@ -21,6 +21,27 @@
 
 ## 更新日志
 
+### NeoForge 1.21.1 崩溃修复：换弹崩溃 + 僵尸战利品表解析失败（基于运行日志定位）
+
+**关键修复：装填弹匣时客户端崩溃（`MagazineReloadAction` 转换异常）**
+
+- 症状：手持使用弹匣的枪械按 R 换弹时客户端崩溃退出，
+  日志反复抛 `ClassCastException: class MagazineReloadAction cannot be cast to EntityItemAction`，
+  触发链 `ClientDist.handleClientTick → MagazineAmmoProvider.reload → BaseLivingExtension.performAction → CraftingDeadSurvival.handlePerformAction`
+- 根因：NeoForge EventBus 按擦除类型派发事件、不做泛型过滤——订阅 `PerformAction<EntityItemAction<?>>`
+  的监听器同样会收到 `MagazineReloadAction` 等非 `EntityItemAction` 动作（换弹 / 退弹匣都走
+  `performAction`），方法内直接调用 `getSelectedTarget()` 的强转即崩溃
+- 修复：`handlePerformAction` 改为订阅 `PerformAction<?>`，入口先用 `instanceof EntityItemAction<?>`
+  做运行时守卫再处理（针筒对丧尸逻辑不受影响）
+
+**关键修复：僵尸实体战利品表解析失败（腐烂的肉 / 额外掉落丢失）**
+
+- 症状：日志报 6 个僵尸（weak / tank / police / doctor / giant / fast）战利品表
+  `Couldn't parse element craftingdeadsurvival:entities/* - No key bonusMultiplier`
+- 根因：1.21 原版 `apply_bonus` 的 `uniform_bonus_count` 公式参数键应为 `bonusMultiplier`，
+  迁移时误写成了 `binomial_with_bonus_count` 使用的 `extra`
+- 修复：6 个 `loot_table/entities/*.json` 的 `apply_bonus` 参数由 `"extra": 1.0` → `"bonusMultiplier": 1`
+
 ### NeoForge 1.21.1 新功能：一键整理 + WTHIT 兼容 + 存储持久化修复
 
 **新功能：一键整理（容器 + 玩家背包）**
