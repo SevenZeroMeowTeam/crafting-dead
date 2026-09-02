@@ -52,14 +52,15 @@ public abstract class LivingEntityMixin {
   @Redirect(method = "collectEquipmentChanges",
       at = @At(value = "INVOKE",
           target = "Lnet/minecraft/world/entity/LivingEntity;equipmentHasChanged(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z"))
-  private boolean craftingdead$equipmentHasChanged(ItemStack lastStack, ItemStack currentStack) {
+  private boolean craftingdead$equipmentHasChanged(LivingEntity self, ItemStack lastStack,
+      ItemStack currentStack) {
+    // @Redirect 实例方法时首参必须是接收者自身（this）
     if (!ItemStack.matches(currentStack, lastStack)) {
       // 堆栈本身变化：交给原版正常处理装备变更 / 广播
       return true;
     }
 
     // 堆栈相同：仅枪械能力（弹药）可能变化，找到对应装备槽并补发同步
-    var self = (LivingEntity) (Object) this;
     for (EquipmentSlot slotType : EquipmentSlot.values()) {
       if (currentStack == self.getItemBySlot(slotType)) {
         var gun = currentStack.getCapability(Gun.CAPABILITY);
