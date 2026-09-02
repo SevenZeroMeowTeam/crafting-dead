@@ -21,6 +21,21 @@
 
 ## 更新日志
 
+### NeoForge 1.21.1 战利品表修复：僵尸 looting 加成失效（apply_bonus → enchanted_count_increase）
+
+**关键修复：僵尸实体战利品表 `apply_bonus` 不再生效（含验证告警）**
+
+- 症状：日志仍对 6 个僵尸（weak / tank / police / doctor / giant / fast）战利品表报验证告警：
+  `Found loot table element validation problem in ...entities/*: Parameters [<parameter minecraft:tool>] are not provided in this context`
+- 根因：1.21 的 `apply_bonus` 依赖 `LootContextParams.TOOL`（读取击杀工具的附魔），但**实体击杀上下文**
+  （`LootContextParamSets.ENTITY`）并不提供 `TOOL` → 运行时 `TOOL` 恒为 null，函数静默返回、
+  **looting 加成实际完全失效**。此前把 `uniform_bonus_count` 的 `extra` 改成 `bonusMultiplier` 只修了解析，函数选型本身是错的
+- 修复：改用 1.21 原版（vanilla `zombie.json`）同款 `minecraft:enchanted_count_increase` ——基于攻击者
+  （`ATTACKING_ENTITY`）身上的 looting 附魔加成数量，`count` 用 `uniform(0,1)`，
+  语义与旧版 `looting_enchant` 完全等价（looting 每级约 +0.5）
+- 涉及：6 个 `loot_table/entities/*.json`（weak / tank / police / doctor / giant / fast）
+- 版本：survival 1.2.8 后续构建（本地 `.homebaked` / CI 递增编号）
+
 ### NeoForge 1.21.1 修复：按 R 换弹后 HUD 仍显示「空弹药」（客户端弹药不同步）
 
 **关键修复：主手枪（装备槽）弹药状态不同步**
