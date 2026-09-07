@@ -7,7 +7,7 @@ plugins {
 subprojects {
     processResources {
         // Copy gun/skin textures from src/main/resources/assets/craftingdead/textures/gun/skin/ to assets/
-        val skinTextures = sourceSets.main.resources.srcDirs
+        val skinTextures = sourceSets.main.resources.sourceDirectories
             .filter { it.resolve("assets/craftingdead/textures/gun/skin").exists() }
             .firstOrNull()
                 ?: layout.projectDirectory.file("src\main\resources\assets\craftingdead\textures\gun\skin")
