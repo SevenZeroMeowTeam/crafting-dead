@@ -8,7 +8,7 @@ subprojects {
     plugins.withType<JavaPlugin> {
         tasks.named<ProcessResources>("processResources") {
             // Copy gun/skin textures from src/main/resources/assets/craftingdead/textures/gun/skin/ to assets/
-            val sourceSets = extensions.getByType<SourceSetContainer>()
+            val sourceSets = project.extensions.getByType<SourceSetContainer>()
             val skinTextures = sourceSets.getByName("main").resources.sourceDirectories
                 .filter { it.resolve("assets/craftingdead/textures/gun/skin").exists() }
                 .firstOrNull()
