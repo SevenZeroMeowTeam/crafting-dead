@@ -41,7 +41,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v7
       with:
-        name: crafting-dead-${{ github.ref_name }}-${{ github.run_number }}
+        name: crafting-dead-${{ github.run_id }}
         path: |
           ./crafting-dead-core/build/libs/*.jar
           ./crafting-dead-survival/build/libs/*.jar
