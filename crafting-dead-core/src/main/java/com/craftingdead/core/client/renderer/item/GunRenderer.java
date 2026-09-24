@@ -122,9 +122,11 @@ public class GunRenderer implements CombatSlotItemRenderer {
   public void renderInCombatSlot(ItemStack itemStack, PoseStack poseStack, float partialTick,
       MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
     var gun = CapabilityUtil.getOrThrow(Gun.CAPABILITY, itemStack, Gun.class);
+    poseStack.pushPose();
     this.renderGun(gun, false, true, itemStack.hasFoil(), 0.0F,
         ItemTransforms.TransformType.GUI, partialTick, poseStack, bufferSource, packedLight,
         packedOverlay);
+    poseStack.popPose();
   }
 
   @Override
@@ -182,6 +184,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
               packedOverlay);
           break;
         case HEAD:
+          poseStack.pushPose();
           poseStack.mulPoseMatrix(this.properties.backTransform().getMatrix());
           this.renderGun(gun, true, false, itemStack.hasFoil(), 0.0F,
               transformType, partialTick, poseStack, bufferSource, packedLight,
@@ -264,6 +267,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
           partialTicks, poseStack);
       poseStack.translate(0.75F, -0.75F, -0.6F);
 
+      poseStack.pushPose();
       poseStack.mulPoseMatrix(rightHandTransforms.getMatrix());
       {
         poseStack.mulPose(Vector3f.YP.rotationDegrees(95.0F));
@@ -289,6 +293,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
 
       poseStack.translate(0.75F, -0.75F, -0.75F);
 
+      poseStack.pushPose();
       poseStack.mulPoseMatrix(leftHandTransforms.getMatrix());
       {
         poseStack.mulPose(Vector3f.YP.rotationDegrees(95.0F));
@@ -399,12 +404,11 @@ public class GunRenderer implements CombatSlotItemRenderer {
 
     // ============== Animations End ==============
 
+    poseStack.pushPose();
     if (sprintingPct > 0) {
       poseStack.mulPoseMatrix(TransformationHelper
           .slerp(Transformation.identity(), this.properties.sprintingTransform(), sprintingPct)
           .getMatrix());
-    } else {
-      poseStack.pushPose();
     }
     {
       if (!aiming && flash) {
@@ -464,6 +468,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
             aimingPct)
         : normalTransform;
 
+    poseStack.pushPose();
     poseStack.mulPoseMatrix(perspectiveTransform.getMatrix());
     {
       this.renderBakedModel(bakedModel, foil, color, transformType,
@@ -537,6 +542,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
 
     if (gun.hasIronSight()) {
       for (var ironSight : this.properties.ironSights()) {
+        matrixStack.pushPose();
         matrixStack.mulPoseMatrix(ironSight.getSecond().getMatrix());
         {
           var bakedModel = this.getBakedModel(ironSight.getFirst(),
@@ -553,6 +559,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
     for (var attachment : gun.getAttachments().values()) {
       var transform = this.properties.attachmentTransforms()
           .getOrDefault(Attachments.registry.get().getKey(attachment), Transformation.identity());
+      matrixStack.pushPose();
       matrixStack.mulPoseMatrix(transform.getMatrix());
       {
         var bakedModel =
@@ -576,6 +583,7 @@ public class GunRenderer implements CombatSlotItemRenderer {
       int packedOverlay) {
     var transform = this.properties.magazineTransforms()
         .getOrDefault(ForgeRegistries.ITEMS.getKey(magazineStack.getItem()), Transformation.identity());
+    poseStack.pushPose();
     poseStack.mulPoseMatrix(transform.getMatrix());
     {
       var modelLocation = getMagazineModelLocation(ForgeRegistries.ITEMS.getKey(magazineStack.getItem()));
