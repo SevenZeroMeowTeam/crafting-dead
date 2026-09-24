@@ -48,6 +48,25 @@
   blocks 图集 —— `forge:obj` 模型的 `#base` 贴图必须先被烘焙进图集，否则模型会以"缺失贴图"渲染
 - 修复 decoration 模块 4 个非法 JSON，并删除一批文件名含空格、资源系统无法加载的冗余装饰贴图
 
+**关键修复：所有生物头饰显示为紫黑方块、且没有正确戴在头上**
+
+- 根因一（变换失效）：`models/hats/*.json` 是 1.12 时代 Minecraft-SMP Modelling Toolbox 导出的
+  `forge:obj` 模型，其中的 `flip-v` / `ambientToFullbright` / `transform` 三个键
+  **在 1.20.1 Forge 的 OBJ 加载器里全部不被识别**（该加载器只认 `model` / `automatic_culling` /
+  `shade_quads` / `flip_v` / `emissive_ambient` / `mtl_override`）。于是设计者写下的
+  缩放（0.525~1.2）与位移全部静默失效：帽子按 OBJ 原始尺寸（约头部的 2 倍）渲染，
+  并整体浮在头顶上方约 1.2 格 —— 表现为生物头上一个巨大偏移的暗色方块
+- 根因二（贴图朝向）：UV 的 V 翻转键同样写成了失效的 `flip-v`，贴图采样方向错误
+- 修复：
+  - 13 个帽子模型 JSON 改写为 1.20.1 合法键：`flip_v` / `emissive_ambient`，
+    移除失效的 `flip-v` / `ambientToFullbright` / `transform`
+  - 47 件头饰的物品模型在 `perspectives.head` 上补齐 `display.head` 变换（缩放 + 居中位移），
+    按"底面贴合头底、水平居中、约 0.62 格宽（头部为 0.5 格）"重新摆放；
+    Forge 的 `forge:separate_transforms` 复合模型会把 `applyTransform` 委托给该 perspective 子模型
+    （`SeparateTransformsModel$Baked.getTransforms()` 返回 `NO_TRANSFORMS`），因此该变换确实生效
+- 验证：用离线复刻 1.20.1 渲染管线的预览器逐个模型核对（修复前帽子不可见/整体偏离头部，
+  修复后贴合头部居中），并随构建产物级复核
+
 **配置修复**
 
 - `ServerConfig` 的 `bonusDamage` 默认值 0.5 越界（合法范围 1~10），导致配置每次启动被回写；
