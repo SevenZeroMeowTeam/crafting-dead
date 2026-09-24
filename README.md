@@ -90,9 +90,12 @@
 - 上述改动已同步至 `1.20.x` / `1.19.x` / `kotlin-refactor-1.19.x` 三个版本分支；
   1.19.2 分支额外补回 `core ClientConfig.moonPhaseZombieTintEnabled` 客户端开关
   （该分支缺失会导致月相染色代码无法编译）
-- 注（同步状态）：「第三人称手持朝向」与「生物头饰佩戴」两项修复目前**仅提交在本分支**
-  （`refactor/remove-geckolib-vanilla-render`，PR #16），尚未下推到
-  `1.20.x` / `1.19.x` / `kotlin-refactor-1.19.x`
+- 注（同步状态）：「第三人称手持朝向」与「生物头饰佩戴」两项修复已同步至三个版本分支，
+  对应提交（`fix(render)`）：`1.20.x` → `ea4ab6d7` / `8a6be04a`，
+  `1.19.x` → `d3424817` / `d18e8b82`，`kotlin-refactor-1.19.x` → `b69c738e` / `1cc7764c`；
+  各分支 README 说明分别为 `5064bde3` / `c50cbcf6` / `eea3616d`（`docs(readme)`）
+- 未同步分支：`kotlin-refactor`（历史分支，工作区存在未提交删除）、`1.21.x`
+  （本地落后远端 5 个提交且工作区有未提交改动）—— 需先整理工作区再同步
 
 **已知未修（同类缺陷，待后续处理）**
 
