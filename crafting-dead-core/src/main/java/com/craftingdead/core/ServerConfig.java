@@ -664,7 +664,7 @@ public class ServerConfig {
       this.criticalHitBonusDamage = builder
           .translation("options.craftingdead.server.critical_hit.bonus_damage")
           .comment("Additional bonus damage multiplier when a critical hit (Multiplier)")
-          .defineInRange("bonusDamage", 0.5D, 1D, 10D);
+          .defineInRange("bonusDamage", 1.0D, 1D, 10D);
       this.criticalHitChance = builder
           .translation("options.craftingdead.server.critical_hit.chance")
           .comment("How likely the player is to hit a critical hit (Percentage)")
