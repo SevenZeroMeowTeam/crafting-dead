@@ -16,6 +16,25 @@
       "parent": "craftingdead:hats/mask",
       "textures": {
         "base": "craftingdead:hats/sheep_mask"
+      },
+      "display": {
+        "head": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "translation": [
+            -0.0,
+            -20.36,
+            -0.5
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
       }
     }
   }

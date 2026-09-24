@@ -23,8 +23,12 @@ import com.craftingdead.core.client.renderer.entity.layers.EquipmentLayer;
 import com.craftingdead.core.world.entity.extension.LivingExtension;
 import com.craftingdead.core.world.item.equipment.Equipment;
 import com.craftingdead.survival.CraftingDeadSurvival;
+import com.craftingdead.survival.client.MoonPhaseTint;
 import com.craftingdead.survival.client.model.AdvancedZombieModel;
 import com.craftingdead.survival.world.entity.extension.ZombieHandler;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -58,6 +62,18 @@ public abstract class AbstractAdvancedZombieRenderer<T extends Zombie, M extends
         .slot(Equipment.Slot.GUN)
         .useCrouchOrientation(true)
         .build());
+  }
+
+  @Override
+  public void render(T entity, float entityYaw, float partialTick, PoseStack poseStack,
+      MultiBufferSource bufferSource, int packedLight) {
+    int tint = MoonPhaseTint.getZombieTint();
+    if (tint != MoonPhaseTint.NO_TINT) {
+      RenderSystem.setShaderColor(((tint >> 16) & 0xFF) / 255.0F,
+          ((tint >> 8) & 0xFF) / 255.0F, (tint & 0xFF) / 255.0F, 1.0F);
+    }
+    super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
   }
 
   @Override
