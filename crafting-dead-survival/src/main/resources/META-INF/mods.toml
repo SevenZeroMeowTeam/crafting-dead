@@ -30,10 +30,3 @@ modId = "forge"
 ordering = "NONE"
 side = "BOTH"
 versionRange = "[43.5.0,)"
-
-[[dependencies.craftingdeadsurvival]]
-mandatory = true
-modId = "geckolib3"
-ordering = "NONE"
-side = "BOTH"
-versionRange = "[3.1.0,)"
