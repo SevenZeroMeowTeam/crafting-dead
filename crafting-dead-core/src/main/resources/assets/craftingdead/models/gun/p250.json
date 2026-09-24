@@ -178,10 +178,12 @@
 	],
 	"display": {
 		"thirdperson_righthand": {
+			"rotation": [90, 0, 180],
 			"translation": [-0.5, 1, 0],
 			"scale": [0.7, 0.7, 0.7]
 		},
 		"thirdperson_lefthand": {
+			"rotation": [90, 0, 180],
 			"translation": [-0.5, 1.25, 0],
 			"scale": [0.7, 0.7, 0.7]
 		},
