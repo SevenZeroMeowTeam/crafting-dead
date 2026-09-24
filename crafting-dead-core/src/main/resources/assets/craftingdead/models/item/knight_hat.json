@@ -18,9 +18,40 @@
         "base": "craftingdead:hats/knight_hat"
       },
       "transform": {
-        "rotation": [0, 180, 0],
-        "translation": [-1.65, -0.825, -1.65],
-        "scale": [1.15, 1.15, 1.15]
+        "rotation": [
+          0,
+          180,
+          0
+        ],
+        "translation": [
+          -1.65,
+          -0.825,
+          -1.65
+        ],
+        "scale": [
+          1.15,
+          1.15,
+          1.15
+        ]
+      },
+      "display": {
+        "head": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "translation": [
+            -0.0,
+            -15.68,
+            -0.0
+          ],
+          "scale": [
+            0.8,
+            0.8,
+            0.8
+          ]
+        }
       }
     }
   }
