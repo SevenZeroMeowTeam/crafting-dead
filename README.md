@@ -21,6 +21,44 @@
 
 ## 更新日志
 
+### 枪械第三人称朝向修复 + 生物头饰佩戴修复（同步自 `refactor/remove-geckolib-vanilla-render`）
+
+**关键修复：第三人称手持枪械枪口朝上、正对持枪者**
+
+- 根因：实体手持（F5 / 其他玩家 / 僵尸手持）的物品空间由 `ItemInHandLayer` 旋转过，
+  它施加的是 `mulPose(Rx: -90°) · mulPose(Ry: 180°)`，把物品空间映射为
+  `x → -x`、`y → -z`、`z → -y`；而 33 把枪的模型 JSON 只在
+  `thirdperson_righthand` / `thirdperson_lefthand` 里写了 `translation` / `scale`、
+  没有 `rotation`，于是枪口（模型 -Z）被映射成 +Y —— 表现为竖着拿枪、枪口朝上正对持枪者
+- 修复：33 把枪（`models/gun/*.json`）补 `rotation: [90, 0, 180]`（枪口 = 朝向、
+  枪身向上、抛壳口 / 拉机柄 = 持枪者右侧）
+- 第一人称不受影响：`ItemInHandRenderer.applyItemArmTransform` 只平移不旋转，
+  物品空间即相机空间，-Z 就是前方
+
+**关键修复：生物头饰显示为紫黑方块、未正确佩戴**
+
+- 根因一（变换失效）：`models/hats/*.json` 是 Minecraft-SMP Modelling Toolbox 导出的
+  `forge:obj` 模型，其中 `flip-v` / `ambientToFullbright` / `transform` 三个键
+  在本分支 Forge 的 OBJ 加载器里**都不被识别**（加载器只认 `model` / `automatic_culling` /
+  `shade_quads` / `flip_v` / `emissive_ambient` / `mtl_override`；已用 `javap` 核对
+  1.20.1 与 1.19.2 的 `ObjModel$ModelSettings`，字段完全一致）。设计者写下的缩放与位移
+  因此全部静默失效：帽子按 OBJ 原始尺寸（约头部的 2 倍）渲染并浮在头顶上方约 1.2 格
+- 根因二（贴图朝向）：UV 的 V 翻转键同样写成了失效的 `flip-v`，贴图采样方向错误
+- 修复：
+  - 13 个帽子模型 JSON 改写为合法键：`flip_v` / `emissive_ambient`，
+    移除失效的 `flip-v` / `ambientToFullbright` / `transform`
+  - 47 件头饰物品模型在 `perspectives.head` 上补齐 `display.head` 变换（缩放 + 居中位移），
+    按「底面贴合头底、水平居中、约 0.62 格宽（头部为 0.5 格）」摆放；
+    `forge:separate_transforms` 复合模型会把 `applyTransform` 委托给该 perspective 子模型
+    （`SeparateTransformsModel$Baked.getTransforms()` 返回 `NO_TRANSFORMS`），因此该变换确实生效
+- 验证：用离线复刻渲染管线的预览器逐模型核对（修复前帽子不可见 / 整体偏离头部，修复后贴合居中）
+
+**同步状态**
+
+- 以上两项修复已同步至 `1.20.x` / `1.19.x` / `kotlin-refactor-1.19.x` 及源分支
+  `refactor/remove-geckolib-vanilla-render`；对应提交见各分支的
+  `fix(render): 修复第三人称手持枪械…` 与 `fix(render): 修复所有生物头饰…`
+
 ### WTHIT 工具提示集成（What The Hell Is That?）
 
 **新功能：为 WTHIT（What The Hell Is That?）提供本模组僵尸的末世生存信息（可选依赖）**
