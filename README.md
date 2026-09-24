@@ -41,6 +41,19 @@
   （冲刺分支只在 `else` 里 push，`pop` 却是无条件的）
 - 修复：补齐缺失的 `pushPose()`（14 push / 14 pop），保留原有 transform 逻辑，不回退取景参数
 
+**关键修复：第三人称手持枪械枪口朝上、正对持枪者**
+
+- 根因：实体手持（第三人称 / 其他玩家视角）走的是
+  `ItemInHandLayer` → `mulPose(Rx: -90°) · mulPose(Ry: 180°)`，
+  该组合把物品空间映射为 `x → -x`、`y → -z`、`z → -y`；而 33 把枪的模型 JSON
+  只写了 `translation` / `scale`，`thirdperson_righthand` /
+  `thirdperson_lefthand` 里没有 `rotation`，于是枪口（模型 -Z 方向）被映射成 +Y ——
+  表现为竖着拿枪、枪口朝上正对持枪者
+- 修复：为 33 把枪补 `rotation: [90, 0, 180]`（枪口 = 朝向、枪身向上、
+  抛壳口 / 拉机柄 = 持枪者右侧）
+- 第一人称不受影响：`ItemInHandRenderer.applyItemArmTransform` 只平移不旋转，
+  物品空间即相机空间，-Z 就是前方（已写入技能 `references/item-in-hand-orientation.md`）
+
 **资源修复**
 
 - `iron_sight .png`（文件名含空格，资源系统无法加载）重命名为 `iron_sight.png`
@@ -77,6 +90,19 @@
 - 上述改动已同步至 `1.20.x` / `1.19.x` / `kotlin-refactor-1.19.x` 三个版本分支；
   1.19.2 分支额外补回 `core ClientConfig.moonPhaseZombieTintEnabled` 客户端开关
   （该分支缺失会导致月相染色代码无法编译）
+- 注（同步状态）：「第三人称手持朝向」与「生物头饰佩戴」两项修复目前**仅提交在本分支**
+  （`refactor/remove-geckolib-vanilla-render`，PR #16），尚未下推到
+  `1.20.x` / `1.19.x` / `kotlin-refactor-1.19.x`
+
+**已知未修（同类缺陷，待后续处理）**
+
+- **战术背心**：`models/vest/tactical_vest.json` 与头饰一样是 `forge:obj` 模型，仍带着
+  在该加载器里无效的 `flip-v` / `ambientToFullbright` / `transform` 三个键，
+  因此穿戴位置同样不正确 —— 可按头饰的同一套方式（改用 `flip_v` / `emissive_ambient`，
+  并用 `perspectives.head` 上的 `display.head` 显式摆放）修正
+- **背包**：`models/backpack/*.json` 是普通元素模型（非 OBJ），但同样残留一个 `transform` 键；
+  该键不属于原版模型字段，不会产生设计者预期的变换（实测游戏未因此报错）。
+  移除该键即可，背包的摆放改由 `display.head` 控制
 
 ### WTHIT 工具提示集成（What The Hell Is That?）
 
