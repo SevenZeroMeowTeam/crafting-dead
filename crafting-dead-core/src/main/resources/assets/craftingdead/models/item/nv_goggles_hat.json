@@ -18,9 +18,40 @@
         "base": "craftingdead:hats/nv_goggles_hat"
       },
       "transform": {
-        "rotation": [0, 180, 0],
-        "translation": [-1.55, -0.485, -1.55],
-        "scale": [1.05, 1.05, 1.05]
+        "rotation": [
+          0,
+          180,
+          0
+        ],
+        "translation": [
+          -1.55,
+          -0.485,
+          -1.55
+        ],
+        "scale": [
+          1.05,
+          1.05,
+          1.05
+        ]
+      },
+      "display": {
+        "head": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "translation": [
+            -0.0,
+            -12.88,
+            -1.4
+          ],
+          "scale": [
+            0.8,
+            0.8,
+            0.8
+          ]
+        }
       }
     }
   }
