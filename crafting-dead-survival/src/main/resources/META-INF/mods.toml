@@ -31,9 +31,3 @@ ordering = "NONE"
 side = "BOTH"
 versionRange = "[47.3.0,)"
 
-[[dependencies.craftingdeadsurvival]]
-mandatory = true
-modId = "geckolib"
-ordering = "NONE"
-side = "BOTH"
-versionRange = "[4.7.0,)"
