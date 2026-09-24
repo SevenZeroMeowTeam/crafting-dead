@@ -16,10 +16,48 @@
 | `1.20.x` | **1.20.1** | **47.4.22** | ✅ 活跃维护 |
 | `1.19.x` | 1.19.2 | 43.5.2 | ✅ 活跃维护 |
 | `1.18.x` | 1.18.2 | 40.2.0 | ⏸ 归档 |
+| `kotlin-refactor-1.20.x` | 1.20.1 | 47.4.22 | 🚧 Kotlin 混编重构 |
+| `kotlin-refactor-1.19.x` | 1.19.2 | 43.5.2 | 🚧 Kotlin 混编重构 |
 
 ---
 
 ## 更新日志
+
+### 移除 GeckoLib 依赖 / 枪械手持渲染修复 / 资源与配置修复（Kotlin 混编重构分支）
+
+**关键变更：运行不再需要 GeckoLib，僵尸改用原版骨架渲染**
+
+- **移除 GeckoLib**：删除全部 GeckoLib 代码（`ZombieGeoModel` / `ZombieGeoRenderer` / `ZombieGeoAnimations` 等）、
+  `mods.toml` 依赖声明与 Gradle 依赖；僵尸渲染改用原版骨架模型体系
+  （`AbstractAdvancedZombieRenderer` + 原版僵尸/骷髅模型），月相染色逻辑迁入
+  `AbstractAdvancedZombieRenderer.render`
+- **安装方式变化**：`mods/` 里不再需要 `geckolib-*.jar`；本分支产出的 jar 里已不含任何 GeckoLib 类
+  （可用 `unzip -l crafting-dead-core-*.jar | grep -i geckolib` 核对，结果应为空）
+- 已有的 `mods/geckolib-*.jar` 留着不影响启动，可以直接删除
+
+**关键修复：所有枪械手持位置 / 旋转错乱**
+
+- 根因：`GunRenderer` 的 `PoseStack` 压栈与弹栈不平衡 —— 9 处 `popPose()` 没有配对的 `pushPose()`
+  （冲刺分支只在 `else` 里 push，`pop` 却是无条件的）
+- 修复：补齐缺失的 `pushPose()`（14 push / 14 pop），保留原有 transform 逻辑，不回退取景参数
+
+**资源修复**
+
+- `iron_sight .png`（文件名含空格，资源系统无法加载）重命名为 `iron_sight.png`
+- 新增 `assets/minecraft/atlases/blocks.json`，把帽子 / 背包 / 战术背心 / 神话装备贴图并入原版
+  blocks 图集 —— `forge:obj` 模型的 `#base` 贴图必须先被烘焙进图集，否则模型会以"缺失贴图"渲染
+- 修复 decoration 模块 4 个非法 JSON，并删除一批文件名含空格、资源系统无法加载的冗余装饰贴图
+
+**配置修复**
+
+- `ServerConfig` 的 `bonusDamage` 默认值 0.5 越界（合法范围 1~10），导致配置每次启动被回写；
+  默认值改为 1.0
+
+**同步**
+
+- 上述改动已同步至 `1.20.x` / `1.19.x` / `kotlin-refactor-1.19.x` 三个版本分支；
+  1.19.2 分支额外补回 `core ClientConfig.moonPhaseZombieTintEnabled` 客户端开关
+  （该分支缺失会导致月相染色代码无法编译）
 
 ### WTHIT 工具提示集成（What The Hell Is That?）
 
@@ -410,6 +448,7 @@ crafting-dead
 - 射击模式：单发、连发、三连发
 - 换弹动画与机制
 - 枪械同步系统（网络优化）
+- 独立手持渲染（`GunRenderer`，第一/第三人称、地面掉落物；不依赖 GeckoLib）
 
 ### 医疗系统
 
@@ -429,7 +468,7 @@ crafting-dead
 
 - 口渴值管理
 - 温度管理（寒冷/炎热）
-- 丧尸增强 AI
+- 丧尸增强 AI（原版骨架渲染，不依赖 GeckoLib）
 - 装备耐久与磨损
 - 末日生存系统：月亮事件（血月/蓝月/黄月/超级血月）、僵尸进化（随天数提升血量/攻击/速度）、
   计分板（天数/时间/月相）、左上角 HUD（手持武器/击杀信息）、击杀概率掉落
@@ -457,6 +496,7 @@ crafting-dead
 | **Minecraft Forge 47.4.22** | Mod 加载框架 |
 | **Minecraft 1.20.1** | 游戏版本 |
 | **Java 17+** | 开发语言 |
+| **Kotlin 1.9.22** | Kotlin/Java 混编（`src/main/kotlin`） |
 | **Gradle 8.5** | 构建工具 |
 | **SpongePowered Mixin 0.8.5** | 运行时字节码注入 |
 | **Spigot API 1.20.1** | WorldGuard 模块 Bukkit 集成 |
@@ -479,8 +519,8 @@ crafting-dead
 git clone https://github.com/SevenZeroMeowTeam/crafting-dead.git
 cd crafting-dead
 
-# 切换到 1.20.x 分支
-git checkout 1.20.x
+# 切换到 Kotlin 混编重构分支（本 README 对应分支）
+git checkout kotlin-refactor-1.20.x
 
 # 编译打包（跳过测试）
 ./gradlew build -x test
@@ -492,18 +532,22 @@ git checkout 1.20.x
 
 | 模块 | Jar 文件（本地构建） |
 |------|----------|
-| Core | `crafting-dead-core-1.20.1-1.9.2.homebaked.jar` |
-| Core (含依赖) | `crafting-dead-core-1.20.1-1.9.2.homebaked-all.jar` |
-| Survival | `crafting-dead-survival-1.20.1-1.2.3.homebaked.jar` |
-| Decoration | `crafting-dead-decoration-1.20.1-1.0.4.homebaked.jar` |
-| WorldGuard | `crafting-dead-worldguard-1.20.1-0.0.4.homebaked.jar` |
+| Core | `crafting-dead-core-1.20.1-1.9.5-kotlin.homebaked.jar` |
+| Core (含依赖) | `crafting-dead-core-1.20.1-1.9.5-kotlin.homebaked-all.jar` |
+| Survival | `crafting-dead-survival-1.20.1-1.2.6-kotlin.homebaked.jar` |
+| Decoration | `crafting-dead-decoration-1.20.1-1.0.7-kotlin.homebaked.jar` |
+| WorldGuard | `crafting-dead-worldguard-1.20.1-0.0.6-kotlin.homebaked.jar` |
 
+> 版本号唯一来源是各模块自己的 `gradle.properties` 里的 `mod_version`（Core 1.9.5 / Survival 1.2.6 /
+> Decoration 1.0.7 / WorldGuard 0.0.6），jar 名由 `buildSrc/src/main/groovy/crafting-dead.gradle` 拼成
+> `${minecraft_version}-${mod_version}-kotlin.<后缀>` —— Kotlin 混编重构分支的 jar 名带 `-kotlin.` 标记。
+>
 > CI 构建（GitHub Actions）使用运行编号替代 `homebaked` 后缀，
-> 例如 `crafting-dead-core-1.20.1-1.9.0.42.jar`。
+> 例如 `crafting-dead-core-1.20.1-1.9.5-kotlin.42.jar`。
 
 ### 持续集成与自动发布
 
-推送到 `1.20.x` 分支后，GitHub Actions 自动执行：
+推送到 `1.20.x` / `kotlin-refactor-1.20.x` / `1.18.x` 分支（或向它们提交 PR）后，GitHub Actions 自动执行：
 
 1. **构建** — `./gradlew build` 编译全部四个模块
 2. **Artifact** — 构建产物上传至 Actions 工件（保留 90 天）
@@ -523,9 +567,11 @@ git checkout 1.20.x
 
 | 模组 | 说明 |
 |------|------|
-| [GeckoLib 4](https://github.com/bernie-g/geckolib) | 动画系统 |
 | [Curios API](https://github.com/TheIllusiveC4/Curios) | 饰品插槽 |
 | [Kotlin for Forge](https://github.com/thedarkcolour/KotlinForForge) | Kotlin 运行库 |
+
+> **不再需要 GeckoLib**：本分支已移除全部 GeckoLib 代码与依赖声明（僵尸改用原版骨架渲染，
+> 枪械手持为独立渲染），`mods/` 里无需再放 `geckolib-*.jar`。
 
 ### WorldGuard 模块依赖（仅服务端）
 
