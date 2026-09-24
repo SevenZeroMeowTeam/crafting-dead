@@ -19,7 +19,6 @@
 package com.craftingdead.survival.world.entity.monster;
 
 import com.craftingdead.survival.CraftingDeadSurvival;
-import com.craftingdead.survival.world.entity.animation.ZombieAnimations;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -35,11 +34,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class ModZombie extends Zombie implements IAnimatable {
+public class ModZombie extends Zombie {
 
   /**
    * 断肢状态同步（服务端 → 客户端），供 Physics Mod 死亡布娃娃联动使用：
@@ -53,8 +49,6 @@ public class ModZombie extends Zombie implements IAnimatable {
       SynchedEntityData.defineId(ModZombie.class, EntityDataSerializers.BOOLEAN);
   private static final EntityDataAccessor<Boolean> DATA_LEG_BROKEN =
       SynchedEntityData.defineId(ModZombie.class, EntityDataSerializers.BOOLEAN);
-
-  private final AnimationFactory factory = new AnimationFactory(this);
 
   public ModZombie(EntityType<? extends Zombie> zombie, Level level) {
     super(zombie, level);
@@ -99,16 +93,6 @@ public class ModZombie extends Zombie implements IAnimatable {
 
   public void setLegBroken(boolean broken) {
     this.getEntityData().set(DATA_LEG_BROKEN, broken);
-  }
-
-  @Override
-  public void registerControllers(AnimationData data) {
-    data.addAnimationController(ZombieAnimations.createController(this));
-  }
-
-  @Override
-  public AnimationFactory getFactory() {
-    return this.factory;
   }
 
   @Override
