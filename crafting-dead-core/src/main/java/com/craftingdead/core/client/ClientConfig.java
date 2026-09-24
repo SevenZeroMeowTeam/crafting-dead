@@ -34,6 +34,8 @@ public class ClientConfig {
 
   public final ForgeConfigSpec.BooleanValue displayPlantGrowth;
 
+  public final ForgeConfigSpec.BooleanValue moonPhaseZombieTintEnabled;
+
   public final ForgeConfigSpec.ConfigValue<String> killSound;
 
   public final ForgeConfigSpec.ConfigValue<String> crosshair;
@@ -59,6 +61,10 @@ public class ClientConfig {
           .translation("options.craftingdead.client.display_plant_growth")
           .comment("瞄准农作物时显示其生长阶段 / 进度")
           .define("displayPlantGrowth", true);
+      this.moonPhaseZombieTintEnabled = builder
+          .translation("options.craftingdead.client.moon_phase_zombie_tint_enabled")
+          .comment("根据当前月相给僵尸模型染上对应的颜色（满月暖金、新月石板灰等）")
+          .define("moonPhaseZombieTintEnabled", true);
       this.killSound = builder
           .translation("options.craftingdead.client.kill_sound")
           .define("killSound", SoundEvents.TRIDENT_RETURN.getLocation().toString(),
