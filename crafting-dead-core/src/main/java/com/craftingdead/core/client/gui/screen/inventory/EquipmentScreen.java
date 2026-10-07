@@ -212,14 +212,14 @@ public class EquipmentScreen extends EffectRenderingInventoryScreen<EquipmentMen
   }
 
   /**
-   * Renders the player's 3D model in the crafting screen.
+   * Renders the player's 3D model in the equipment screen.
    */
   private void renderPlayerEntity(GuiGraphics guiGraphics) {
     if (this.minecraft != null && this.minecraft.player != null) {
       InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics,
-          this.leftPos + 51, this.topPos + 45, 30,
+          this.leftPos + 51, this.topPos + 72, 30,
           (float) ((this.leftPos + 51) - this.oldMouseX),
-          (float) ((this.topPos + 45) - this.oldMouseY),
+          (float) ((this.topPos + 75 - 50) - this.oldMouseY),
           this.minecraft.player
       );
     }

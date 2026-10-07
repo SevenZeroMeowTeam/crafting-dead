@@ -18,9 +18,32 @@
         "base": "craftingdead:hats/bunny_hat"
       },
       "transform": {
-        "rotation": [0, 0, 0],
-        "translation": [0.5, -0.65, 0.47],
-        "scale": [1, 1, 1]
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "translation": [ 0.001953, -0.002539, 0.001836 ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "display": {
+        "head": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "translation": [ 0, -0.079531, -0.001953 ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
       }
     }
   }
