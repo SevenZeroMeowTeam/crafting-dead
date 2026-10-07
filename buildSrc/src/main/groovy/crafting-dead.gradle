@@ -41,10 +41,6 @@ repositories {
             includeGroup 'org.spongepowered'
         }
     }
-    maven {
-        name 'GeckoLib'
-        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
-    }
 }
 
 dependencies {

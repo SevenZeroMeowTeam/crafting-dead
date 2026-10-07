@@ -2,8 +2,8 @@
 	"credit": "nuklear71",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "craftingdeaddecoration:lab_mixer",
-		"particle": "craftingdeaddecoration:lab_mixer"
+		"0": "craftingdeaddecoration:block/lab_mixer",
+		"particle": "craftingdeaddecoration:block/lab_mixer"
 	},
 	"elements": [
 		{

@@ -19,7 +19,6 @@
 package com.craftingdead.survival.world.entity.monster;
 
 import com.craftingdead.survival.CraftingDeadSurvival;
-import com.craftingdead.survival.world.entity.animation.ZombieAnimations;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -35,12 +34,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class ModZombie extends Zombie implements GeoEntity {
+public class ModZombie extends Zombie {
 
   /**
    * 断肢状态同步（服务端 → 客户端），供 Physics Mod 死亡布娃娃联动使用：
@@ -54,9 +49,6 @@ public class ModZombie extends Zombie implements GeoEntity {
       SynchedEntityData.defineId(ModZombie.class, EntityDataSerializers.BOOLEAN);
   private static final EntityDataAccessor<Boolean> DATA_LEG_BROKEN =
       SynchedEntityData.defineId(ModZombie.class, EntityDataSerializers.BOOLEAN);
-
-  private final AnimatableInstanceCache animatableInstanceCache =
-      GeckoLibUtil.createInstanceCache(this);
 
   public ModZombie(EntityType<? extends Zombie> zombie, Level level) {
     super(zombie, level);
@@ -104,22 +96,8 @@ public class ModZombie extends Zombie implements GeoEntity {
   }
 
   @Override
-  public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-    controllers.add(ZombieAnimations.createController(this));
-  }
-
-  @Override
-  public AnimatableInstanceCache getAnimatableInstanceCache() {
-    return this.animatableInstanceCache;
-  }
-
-  @Override
   public boolean doHurtTarget(Entity target) {
-    boolean hurt = super.doHurtTarget(target);
-    if (hurt && !this.level().isClientSide()) {
-      this.triggerAnim("controller", "attack");
-    }
-    return hurt;
+    return super.doHurtTarget(target);
   }
 
   @Override

@@ -16,10 +16,133 @@
 | `1.20.x` | **1.20.1** | **47.4.22** | ✅ 活跃维护 |
 | `1.19.x` | 1.19.2 | 43.5.2 | ✅ 活跃维护 |
 | `1.18.x` | 1.18.2 | 40.2.0 | ⏸ 归档 |
+| `kotlin-refactor-1.20.x` | 1.20.1 | 47.4.22 | 🚧 Kotlin 混编重构 |
+| `kotlin-refactor-1.19.x` | 1.19.2 | 43.5.2 | 🚧 Kotlin 混编重构 |
 
 ---
 
 ## 更新日志
+
+### 装备佩戴位置修复：背心 / 背包 / 部分头饰（全部装备模型）
+
+**关键修复：战术背心、背包穿在身上位置错误；部分头饰被推离头部**
+
+- 根因（单位不匹配）：`models/vest/tactical_vest.json`、`models/backpack/*.json` 以及 8 件
+  带 `transform` 的头饰物品模型（`bunny_hat` / `gas_mask` / `knight_hat` / `nv_goggles_hat` /
+  `scuba_mask` / `top_hat` / `chief_fireman_hat` / `fireman_hat`）里的 `transform.translation`
+  沿用的是 1.18 时代的**像素（1/16 格）**语义，而 1.19+ 的 Forge 把 `transform` 当作
+  `Transformation`（**格**）处理（`TransformationHelper$Deserializer` 不做 ÷16，
+  `UnbakedGeometryHelper.composeRootTransformIntoModelState` 以 `-0.5F` 格为原点）。
+  于是设计者的"微调"被放大 16 倍：背心的 `-1.575` 由 0.098 格变成 1.575 格，背包
+  `-0.8` 变成 0.8 格 —— 装备被整体推出身体外
+- 根因（OBJ 键名）：`models/vest/tactical_vest.json` 仍写着 1.18 的 `flip-v` /
+  `ambientToFullbright`；1.20.1 的 `ObjLoader` 只认 `flip_v` / `emissive_ambient`
+  （`ObjLoader#read`），因此 UV 翻转与全亮环境光静默失效
+- 修复：`transform.translation` 三个分量各 ÷16（恢复设计者原本的微调量），
+  背心的两个 OBJ 键改写为 1.20.1 合法名
+- 说明：`transform` 在 1.20.1 **是生效的** —— `ExtendedBlockModelDeserializer` 会把它
+  存入 `customData.setRootTransform`，`ObjModel$ModelMesh#addQuads` 与
+  `ElementsModel#addQuads` 都会取用 `owner.getRootTransform()`。旧版"该键不被识别"
+  的判断有误；因此这里保留 `transform` 并换算单位，而不是删除它
+
+### 装备界面 3D 人物预览位置修复
+
+**关键修复：打开装备/合成界面时人物模型偏上、越出预览框顶部**
+
+- 根因：`EquipmentScreen` / `CraftingScreen` 的 `renderPlayerEntity` 把人物脚底锚点写成
+  `topPos + 45`，而 Crafting Dead 1.18 官方实现是 `topPos + 72`；鼠标 Y 偏移也漏掉了
+  实体眼高补偿 `- 50`。结果是整个玩家模型（连同它身上渲染的装备/武器/手持物品）整体
+  上移 27 像素，头部越出 `equipment.png` 的人物预览框并遮住标签页图标
+- 修复：锚点改回 `topPos + 72`，鼠标 Y 改用 `(topPos + 75 - 50) - oldMouseY`
+- 验证：按 `equipment.png` 实测预览框为 GUI `(25,7)-(74,77)`，修复后人物占 y 18~72，
+  正好居中且脚底落在框底的地面阴影上
+
+### 移除 GeckoLib 依赖 / 枪械手持渲染修复 / 资源与配置修复（Kotlin 混编重构分支）
+
+**关键变更：运行不再需要 GeckoLib，僵尸改用原版骨架渲染**
+
+- **移除 GeckoLib**：删除全部 GeckoLib 代码（`ZombieGeoModel` / `ZombieGeoRenderer` / `ZombieGeoAnimations` 等）、
+  `mods.toml` 依赖声明与 Gradle 依赖；僵尸渲染改用原版骨架模型体系
+  （`AbstractAdvancedZombieRenderer` + 原版僵尸/骷髅模型），月相染色逻辑迁入
+  `AbstractAdvancedZombieRenderer.render`
+- **安装方式变化**：`mods/` 里不再需要 `geckolib-*.jar`；本分支产出的 jar 里已不含任何 GeckoLib 类
+  （可用 `unzip -l crafting-dead-core-*.jar | grep -i geckolib` 核对，结果应为空）
+- 已有的 `mods/geckolib-*.jar` 留着不影响启动，可以直接删除
+
+**关键修复：所有枪械手持位置 / 旋转错乱**
+
+- 根因：`GunRenderer` 的 `PoseStack` 压栈与弹栈不平衡 —— 9 处 `popPose()` 没有配对的 `pushPose()`
+  （冲刺分支只在 `else` 里 push，`pop` 却是无条件的）
+- 修复：补齐缺失的 `pushPose()`（14 push / 14 pop），保留原有 transform 逻辑，不回退取景参数
+
+**关键修复：第三人称手持枪械枪口朝上、正对持枪者**
+
+- 根因：实体手持（第三人称 / 其他玩家视角）走的是
+  `ItemInHandLayer` → `mulPose(Rx: -90°) · mulPose(Ry: 180°)`，
+  该组合把物品空间映射为 `x → -x`、`y → -z`、`z → -y`；而 33 把枪的模型 JSON
+  只写了 `translation` / `scale`，`thirdperson_righthand` /
+  `thirdperson_lefthand` 里没有 `rotation`，于是枪口（模型 -Z 方向）被映射成 +Y ——
+  表现为竖着拿枪、枪口朝上正对持枪者
+- 修复：为 33 把枪补 `rotation: [90, 0, 180]`（枪口 = 朝向、枪身向上、
+  抛壳口 / 拉机柄 = 持枪者右侧）
+- 第一人称不受影响：`ItemInHandRenderer.applyItemArmTransform` 只平移不旋转，
+  物品空间即相机空间，-Z 就是前方（已写入技能 `references/item-in-hand-orientation.md`）
+
+**资源修复**
+
+- `iron_sight .png`（文件名含空格，资源系统无法加载）重命名为 `iron_sight.png`
+- 新增 `assets/minecraft/atlases/blocks.json`，把帽子 / 背包 / 战术背心 / 神话装备贴图并入原版
+  blocks 图集 —— `forge:obj` 模型的 `#base` 贴图必须先被烘焙进图集，否则模型会以"缺失贴图"渲染
+- 修复 decoration 模块 4 个非法 JSON，并删除一批文件名含空格、资源系统无法加载的冗余装饰贴图
+
+**关键修复：所有生物头饰显示为紫黑方块、且没有正确戴在头上**
+
+- 根因一（变换失效）：`models/hats/*.json` 是 1.12 时代 Minecraft-SMP Modelling Toolbox 导出的
+  `forge:obj` 模型，其中的 `flip-v` / `ambientToFullbright` / `transform` 三个键
+  **在 1.20.1 Forge 的 OBJ 加载器里全部不被识别**（该加载器只认 `model` / `automatic_culling` /
+  `shade_quads` / `flip_v` / `emissive_ambient` / `mtl_override`）。于是设计者写下的
+  缩放（0.525~1.2）与位移全部静默失效：帽子按 OBJ 原始尺寸（约头部的 2 倍）渲染，
+  并整体浮在头顶上方约 1.2 格 —— 表现为生物头上一个巨大偏移的暗色方块
+- 根因二（贴图朝向）：UV 的 V 翻转键同样写成了失效的 `flip-v`，贴图采样方向错误
+- 修复：
+  - 13 个帽子模型 JSON 改写为 1.20.1 合法键：`flip_v` / `emissive_ambient`，
+    移除失效的 `flip-v` / `ambientToFullbright` / `transform`
+  - 47 件头饰的物品模型在 `perspectives.head` 上补齐 `display.head` 变换（缩放 + 居中位移），
+    按"底面贴合头底、水平居中、约 0.62 格宽（头部为 0.5 格）"重新摆放；
+    Forge 的 `forge:separate_transforms` 复合模型会把 `applyTransform` 委托给该 perspective 子模型
+    （`SeparateTransformsModel$Baked.getTransforms()` 返回 `NO_TRANSFORMS`），因此该变换确实生效
+- 验证：用离线复刻 1.20.1 渲染管线的预览器逐个模型核对（修复前帽子不可见/整体偏离头部，
+  修复后贴合头部居中），并随构建产物级复核
+
+**配置修复**
+
+- `ServerConfig` 的 `bonusDamage` 默认值 0.5 越界（合法范围 1~10），导致配置每次启动被回写；
+  默认值改为 1.0
+
+**同步**
+
+- 上述改动已同步至 `1.20.x` / `1.19.x` / `kotlin-refactor-1.19.x` 三个版本分支；
+  1.19.2 分支额外补回 `core ClientConfig.moonPhaseZombieTintEnabled` 客户端开关
+  （该分支缺失会导致月相染色代码无法编译）
+- 注（同步状态）：「第三人称手持朝向」与「生物头饰佩戴」两项修复已同步至三个版本分支，
+  对应提交（`fix(render)`）：`1.20.x` → `ea4ab6d7` / `8a6be04a`，
+  `1.19.x` → `d3424817` / `d18e8b82`，`kotlin-refactor-1.19.x` → `b69c738e` / `1cc7764c`；
+  各分支 README 说明分别为 `5064bde3` / `c50cbcf6` / `eea3616d`（`docs(readme)`）
+- 未同步分支：`kotlin-refactor`（历史分支，工作区存在未提交删除）、`1.21.x`
+  （本地落后远端 5 个提交且工作区有未提交改动）—— 需先整理工作区再同步
+
+**原「已知未修」的两项，已在本轮修复**
+
+- **战术背心**：`models/vest/tactical_vest.json` —— 已把 `flip-v` / `ambientToFullbright`
+  改写为 1.20.1 合法键 `flip_v` / `emissive_ambient`；`transform.translation` 由
+  1.18 像素单位换算为格单位（见上方"装备佩戴位置修复"）。注意此处**不必**再删 `transform`：
+  1.20.1 的 `ObjModel` 会通过 `owner.getRootTransform()` 正常应用它，删掉反而丢失设计者
+  写下的旋转（`rotation: [0,0,180]`）与缩放（`1.075 / 1.15`）
+- **背包**：`models/backpack/{small,medium,large}_backpack.json` 与 `gun_bag.json` ——
+  同样保留 `transform` 并把 `translation` 换算为格单位。它们虽是普通元素模型（非 OBJ），
+  但 Forge 的 `UnbakedGeometryHelper#bake` 会把 vanilla `elements` 交给 `ElementsModel`
+  烘焙，而 `ElementsModel#addQuads` 会取用 `owner.getRootTransform()`，所以该键**确实生效**；
+  之前"该键不属于原版模型字段、不产生变换"的结论不成立
 
 ### WTHIT 工具提示集成（What The Hell Is That?）
 
@@ -410,6 +533,7 @@ crafting-dead
 - 射击模式：单发、连发、三连发
 - 换弹动画与机制
 - 枪械同步系统（网络优化）
+- 独立手持渲染（`GunRenderer`，第一/第三人称、地面掉落物；不依赖 GeckoLib）
 
 ### 医疗系统
 
@@ -429,7 +553,7 @@ crafting-dead
 
 - 口渴值管理
 - 温度管理（寒冷/炎热）
-- 丧尸增强 AI
+- 丧尸增强 AI（原版骨架渲染，不依赖 GeckoLib）
 - 装备耐久与磨损
 - 末日生存系统：月亮事件（血月/蓝月/黄月/超级血月）、僵尸进化（随天数提升血量/攻击/速度）、
   计分板（天数/时间/月相）、左上角 HUD（手持武器/击杀信息）、击杀概率掉落
@@ -457,6 +581,7 @@ crafting-dead
 | **Minecraft Forge 47.4.22** | Mod 加载框架 |
 | **Minecraft 1.20.1** | 游戏版本 |
 | **Java 17+** | 开发语言 |
+| **Kotlin 1.9.22** | Kotlin/Java 混编（`src/main/kotlin`） |
 | **Gradle 8.5** | 构建工具 |
 | **SpongePowered Mixin 0.8.5** | 运行时字节码注入 |
 | **Spigot API 1.20.1** | WorldGuard 模块 Bukkit 集成 |
@@ -479,8 +604,8 @@ crafting-dead
 git clone https://github.com/SevenZeroMeowTeam/crafting-dead.git
 cd crafting-dead
 
-# 切换到 1.20.x 分支
-git checkout 1.20.x
+# 切换到 Kotlin 混编重构分支（本 README 对应分支）
+git checkout kotlin-refactor-1.20.x
 
 # 编译打包（跳过测试）
 ./gradlew build -x test
@@ -492,18 +617,22 @@ git checkout 1.20.x
 
 | 模块 | Jar 文件（本地构建） |
 |------|----------|
-| Core | `crafting-dead-core-1.20.1-1.9.2.homebaked.jar` |
-| Core (含依赖) | `crafting-dead-core-1.20.1-1.9.2.homebaked-all.jar` |
-| Survival | `crafting-dead-survival-1.20.1-1.2.3.homebaked.jar` |
-| Decoration | `crafting-dead-decoration-1.20.1-1.0.4.homebaked.jar` |
-| WorldGuard | `crafting-dead-worldguard-1.20.1-0.0.4.homebaked.jar` |
+| Core | `crafting-dead-core-1.20.1-1.9.5-kotlin.homebaked.jar` |
+| Core (含依赖) | `crafting-dead-core-1.20.1-1.9.5-kotlin.homebaked-all.jar` |
+| Survival | `crafting-dead-survival-1.20.1-1.2.6-kotlin.homebaked.jar` |
+| Decoration | `crafting-dead-decoration-1.20.1-1.0.7-kotlin.homebaked.jar` |
+| WorldGuard | `crafting-dead-worldguard-1.20.1-0.0.6-kotlin.homebaked.jar` |
 
+> 版本号唯一来源是各模块自己的 `gradle.properties` 里的 `mod_version`（Core 1.9.5 / Survival 1.2.6 /
+> Decoration 1.0.7 / WorldGuard 0.0.6），jar 名由 `buildSrc/src/main/groovy/crafting-dead.gradle` 拼成
+> `${minecraft_version}-${mod_version}-kotlin.<后缀>` —— Kotlin 混编重构分支的 jar 名带 `-kotlin.` 标记。
+>
 > CI 构建（GitHub Actions）使用运行编号替代 `homebaked` 后缀，
-> 例如 `crafting-dead-core-1.20.1-1.9.0.42.jar`。
+> 例如 `crafting-dead-core-1.20.1-1.9.5-kotlin.42.jar`。
 
 ### 持续集成与自动发布
 
-推送到 `1.20.x` 分支后，GitHub Actions 自动执行：
+推送到 `1.20.x` / `kotlin-refactor-1.20.x` / `1.18.x` 分支（或向它们提交 PR）后，GitHub Actions 自动执行：
 
 1. **构建** — `./gradlew build` 编译全部四个模块
 2. **Artifact** — 构建产物上传至 Actions 工件（保留 90 天）
@@ -523,9 +652,11 @@ git checkout 1.20.x
 
 | 模组 | 说明 |
 |------|------|
-| [GeckoLib 4](https://github.com/bernie-g/geckolib) | 动画系统 |
 | [Curios API](https://github.com/TheIllusiveC4/Curios) | 饰品插槽 |
 | [Kotlin for Forge](https://github.com/thedarkcolour/KotlinForForge) | Kotlin 运行库 |
+
+> **不再需要 GeckoLib**：本分支已移除全部 GeckoLib 代码与依赖声明（僵尸改用原版骨架渲染，
+> 枪械手持为独立渲染），`mods/` 里无需再放 `geckolib-*.jar`。
 
 ### WorldGuard 模块依赖（仅服务端）
 

@@ -16,6 +16,25 @@
       "parent": "craftingdead:hats/ballistic_helmet",
       "textures": {
         "base": "craftingdead:hats/green_ballistic_helmet"
+      },
+      "display": {
+        "head": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "translation": [
+            -0.0,
+            -3.468,
+            0.855
+          ],
+          "scale": [
+            0.57,
+            0.57,
+            0.57
+          ]
+        }
       }
     }
   }

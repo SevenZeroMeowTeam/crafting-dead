@@ -16,6 +16,25 @@
       "parent": "craftingdead:hats/hard_hat",
       "textures": {
         "base": "craftingdead:hats/yellow_hard_hat"
+      },
+      "display": {
+        "head": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "translation": [
+            0.42,
+            -16.576,
+            0.42
+          ],
+          "scale": [
+            0.84,
+            0.84,
+            0.84
+          ]
+        }
       }
     }
   }
