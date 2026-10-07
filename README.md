@@ -20,6 +20,44 @@
 
 ## 更新日志
 
+### 装备佩戴位置修复：背心 / 背包 / 部分头饰（同步自 `refactor/remove-geckolib-vanilla-render`）
+
+**关键修复：战术背心、背包穿在身上位置错误；部分头饰被推离头部**
+
+- 根因（单位不匹配）：`models/vest/tactical_vest.json`、`models/backpack/*.json` 以及 8 件
+  带 `transform` 的头饰物品模型（`bunny_hat` / `gas_mask` / `knight_hat` / `nv_goggles_hat` /
+  `scuba_mask` / `top_hat` / `chief_fireman_hat` / `fireman_hat`）里的 `transform.translation`
+  沿用的是 1.18 时代的**像素（1/16 格）**语义，而 1.19+ 的 Forge 把 `transform` 当作
+  `Transformation`（**格**）处理（`TransformationHelper$Deserializer` 不做 ÷16，
+  `UnbakedGeometryHelper.composeRootTransformIntoModelState` 以 `-0.5F` 格为原点）。
+  于是设计者写下的"微调"被放大 16 倍：背心的 `-1.575` 由 0.098 格变成 1.575 格，
+  背包的 `-0.8` 变成 0.8 格 —— 装备被整体推出身体外
+- 根因（OBJ 键名）：`models/vest/tactical_vest.json` 仍写着 1.18 的 `flip-v` /
+  `ambientToFullbright`，本分支的 `ObjLoader#read` 只认 `flip_v` / `emissive_ambient`，
+  因此 UV 翻转与全亮环境光静默失效
+- 修复：`transform.translation` 三分量各 ÷16（恢复设计者原本的微调量），
+  并把背心的两个 OBJ 键改写为合法名
+- **结论更正（重要）**：此前记录称 `flip-v` / `ambientToFullbright` / `transform` 三键
+  "在本分支 Forge 的 OBJ 加载器里都不被识别"，其中 `transform` 一项有误 —— 它并不由
+  `ObjLoader#read` 解析，而是由 `ExtendedBlockModelDeserializer` 存入
+  `customData.setRootTransform`，再由 `ObjModel$ModelMesh#addQuads` 与
+  `ElementsModel#addQuads` 通过 `owner.getRootTransform()` 取用，**是生效的**。
+  所以背心/背包应当保留 `transform` 并换算单位，而不是删除它（删掉会连带丢失设计者写下的
+  `rotation: [0,0,180]` 与缩放 `1.075 / 1.15`）
+
+### 装备界面 3D 人物预览位置修复（同步自 `refactor/remove-geckolib-vanilla-render`）
+
+**关键修复：打开装备/合成界面时人物模型偏上、越出预览框顶部**
+
+- 根因：`EquipmentScreen` / `CraftingScreen` 的 `renderPlayerEntity` 把人物脚底锚点写成
+  `topPos + 45`，而 Crafting Dead 1.18 官方实现是 `topPos + 72`；鼠标 Y 偏移也漏掉了
+  实体眼高补偿 `- 50`
+- 影响：整个玩家模型连同它身上渲染的装备/武器/手持物品整体上移 27 像素，头部越出
+  `equipment.png` 的人物预览框，并遮住标签页里的装饰图标
+- 修复：锚点改回 `topPos + 72`，鼠标 Y 改用 `(topPos + 75 - 50) - oldMouseY`
+
+
+
 ### 枪械第三人称朝向修复 + 生物头饰佩戴修复（同步自 `refactor/remove-geckolib-vanilla-render`）
 
 **关键修复：第三人称手持枪械枪口朝上、正对持枪者**

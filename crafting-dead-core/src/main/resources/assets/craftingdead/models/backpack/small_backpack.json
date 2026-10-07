@@ -65,7 +65,7 @@
 	],
 	"transform": {
 		"rotation":  [ 0, 0, 0 ],
-		"translation": [ -0.03, 0.22, -0.7 ],
+		"translation": [ -0.001875, 0.01375, -0.04375 ],
 		"scale":  [ 1, -1, -1 ]
 	}
 }
