@@ -106,7 +106,9 @@
 - 根因二（贴图朝向）：UV 的 V 翻转键同样写成了失效的 `flip-v`，贴图采样方向错误
 - 修复：
   - 13 个帽子模型 JSON 改写为 1.20.1 合法键：`flip_v` / `emissive_ambient`，
-    移除失效的 `flip-v` / `ambientToFullbright` / `transform`
+    并移除了 `flip-v` / `ambientToFullbright` / `transform`
+    （更正：其中 `transform` 在 1.20.1 **是生效的**，详见上方"结论更正"；
+    该键原本承担设计者的旋转与缩放，更忠实的做法是保留它并换算单位）
   - 47 件头饰的物品模型在 `perspectives.head` 上补齐 `display.head` 变换（缩放 + 居中位移），
     按"底面贴合头底、水平居中、约 0.62 格宽（头部为 0.5 格）"重新摆放；
     Forge 的 `forge:separate_transforms` 复合模型会把 `applyTransform` 委托给该 perspective 子模型
@@ -130,6 +132,27 @@
   各分支 README 说明分别为 `5064bde3` / `c50cbcf6` / `eea3616d`（`docs(readme)`）
 - 未同步分支：`kotlin-refactor`（历史分支，工作区存在未提交删除）、`1.21.x`
   （本地落后远端 5 个提交且工作区有未提交改动）—— 需先整理工作区再同步
+
+### 本轮同步状态（装备佩戴位置 + 装备界面人物预览）
+
+- 已同步至以下版本分支，均为各自独立提交：
+  - `1.20.x` → `9fed917d`（修复） + `dd826f4e`（移除误提交的 `logs/` 并加入 `.gitignore`）
+  - `kotlin-refactor-1.20.x` → `dd75eb3f`
+  - `1.19.x` → `a0bcf9eb`
+  - `kotlin-refactor-1.19.x` → `952072d7`
+- 1.19 系列的分支代码与 1.20 不同：其 `renderEntityInInventory` 仍是旧签名
+  （无 `GuiGraphics` 参数），因此同步时按同样语义做了文本替换
+  （`topPos + 45` → `topPos + 72`、`topPos + 45 - 50` → `topPos + 75 - 50`），
+  资源部分则与 1.20 完全一致
+- 仍未同步：
+  - `1.21.x`：该分支远端已迁移 NeoForge（5 个新提交），本地工作树落后且存在
+    未提交改动（`ServerConfig.java` 与 decoration 资源），直接合并会被拒绝。
+    资源文件本身仍是旧状态（`forge:obj` 命名空间保留、`translation: -1.575...`、
+    `flip-v` 仍在），因此**同样需要本轮修复**；建议先提交或 stash 本地改动，
+    快进到 `3a6684e7` 后再套用同一组改动
+  - `kotlin-refactor`：历史分支，工作树存在未提交删除
+  - 其余远程分支（1.15.x ~ 1.18.x、`Medical`、`bliss`、`bugfixes`、`copilot/*` 等）
+    为历史或实验分支，不在维护范围
 
 **原「已知未修」的两项，已在本轮修复**
 
