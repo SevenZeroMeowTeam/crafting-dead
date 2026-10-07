@@ -23,6 +23,40 @@
 
 ## 更新日志
 
+### 装备佩戴位置修复：背心 / 背包 / 部分头饰（全部装备模型）
+
+**关键修复：战术背心、背包穿在身上位置错误；部分头饰被推离头部**
+
+- 根因（单位不匹配）：`models/vest/tactical_vest.json`、`models/backpack/*.json` 以及 8 件
+  带 `transform` 的头饰物品模型（`bunny_hat` / `gas_mask` / `knight_hat` / `nv_goggles_hat` /
+  `scuba_mask` / `top_hat` / `chief_fireman_hat` / `fireman_hat`）里的 `transform.translation`
+  沿用的是 1.18 时代的**像素（1/16 格）**语义，而 1.19+ 的 Forge 把 `transform` 当作
+  `Transformation`（**格**）处理（`TransformationHelper$Deserializer` 不做 ÷16，
+  `UnbakedGeometryHelper.composeRootTransformIntoModelState` 以 `-0.5F` 格为原点）。
+  于是设计者的"微调"被放大 16 倍：背心的 `-1.575` 由 0.098 格变成 1.575 格，背包
+  `-0.8` 变成 0.8 格 —— 装备被整体推出身体外
+- 根因（OBJ 键名）：`models/vest/tactical_vest.json` 仍写着 1.18 的 `flip-v` /
+  `ambientToFullbright`；1.20.1 的 `ObjLoader` 只认 `flip_v` / `emissive_ambient`
+  （`ObjLoader#read`），因此 UV 翻转与全亮环境光静默失效
+- 修复：`transform.translation` 三个分量各 ÷16（恢复设计者原本的微调量），
+  背心的两个 OBJ 键改写为 1.20.1 合法名
+- 说明：`transform` 在 1.20.1 **是生效的** —— `ExtendedBlockModelDeserializer` 会把它
+  存入 `customData.setRootTransform`，`ObjModel$ModelMesh#addQuads` 与
+  `ElementsModel#addQuads` 都会取用 `owner.getRootTransform()`。旧版"该键不被识别"
+  的判断有误；因此这里保留 `transform` 并换算单位，而不是删除它
+
+### 装备界面 3D 人物预览位置修复
+
+**关键修复：打开装备/合成界面时人物模型偏上、越出预览框顶部**
+
+- 根因：`EquipmentScreen` / `CraftingScreen` 的 `renderPlayerEntity` 把人物脚底锚点写成
+  `topPos + 45`，而 Crafting Dead 1.18 官方实现是 `topPos + 72`；鼠标 Y 偏移也漏掉了
+  实体眼高补偿 `- 50`。结果是整个玩家模型（连同它身上渲染的装备/武器/手持物品）整体
+  上移 27 像素，头部越出 `equipment.png` 的人物预览框并遮住标签页图标
+- 修复：锚点改回 `topPos + 72`，鼠标 Y 改用 `(topPos + 75 - 50) - oldMouseY`
+- 验证：按 `equipment.png` 实测预览框为 GUI `(25,7)-(74,77)`，修复后人物占 y 18~72，
+  正好居中且脚底落在框底的地面阴影上
+
 ### 移除 GeckoLib 依赖 / 枪械手持渲染修复 / 资源与配置修复（Kotlin 混编重构分支）
 
 **关键变更：运行不再需要 GeckoLib，僵尸改用原版骨架渲染**
@@ -97,15 +131,18 @@
 - 未同步分支：`kotlin-refactor`（历史分支，工作区存在未提交删除）、`1.21.x`
   （本地落后远端 5 个提交且工作区有未提交改动）—— 需先整理工作区再同步
 
-**已知未修（同类缺陷，待后续处理）**
+**原「已知未修」的两项，已在本轮修复**
 
-- **战术背心**：`models/vest/tactical_vest.json` 与头饰一样是 `forge:obj` 模型，仍带着
-  在该加载器里无效的 `flip-v` / `ambientToFullbright` / `transform` 三个键，
-  因此穿戴位置同样不正确 —— 可按头饰的同一套方式（改用 `flip_v` / `emissive_ambient`，
-  并用 `perspectives.head` 上的 `display.head` 显式摆放）修正
-- **背包**：`models/backpack/*.json` 是普通元素模型（非 OBJ），但同样残留一个 `transform` 键；
-  该键不属于原版模型字段，不会产生设计者预期的变换（实测游戏未因此报错）。
-  移除该键即可，背包的摆放改由 `display.head` 控制
+- **战术背心**：`models/vest/tactical_vest.json` —— 已把 `flip-v` / `ambientToFullbright`
+  改写为 1.20.1 合法键 `flip_v` / `emissive_ambient`；`transform.translation` 由
+  1.18 像素单位换算为格单位（见上方"装备佩戴位置修复"）。注意此处**不必**再删 `transform`：
+  1.20.1 的 `ObjModel` 会通过 `owner.getRootTransform()` 正常应用它，删掉反而丢失设计者
+  写下的旋转（`rotation: [0,0,180]`）与缩放（`1.075 / 1.15`）
+- **背包**：`models/backpack/{small,medium,large}_backpack.json` 与 `gun_bag.json` ——
+  同样保留 `transform` 并把 `translation` 换算为格单位。它们虽是普通元素模型（非 OBJ），
+  但 Forge 的 `UnbakedGeometryHelper#bake` 会把 vanilla `elements` 交给 `ElementsModel`
+  烘焙，而 `ElementsModel#addQuads` 会取用 `owner.getRootTransform()`，所以该键**确实生效**；
+  之前"该键不属于原版模型字段、不产生变换"的结论不成立
 
 ### WTHIT 工具提示集成（What The Hell Is That?）
 
