@@ -17,6 +17,8 @@
       "textures": {
         "base": "craftingdead:hats/green_hard_hat"
       }
+    ,
+      "display": { "head": { "rotation": [ 0, 0, 0 ], "translation": [ 0.585, -0.65, 0.525 ], "scale": [ 1.05, 1.05, 1.05 ] } }
     }
   }
 }

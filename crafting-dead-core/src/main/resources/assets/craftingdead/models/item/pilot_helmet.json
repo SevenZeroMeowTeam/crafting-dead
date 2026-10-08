@@ -17,6 +17,8 @@
       "textures": {
         "base": "craftingdead:hats/pilot_helmet"
       }
+    ,
+      "display": { "head": { "rotation": [ 0, 0, 0 ], "translation": [ 0.32, -0.2, -0.265 ], "scale": [ 0.525, 0.525, 0.525 ] } }
     }
   }
 }
