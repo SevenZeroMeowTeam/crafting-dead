@@ -28,8 +28,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HeadedModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -55,6 +56,15 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
   private final boolean useHeadOrientation;
 
   /**
+   * Whether this model should be attached to the player's torso, the way vanilla renders chest
+   * armour in {@code HumanoidArmorLayer} (copy the pose, then {@code body.translateAndRotate}).
+   * Gear that is worn on the body rather than held — vest, backpack — needs this: without it the
+   * gear stays pinned to the model origin and does not follow the torso while the player walks or
+   * swings their arms.
+   */
+  private final boolean useBodyOrientation;
+
+  /**
    * Optional arbitrary transformation right before rendering the {@link ItemStack}.
    */
   @Nullable
@@ -66,6 +76,7 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
     this.useCrouchOrientation = builder.useCrouchOrientation;
     this.transformation = builder.tranformation;
     this.useHeadOrientation = builder.useHeadOrientation;
+    this.useBodyOrientation = builder.useBodyOrientation;
   }
 
   @Override
@@ -86,7 +97,7 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
 
         if (!itemStack.isEmpty()) {
           var bakedModel =
-              itemRenderer.getModel(itemStack, livingEntity.getLevel(), livingEntity, 0);
+              itemRenderer.getModel(itemStack, livingEntity.level(), livingEntity, 0);
 
           poseStack.pushPose();
 
@@ -107,13 +118,18 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
             this.getParentModel().getHead().translateAndRotate(poseStack);
           }
 
+          // Attaches body-worn gear to the torso, mirroring vanilla's HumanoidArmorLayer.
+          if (this.useBodyOrientation && this.getParentModel() instanceof HumanoidModel<?> humanoid) {
+            humanoid.body.translateAndRotate(poseStack);
+          }
+
           // Applies the arbitrary transformation if needed
           if (this.transformation != null) {
             this.transformation.accept(poseStack);
           }
 
           // Renders the item. Also note the TransformType.
-          itemRenderer.render(itemStack, ItemTransforms.TransformType.HEAD, false,
+          itemRenderer.render(itemStack, ItemDisplayContext.HEAD, false,
               poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY, bakedModel);
 
           poseStack.popPose();
@@ -135,6 +151,7 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
     private Consumer<PoseStack> tranformation;
     private boolean useCrouchOrientation;
     private boolean useHeadOrientation;
+    private boolean useBodyOrientation;
 
     private Builder(LivingEntityRenderer<T, M> renderer) {
       this.renderer = renderer;
@@ -157,6 +174,11 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
 
     public Builder<T, M> useHeadOrientation(boolean useHeadOrientation) {
       this.useHeadOrientation = useHeadOrientation;
+      return this;
+    }
+
+    public Builder<T, M> useBodyOrientation(boolean useBodyOrientation) {
+      this.useBodyOrientation = useBodyOrientation;
       return this;
     }
 
