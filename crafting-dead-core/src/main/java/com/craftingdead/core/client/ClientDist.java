@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -89,7 +90,8 @@ import com.craftingdead.core.world.item.gun.skin.Paint;
 import com.craftingdead.core.world.item.gun.skin.Skins;
 import com.craftingdead.core.world.item.scope.Scope;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
+import org.joml.Vector3f;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -243,9 +245,12 @@ public class ClientDist implements ModDist {
   @Override
   public RegistryAccess registryAccess() {
     var minecraft = Minecraft.getInstance();
-    if (minecraft.level != null) {
-      return minecraft.level.registryAccess();
+    if (FMLEnvironment.dist.isDedicatedServer() && minecraft.getSingleplayerServer() != null) {
+      return minecraft.getSingleplayerServer().registryAccess();
+    } else if (FMLEnvironment.dist.isClient() && minecraft.player != null) {
+      return minecraft.player.connection.registryAccess();
     }
+
     return ModDist.super.registryAccess();
   }
 
@@ -396,6 +401,7 @@ public class ClientDist implements ModDist {
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.VEST)
           .useCrouchOrientation(true)
+          .useBodyOrientation(true)
           .build());
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.HAT)
@@ -409,6 +415,7 @@ public class ClientDist implements ModDist {
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.BACKPACK)
           .useCrouchOrientation(true)
+          .useBodyOrientation(true)
           .build());
     }
   }
@@ -670,14 +677,10 @@ public class ClientDist implements ModDist {
 
     var heldStack = player.mainHandItem();
     var gun = heldStack.getCapability(Gun.CAPABILITY).orElse(null);
-    var window = event.getWindow();
-    this.ingameGui.renderOverlay(player, heldStack, gun, event.getPoseStack(),
-        window.getGuiScaledWidth(), window.getGuiScaledHeight(),
+    this.ingameGui.renderOverlay(player, heldStack, gun, event.getGuiGraphics(),
+        event.getGuiGraphics().guiWidth(), event.getGuiGraphics().guiHeight(),
         event.getPartialTick());
-    this.targetOverlay.render(event.getPoseStack(), event.getPartialTick());
-    // 闪盲倒计时/渐隐（1.19.2 无 GuiGraphics，用 PoseStack 渲染）
-    this.ingameGui.renderFlashBangOverlay(this.minecraft.player, event.getPoseStack(),
-        window.getGuiScaledWidth(), window.getGuiScaledHeight(), event.getPartialTick());
+    this.targetOverlay.render(event.getGuiGraphics(), event.getPartialTick());
   }
 
   /**
@@ -709,9 +712,9 @@ public class ClientDist implements ModDist {
       }
     }
 
-    this.lastPitch = Mth.lerp(0.1F, this.lastPitch, mutableCameraRotations.x());
-    this.lastYaw = Mth.lerp(0.1F, this.lastYaw, mutableCameraRotations.y());
-    this.lastRoll = Mth.lerp(0.1F, this.lastRoll, mutableCameraRotations.z());
+    this.lastPitch = Mth.lerp(0.1F, this.lastPitch, mutableCameraRotations.x);
+    this.lastYaw = Mth.lerp(0.1F, this.lastYaw, mutableCameraRotations.y);
+    this.lastRoll = Mth.lerp(0.1F, this.lastRoll, mutableCameraRotations.z);
     mutableCameraRotations.set(0.0F, 0.0F, 0.0F);
     event.setPitch(event.getPitch() + this.lastPitch);
     event.setYaw(event.getYaw() + this.lastYaw);
@@ -742,6 +745,14 @@ public class ClientDist implements ModDist {
       case END -> {
         if (this.minecraft.player != null) {
           this.updateAdrenalineShader(event.renderTickTime);
+          if (this.minecraft.screen == null) {
+            var guiGraphics = new GuiGraphics(this.minecraft,
+                this.minecraft.renderBuffers().bufferSource());
+            this.ingameGui.renderFlashBangOverlay(this.minecraft.player, guiGraphics,
+                this.minecraft.getWindow().getGuiScaledWidth(),
+                this.minecraft.getWindow().getGuiScaledHeight(), event.renderTickTime);
+            guiGraphics.flush();
+          }
         }
       }
     }
@@ -750,7 +761,7 @@ public class ClientDist implements ModDist {
   @SubscribeEvent
   public void handleRenderScreen(ScreenEvent.Render.Pre event) {
     if (this.minecraft.player != null) {
-      this.ingameGui.renderFlashBangOverlay(this.minecraft.player, event.getPoseStack(),
+      this.ingameGui.renderFlashBangOverlay(this.minecraft.player, event.getGuiGraphics(),
           this.minecraft.getWindow().getGuiScaledWidth(),
           this.minecraft.getWindow().getGuiScaledHeight(), event.getPartialTick());
     }
@@ -902,7 +913,7 @@ public class ClientDist implements ModDist {
       int packedLight) {
     poseStack.pushPose();
     poseStack.translate(0.0D, -1.08D, -1.0D);
-    poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
+    poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
 
     var vertexConsumer = ItemRenderer.getArmorFoilBuffer(
         bufferSource,
