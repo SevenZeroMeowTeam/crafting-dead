@@ -16,26 +16,9 @@
       "parent": "craftingdead:hats/knight_hat",
       "textures": {
         "base": "craftingdead:hats/knight_hat"
-      },
-      "display": {
-        "head": {
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "translation": [
-            -0.0,
-            -15.68,
-            -0.0
-          ],
-          "scale": [
-            0.8,
-            0.8,
-            0.8
-          ]
-        }
       }
+    ,
+      "display": { "head": { "rotation": [ 0, 0, 0 ], "translation": [ -0.0,-15.68,-0.0 ], "scale": [ 0.8,0.8,0.8 ] } }
     }
   }
 }

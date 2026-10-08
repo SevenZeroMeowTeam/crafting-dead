@@ -17,6 +17,8 @@
       "textures": {
         "base": "craftingdead:hats/black_ballistic_hat"
       }
+    ,
+      "display": { "head": { "rotation": [ 0, 0, 0 ], "translation": [ 0.07, -0.16, 0.07 ], "scale": [ 0.57, 0.57, 0.57 ] } }
     }
   }
 }
