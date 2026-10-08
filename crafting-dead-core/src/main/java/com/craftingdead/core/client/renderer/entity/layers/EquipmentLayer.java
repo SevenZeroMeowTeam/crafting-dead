@@ -30,7 +30,7 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HeadedModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -57,10 +57,8 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
 
   /**
    * Whether this model should be attached to the player's torso, the way vanilla renders chest
-   * armour in {@code HumanoidArmorLayer} (copy the pose, then {@code body.translateAndRotate}).
-   * Gear that is worn on the body rather than held — vest, backpack — needs this: without it the
-   * gear stays pinned to the model origin and does not follow the torso while the player walks or
-   * swings their arms.
+   * armour in HumanoidArmorLayer. Gear worn on the body rather than held - vest, backpack - needs
+   * this, otherwise it stays pinned to the model origin and ignores the torso's movement.
    */
   private final boolean useBodyOrientation;
 
@@ -97,7 +95,7 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
 
         if (!itemStack.isEmpty()) {
           var bakedModel =
-              itemRenderer.getModel(itemStack, livingEntity.level(), livingEntity, 0);
+              itemRenderer.getModel(itemStack, livingEntity.getLevel(), livingEntity, 0);
 
           poseStack.pushPose();
 
@@ -129,7 +127,7 @@ public class EquipmentLayer<T extends LivingEntity, M extends EntityModel<T> & H
           }
 
           // Renders the item. Also note the TransformType.
-          itemRenderer.render(itemStack, ItemDisplayContext.HEAD, false,
+          itemRenderer.render(itemStack, ItemTransforms.TransformType.HEAD, false,
               poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY, bakedModel);
 
           poseStack.popPose();
