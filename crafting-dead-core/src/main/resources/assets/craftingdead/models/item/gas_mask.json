@@ -17,19 +17,6 @@
       "textures": {
         "base": "craftingdead:hats/gas_mask"
       },
-      "transform": {
-        "rotation": [
-          0,
-          0,
-          0
-        ],
-        "translation": [ 0.003418, -0.001758, 0.000977 ],
-        "scale": [
-          1.07,
-          1.07,
-          1.07
-        ]
-      },
       "display": {
         "head": {
           "rotation": [
@@ -37,7 +24,11 @@
             0,
             0
           ],
-          "translation": [ 0.014093, -0.046609, -0.008811 ],
+          "translation": [
+            3.60785,
+            -11.93177,
+            -2.25571
+          ],
           "scale": [
             0.80175,
             0.80175,
