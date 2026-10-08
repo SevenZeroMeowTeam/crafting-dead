@@ -16,9 +16,24 @@
       "parent": "craftingdead:hats/chief_fireman_hat",
       "textures": {
         "base": "craftingdead:hats/chief_fireman_hat"
+      },
+      "transform": {
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "translation": [
+          0.61,
+          -0.625,
+          0.55
+        ],
+        "scale": [
+          1.05,
+          1.05,
+          1.05
+        ]
       }
-    ,
-      "display": { "head": { "rotation": [ 0, 0, 0 ], "translation": [ 0.39999,-15.15756,-1.56961 ], "scale": [ 0.8,0.8,0.8 ] } }
     }
   }
 }
