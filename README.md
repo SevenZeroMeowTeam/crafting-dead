@@ -23,6 +23,55 @@
 
 ## 更新日志
 
+### 装备穿戴错位修复：头饰 / 战术背心（1.19.4+ 的 OBJ root transform 多了一次居中偏移）
+
+**现象**：玩家/生物穿上模组装备后，装备整体错位 —— 头饰浮在头顶上方或偏移半个身位，
+骑士头盔 / 夜视仪 / 潜水镜等甚至偏出 1 格以上；战术背心跑到身体侧面或头顶上方。
+
+**根因（有源码依据）**：
+
+- 官方（`origin/1.18.x` 与 1.20.1 初始提交 `3042a4c9`）把帽子 / 背心的定位写在模型的
+  `transform`（Forge root transform）里，值按「围绕默认原点 `opposing-corner` = (1,1,1)」标定 ——
+  用 `TransformationHelper$Deserializer` 的默认 origin + `IForgeTransformation.applyOrigin`
+  复刻即得 `p = c + R·S·(v − c)`，逐件验算后每顶帽子都正好水平居中、贴住头部。
+- 1.19.4+ 的 Forge 在 **OBJ 路径**上多了一次 `Transformation.blockCenterToCorner()`
+  （= `applyOrigin(+0.5)`，见 `ObjModel.makeQuad`），于是同一组官方值在 1.20.1 上整体多偏
+  `0.5·(1,1,1) − R·S·(0.5,0.5,0.5)`：无旋转的模型偏 `0.5·(1−scale)`（0.525 缩放的军盔偏 0.24 格），
+  带 `rotation` 的（骑士 / 夜视 / 潜水镜的 rotY 180°/90°）偏 1 格以上。
+  elements（背包）路径没有这次偏移，不受影响。
+- 此前几轮的处置方向有误，叠加成了现在的表现：
+  - 把 OBJ 的 `transform` 删掉、改用 `display` 定位，并把 `transform`（**格**语义）的数值原样写进
+    `display`（**像素**语义，1/16 格）→ 补偿缩小 16 倍，帽子等于没定位；
+  - HAT 层的补偿从官方的 `scale(-1, -1, 1)` 改成 `rotateY(180)` —— 前者才把「OBJ 的 y 向上世界坐标」
+    映射到「实体模型空间（y 向下）」，后者不翻 y，会让帽子上下颠倒且整体偏 0.5 格。
+    （僵尸渲染器 `AbstractAdvancedZombieRenderer` 一直是 `scale(-1,-1,1)`，两条链不一致本身就是线索。）
+
+**修复**：
+
+- 5 个帽子模板 `models/hats/*.json`、8 件头饰的 `perspectives.head.transform`、战术背心
+  `models/vest/tactical_vest.json`：**恢复官方 `transform` 值并补偿 1.20.1 多出的居中偏移**，
+  即 `t' = t − 0.5·(1,1,1) + R·S·(0.5,0.5,0.5)`（脚本 `tools/fix_equipment_transforms.js`，可复算）；
+  键名照 1.20.1 合法化（`flip_v` / `emissive_ambient`）。
+- 其余 47 件头饰 item 上误加的 `display.head` 全部移除（官方没有，靠模板 `transform` 定位）。
+- `EquipmentLayer` 的 HAT 补偿恢复为官方 `scale(-1F, -1F, 1F)`；`useBodyOrientation`（装备跟随躯干，
+  与原版胸甲行为一致）保留。
+- 背包（elements 路径）本轮不动。
+
+**验证**：`tools/verify_equipment.js` 离线复刻渲染链（bake 期 root transform + `ItemRenderer` 的
+`translate(-0.5,-0.5,-0.5)` + HAT 的 `scale(-1,-1,1)`），逐件输出包围盒：
+
+```
+textured_helmet_multiple_of_9  1.20.1 现状 center=(-0.24,-0.40, 0.24)  →  补偿后 center=(0.00,-0.17, 0.01)
+knight_hat                     1.20.1 现状 center=(-1.07,-0.13, 1.08)  →  补偿后 center=(0.00,-0.21, 0.00)
+nv_goggles_hat                 1.20.1 现状 center=(-1.02,-0.31, 0.91)  →  补偿后 center=(0.00,-0.34,-0.11)
+战术背心                        1.20.1 现状 x[-1.37,-0.70] y[-1.82,-1.03] →  补偿后 x[-0.34,0.34] y[-0.75,0.04]
+（头部 = x/z ±0.25、y[-0.5,0]；躯干 = x ±0.25、y[-0.75,0]）
+```
+
+补偿后所有头饰 / 背心的落点与 1.18 语义逐件一致。`gradlew :crafting-dead-core:compileJava --offline` 通过。
+
+**未包含**：背包（elements 路径的坐标系含 `FaceBakery` 的 y 翻转，未在本轮验证范围）；1.21.x 分支不改。
+
 ### 装备渲染修复：3D 装备纹理缺失（品红方块）与佩戴错位
 
 **关键修复：头盔 / 背包 / 背心渲染为品红方块，且不贴合身体**

@@ -407,10 +407,12 @@ public class ClientDist implements ModDist {
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.HAT)
           .useHeadOrientation(true)
-          // 1.18's TransformType.HEAD carried a right_rotation of 180 degrees around Y, which 1.19+
-          // dropped. Re-apply exactly that rotation. A scale(-1, -1, 1) here would be a rotation
-          // around Z instead, flipping Y as well and lifting helmets above the player's head.
-          .transformation(poseStack -> poseStack.mulPose(Axis.YP.rotationDegrees(180)))
+          // 帽子模型的顶点是"y 向上"的世界坐标（如 bunny_hat 的兔耳在 y≈2.2），而实体模型空间
+          // y 向下（头顶 y=0、脚 y=1.5），x 也已被实体渲染的 scale(-1,-1,1) 翻转过。
+          // scale(-1,-1,1) 正好把前者映射到后者：既翻转 y（帽子不会上下颠倒），又翻转 x（左右不镜像）。
+          // 官方 1.18 / 1.20.1 以及僵尸渲染器（AbstractAdvancedZombieRenderer）用的都是它，
+          // 模型的 transform 值也是按这条链标定的 —— 换成 rotateY(180) 会让所有头饰偏 0.5 格并上下颠倒。
+          .transformation(poseStack -> poseStack.scale(-1F, -1F, 1F))
           .build());
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.GUN)
