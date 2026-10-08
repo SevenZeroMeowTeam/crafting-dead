@@ -17,18 +17,24 @@
       "textures": {
         "base": "craftingdead:hats/top_hat"
       },
-      "transform": {
-        "rotation": [
-          0,
-          0,
-          0
-        ],
-        "translation": [0.03125, -0.009375, 0.03125],
-        "scale": [
-          1,
-          1,
-          1
-        ]
+      "display": {
+        "head": {
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "translation": [
+            -0.0,
+            -19.36,
+            -0.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
       }
     }
   }
