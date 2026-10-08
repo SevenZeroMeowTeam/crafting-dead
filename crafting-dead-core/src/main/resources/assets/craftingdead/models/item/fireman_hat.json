@@ -17,19 +17,6 @@
       "textures": {
         "base": "craftingdead:hats/fireman_hat"
       },
-      "transform": {
-        "rotation": [
-          0,
-          0,
-          0
-        ],
-        "translation": [ 0.002285, -0.002539, 0.002051 ],
-        "scale": [
-          1.05,
-          1.05,
-          1.05
-        ]
-      },
       "display": {
         "head": {
           "rotation": [
@@ -37,7 +24,11 @@
             0,
             0
           ],
-          "translation": [ 0.001562, -0.059209, -0.006131 ],
+          "translation": [
+            0.39999,
+            -15.15756,
+            -1.56961
+          ],
           "scale": [
             0.8,
             0.8,
