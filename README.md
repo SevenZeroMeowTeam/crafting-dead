@@ -20,6 +20,31 @@
 
 ## 更新日志
 
+### 装备渲染修复：3D 装备纹理缺失（品红方块）与佩戴错位
+
+**关键修复：头盔 / 背包 / 背心渲染为品红方块，且不贴合身体**
+
+- 根因一（纹理缺失）：装备的 3D 模型走 `forge:obj` + `#base` 材质，而 `#base` 指向的贴图
+  **必须先被烘焙进 `minecraft:blocks` 图集**才会被采样，否则渲染为品红（missing sprite）。
+  本分支此前**缺少** `assets/minecraft/atlases/blocks.json`（其余版本分支都有 93 条 single source），
+  于是所有装备 3D 模型都没有纹理 —— 已补齐该文件
+  - 参考实现：图集定义**只从 `minecraft:atlases/blocks.json` 读取**
+    （`SpriteResourceLoader.load` → `getResourceStack(minecraft:atlases/blocks.json)`），
+    并且会对**所有资源包**的同一位置做堆叠、**逐份解析并合并** sources。
+    所以多个 mod 共用这一个文件不会互相覆盖，各自追加自己的 `single` 条目即可
+- 根因二（佩戴错位）：`models/backpack/*.json`、`models/vest/tactical_vest.json` 以及 8 件头饰
+  物品模型里的 `transform` 键，在 1.18 的 Forge 中**不生效**（原版模型按自身元素坐标摆放本来就正确），
+  而 1.19+ 的 Forge 会解析并应用它。于是 `scale: [1, -1, -1]` 把模型翻到身体之外，
+  `translation` 又叠了一层偏移 —— 表现为背包浮在人物侧面、头盔悬在头顶上方
+  - 修复：**移除**这些 `transform` 键，回到"只依赖模型自身元素坐标"的行为
+  - 更正：上一轮记录里"保留 `transform` 并换算单位"的做法只处理了 `translation`，
+    漏掉了同样生效的 `scale`，因此未能修正错位；正确做法是移除该键
+- 附带修正：上一轮的批量 ÷16 替换同时误伤了 8 件头饰的 `display.head.translation`
+  （该字段本来就是 1/16 格单位，不该换算），使其定位补偿缩小 16 倍；
+  已从历史恢复为原值，并保留这些头饰在 `perspectives.head` 上的 `display.head` 补偿
+
+
+
 ### 装备佩戴位置修复：背心 / 背包 / 部分头饰（同步自 `refactor/remove-geckolib-vanilla-render`）
 
 **关键修复：战术背心、背包穿在身上位置错误；部分头饰被推离头部**
