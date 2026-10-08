@@ -1,11 +1,11 @@
 {
 	"loader":"forge:obj",
 	"model":"craftingdead:models/hats/mask.obj",
-	"flip-v":true,
-	"ambientToFullbright": false,
+	"flip_v":true,
+	"emissive_ambient": false,
 	"transform": {
 		"rotation":  [ 0, 0, 0 ],
-		"translation":  [ 0.5, -0.75, 0.185 ],
+		"translation":  [0.03125, -0.046875, 0.011563],
 		"scale":  [ 1, 1, 1 ]
 	}
 }
