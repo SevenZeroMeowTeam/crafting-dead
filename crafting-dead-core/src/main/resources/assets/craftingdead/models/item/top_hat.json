@@ -16,26 +16,9 @@
       "parent": "craftingdead:hats/top_hat",
       "textures": {
         "base": "craftingdead:hats/top_hat"
-      },
-      "display": {
-        "head": {
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "translation": [
-            -0.0,
-            -19.36,
-            -0.0
-          ],
-          "scale": [
-            1.0,
-            1.0,
-            1.0
-          ]
-        }
       }
+    ,
+      "display": { "head": { "rotation": [ 0, 0, 0 ], "translation": [ -0.0,-19.36,-0.0 ], "scale": [ 1.0,1.0,1.0 ] } }
     }
   }
 }

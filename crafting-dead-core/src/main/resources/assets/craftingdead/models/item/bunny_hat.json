@@ -16,26 +16,9 @@
       "parent": "craftingdead:hats/bunny_hat",
       "textures": {
         "base": "craftingdead:hats/bunny_hat"
-      },
-      "display": {
-        "head": {
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "translation": [
-            -1e-05,
-            -20.36,
-            -0.5
-          ],
-          "scale": [
-            1.0,
-            1.0,
-            1.0
-          ]
-        }
       }
+    ,
+      "display": { "head": { "rotation": [ 0, 0, 0 ], "translation": [ -1e-05,-20.36,-0.5 ], "scale": [ 1.0,1.0,1.0 ] } }
     }
   }
 }
