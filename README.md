@@ -72,6 +72,19 @@ nv_goggles_hat                 1.20.1 现状 center=(-1.02,-0.31, 0.91)  →  �
 
 **未包含**：背包（elements 路径的坐标系含 `FaceBakery` 的 y 翻转，未在本轮验证范围）；1.21.x 分支不改。
 
+**本轮同步状态**（各分支独立提交，均已推送）：
+
+| 分支 | 提交 | 说明 |
+|------|------|------|
+| `refactor/remove-geckolib-vanilla-render` | `23fe4489` | 本轮修复源 |
+| `1.20.x` | `e7780e36` | 同源，含 `blockCenterToCorner` 补偿 |
+| `kotlin-refactor-1.20.x` | `2d3d4895` | 同源，含补偿 |
+| `1.19.x` | `7c49e356` | **不含补偿**：1.19.2（Forge 43.5.2）的 `ObjModel` 没有 `blockCenterToCorner`，官方值直接有效 |
+| `kotlin-refactor-1.19.x` | `cab3f5d4` | 同 `1.19.x` |
+
+各分支由同一脚本生成：`tools/fix_equipment_transforms.js --repo <工作树> --compensate <true|false> --clientdist <ClientDist.java>`（幂等、可复算），
+README 说明由 `tools/sync_readme_note.js` 插入。未纳入同步：`1.21.x`（本轮不改，但其装备显示同样需要这套修复）、`1.18.x`（归档）、`kotlin-refactor`（历史分支）。
+
 ### 装备渲染修复：3D 装备纹理缺失（品红方块）与佩戴错位
 
 **关键修复：头盔 / 背包 / 背心渲染为品红方块，且不贴合身体**
