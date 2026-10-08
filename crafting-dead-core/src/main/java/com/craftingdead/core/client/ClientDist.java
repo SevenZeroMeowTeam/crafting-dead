@@ -397,6 +397,7 @@ public class ClientDist implements ModDist {
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.MELEE)
           .useCrouchOrientation(true)
+          .useBodyOrientation(true)
           .build());
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.VEST)
@@ -406,11 +407,15 @@ public class ClientDist implements ModDist {
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.HAT)
           .useHeadOrientation(true)
-          .transformation(poseStack -> poseStack.scale(-1F, -1F, 1F))
+          // 1.18's TransformType.HEAD carried a right_rotation of 180 degrees around Y, which 1.19+
+          // dropped. Re-apply exactly that rotation. A scale(-1, -1, 1) here would be a rotation
+          // around Z instead, flipping Y as well and lifting helmets above the player's head.
+          .transformation(poseStack -> poseStack.mulPose(Axis.YP.rotationDegrees(180)))
           .build());
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.GUN)
           .useCrouchOrientation(true)
+          .useBodyOrientation(true)
           .build());
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.BACKPACK)
