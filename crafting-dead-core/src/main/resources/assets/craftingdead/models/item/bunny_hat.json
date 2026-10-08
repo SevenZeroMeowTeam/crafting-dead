@@ -17,24 +17,18 @@
       "textures": {
         "base": "craftingdead:hats/bunny_hat"
       },
-      "display": {
-        "head": {
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "translation": [
-            -1e-05,
-            -20.36,
-            -0.5
-          ],
-          "scale": [
-            1.0,
-            1.0,
-            1.0
-          ]
-        }
+      "transform": {
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "translation": [0.03125, -0.040625, 0.029375],
+        "scale": [
+          1,
+          1,
+          1
+        ]
       }
     }
   }

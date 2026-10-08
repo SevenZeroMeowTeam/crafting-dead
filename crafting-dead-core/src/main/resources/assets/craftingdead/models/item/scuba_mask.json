@@ -17,24 +17,18 @@
       "textures": {
         "base": "craftingdead:hats/scuba_mask"
       },
-      "display": {
-        "head": {
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "translation": [
-            2.75,
-            -17.71078,
-            -4.0
-          ],
-          "scale": [
-            1.0,
-            1.0,
-            1.0
-          ]
-        }
+      "transform": {
+        "rotation": [
+          0,
+          90,
+          0
+        ],
+        "translation": [0.020313, -0.03125, -0.115625],
+        "scale": [
+          1.1,
+          1.1,
+          1.1
+        ]
       }
     }
   }
