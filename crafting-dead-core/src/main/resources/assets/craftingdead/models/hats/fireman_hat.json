@@ -1,11 +1,6 @@
 {
-"textures": {
-	"base": "craftingdead:hats/fireman_hat",
-	"particle": "craftingdead:hats/fireman_hat"
-},
-
-	"loader":"forge:obj",
-	"model":"craftingdead:models/hats/fireman_hat.obj",
-	"flip-v":true,
-	"ambientToFullbright": false
+  "loader": "forge:obj",
+  "model": "craftingdead:models/hats/fireman_hat.obj",
+  "flip_v": true,
+  "emissive_ambient": false
 }

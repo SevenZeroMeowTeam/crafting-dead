@@ -1,9 +1,4 @@
 {
-"textures": {
-	"base": "craftingdead:backpack/large_black_backpack",
-	"particle": "craftingdead:backpack/large_black_backpack"
-},
-
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 32],
 	"elements": [
@@ -100,7 +95,7 @@
 	],
 	"transform": {
 		"rotation":  [ 0, 0, 0 ],
-		"translation": [ 0, 0.02, -0.63 ],
+		"translation": [0, 0.00125, -0.039375],
 		"scale":  [ 1, -1, -1 ]
 	}
 }

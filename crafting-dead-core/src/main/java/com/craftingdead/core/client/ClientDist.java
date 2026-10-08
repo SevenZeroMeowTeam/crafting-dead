@@ -400,23 +400,27 @@ public class ClientDist implements ModDist {
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.MELEE)
           .useCrouchOrientation(true)
+          .useBodyOrientation(true)
           .build());
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.VEST)
           .useCrouchOrientation(true)
+          .useBodyOrientation(true)
           .build());
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.HAT)
           .useHeadOrientation(true)
-          .transformation(poseStack -> poseStack.scale(-1F, -1F, 1F))
+          .transformation(poseStack -> poseStack.mulPose(Axis.YP.rotationDegrees(180)))
           .build());
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.GUN)
           .useCrouchOrientation(true)
+          .useBodyOrientation(true)
           .build());
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.BACKPACK)
           .useCrouchOrientation(true)
+          .useBodyOrientation(true)
           .build());
     }
   }
