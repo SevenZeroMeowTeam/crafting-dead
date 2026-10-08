@@ -401,6 +401,7 @@ public class ClientDist implements ModDist {
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.VEST)
           .useCrouchOrientation(true)
+          .useBodyOrientation(true)
           .build());
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.HAT)
@@ -414,6 +415,7 @@ public class ClientDist implements ModDist {
       renderer.addLayer(EquipmentLayer.builder(renderer)
           .slot(Equipment.Slot.BACKPACK)
           .useCrouchOrientation(true)
+          .useBodyOrientation(true)
           .build());
     }
   }
