@@ -16,26 +16,9 @@
       "parent": "craftingdead:hats/nv_goggles_hat",
       "textures": {
         "base": "craftingdead:hats/nv_goggles_hat"
-      },
-      "display": {
-        "head": {
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "translation": [
-            -0.0,
-            -12.88,
-            -1.4
-          ],
-          "scale": [
-            0.8,
-            0.8,
-            0.8
-          ]
-        }
       }
+    ,
+      "display": { "head": { "rotation": [ 0, 0, 0 ], "translation": [ -0.0,-12.88,-1.4 ], "scale": [ 0.8,0.8,0.8 ] } }
     }
   }
 }

@@ -16,26 +16,9 @@
       "parent": "craftingdead:hats/mask",
       "textures": {
         "base": "craftingdead:hats/cow_mask"
-      },
-      "display": {
-        "head": {
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "translation": [
-            -0.0,
-            -20.36,
-            -0.5
-          ],
-          "scale": [
-            1.0,
-            1.0,
-            1.0
-          ]
-        }
       }
+    ,
+      "display": { "head": { "rotation": [ 0, 0, 0 ], "translation": [ 0.5, -0.75, 0.185 ], "scale": [ 1, 1, 1 ] } }
     }
   }
 }
